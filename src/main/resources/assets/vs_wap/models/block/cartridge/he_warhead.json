@@ -1,0 +1,24 @@
+{
+	"credit": "Made with Blockbench",
+	"parent": "minecraft:block/block",
+	"textures": {
+		"2": "vs_wap:block/cartridge/copper_bottom_ring",
+		"3": "vs_wap:block/cartridge/he_side",
+		"particle": "vs_wap:block/cartridge/he_side"
+	},
+	"elements": [
+		{
+			"from": [3, 0, 3],
+			"to": [13, 16, 13],
+			"rotation": {"angle": 0, "axis": "y", "origin": [3, 0, 3]},
+			"faces": {
+				"north": {"uv": [3, 0, 13, 16], "texture": "#3"},
+				"east": {"uv": [3, 0, 13, 16], "texture": "#3"},
+				"south": {"uv": [3, 0, 13, 16], "texture": "#3"},
+				"west": {"uv": [3, 0, 13, 16], "texture": "#3"},
+				"up": {"uv": [0, 0, 16, 16], "texture": "#2"},
+				"down": {"uv": [0, 0, 16, 16], "texture": "#2"}
+			}
+		}
+	]
+}

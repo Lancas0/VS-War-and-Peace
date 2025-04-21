@@ -1,0 +1,85 @@
+package com.lancas.vs_wap.content.items;
+
+import com.lancas.vs_wap.content.items.base.ShipInteractableItem;
+import com.lancas.vs_wap.debug.EzDebug;
+import com.lancas.vs_wap.content.saved.RetrievableDisabledCollisionMgr;
+import com.lancas.vs_wap.util.ShipUtil;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.NotNull;
+import org.valkyrienskies.core.api.ships.Ship;
+
+public class DebugTool extends ShipInteractableItem {
+    public DebugTool(Properties p_41383_) {
+        super(p_41383_);
+    }
+
+    @Override
+    public InteractionResult onItemUseOnShip(ItemStack stack, @NotNull Ship ship, @NotNull Level level, @NotNull Player player, UseOnContext ctx) {
+        /*for (int i = 0; i < 10; ++i) {
+            new ShipBuilder(player.getOnPos().offset(0, 10, 10), level, 1.0, false).addBlock(new BlockPos(0, 0, 0), Blocks.IRON_BLOCK.defaultBlockState());
+        }*/
+        if (!(level instanceof ServerLevel sLevel)) return InteractionResult.PASS;
+
+        boolean hasDisabled = RetrievableDisabledCollisionMgr.hasDisabledCollision(sLevel, ship.getId());
+        EzDebug.log("has disabled:" + hasDisabled);
+
+        if (hasDisabled) {
+            int ret = RetrievableDisabledCollisionMgr.retrieveAllCollisionsOf(sLevel, ship.getId());
+            EzDebug.log("retrive:" + ret);
+        } else {
+            RetrievableDisabledCollisionMgr.disableCollisionBetween(sLevel, ship.getId(), ShipUtil.getGroundId(sLevel));
+        }
+
+        return InteractionResult.CONSUME;
+    }
+
+    public boolean lazy(ItemStack stack) {
+        /*if (!stack.getOrCreateTag().contains("lazy")) {
+            stack.getOrCreateTag().putInt("lazy", 5);
+            return false;
+        }
+
+        int lazy = stack.getTag().getInt("lazy");
+        if (lazy == 0) {
+            stack.getTag().putInt("lazy", 5);
+            return true;
+        } else {
+            stack.getTag().putInt("lazy", lazy - 1);
+            return false;
+        }*/
+        return false;
+    }
+
+    @Override
+    public void inventoryTick(ItemStack stack, Level level, Entity entity, int p_41407_, boolean selecting) {
+        /*if (true) return;
+
+        if (!selecting) return;
+        if (!level.isClientSide) return;
+        if (!(entity instanceof Player player)) return;
+
+        if (!lazy(stack)) return;
+
+        //in client raycast debug
+        Vec3 viewV = player.getViewVector(1f).scale(10f);
+        Vec3 eyePos = player.getEyePosition();
+
+        BlockHitResult hit = level.clip(new ClipContext(
+            eyePos,
+            eyePos.add(viewV),
+            ClipContext.Block.COLLIDER,
+            ClipContext.Fluid.NONE,
+            null
+        ));
+
+        if (hit.getType() == HitResult.Type.BLOCK) {
+            EzDebug.log("hit block:" + level.getBlockState(hit.getBlockPos()).getBlock().getName().getString() + ", dir:" + hit.getDirection());
+        }*/
+    }
+}

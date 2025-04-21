@@ -1,0 +1,28 @@
+{
+  "block.vs_wap.shelled_propellant": "shelled propellant",
+  "block.vs_wap.rotator": "rotate test",
+  "block.vs_wap.wind_cap": "wind_cap",
+  "block.vs_wap.gauge12": "gauge 12",
+  "block.vs_wap.ap_core_warhead": "hard core ap warhead",
+  "block.vs_wap.blunt_ap_warhead": "blunt_ap_warhead",
+  "block.vs_wap.he_warhead": "he warhead",
+  "block.vs_wap.impact_fuze": "impact fuze",
+  "block.vs_wap.primer": "primer",
+  "block.vs_wap.tail_fin": "tail fin",
+  "block.vs_wap.shell_frame": "shell frame",
+
+  "block.vs_wap.mech_scope_block": "mech scope block",
+  "block.vs_wap.tele_scope_block": "tele scope block",
+  "block.vs_wap.activator": "activator",
+
+  "block.vs_wap.artillery_plate": "artillery plate",
+  "block.vs_wap.artillery_barrel": "artillery barrel",
+  "block.vs_wap.cartridge_rail": "cartridge rail",
+  "block.vs_wap.artillery_part1": "artillery part1",
+
+  "block.vs_wap.ejecting_breech": "ejecting breech",
+  "block.vs_wap.dropping_breech": "dropping breech",
+  "block.vs_wap.artillery_door": "artillery door",
+
+  "item.vs_wap.vs_wap_wand": "vs_wap wand"
+}

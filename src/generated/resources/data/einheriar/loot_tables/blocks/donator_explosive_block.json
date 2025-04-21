@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "einheriar:donator_explosive_block"
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "einheriar:blocks/donator_explosive_block"
+}

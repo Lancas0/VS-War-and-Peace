@@ -1,0 +1,28 @@
+{
+  "item.vs_wap.shelled_propellant": "具壳发射药",
+  "item.vs_wap.ccc": "可燃药筒发射药",
+  "block.vs_wap.shelled_propellant": "具壳发射药",
+  "block.vs_wap.rotator": "自旋稳定测试方块",
+  "block.vs_wap.wind_cap": "风帽(可以用但未完成)",
+  "block.vs_wap.gauge12": "12号霰弹(未完成)",
+  "block.vs_wap.ap_core_warhead": "硬芯穿甲弹头",
+  "block.vs_wap.blunt_ap_warhead": "被帽穿甲弹头",
+  "block.vs_wap.he_warhead": "普通高爆战斗部",
+  "block.vs_wap.impact_fuze": "触发引信",
+  "block.vs_wap.primer": "底火",
+  "block.vs_wap.tail_fin": "尾翼",
+  "block.vs_wap.shell_frame": "弹药架",
+  "block.vs_wap.mech_scope_block": "机械式瞄具",
+  "block.vs_wap.tele_scope_block": "光学瞄准镜",
+  "block.vs_wap.activator": "自更新激活器",
+
+  "block.vs_wap.artillery_plate": "火炮部件1",
+  "block.vs_wap.artillery_barrel": "炮管",
+  "block.vs_wap.cartridge_rail": "弹轨",
+  "block.vs_wap.artillery_part1": "火炮部件2",
+  "block.vs_wap.ejecting_breech": "抛壳式炮闩",
+  "block.vs_wap.dropping_breech": "无抛壳炮闩",
+  "block.vs_wap.artillery_door": "投弹仓",
+
+  "item.vs_wap.vs_wap_wand": "很有武德的杖"
+}

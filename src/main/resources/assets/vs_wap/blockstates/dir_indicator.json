@@ -1,0 +1,5 @@
+{
+  "variants": {
+    "" : { "model": "vs_wap:block/debug/dir_indicator" }
+  }
+}

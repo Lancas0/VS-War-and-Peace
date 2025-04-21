@@ -1,0 +1,2 @@
+redraw artillery door,
+add artillery door side

@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "particle": "vs_wap:block/warheads/flare/side",
+    "up": "vs_wap:block/warheads/flare/top",
+    "down": "vs_wap:block/warheads/flare/bottom",
+    "north": "vs_wap:block/warheads/flare/side",
+    "south": "vs_wap:block/warheads/flare/side",
+    "east": "vs_wap:block/warheads/flare/side",
+    "west": "vs_wap:block/warheads/flare/side"
+  }
+}

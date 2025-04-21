@@ -1,0 +1,48 @@
+[
+  {
+    "block": "minecraft:dirt",
+    "hardness": 20E3,
+    "toughness": 20E3
+  },
+  {
+    "block": "minecraft:stone",
+    "hardness": 140E3,
+    "toughness": 90E3
+  },
+  {
+    "tag": "minecraft:logs",
+    "hardness": 80E3,
+    "toughness": 85E3
+  },
+  {
+    "tag": "minecraft:planks",
+    "hardness": 60E3,
+    "toughness": 40E3
+  },
+  {
+    "block": "minecraft:wooden_stairs",
+    "hardness": 60E3,
+    "toughness": 30E3
+  },
+  {
+    "block": "minecraft:wooden_slabs",
+    "hardness": 60E3,
+    "toughness": 20E3
+  },
+  {
+    "block": "minecraft:netherite_block",
+    "hardness": 1E9,
+    "toughness": 1.25E9
+  },
+  {
+    "block": "minecraft:iron_block",
+    "hardness": 600E3,
+    "toughness": 350E3
+  },
+  {
+    "block": "minecraft:bedrock",
+    "hardness": "Infinity",
+    "toughness": "Infinity"
+  }
+
+]

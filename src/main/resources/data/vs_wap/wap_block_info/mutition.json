@@ -1,0 +1,62 @@
+[
+  {
+    "block": "vs_wap:ap_core_warhead",
+    "mass": 35,
+    "hardness": 2000E3,
+    "ap_area": 0.25,
+    "oblique_degree": 0.5
+  },
+  {
+    "block": "vs_wap:blunt_ap_warhead",
+    "mass": 75,
+    "hardness": 1050E3,
+    "ap_area": 0.85,
+    "oblique_degree": 7
+  },
+  {
+    "block": "vs_wap:he_warhead",
+    "mass": 40,
+    "drag_factor": 1.35
+  },
+  {
+    "block": "vs_wap:impact_fuze",
+    "mass": 10,
+    "drag_factor": 0.15
+  },
+  {
+    "block": "vs_wap:wind_cap",
+    "mass": 15,
+    "drag_factor": 0.09
+  },
+
+
+  {
+    "block": "vs_wap:primer",
+    "mass": 15
+  },
+  {
+    "block": "vs_wap:shelled_propellant",
+    "mass": 30,
+    "propellant_power": 5E5
+  },
+  {
+    "block": "vs_wap:ccc",
+    "mass": 25,
+    "propellant_power": 4E5
+  },
+  {
+    "block": "vs_wap:gauge12",
+    "mass": 30,
+    "propellant_power": 2.5E5
+  },
+
+
+  {
+    "block": "vs_wap:rotator",
+    "mass": 10
+  },
+  {
+    "block": "vs_wap:tail_fin",
+    "mass": 15
+  }
+]

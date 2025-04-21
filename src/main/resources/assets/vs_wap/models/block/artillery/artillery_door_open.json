@@ -1,0 +1,36 @@
+{
+	"credit": "Made with Blockbench",
+	"parent": "minecraft:block/block",
+	"textures": {
+		"0": "vs_wap:block/artillery/artillery_door",
+		"1": "vs_wap:block/thick_metal_shell_top",
+		"particle": "vs_wap:block/artillery/artillery_door"
+	},
+	"elements": [
+		{
+			"from": [0, 0, 0],
+			"to": [16, 4, 2],
+			"faces": {
+				"north": {"uv": [0, 12, 16, 16], "texture": "#1"},
+				"east": {"uv": [13, 0, 15, 4], "texture": "#1"},
+				"south": {"uv": [0, 7, 16, 11], "texture": "#0"},
+				"west": {"uv": [1, 0, 3, 4], "texture": "#1"},
+				"up": {"uv": [0, 5, 16, 7], "texture": "#0"},
+				"down": {"uv": [0, 0, 16, 2], "texture": "#missing"}
+			}
+		},
+		{
+			"from": [0, 0, 14],
+			"to": [16, 4, 16],
+			"rotation": {"angle": 0, "axis": "y", "origin": [0, 0, 14]},
+			"faces": {
+				"north": {"uv": [0, 7, 16, 11], "texture": "#0"},
+				"east": {"uv": [1, 0, 3, 4], "texture": "#1"},
+				"south": {"uv": [0, 12, 16, 16], "texture": "#1"},
+				"west": {"uv": [13, 0, 15, 4], "texture": "#1"},
+				"up": {"uv": [0, 6, 16, 8], "rotation": 180, "texture": "#0"},
+				"down": {"uv": [0, 0, 16, 2], "texture": "#missing"}
+			}
+		}
+	]
+}
