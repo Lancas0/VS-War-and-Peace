@@ -224,9 +224,10 @@ public class ShipBuilder {
         if (canceled) return this;
         if (state.isAir()) return this;
 
-        BlockPos currentPos = initialBP.offset(offset);
-        WorldUtil.setBlock(level, currentPos, state, null);
-        WorldUtil.updateBlock(level, currentPos);
+        BlockPos realPos = initialBP.offset(offset);
+        WorldUtil.setBlock(level, realPos, state, null);
+        WorldUtil.updateBlock(level, realPos);
+        //level.getChunk(realPos).setBlockState(realPos, state, true);
 
         return this;
     }
@@ -234,9 +235,9 @@ public class ShipBuilder {
         if (canceled) return this;
         if (state.isAir()) return this;
 
-        BlockPos currentPos = initialBP.offset(offset);
-        WorldUtil.setBlock(level, currentPos, state, beNbt);
-        WorldUtil.updateBlock(level, currentPos);
+        BlockPos realPos = initialBP.offset(offset);
+        WorldUtil.setBlock(level, realPos, state, beNbt);
+        WorldUtil.updateBlock(level, realPos);
 
         return this;
     }

@@ -144,7 +144,7 @@ public class DockerItem extends ShipInteractableItem {
 
         ShipBuilder shipBuilder = ShipPool
             .getOrCreatePool(level)
-            .getOrCreateShipBuilder();
+            .getOrCreateEmptyShipBuilder();
 
         return makeShipByBuilder(stack, shipBuilder, pos, headWorldDir);
     }

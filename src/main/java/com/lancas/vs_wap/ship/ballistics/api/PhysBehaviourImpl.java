@@ -1,5 +1,6 @@
 package com.lancas.vs_wap.ship.ballistics.api;
 
+/*
 import com.lancas.vs_wap.foundation.api.math.ForceOnPos;
 import com.lancas.vs_wap.ship.ballistics.data.BallisticsShipData;
 import net.minecraft.core.BlockPos;
@@ -38,9 +39,9 @@ public class PhysBehaviourImpl implements IPhysBehaviour {
     public static PhysBehaviourImpl createTorqueBehaviour(TriFunction<PhysShipImpl, BlockPos, BallisticsShipData, Vector3d> torqueGetter) {
         return new PhysBehaviourImpl(null, null, torqueGetter);
     }
-    /*public static PhysBehaviourImpl createTorqueOnPosBehaviour(BiFunction<PhysShipImpl, BlockPos, TorqueOnPos> torqueOnPosGetter) {
+    /.*public static PhysBehaviourImpl createTorqueOnPosBehaviour(BiFunction<PhysShipImpl, BlockPos, TorqueOnPos> torqueOnPosGetter) {
         return new PhysBehaviourImpl(null, null, null, torqueOnPosGetter);
-    }*/
+    }*./
 
     @Override
     public Vector3d getAdditionalForce(PhysShipImpl physShip, BlockPos bpInShip, BallisticsShipData shipData) {
@@ -60,10 +61,11 @@ public class PhysBehaviourImpl implements IPhysBehaviour {
             return null;
         return torqueGetter.apply(physShip, bpInShip, shipData);
     }
-    /*@Override
+    /.*@Override
     public TorqueOnPos getAdditionalTorqueOnPos(PhysShipImpl physShip, BlockPos bpInShip, BallisticsShipData shipData) {
         if (physShip == null || torqueOnPosGetter == null)
             return null;
         return torqueOnPosGetter.apply(physShip, bpInShip);
-    }*/
+    }*./
 }
+*/

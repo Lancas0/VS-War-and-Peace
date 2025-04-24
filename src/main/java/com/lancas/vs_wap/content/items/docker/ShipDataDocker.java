@@ -55,7 +55,7 @@ public class ShipDataDocker extends Item implements IDocker {
 
         ShipBuilder shipBuilder = ShipPool
             .getOrCreatePool(level)
-            .getOrCreateShipBuilder()
+            .getOrCreateEmptyShipBuilder()
             .overwriteByScheme(shipSchemeData);
 
         Matrix4dc shipToWorld = shipBuilder.get().getShipToWorld();

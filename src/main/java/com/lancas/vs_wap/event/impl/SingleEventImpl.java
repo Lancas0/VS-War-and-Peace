@@ -14,7 +14,7 @@ public class SingleEventImpl<T> implements ISingleEvent<T> {
     private final List<Consumer<T>> listeners = new ArrayList<>();
     private final Set<Consumer<T>> toRemove = ConcurrentHashMap.newKeySet();
 
-    @Override
+    //@Override
     public void invokeAll(T t) {
         var listenersIt = listeners.iterator();
         while (listenersIt.hasNext()) {
@@ -37,7 +37,7 @@ public class SingleEventImpl<T> implements ISingleEvent<T> {
     }
 
     @Override
-    public void add(@NotNull Consumer<T> listener) {
+    public void addListener(@NotNull Consumer<T> listener) {
         listeners.add(listener);
     }
     @Override

@@ -5,13 +5,13 @@ import com.lancas.vs_wap.subproject.blockplusapi.blockplus.adder.IBlockAdder;
 import com.lancas.vs_wap.content.blocks.blockplus.DefaultCartridgeAdder;
 import com.lancas.vs_wap.foundation.api.PidDirectionPhysBehaviour;
 import com.lancas.vs_wap.ship.ballistics.api.IPhysBehaviour;
-import com.lancas.vs_wap.ship.ballistics.api.IPhysicalBehaviourAdder;
+import com.lancas.vs_wap.ship.ballistics.api.IPhysicalBehaviourBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.List;
 
-public class TailFin extends BlockPlus implements IPhysicalBehaviourAdder {
+public class TailFin extends BlockPlus implements IPhysicalBehaviourBlock {
     @Override
     public Iterable<IBlockAdder> getAdders() {
         return BlockPlus.addersIfAbsent(

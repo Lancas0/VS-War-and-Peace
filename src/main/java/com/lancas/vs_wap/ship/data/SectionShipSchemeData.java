@@ -102,7 +102,7 @@ public class SectionShipSchemeData implements IShipSchemeData {
 
         NbtBuilder nbtBuilder = NbtBuilder.copy(tag)
             .readEachSimpleJackson("section_locations", SectionXZI.class, locations)
-            .readEachList("section_data", SectionData::of, sectionData)
+            .readEachAsList("section_data", SectionData::of, sectionData)
             .readDouble("scale", scale);
             //.readEachSimpleJackson("section_data", SectionData.class, sectionData);
 

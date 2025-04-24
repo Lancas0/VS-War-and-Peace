@@ -17,7 +17,7 @@ public class QuadEventImpl<T, U, V, W> implements IQuadEvent<T, U, V, W> {
     private final List<QuadConsumer<T, U, V, W>> listeners = new ArrayList<>();
     private final Set<QuadConsumer<T, U, V, W>> toRemove = ConcurrentHashMap.newKeySet();
 
-    @Override
+    //@Override
     public void invokeAll(T t, U u, V v, W w) {
         var listenersIt = listeners.iterator();
         while (listenersIt.hasNext()) {
@@ -38,7 +38,7 @@ public class QuadEventImpl<T, U, V, W> implements IQuadEvent<T, U, V, W> {
     }
 
     @Override
-    public void add(@NotNull QuadConsumer<T, U, V, W> listener) {
+    public void addListener(@NotNull QuadConsumer<T, U, V, W> listener) {
         listeners.add(listener);
     }
     @Override

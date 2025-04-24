@@ -3,7 +3,8 @@ package com.lancas.vs_wap.ship.ballistics.data;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.lancas.vs_wap.ship.ballistics.ProjectileShipWrapper;
+import com.lancas.vs_wap.ship.helper.LazyShip;
+import com.lancas.vs_wap.ship.type.ProjectileWrapper;
 import com.lancas.vs_wap.util.JomlUtil;
 import com.lancas.vs_wap.util.ShipUtil;
 import net.minecraft.core.BlockPos;
@@ -26,9 +27,13 @@ import java.lang.Math;
 public class BallisticsShipData {
     //public final long projectileShipId;
     @NotNull
-    public final ProjectileShipWrapper projectile;
+    public final ProjectileWrapper projectile;
     public final long propellantShipId;
     public final long artilleryShipId;
+
+    private LazyShip projectileLazyShip;
+    private LazyShip propellantLazyShip;
+    private LazyShip artilleryLazyShip;
 
     public long getProjectileId() { return projectile.shipId; }
     public Direction getForwardInProjectileShip() { return projectile.forwardInShip; }
@@ -59,12 +64,17 @@ public class BallisticsShipData {
         //shipAABB = new AABBi();
         headBp = new SavedBlockPos();
         tailBp = new SavedBlockPos();*/
+        projectileLazyShip = propellantLazyShip = artilleryLazyShip = null;
     }
-    public BallisticsShipData(ProjectileShipWrapper inProjectile, long propShipId, long artilShipId) {
+    public BallisticsShipData(ProjectileWrapper inProjectile, long propShipId, long artilShipId) {
         //projectileShipId = projectileShip.getId();
         projectile = inProjectile;
         propellantShipId = propShipId;
         artilleryShipId = artilShipId;
+
+        projectileLazyShip = LazyShip.ofId(inProjectile.shipId);
+        propellantLazyShip = LazyShip.ofId(propShipId);
+        artilleryLazyShip = LazyShip.ofId(artilShipId);
 
         //launchDir = inLaunchDir.get(new Vector3d());
 
@@ -103,32 +113,14 @@ public class BallisticsShipData {
         }*/
     }
 
-    public ServerShip getProjectileShip(ServerLevel level) {
-        /*if (projectileShipCache == null) {
-            projectileShipCache = (ServerShip)ShipUtil.getShipByID(level, projectileShipId);
-        }
-        return projectileShipCache;*/
-        return projectile.getShip(level);//(ServerShip)ShipUtil.getShipByID(level, projectileShipId);
-    }
-    public ServerShip getPropellantShip(ServerLevel level) {
-        /*if (propellantShipCache == null) {
-            propellantShipCache = (ServerShip)ShipUtil.getShipByID(level, propellantShipId);
-        }
-        return propellantShipCache;*/
-        return (ServerShip)ShipUtil.getShipByID(level, propellantShipId);
-    }
-    public ServerShip getArtilleryShip(ServerLevel level) {
-        /*if (artilleryShipCache == null && artilleryShipId >= 0) {
-            artilleryShipCache = (ServerShip)ShipUtil.getShipByID(level, artilleryShipId);
-        }
-        return artilleryShipCache;*/
-        return (ServerShip)ShipUtil.getShipByID(level, artilleryShipId);
-    }
+    public ServerShip getProjectileShip(ServerLevel level) { return projectileLazyShip.get(level); }
+    public ServerShip getPropellantShip(ServerLevel level) { return propellantLazyShip.get(level); }
+    public ServerShip getArtilleryShip(ServerLevel level)  { return artilleryLazyShip.get(level); }
 
-    public Vector3d getWorldGeoCenter(Matrix4dc shipToWorld) {
+    /*public Vector3d getWorldGeoCenter(Matrix4dc shipToWorld) {
         return projectile.getGeoCenterInWorld(shipToWorld);//shipToWorld.transformPosition(geoCenterInShip, new Vector3d());
-    }
-    public double getProjectArea(Matrix4dc worldToShip, Vector3dc worldVel) {
+    }*/
+    /*public double getProjectArea(Matrix4dc worldToShip, Vector3dc worldVel) {
         Vector3d velDirInShip = worldToShip.transformDirection(worldVel, new Vector3d()).normalize();
         AABBic shipAABB = projectile.getShipAABB();
 
@@ -141,7 +133,7 @@ public class BallisticsShipData {
         double areaTowardsZ = lengthX * lengthY;
 
         return Math.abs(velDirInShip.x) * areaTowardsX + Math.abs(velDirInShip.y) * areaTowardsY + Math.abs(velDirInShip.z) * areaTowardsZ;
-    }
+    }*/
     public Vector3dc getLaunchDir() { return projectile.getLaunchDir(); }
     public boolean isHead(BlockPos bp) { return projectile.headBp.equalsBp(bp); }
     public boolean isTail(BlockPos bp) { return projectile.tailBp.equalsBp(bp); }

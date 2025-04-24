@@ -17,6 +17,9 @@ public class StrUtil {
     public static String F2(Vector3dc v) {
         return String.format("(%.2f, %.2f, %.2f)", v.x(), v.y(), v.z());
     }
+    public static String F2(Quaterniondc q) {
+        return String.format("(%.2f, %.2f, %.2f, %.2f)", q.x(), q.y(), q.z(), q.w());
+    }
     public static String F2(Vec3 v) {
         return String.format("(%.2f, %.2f, %.2f)", v.x(), v.y(), v.z());
     }

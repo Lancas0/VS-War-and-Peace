@@ -37,17 +37,17 @@
   {
     "block": "vs_wap:shelled_propellant",
     "mass": 30,
-    "propellant_power": 5E5
+    "propellant_power": 1E5
   },
   {
     "block": "vs_wap:ccc",
     "mass": 25,
-    "propellant_power": 4E5
+    "propellant_power": 1E4
   },
   {
     "block": "vs_wap:gauge12",
     "mass": 30,
-    "propellant_power": 2.5E5
+    "propellant_power": 1E3
   },
 
 

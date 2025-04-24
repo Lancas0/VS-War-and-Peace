@@ -15,14 +15,13 @@ public class ConstraintRemoveEvent implements ITriEvent<ServerLevel, String, VSC
     private final List<TriConsumer<ServerLevel, String, VSConstraint>> listeners = new ArrayList<>();
 
 
-    @Override
     public void invokeAll(ServerLevel level, String key, VSConstraint constraint) {
         for (var listener : listeners)
             listener.accept(level, key, constraint);
     }
 
     @Override
-    public void add(@NotNull TriConsumer<ServerLevel, String, VSConstraint> listener) {
+    public void addListener(@NotNull TriConsumer<ServerLevel, String, VSConstraint> listener) {
         listeners.add(listener);
     }
 

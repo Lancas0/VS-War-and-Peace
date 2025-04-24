@@ -16,11 +16,11 @@ import java.util.Objects;
     setterVisibility = JsonAutoDetect.Visibility.NONE
 )
 public class SavedBlockPos {
-    public int x = 0;
-    public int y = 0;
-    public int z = 0;
+    public final int x;
+    public final int y;
+    public final int z;
 
-    public SavedBlockPos() {}
+    public SavedBlockPos() { x = y = z = 0; }
     public SavedBlockPos(BlockPos bp) {
         x = bp.getX();
         y = bp.getY();

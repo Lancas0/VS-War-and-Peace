@@ -1,7 +1,7 @@
 package com.lancas.vs_wap.content.blocks.cartridge.modifier;
 
 import com.lancas.vs_wap.foundation.BiTuple;
-import com.lancas.vs_wap.ship.ballistics.ProjectileShipWrapper;
+import com.lancas.vs_wap.ship.type.ProjectileWrapper;
 import com.lancas.vs_wap.ship.ballistics.api.IPhysBehaviour;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.state.BlockState;
@@ -81,8 +81,8 @@ public interface IModifier {
     public default Vector3dc calculateTorqueInServerTick(ModifierData data) { return new Vector3d(); }
     public default double getDragFactorModification(ModifierData data) { return 0; }*/
 
-    public default double getAirDragMultiplier(ProjectileShipWrapper projectile, BlockPos pos, BlockState state) { return 1; }
-    public default void modifyTempPhysBehaviour(ProjectileShipWrapper projectile, BlockPos pos, BlockState state, Map<String, BiTuple<BlockPos, IPhysBehaviour>> tempPhysBehaviours) {}
+    public default double getAirDragMultiplier(ProjectileWrapper projectile, BlockPos pos, BlockState state) { return 1; }
+    public default void modifyTempPhysBehaviour(ProjectileWrapper projectile, BlockPos pos, BlockState state, Map<String, BiTuple<BlockPos, IPhysBehaviour>> tempPhysBehaviours) {}
 
 
 }

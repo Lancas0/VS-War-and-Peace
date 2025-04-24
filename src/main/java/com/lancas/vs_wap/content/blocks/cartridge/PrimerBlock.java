@@ -197,7 +197,7 @@ public class PrimerBlock extends BlockPlus implements IPrimer/*, IBE<PrimerBE>*/
                 EzDebug.warn("verified key but no constraint is matched, isAtt:" + isAttachment.get() + ", isOri:" + isOrientation.get() + ", primerBp:" + primerBp.get());
             }
 
-            EventMgr.Server.holdShipEvent.add(new TriRemoveAfterSuccessListener<ServerLevel, ServerPlayer, Long>() {
+            EventMgr.Server.holdShipEvent.addListener(new TriRemoveAfterSuccessListener<ServerLevel, ServerPlayer, Long>() {
                 private boolean success = false;
                 @Override
                 public void accept(ServerLevel level, ServerPlayer player, Long shipId) {

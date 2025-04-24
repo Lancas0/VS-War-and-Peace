@@ -1,11 +1,15 @@
 package com.lancas.vs_wap.register;
 
 import com.lancas.vs_wap.ModMain;
+import com.lancas.vs_wap.debug.EzDebug;
 import com.lancas.vs_wap.foundation.network.KeyPressPacket;
 import com.lancas.vs_wap.foundation.network.NetworkHandler;
 import com.lancas.vs_wap.foundation.network.client2server.SwapShipsInSlotC2S;
 import com.lancas.vs_wap.foundation.network.client2server.ThrowShipPacketC2S;
 import com.lancas.vs_wap.ship.feature.hold.ShipHoldSlot;
+import com.lancas.vs_wap.subproject.sandbox.SandBoxClientWorld;
+import com.lancas.vs_wap.subproject.sandbox.network.test.CreateShipAtPlayerFromClientPacketC2S;
+import com.lancas.vs_wap.subproject.sandbox.ship.ShipClientRenderer;
 import net.minecraft.client.KeyMapping;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
@@ -92,14 +96,38 @@ public enum KeyBinding {
         },
         null,
         null
-    )/*,
+    ),
     TestKey(
-      "Test Key",
-      GLFW.GLFW_KEY_P,
-      true,
-        (kb, state) -> {  },
+        "Test Key",
+        GLFW.GLFW_KEY_P,
+        true,
+        (kb, keyDown) -> { if (!keyDown) return;
+            EzDebug.log("current sandbox client level:" + SandBoxClientWorld.INSTANCE.getCurLevelName());
+            EzDebug.logs(SandBoxClientWorld.INSTANCE.allRenderers(), ShipClientRenderer::toString);
+
+        },
         null, null
-    )*/;
+    ),
+    TestKey2(
+        "Test Key2",
+        GLFW.GLFW_KEY_O,
+        true,
+        (kb, keyDown) -> { if (!keyDown) return;
+            EzDebug.log("try create ship");
+            NetworkHandler.sendToServer(new CreateShipAtPlayerFromClientPacketC2S(1));
+        },
+        null, null
+    ),
+    TestKey3(
+        "Test Key3",
+        GLFW.GLFW_KEY_I,
+        true,
+        (kb, keyDown) -> { if (!keyDown) return;
+            EzDebug.log("try create ship");
+            NetworkHandler.sendToServer(new CreateShipAtPlayerFromClientPacketC2S(9));
+        },
+        null, null
+    );
 
 
     private static Hashtable<String, KeyBinding> name2key = new Hashtable<>();

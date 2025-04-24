@@ -13,6 +13,7 @@ import com.lancas.vs_wap.ship.ballistics.data.BallisticsComponentData;
 import com.lancas.vs_wap.ship.ballistics.data.BallisticsShipData;
 import com.lancas.vs_wap.ship.ballistics.api.TriggerInfo;
 import com.lancas.vs_wap.ship.attachment.force.ProjectileReactForceInducer;
+import com.lancas.vs_wap.ship.type.ProjectileWrapper;
 import com.lancas.vs_wap.util.JomlUtil;
 import com.lancas.vs_wap.util.MathUtil;
 import com.lancas.vs_wap.util.ShipUtil;
@@ -114,7 +115,7 @@ public class BallisticsController implements ShipForcesInducer {  //apply on pro
 
 
     //private BallisticsController() {}
-    public static BallisticsController apply(ServerLevel level, @NotNull ProjectileShipWrapper inProjectile, long propellantShipId, long artilleryShipId, double inPropellantPower) {
+    public static BallisticsController apply(ServerLevel level, @NotNull ProjectileWrapper inProjectile, long propellantShipId, long artilleryShipId, double inPropellantPower) {
         if (propellantShipId < 0) {
             EzDebug.fatal("propellant ship can not be null");
             return null;
@@ -216,14 +217,13 @@ public class BallisticsController implements ShipForcesInducer {  //apply on pro
             //Vector3d worldGeoCenter = shipData.getWorldGeoCenter(physShipTransform.getShipToWorld());
             Vector3d worldAirDragCenter = physShipTransform.getShipToWorld().transformPosition(airDragCenterInShip, new Vector3d());
 
-            double projectArea = shipData.getProjectArea(physShipTransform.getWorldToShip(), velInWorld);
-            double dragForceLen = 0.5 * projectArea * sqVelLenInWorld * airDragMultiplierCalInServer;
-            Vector3d airDragForce = velInWorld.normalize(-dragForceLen, new Vector3d());
-            //EzDebug.log("worldGeoCenter" + StringUtil.toF2String(worldGeoCenter) + ", projectArea:" + projectArea + ", dragForceLen:" + dragForceLen + ", dragForce:" + StringUtil.toF2String(dragForce));
-            //if (airDragForce.isFinite())
-            //    physShipImpl.applyInvariantForceToPos(airDragForce, worldGeoCenter);
+            //double projectArea = shipData.getProjectArea(physShipTransform.getWorldToShip(), velInWorld);
+            //double dragForceLen = 0.5 * projectArea * sqVelLenInWorld * airDragMultiplierCalInServer;
+            //Vector3d airDragForce = velInWorld.normalize(-dragForceLen, new Vector3d());
+            //todo remove
+            Vector3d airDragForce = null;
 
-            if (airDragForce.isFinite()) {
+            if (airDragForce != null && airDragForce.isFinite()) {
                 Vector3d linearDrag = new Vector3d();
                 Vector3d rotateDrag = new Vector3d();
                 MathUtil.orthogonality(airDragForce, worldForwardDir, linearDrag, rotateDrag);

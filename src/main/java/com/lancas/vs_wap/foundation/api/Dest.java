@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 public class Dest<T> {
@@ -50,6 +51,7 @@ public class Dest<T> {
 
     public T get() { return value; }
     public void set(T value) { this.value = value; }
+    public void update(Function<T, T> updater) { value = updater.apply(value); }
 
     public boolean hasValue() { return value != null; }
 

@@ -6,8 +6,10 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.lancas.vs_wap.content.blocks.cartridge.modifier.IModifier;
 import com.lancas.vs_wap.content.blocks.cartridge.ticker.ITicker;
 import com.lancas.vs_wap.debug.EzDebug;
+import com.lancas.vs_wap.foundation.BiTuple;
 import com.lancas.vs_wap.foundation.data.SavedBlockPos;
-import com.lancas.vs_wap.ship.ballistics.api.IPhysicalBehaviourAdder;
+import com.lancas.vs_wap.ship.ballistics.api.IPhysBehaviour;
+import com.lancas.vs_wap.ship.ballistics.api.IPhysicalBehaviourBlock;
 import com.lancas.vs_wap.ship.ballistics.api.ITerminalEffector;
 import com.lancas.vs_wap.ship.ballistics.api.ITrigger;
 import com.lancas.vs_wap.util.ShipUtil;
@@ -23,8 +25,11 @@ import org.valkyrienskies.core.api.ships.ServerShip;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 @JsonAutoDetect(
     fieldVisibility = JsonAutoDetect.Visibility.ANY,
@@ -76,7 +81,7 @@ public class BallisticsComponentData {
             if (block instanceof ITerminalEffector) {
                 tempEffectors.add(new SavedBlockPos(bp));
             }
-            if (block instanceof IPhysicalBehaviourAdder) {
+            if (block instanceof IPhysicalBehaviourBlock) {
                 tempPhyBehaviours.add(new SavedBlockPos(bp));
             }
         });
@@ -193,9 +198,9 @@ public class BallisticsComponentData {
             consumer.accept(savedBlockPos.toBp());
         });
     }
-    public void foreachPhysBehaviourAdder(ServerLevel level, TriConsumer<BlockPos, BlockState, IPhysicalBehaviourAdder> consumer) {
+    public void foreachPhysBehaviourAdder(ServerLevel level, TriConsumer<BlockPos, BlockState, IPhysicalBehaviourBlock> consumer) {
         foreachSbps(level, physBehaviourAdderSbps, (bp, state) -> {
-            if (!(state.getBlock() instanceof IPhysicalBehaviourAdder adder)) {
+            if (!(state.getBlock() instanceof IPhysicalBehaviourBlock adder)) {
                 EzDebug.warn(StrUtil.getBlockName(state) + " is not IPhysicalBehaviourAdder and skip it.");
                 return;
             }
@@ -218,4 +223,49 @@ public class BallisticsComponentData {
         totalSystemFailTick--;
         return false;
     }*/
+
+    public <T> void getPhysBehaviours(ServerLevel level, BiFunction<BlockPos, IPhysBehaviour, T> elementCreator, List<T> dest) {
+        dest.clear();
+        physBehaviourAdderSbps.forEach(sbp -> {
+            BlockPos bp = sbp.toBp();
+            BlockState state = level.getChunk(bp).getBlockState(bp);
+
+            if (!(state.getBlock() instanceof IPhysicalBehaviourBlock pbBlock)) {
+                EzDebug.warn("at " + bp.toShortString() + " " + StrUtil.getBlockName(state) + " is not phyBehaviourBlock");
+                return;
+            }
+
+            dest.add(elementCreator.apply(bp, pbBlock.getPhysicalBehaviour(bp, state)));
+        });
+    }
+    public <T> void getPhysBehaviours(ServerLevel level, List<SavedBlockPos> sbpDest, List<IPhysBehaviour> pbDest) {
+        sbpDest.clear();
+        pbDest.clear();
+        physBehaviourAdderSbps.forEach(sbp -> {
+            BlockPos bp = sbp.toBp();
+            BlockState state = level.getChunk(bp).getBlockState(bp);
+
+            if (!(state.getBlock() instanceof IPhysicalBehaviourBlock pbBlock)) {
+                EzDebug.warn("at " + bp.toShortString() + " " + StrUtil.getBlockName(state) + " is not phyBehaviourBlock");
+                return;
+            }
+
+            sbpDest.add(new SavedBlockPos(bp));
+            pbDest.add(pbBlock.getPhysicalBehaviour(bp, state));
+        });
+    }
+    public void getPhysBehaviours(ServerLevel level, Map<SavedBlockPos, IPhysBehaviour> dest) {
+        dest.clear();
+        physBehaviourAdderSbps.forEach(sbp -> {
+            BlockPos bp = sbp.toBp();
+            BlockState state = level.getChunk(bp).getBlockState(bp);
+
+            if (!(state.getBlock() instanceof IPhysicalBehaviourBlock pbBlock)) {
+                EzDebug.warn("at " + bp.toShortString() + " " + StrUtil.getBlockName(state) + " is not phyBehaviourBlock");
+                return;
+            }
+
+            dest.put(new SavedBlockPos(bp), pbBlock.getPhysicalBehaviour(bp, state));
+        });
+    }
 }

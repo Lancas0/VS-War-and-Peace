@@ -5,12 +5,19 @@ import com.lancas.vs_wap.foundation.network.client2server.*;
 import com.lancas.vs_wap.foundation.network.debug.ForceOnPosDebugS2C;
 import com.lancas.vs_wap.foundation.network.server2client.*;
 import com.lancas.vs_wap.ship.ballistics.network.BallisticIdSyncPacketS2C;
+import com.lancas.vs_wap.subproject.sandbox.network.SyncRemoveClientRendererPacketS2C;
+import com.lancas.vs_wap.subproject.sandbox.network.test.CreateShipAtPlayerFromClientPacketC2S;
+import com.lancas.vs_wap.subproject.sandbox.network.worldsync.ConfirmSyncNecessityPacketC2S;
+import com.lancas.vs_wap.subproject.sandbox.network.worldsync.DoSyncClientWorldPacketS2C;
+import com.lancas.vs_wap.subproject.sandbox.network.worldsync.SyncClientWorldIfNecessaryPacketS2C;
+import com.lancas.vs_wap.subproject.sandbox.network.UpdateShipTransformPacketS2C;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.simple.SimpleChannel;
+import com.lancas.vs_wap.subproject.sandbox.network.SyncAddClientRendererPacketS2C;
 
 public class NetworkHandler {
     private static int packetId = 0;
@@ -157,6 +164,58 @@ public class NetworkHandler {
             CarryShipSyncPacketS2C::decode,
             CarryShipSyncPacketS2C::handle
         );*/
+        channel.registerMessage(
+            packetId++,
+            SyncClientWorldIfNecessaryPacketS2C.class,
+            SyncClientWorldIfNecessaryPacketS2C::encode,
+            SyncClientWorldIfNecessaryPacketS2C::decode,
+            SyncClientWorldIfNecessaryPacketS2C::handle
+        );
+        channel.registerMessage(
+            packetId++,
+            ConfirmSyncNecessityPacketC2S.class,
+            ConfirmSyncNecessityPacketC2S::encode,
+            ConfirmSyncNecessityPacketC2S::decode,
+            ConfirmSyncNecessityPacketC2S::handle
+        );
+        channel.registerMessage(
+            packetId++,
+            DoSyncClientWorldPacketS2C.class,
+            DoSyncClientWorldPacketS2C::encode,
+            DoSyncClientWorldPacketS2C::decode,
+            DoSyncClientWorldPacketS2C::handle
+        );
+
+        channel.registerMessage(
+            packetId++,
+            UpdateShipTransformPacketS2C.class,
+            UpdateShipTransformPacketS2C::encode,
+            UpdateShipTransformPacketS2C::decode,
+            UpdateShipTransformPacketS2C::handle
+        );
+        channel.registerMessage(
+            packetId++,
+            SyncAddClientRendererPacketS2C.class,
+            SyncAddClientRendererPacketS2C::encode,
+            SyncAddClientRendererPacketS2C::decode,
+            SyncAddClientRendererPacketS2C::handle
+        );
+        channel.registerMessage(
+            packetId++,
+            SyncRemoveClientRendererPacketS2C.class,
+            SyncRemoveClientRendererPacketS2C::encode,
+            SyncRemoveClientRendererPacketS2C::decode,
+            SyncRemoveClientRendererPacketS2C::handle
+        );
+
+        channel.registerMessage(
+            packetId++,
+            CreateShipAtPlayerFromClientPacketC2S.class,
+            CreateShipAtPlayerFromClientPacketC2S::encode,
+            CreateShipAtPlayerFromClientPacketC2S::decode,
+            CreateShipAtPlayerFromClientPacketC2S::handle
+        );
+
 
 
     }

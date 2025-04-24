@@ -1,9 +1,9 @@
 package com.lancas.vs_wap.compact.create.arminteraction;
 
-import com.lancas.vs_wap.content.blockentity.BreechBE;
-import com.lancas.vs_wap.content.blocks.artillery.IBreech;
+import com.lancas.vs_wap.content.blocks.artillery.breech.IBreech;
 import com.lancas.vs_wap.content.blocks.cartridge.PrimerBlock;
 import com.lancas.vs_wap.content.items.docker.DockerItem;
+import com.lancas.vs_wap.content.saved.BlockRecordRWMgr;
 import com.lancas.vs_wap.debug.EzDebug;
 import com.lancas.vs_wap.foundation.api.Dest;
 import com.lancas.vs_wap.ship.attachment.HoldableAttachment;
@@ -44,12 +44,21 @@ public class BreechArmPoint extends AllArmInteractionPointTypes.DepositOnlyArmIn
             return stack;
         }
 
-        if (!(sLevel.getBlockEntity(pos) instanceof BreechBE be)) {
+        /*if (!(sLevel.getBlockEntity(pos) instanceof BreechBE be)) {
             EzDebug.warn("Breech Arm Point should have a breech be");
             return stack;
         }
         BreechBE breechBE = (BreechBE)level.getBlockEntity(pos);
-        if (!breechBE.isCold()) return stack;
+        if (!breechBE.isCold()) return stack;*/
+        IBreech.BreechRecord record = BlockRecordRWMgr.getRecord(sLevel, pos);
+        if (record == null) {
+            EzDebug.warn("can't get breechRecord at " + pos.toShortString());
+            return stack;
+        }
+        if (!record.isCold()) {
+            //EzDebug.light("breech is colding");
+            return stack;
+        }
 
         if (!breech.isDockerLoadable(level, pos, stack))
             return stack;
@@ -93,6 +102,7 @@ public class BreechArmPoint extends AllArmInteractionPointTypes.DepositOnlyArmIn
 
             if (newMunition == null) {
                 EzDebug.warn("fail to load munition ship");
+                return ItemStack.EMPTY;
             } else {
                 EzDebug.highlight("successfully make ship and place at:" + newMunition.getTransform().getPositionInWorld());
             }
@@ -108,8 +118,14 @@ public class BreechArmPoint extends AllArmInteractionPointTypes.DepositOnlyArmIn
                     PrimerBlock.createConstraints(sLevel, curBp, (ServerShip)artilleryShip.get(sLevel), finalNewMunition, pos, breechDirInWorldOrShip, holdable);
                 }
             });
-            BreechBE breechBE = (BreechBE)level.getBlockEntity(pos);
-            breechBE.resetColdDown();
+
+
+            IBreech.BreechRecord record = BlockRecordRWMgr.getRecord(sLevel, pos);
+            if (record == null) {
+                EzDebug.warn("can't get breechRecord at " + pos.toShortString());
+                return ItemStack.EMPTY;
+            }
+            record.startColdDown();
         }
 
         return ItemStack.EMPTY;

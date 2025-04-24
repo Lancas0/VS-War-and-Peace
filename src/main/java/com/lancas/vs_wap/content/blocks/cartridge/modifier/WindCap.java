@@ -1,6 +1,6 @@
 package com.lancas.vs_wap.content.blocks.cartridge.modifier;
 
-import com.lancas.vs_wap.ship.ballistics.ProjectileShipWrapper;
+import com.lancas.vs_wap.ship.type.ProjectileWrapper;
 import com.lancas.vs_wap.subproject.blockplusapi.blockplus.BlockPlus;
 import com.lancas.vs_wap.subproject.blockplusapi.blockplus.adder.IBlockAdder;
 import com.lancas.vs_wap.content.blocks.blockplus.DefaultCartridgeAdder;
@@ -24,7 +24,7 @@ public class WindCap extends BlockPlus implements IModifier {
     }
 
     @Override
-    public double getAirDragMultiplier(ProjectileShipWrapper projectile, BlockPos pos, BlockState state) {
+    public double getAirDragMultiplier(ProjectileWrapper projectile, BlockPos pos, BlockState state) {
         if (projectile.headBp.equalsBp(pos))
             return 0.01;
         return 1;

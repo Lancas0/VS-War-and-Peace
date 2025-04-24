@@ -6,6 +6,8 @@ import com.lancas.vs_wap.content.behaviour.item.DockerDispenseBehaviour;
 import com.lancas.vs_wap.content.WapMass;
 import com.lancas.vs_wap.event.EventMgr;
 import com.lancas.vs_wap.foundation.network.NetworkHandler;
+import com.lancas.vs_wap.subproject.sandbox.SandBoxServerWorld;
+import com.lancas.vs_wap.subproject.sandbox.event.SandBoxEventMgr;
 import com.mojang.logging.LogUtils;
 import com.simibubi.create.foundation.data.CreateRegistrate;
 import net.minecraft.client.Minecraft;
@@ -63,6 +65,7 @@ public class ModMain  {
         WapMass.INSTANCE.register();
 
         EventMgr.registerDefault();
+        SandBoxEventMgr.register();
 
 
 

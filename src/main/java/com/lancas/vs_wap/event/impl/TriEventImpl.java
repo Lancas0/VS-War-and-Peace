@@ -18,7 +18,7 @@ public class TriEventImpl<T, U, V> implements ITriEvent<T, U, V> {
     private final List<TriConsumer<T, U, V>> listeners = new ArrayList<>();
     private final Set<TriConsumer<T, U, V>> toRemove = ConcurrentHashMap.newKeySet();
 
-    @Override
+    //@Override
     public void invokeAll(T t, U u, V v) {
         var listenersIt = listeners.iterator();
         while (listenersIt.hasNext()) {
@@ -41,7 +41,7 @@ public class TriEventImpl<T, U, V> implements ITriEvent<T, U, V> {
     }
 
     @Override
-    public void add(@NotNull TriConsumer<T, U, V> listener) {
+    public void addListener(@NotNull TriConsumer<T, U, V> listener) {
         listeners.add(listener);
     }
 

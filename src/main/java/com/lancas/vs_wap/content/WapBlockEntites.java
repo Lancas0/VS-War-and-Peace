@@ -55,10 +55,10 @@ public class WapBlockEntites {
         .validBlocks(Cartridge.PRIMER)
         .register();*/
 
-    public static final BlockEntityEntry<BreechBE> BREECH_BE = REGISTRATE
+    /*public static final BlockEntityEntry<BreechBE> BREECH_BE = REGISTRATE
         .blockEntity("breech_be", BreechBE::new)
         .validBlocks(Artillery.EJECTING_BREECH, Artillery.DROPPING_BREECH)
-        .register();
+        .register();*/
 
     /*public static final BlockEntityEntry<RocketBoosterBE> ROCKET_BOOSTER_BE = REGISTRATE
         .blockEntity("rocket_booster_be", RocketBoosterBE::new)

@@ -26,14 +26,14 @@ public class EventMgr {
 
 
     public static void registerDefault() {
-        Server.constraintAddEvent.add(ShellFrame.onConstraintAdd());
-        Server.constraintRemoveEvent.add(ShellFrame.onConstraintRemove());
+        Server.constraintAddEvent.addListener(ShellFrame.onConstraintAdd());
+        Server.constraintRemoveEvent.addListener(ShellFrame.onConstraintRemove());
 
-        Server.constraintAddEvent.add(PrimerBlock.onConstraintAdd);
-        Server.constraintRemoveEvent.add(PrimerBlock.onConstraintRemove);
+        Server.constraintAddEvent.addListener(PrimerBlock.onConstraintAdd);
+        Server.constraintRemoveEvent.addListener(PrimerBlock.onConstraintRemove);
 
         //remove all constraint with the toHoldShip that record in ConstraintMgr
-        Server.holdShipEvent.add((ServerLevel level, ServerPlayer player, Long shiId) -> {
+        Server.holdShipEvent.addListener((ServerLevel level, ServerPlayer player, Long shiId) -> {
             Ship toHoldShip = ShipUtil.getServerShipByID(level, shiId);
             if (toHoldShip == null) {
                 EzDebug.error("the ship to hold is null!");

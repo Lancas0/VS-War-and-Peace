@@ -191,9 +191,6 @@ public class JomlUtil {
     public static AABB boundsFace(VoxelShape shape, Direction face) { return aabb(boundsFaceImpl(d(shape.bounds()), face)); }
     public static AABBd dBoundsFace(VoxelShape shape, Direction face) { return boundsFaceImpl(d(shape.bounds()), face); }
 
-    public static Vector3d dOffsetAtoB(BlockPos a, BlockPos b) {
-        return new Vector3d(b.getX() - a.getX(), b.getY() - a.getY(), b.getZ() - a.getZ());
-    }
     public static Vector3d dLowerCorner(BlockPos pos) { return new Vector3d(pos.getX(), pos.getY(), pos.getZ()); }
     public static Iterable<Vector3d> dCorners(BlockPos pos) {
         ArrayList<Vector3d> corners = new ArrayList<>();
@@ -229,6 +226,7 @@ public class JomlUtil {
         return new AABBd(center.x() - halfLen, center.y() - halfLen, center.z() - halfLen,
             center.x() + halfLen, center.y() + halfLen, center.z() + halfLen);
     }
+    
 
     public static AABBd correctAABBd(Vector3dc a, Vector3dc b) {
         double minX = Math.min(a.x(), b.x());

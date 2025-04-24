@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.lancas.vs_wap.content.blocks.artillery.IBarrel;
-import com.lancas.vs_wap.content.blocks.artillery.IBreech;
+import com.lancas.vs_wap.content.blocks.artillery.breech.IBreech;
 import com.lancas.vs_wap.foundation.Constants;
 import com.lancas.vs_wap.util.JomlUtil;
 import com.lancas.vs_wap.util.ShipUtil;
@@ -29,9 +29,9 @@ import org.valkyrienskies.core.impl.game.ships.PhysShipImpl;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class BallisticStateData {
     @JsonIgnore
-    private static int STOPPED_TICK = 120;
+    private static int STOPPED_TICK = 30;  //about 1.5s
     @JsonIgnore
-    private static double STOPPED_SQ_THERSOLD = 0.01;
+    private static double STOPPED_SQ_THERSOLD = 0.1;
     @JsonIgnore
     private static final Vector3dc ANTI_GRAVITY = new Vector3d(0, 10, 0);
     @JsonIgnore
@@ -41,7 +41,7 @@ public class BallisticStateData {
     //private boolean isTriggered = false;
     public double timeInBarrel = 0;
     private double remainPower;
-    private int stoppedTick = 40;  //todo more time
+    private int stoppedTick = STOPPED_TICK;  //todo more time
     private Vector3d lastFrameVelocity = new Vector3d();
     //@JsonIgnore
     //private Long lastChunk;

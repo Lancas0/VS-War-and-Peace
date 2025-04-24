@@ -13,14 +13,13 @@ public class ConstraintAddEvent implements IQuadEvent<ServerLevel, String, VSCon
 
     private List<QuadConsumer<ServerLevel, String, VSConstraint, Integer>> listeners = new ArrayList<>();
 
-    @Override
     public void invokeAll(ServerLevel level, String key, VSConstraint constraint, Integer id) {
         for (var listener : listeners)
             listener.apply(level, key, constraint, id);
     }
 
     @Override
-    public void add(QuadConsumer<ServerLevel, String, VSConstraint, Integer> listener) {
+    public void addListener(QuadConsumer<ServerLevel, String, VSConstraint, Integer> listener) {
         listeners.add(listener);
     }
 

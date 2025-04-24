@@ -14,7 +14,9 @@
   "client": [
     "CameraMixin",
     "LocalPlayerMixin",
-    "client.option.MixinGammaOption"
+    "client.option.MixinGammaOption",
+    "sandbox.SandBoxBlockHint",
+    "sandbox.SandBoxLevelRenderMixin"
   ],
   "server": [],
   "injectors": {

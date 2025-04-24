@@ -1,8 +1,10 @@
 package com.lancas.vs_wap.content.blockentity;
 
+/*
 import com.lancas.vs_wap.debug.EzDebug;
 import com.lancas.vs_wap.ship.ballistics.BallisticsController;
-import com.lancas.vs_wap.ship.ballistics.ProjectileShipWrapper;
+import com.lancas.vs_wap.ship.ballistics.BallisticsServerMgr;
+import com.lancas.vs_wap.ship.type.ProjectileWrapper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -29,20 +31,21 @@ public class BreechBE extends BlockEntity {
         super(p_155228_, p_155229_, p_155230_);
     }
 
-    private final List<BallisticsController> ballisticsControllers = new ArrayList<>();//Collections.synchronizedList(new ArrayList<>());
-    public void addBallistics(ProjectileShipWrapper projectile, ServerShip propellantShip, @Nullable ServerShip breechShip, double propellantEnergy) {
+    //private final List<BallisticsController> ballisticsControllers = new ArrayList<>();//Collections.synchronizedList(new ArrayList<>());
+    public void addBallistics(ProjectileWrapper projectile, ServerShip propellantShip, @Nullable ServerShip artilleryShip, double propellantEnergy) {
         EzDebug.log("add Ballistics");
         if (level == null || level.isClientSide) {
             EzDebug.error("add ballistic while level:" + level);
             return;
         }
 
-        long breechShipId = breechShip == null ? -1 : breechShip.getId();
-        var bc = BallisticsController.apply((ServerLevel)level, projectile, propellantShip.getId(), breechShipId, propellantEnergy);
-        ballisticsControllers.add(bc);
+        //long breechShipId = breechShip == null ? -1 : breechShip.getId();
+        //var bc = BallisticsController.apply((ServerLevel)level, projectile, propellantShip.getId(), breechShipId, propellantEnergy);
+        //ballisticsControllers.add(bc);
+        BallisticsServerMgr.addBallistics((ServerLevel)level, projectile, propellantShip, artilleryShip, propellantEnergy);
     }
 
-    public void tick() {
+    /*public void tick() {
         if (level == null || level.isClientSide) return;
 
         if (coldDown > 0) coldDown--;
@@ -52,5 +55,6 @@ public class BreechBE extends BlockEntity {
             bc.serverTick((ServerLevel)level);
             //todo remove bc and ship
         }
-    }
+    }*./
 }
+*/

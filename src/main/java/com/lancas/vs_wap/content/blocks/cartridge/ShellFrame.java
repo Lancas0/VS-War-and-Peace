@@ -288,7 +288,7 @@ public class ShellFrame extends BlockPlus/* implements IBE<ShellFrameBE>*/ {
                     EzDebug.highlight("remove constraint by hold event");
                     EventMgr.Server.holdShipEvent.remove(record.unholdListener);
                 };
-                EventMgr.Server.holdShipEvent.add(record.unholdListener);
+                EventMgr.Server.holdShipEvent.addListener(record.unholdListener);
             }
             //todo can i only save one?
             //or to lazy save only when game exit?

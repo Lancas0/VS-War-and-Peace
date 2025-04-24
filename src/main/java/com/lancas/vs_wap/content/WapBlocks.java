@@ -2,6 +2,8 @@ package com.lancas.vs_wap.content;
 
 import com.lancas.vs_wap.content.behaviour.block.ScopeMovementBehaviour;
 import com.lancas.vs_wap.content.blocks.LocatorBlock;
+import com.lancas.vs_wap.content.blocks.artillery.breech.DroppingBreech;
+import com.lancas.vs_wap.content.blocks.artillery.breech.EjectingBreech;
 import com.lancas.vs_wap.content.blocks.cartridge.Rotator;
 import com.lancas.vs_wap.content.blocks.cartridge.ShellFrame;
 import com.lancas.vs_wap.content.blocks.cartridge.ValkyrienAssemblerBlock;

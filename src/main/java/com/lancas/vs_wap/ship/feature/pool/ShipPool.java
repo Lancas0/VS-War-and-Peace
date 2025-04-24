@@ -26,6 +26,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joml.Math;
 import org.joml.Vector3d;
+import org.joml.Vector3dc;
 import org.joml.Vector3i;
 import org.valkyrienskies.core.api.ships.ServerShip;
 import org.valkyrienskies.mod.common.VSGameUtilsKt;
@@ -76,8 +77,8 @@ public class ShipPool extends SavedData {
     public static class ResetAndSet {
 
         public static BiConsumer<ServerLevel, ServerShip> moveToFaraway = (level, ship) -> {
-            //Vector3dc shipWorldPos = ship.getTransform().getPositionInWorld();
-            ShipUtil.teleport(level, ship, TeleportDataBuilder.noMovementOf(level, ship).withPos(new Vector3d(0, -2000, 0)));
+            Vector3dc shipWorldPos = ship.getTransform().getPositionInWorld();
+            ShipUtil.teleport(level, ship, TeleportDataBuilder.noMovementOf(level, ship).withPos(new Vector3d(shipWorldPos.x(), -2000, shipWorldPos.z())));
         };
         public static BiConsumer<ServerLevel, ServerShip> removeConstraints = (level, ship) -> {
             ConstraintsMgr.removeAllConstraintWith(level, ship.getId());
@@ -149,38 +150,46 @@ public class ShipPool extends SavedData {
         ShipPool pool = new ShipPool(level);
         NbtBuilder nbtBuilder = NbtBuilder.copy(tag);
 
+        ArrayList<Long> ids;
         try {
-            ArrayList<Long> ids = nbtBuilder.readSimpleJackson("pool_ids", new TypeReference<ArrayList<Long>>() {});
-            ArrayList<BlockKeepAlivePooledShip> poolValues = new ArrayList<>();
-            nbtBuilder.readEachSimpleJackson("pool_values", BlockKeepAlivePooledShip.class, poolValues);
-
-            if (ids.size() != poolValues.size()) {
-                EzDebug.warn("id size don't match poolValues");
-                return pool;
-            }
-
-            int size = Math.min(ids.size(), poolValues.size());
-            for (int i = 0; i < size; ++i) {
-                pool.poolMap.put(ids.get(i), poolValues.get(i));
-            }
-
-            pool.fillUntilFillLine();
-
-
-            ArrayList<Long> hideIds = nbtBuilder.readSimpleJackson("hide_ids", new TypeReference<ArrayList<Long>>() {});
-            ArrayList<HidingShip> hidingShips = new ArrayList<>();
-            nbtBuilder.putEachSimpleJackson("hide_values", hidingShips);
-            if (hideIds.size() != hidingShips.size()) {
-                EzDebug.warn("id size don't match hidingShips");
-                return pool;
-            }
-            size = Math.min(hideIds.size(), hidingShips.size());
-            for (int i = 0; i < size; ++i) {
-                pool.hidingShips.put(hideIds.get(i), hidingShips.get(i));
-            }
-
-        } catch (JsonProcessingException e) {
+            ids = nbtBuilder.readSimpleJackson("pool_ids", new TypeReference<ArrayList<Long>>() {});
+        } catch (Exception e) {
+            EzDebug.error("fail to get pool ids by exception");
             throw new RuntimeException(e);
+        }
+
+        ArrayList<BlockKeepAlivePooledShip> poolValues = new ArrayList<>();
+        nbtBuilder.readEachSimpleJackson("pool_values", BlockKeepAlivePooledShip.class, poolValues);
+
+        if (ids.size() != poolValues.size()) {
+            EzDebug.warn("id size don't match poolValues");
+            return pool;
+        }
+
+        int size = Math.min(ids.size(), poolValues.size());
+        for (int i = 0; i < size; ++i) {
+            pool.poolMap.put(ids.get(i), poolValues.get(i));
+        }
+
+        pool.fillUntilFillLine();
+
+        ArrayList<Long> hideIds;
+        try {
+            hideIds = nbtBuilder.readSimpleJackson("hide_ids", new TypeReference<ArrayList<Long>>() {});
+        } catch (Exception e) {
+            EzDebug.error("fail to get hide ids");
+            throw new RuntimeException(e);
+        }
+
+        ArrayList<HidingShip> hidingShips = new ArrayList<>();
+        nbtBuilder.putEachSimpleJackson("hide_values", hidingShips);
+        if (hideIds.size() != hidingShips.size()) {
+            EzDebug.warn("id size don't match hidingShips");
+            return pool;
+        }
+        size = Math.min(hideIds.size(), hidingShips.size());
+        for (int i = 0; i < size; ++i) {
+            pool.hidingShips.put(hideIds.get(i), hidingShips.get(i));
         }
         //NbtBuilder.copy(tag)
             //.readEach("ships", PooledShip::load, pool.poolQueue)
@@ -207,7 +216,7 @@ public class ShipPool extends SavedData {
             return new NbtBuilder()
                 .putSimpleJackson("pool_ids", poolMap.keySet())
                 .putEachSimpleJackson("pool_values", poolMap.values())
-                .putSimpleJackson("hide_ides", hidingShips.keySet())
+                .putSimpleJackson("hide_ids", hidingShips.keySet())
                 .putEachSimpleJackson("hide_values", hidingShips.values())
                 .get();
         } catch (JsonProcessingException e) {
@@ -268,12 +277,12 @@ public class ShipPool extends SavedData {
             return VSGameUtilsKt.getShipObjectWorld(level).createNewShipAtBlock(new Vector3i(), false, 1f, VSGameUtilsKt.getDimensionId(level));
         }
     }
-    public ShipBuilder getOrCreateShipBuilder() {
+    public ShipBuilder getOrCreateEmptyShipBuilder() {
         ServerShip shipToBuild = getOrCreateEmptyShip();
         return ShipBuilder.modify(level, shipToBuild);
     }
-    public ShipBuilder getOrCreateShipBuilder(Consumer<ShipBuilder> initializer) {
-        ShipBuilder builder = getOrCreateShipBuilder();
+    public ShipBuilder getOrCreateEmptyShipBuilder(Consumer<ShipBuilder> initializer) {
+        ShipBuilder builder = getOrCreateEmptyShipBuilder();
         if (initializer != null)
             initializer.accept(builder);
         return builder;

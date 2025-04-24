@@ -25,6 +25,8 @@ import java.util.function.Function;
 @Mod.EventBusSubscriber(modid = ModMain.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public final class WapBlockInfos {
     public static double getValkrienMass(BlockState state) {
+        if (state == null || state.isAir()) return 0;
+
         var valkyrienInfo = BlockStateInfo.INSTANCE.get(state);
 
         if (valkyrienInfo == null) {
