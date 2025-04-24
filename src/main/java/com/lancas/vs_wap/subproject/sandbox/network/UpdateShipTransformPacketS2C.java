@@ -43,7 +43,7 @@ public class UpdateShipTransformPacketS2C {
             }
 
             //EzDebug.log("update transform");
-            renderer.updateTransform(newTransformData);
+            renderer.receiveNetworkTransform(newTransformData);
         });
         ctx.get().setPacketHandled(true);
     }

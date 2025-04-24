@@ -22,7 +22,7 @@ import org.joml.Vector3d;
 public class RenderHelper {
     public static void renderShip(ShipClientRenderer renderer, PoseStack poseStack, MultiBufferSource bufferSource, double partialTick) {
         //SandBoxTransform lerpTransform = ship.getLerpTransform(lerp);
-        SandBoxTransformData lerpTransformData = renderer.getLerpTransform(partialTick);
+        SandBoxTransformData lerpTransformData = renderer.getRenderTransformData(partialTick);
 
         Minecraft mc = Minecraft.getInstance();
         Level level = mc.level;

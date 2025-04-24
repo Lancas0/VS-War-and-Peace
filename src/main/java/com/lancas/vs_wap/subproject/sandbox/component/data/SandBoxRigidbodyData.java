@@ -4,6 +4,8 @@ import com.lancas.vs_wap.util.NbtBuilder;
 import net.minecraft.nbt.CompoundTag;
 import org.joml.Vector3d;
 
+import java.util.List;
+
 public class SandBoxRigidbodyData implements IComponentData<SandBoxRigidbodyData>, IExposedRigidbodyData {
     public double mass = 0;
     public final Vector3d localPosMassMul = new Vector3d();  //todo may exceed limit

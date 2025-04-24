@@ -30,6 +30,7 @@ public class SandBoxLevelRenderMixin {
 
         for (ShipClientRenderer renderer : SandBoxClientWorld.INSTANCE.allRenderers()) {
             RenderHelper.renderShip(renderer, poseStack, bufferSource, partialTicks);
+            renderer.postRender();
         }
     }
 
