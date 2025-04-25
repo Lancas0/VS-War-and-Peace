@@ -11,6 +11,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
@@ -18,6 +19,7 @@ import org.jetbrains.annotations.Nullable;
 public interface IBlockAdder {
     public default void onInit(BlockPlus thisBlock) {}
     public default void onCreateBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {}
+    public default BlockState setValueForDefaultState(BlockState defaultState) { return defaultState; }
     public default BlockState getStateForPlacement(BlockPlaceContext ctx, BlockState dest) { return dest; }
     public default VoxelShape appendShape(BlockState state) { return Shapes.empty(); }
 

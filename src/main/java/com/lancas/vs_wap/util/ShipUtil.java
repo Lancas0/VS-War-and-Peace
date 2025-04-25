@@ -164,7 +164,7 @@ public class ShipUtil {
     public static void foreachBlock(ServerShip ship, ServerLevel level, TriConsumer<BlockPos, BlockState, BlockEntity> func) {
         if (ship == null || level == null) return;
 
-        BlockPos shipCenterBP = ShipUtil.getCenterShipBP(ship);
+        //BlockPos shipCenterBP = ShipUtil.getCenterShipBP(ship);
 
         ship.getActiveChunksSet().forEach((chunkX, chunkZ) -> {
             LevelChunk chunk = level.getChunk(chunkX, chunkZ);
@@ -185,9 +185,7 @@ public class ShipUtil {
                             int realY = bottomY + y + level.getMinBuildHeight();
                             int realZ = (chunkZ << 4) + z;
 
-                            //TODO memory alloc freq gc?
                             BlockPos blockPos = new BlockPos(realX, realY, realZ);
-                            //BlockPos offset = curBlockPos.subtract(shipCenterBP);
                             BlockEntity blockEntity = level.getBlockEntity(blockPos);
 
                             func.accept(blockPos, state, blockEntity);

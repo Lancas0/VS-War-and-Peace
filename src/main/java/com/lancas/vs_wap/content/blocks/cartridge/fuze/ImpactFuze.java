@@ -1,5 +1,7 @@
 package com.lancas.vs_wap.content.blocks.cartridge.fuze;
 
+import com.lancas.vs_wap.debug.EzDebug;
+import com.lancas.vs_wap.sandbox.component.ballistic.ISandBoxBallisticBlock;
 import com.lancas.vs_wap.ship.ballistics.collision.traverse.BlockTraverser;
 import com.lancas.vs_wap.ship.ballistics.data.BallisticsHitInfo;
 import com.lancas.vs_wap.ship.ballistics.helper.BallisticsUtil;
@@ -11,6 +13,7 @@ import com.lancas.vs_wap.ship.ballistics.data.BallisticStateData;
 import com.lancas.vs_wap.ship.ballistics.data.BallisticsShipData;
 import com.lancas.vs_wap.ship.ballistics.api.ICollisionTrigger;
 import com.lancas.vs_wap.ship.ballistics.api.TriggerInfo;
+import com.lancas.vs_wap.subproject.sandbox.ship.SandBoxServerShip;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ClipContext;
@@ -19,6 +22,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
+import org.joml.Vector3i;
 import org.joml.primitives.AABBd;
 import org.valkyrienskies.core.api.ships.ServerShip;
 
@@ -26,7 +30,7 @@ import java.util.HashSet;
 import java.util.List;
 
 
-public class ImpactFuze extends BlockPlus implements ICollisionTrigger {
+public class ImpactFuze extends BlockPlus implements ICollisionTrigger, ISandBoxBallisticBlock {
     public static BooleanProperty TRIGGERED = BooleanProperty.create("triggered");
 
     private static final List<IBlockAdder> providers = List.of(
@@ -83,6 +87,11 @@ public class ImpactFuze extends BlockPlus implements ICollisionTrigger {
 
     private void setTriggered(BlockState state, boolean val) { state.setValue(TRIGGERED, val); }
     private boolean isTriggered(BlockState state) { return state.getValue(TRIGGERED); }
+
+    @Override
+    public void appendTriggerInfos(Vector3i localPos, BlockState state, SandBoxServerShip ship, List<TriggerInfo> dest) {
+        EzDebug.log("impact fuze try to append infos:");
+    }
 
     /*@Override
     public double getMass(BlockState state) {

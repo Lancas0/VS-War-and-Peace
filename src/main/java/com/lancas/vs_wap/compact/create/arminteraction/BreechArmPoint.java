@@ -78,7 +78,7 @@ public class BreechArmPoint extends AllArmInteractionPointTypes.DepositOnlyArmIn
 
         Dest<Vector3d> placePos = new Dest<>();
         Dest<Vector3d> placeDir = new Dest<>();
-        breech.getMunitionPlaceData(sLevel, pos, breechState, placePos, placeDir);
+        breech.loadMunition(sLevel, pos, breechState, placePos, placeDir);
         return loadMunition(sLevel, placePos.get(), placeDir.get(), stack, (ServerShip)prevMunitionShip.get(), prevMunitionDirInShip.get(), simulate);
     }
 
@@ -110,12 +110,9 @@ public class BreechArmPoint extends AllArmInteractionPointTypes.DepositOnlyArmIn
             Direction breechDirInWorldOrShip = sLevel.getBlockState(pos).getValue(DirectionAdder.FACING);
             //todo lock more effective, todo not foreach
             ServerShip finalNewMunition = newMunition;
-            ShipBuilder.modify(sLevel, newMunition).foreachBlock((curBp, state, be) -> {
-                /*if (be instanceof PrimerBE primerBE) {
-                    primerBE.createConstraints((ServerShip)artilleryShip.get(sLevel), finalNewMunition, pos, /.*primerDir, primer.getPixelLength(),*./ breechDirInWorldOrShip, holdable);
-                }*/
+            ShipBuilder.modify(sLevel, finalNewMunition).foreachBlock((curBp, state, be) -> {
                 if (state.getBlock() instanceof PrimerBlock primer) {
-                    PrimerBlock.createConstraints(sLevel, curBp, (ServerShip)artilleryShip.get(sLevel), finalNewMunition, pos, breechDirInWorldOrShip, holdable);
+                    PrimerBlock.createConstraints(sLevel, curBp,artilleryShip.get(sLevel), finalNewMunition, pos, breechDirInWorldOrShip, holdable);
                 }
             });
 

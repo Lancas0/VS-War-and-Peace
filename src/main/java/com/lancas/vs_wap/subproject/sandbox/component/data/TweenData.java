@@ -1,8 +1,9 @@
 package com.lancas.vs_wap.subproject.sandbox.component.data;
 
 import com.lancas.vs_wap.debug.EzDebug;
+import com.lancas.vs_wap.subproject.sandbox.component.data.exposed.IExposedComponentData;
+import com.lancas.vs_wap.subproject.sandbox.component.data.exposed.IExposedTransformData;
 import net.minecraft.nbt.CompoundTag;
-import org.joml.Vector3d;
 
 import java.io.*;
 

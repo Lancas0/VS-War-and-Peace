@@ -1,14 +1,17 @@
 package com.lancas.vs_wap.subproject.sandbox.ship;
 
 import com.lancas.vs_wap.debug.EzDebug;
-import com.lancas.vs_wap.subproject.sandbox.INbtSerializable;
+import com.lancas.vs_wap.subproject.sandbox.INbtSavedObject;
 import com.lancas.vs_wap.subproject.sandbox.component.behviour.IComponentBehaviour;
+import com.lancas.vs_wap.subproject.sandbox.component.behviour.SandBoxRigidbody;
 import com.lancas.vs_wap.subproject.sandbox.component.data.IComponentData;
-import com.lancas.vs_wap.subproject.sandbox.component.data.IExposedComponentData;
+import com.lancas.vs_wap.subproject.sandbox.component.data.SandBoxRigidbodyData;
+import com.lancas.vs_wap.subproject.sandbox.component.data.exposed.IExposedComponentData;
 import com.lancas.vs_wap.subproject.sandbox.component.data.SandBoxBlockClusterData;
 import com.lancas.vs_wap.subproject.sandbox.component.behviour.SandBoxShipBlockCluster;
 import com.lancas.vs_wap.subproject.sandbox.component.behviour.SandBoxTransform;
 import com.lancas.vs_wap.subproject.sandbox.component.data.SandBoxTransformData;
+import com.lancas.vs_wap.subproject.sandbox.component.data.exposed.IExposedRigidbodyData;
 import com.lancas.vs_wap.subproject.sandbox.util.SerializeUtil;
 import com.lancas.vs_wap.subproject.sandbox.util.TransformUtil;
 import com.lancas.vs_wap.util.NbtBuilder;
@@ -18,7 +21,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Quaterniondc;
+import org.joml.Vector3d;
 import org.joml.Vector3dc;
+import org.joml.Vector3ic;
 import org.joml.primitives.AABBd;
 import org.joml.primitives.AABBdc;
 import org.joml.primitives.AABBic;
@@ -26,15 +31,20 @@ import org.joml.primitives.AABBic;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-public class SandBoxServerShip implements ISandBoxShip, INbtSerializable<SandBoxServerShip> {
+public class SandBoxServerShip implements ISandBoxShip, INbtSavedObject<SandBoxServerShip> {
     private UUID uuid;
     private final SandBoxTransform transform = new SandBoxTransform();
     private final SandBoxShipBlockCluster blockData = new SandBoxShipBlockCluster();
+    private final SandBoxRigidbody rigidbody = new SandBoxRigidbody();
 
     private final Queue<IComponentBehaviour<?>> behaviours = new ConcurrentLinkedQueue<>();
 
     private final AABBd cachedWorldAABB = new AABBd();
     private boolean worldAABBDirty = true;
+
+    private boolean destroyMark = false;
+    public void addDestroyMark() { destroyMark = true; }
+    public boolean isDestroyMarked() { return destroyMark; }
 
 
     public void setPosition(Vector3dc pos)    {
@@ -51,7 +61,7 @@ public class SandBoxServerShip implements ISandBoxShip, INbtSerializable<SandBox
     }
 
 
-    public void setBlock(BlockPos localPos, BlockState state) {
+    public void setBlock(Vector3ic localPos, BlockState state) {
         if (state == null || state.isAir()) {
             removeBlock(localPos);
             return;
@@ -60,15 +70,15 @@ public class SandBoxServerShip implements ISandBoxShip, INbtSerializable<SandBox
         blockData.setBlock(localPos, state);
         worldAABBDirty = true;
     }
-    public void removeBlock(BlockPos localPos) {
+    public void removeBlock(Vector3ic localPos) {
         blockData.removeBlock(localPos);
         worldAABBDirty = true;
     }
 
     @Nullable
-    public BlockState getBlockOrNull(BlockPos localPos) { return blockData.getBlockOrNull(localPos); }
+    public BlockState getBlockOrNull(Vector3ic localPos) { return blockData.getBlockOrNull(localPos); }
     @NotNull
-    public BlockState getBlockOrAir(BlockPos localPos) { return blockData.getBlockOrAir(localPos); }
+    public BlockState getBlockOrAir(Vector3ic localPos) { return blockData.getBlockOrAir(localPos); }
 
     /*private SandBoxServerShip() {
         uuid = null;
@@ -85,10 +95,11 @@ public class SandBoxServerShip implements ISandBoxShip, INbtSerializable<SandBox
         ship.load(nbt);
         return ship;
     }*/
-    public SandBoxServerShip(UUID inId, SandBoxTransformData transformData, SandBoxBlockClusterData clusterData) {
+    public SandBoxServerShip(UUID inId, SandBoxTransformData transformData, SandBoxBlockClusterData clusterData, SandBoxRigidbodyData rigidbodyData) {
         uuid = inId;
         transform.loadData(this, transformData);
         blockData.loadData(this, clusterData);
+        rigidbody.loadData(this, rigidbodyData);
     }
     public SandBoxServerShip(CompoundTag saved) {
         load(saved);
@@ -126,11 +137,22 @@ public class SandBoxServerShip implements ISandBoxShip, INbtSerializable<SandBox
 
     //todo readonly interface
     @Override
-    public SandBoxTransform getTransform() { return transform; }
+    public SandBoxTransform getTransform() { return transform; }  //todo get Exposed Behaviour?
     @Override
     public SandBoxShipBlockCluster getCluster() { return blockData; }
 
+    public SandBoxRigidbody getRigidbody() { return rigidbody; }
+    //public IExposedRigidbodyData getRigidbodyData() { return rigidbody.getExposedData(); }
 
+    public double getLengthScale(int component) { return transform.getScale().get(component); }
+    public double getAreaScale(int component) {
+        double scale = transform.getScale().get(component);
+        return scale * scale;
+    }
+    public double getVolumeScale(int component) {
+        double scale = transform.getScale().get(component);
+        return scale * scale * scale;
+    }
 
     public ShipClientRenderer createRenderer() {
         return new ShipClientRenderer(
@@ -143,6 +165,7 @@ public class SandBoxServerShip implements ISandBoxShip, INbtSerializable<SandBox
     public Iterable<IComponentBehaviour<?>> getAllBehaviours() {
         return behaviours;
     }
+
 
     /// todo
     /*
@@ -171,10 +194,11 @@ public class SandBoxServerShip implements ISandBoxShip, INbtSerializable<SandBox
             .putUUID("uuid", uuid)
             .putCompound("transform_data", transform.getSavedData())
             .putCompound("block_data", blockData.getSavedData())
+            .putCompound("rigidbody_data", rigidbody.getSavedData())
             .putEach("behaviours", behaviours,
                 beh -> new NbtBuilder()
                     .putString("behaviour_type", beh.getClass().getName())
-                    .putString("data_type", beh.getReadOnlyData().getClass().getName())
+                    .putString("data_type", beh.getExposedData().getClass().getName())
                     .putCompound("data", beh.getSavedData())
                     .get()
             ).get();
@@ -186,18 +210,15 @@ public class SandBoxServerShip implements ISandBoxShip, INbtSerializable<SandBox
         NbtBuilder.modify(tag)
             .readUUIDDo("uuid", v -> uuid = v)
             .readCompoundDo("transform_data",
-                nbt -> transform.loadData(
-                    this,
-                    new SandBoxTransformData().load(nbt)
-                )
+                t -> transform.loadData(this, new SandBoxTransformData().load(t))
             )
             .readCompoundDo("block_data",
-                nbt -> blockData.loadData(
-                    this,
-                    new SandBoxBlockClusterData().load(nbt)
-                )
+                t -> blockData.loadData(this, new SandBoxBlockClusterData().load(t))
             )
-            .readEachAsCompound("behaviours",
+            .readCompoundDo("rigidbody_data",
+                t -> rigidbody.loadData(this, new SandBoxRigidbodyData().load(t))
+            )
+            .readEachCompound("behaviours",
                 nbt -> {
                     String typename = nbt.getString("behaviour_type");
                     String dataTypename = nbt.getString("data_type");
@@ -218,10 +239,11 @@ public class SandBoxServerShip implements ISandBoxShip, INbtSerializable<SandBox
                 behaviours
             );
 
+        EzDebug.log("after load omega:" + rigidbody.getExposedData().getOmega());
+
         behaviours.removeIf(Objects::isNull);
         return this;
     }
-
 
     /*
     @Override

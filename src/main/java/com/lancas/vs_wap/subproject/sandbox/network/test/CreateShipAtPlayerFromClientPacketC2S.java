@@ -1,8 +1,8 @@
 package com.lancas.vs_wap.subproject.sandbox.network.test;
 
+import com.lancas.vs_wap.content.WapBlocks;
 import com.lancas.vs_wap.debug.EzDebug;
 import com.lancas.vs_wap.subproject.sandbox.SandBoxServerWorld;
-import com.lancas.vs_wap.subproject.sandbox.component.behviour.SandBoxRigidbody;
 import com.lancas.vs_wap.subproject.sandbox.component.behviour.SandBoxTween;
 import com.lancas.vs_wap.subproject.sandbox.component.data.SandBoxBlockClusterData;
 import com.lancas.vs_wap.subproject.sandbox.component.data.SandBoxRigidbodyData;
@@ -10,11 +10,9 @@ import com.lancas.vs_wap.subproject.sandbox.component.data.SandBoxTransformData;
 import com.lancas.vs_wap.subproject.sandbox.component.data.TweenData;
 import com.lancas.vs_wap.subproject.sandbox.ship.SandBoxServerShip;
 import com.lancas.vs_wap.util.JomlUtil;
-import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.network.NetworkEvent;
 import org.joml.Math;
 import org.joml.Quaterniond;
@@ -53,18 +51,18 @@ public class CreateShipAtPlayerFromClientPacketC2S {
             SandBoxServerShip ship;
             try {
                 SandBoxBlockClusterData blockData = new SandBoxBlockClusterData();
-                BlockPos p = new BlockPos(0, 0, 0);
+                Vector3ic p = new Vector3i();
                 for (int i = 0; i < blockCnt; ++i) {
-                    blockData.setBlock(p, Blocks.IRON_BLOCK.defaultBlockState());
+                    blockData.setBlock(p, WapBlocks.Cartridge.PRIMER.getDefaultState());
 
                     while (blockData.contains(p)) {
                         switch (r.nextInt(0, 6)) {
-                            case 0 -> p = p.offset(1, 0, 0);
-                            case 1 -> p = p.offset(-1, 0, 0);
-                            case 2 -> p = p.offset(0, 1, 0);
-                            case 3 -> p = p.offset(0, -1, 0);
-                            case 4 -> p = p.offset(0, 0, 1);
-                            case 5 -> p = p.offset(0, 0, -1);
+                            case 0 -> p = p.add(1, 0, 0, new Vector3i());
+                            case 1 -> p = p.add(-1, 0, 0, new Vector3i());
+                            case 2 -> p = p.add(0, 1, 0, new Vector3i());
+                            case 3 -> p = p.add(0, -1, 0, new Vector3i());
+                            case 4 -> p = p.add(0, 0, 1, new Vector3i());
+                            case 5 -> p = p.add(0, 0, -1, new Vector3i());
                         }
                     }
                 }
@@ -73,14 +71,22 @@ public class CreateShipAtPlayerFromClientPacketC2S {
                 ship = new SandBoxServerShip(
                     uuid,
                     new SandBoxTransformData(JomlUtil.d(player.position()), new Quaterniond(), new Vector3d(1, 1, 1)),
-                    blockData
+                    blockData,
+                    new SandBoxRigidbodyData()
                 );
-                //ship.addBehaviour(new SandBoxRigidbody(), new SandBoxRigidbodyData());
+                EzDebug.log("ship mass:" + ship.getRigidbody().getExposedData().getMass());
+                ship.getRigidbody().applyTorque(new Vector3d(0, 40000000, 0));
+
+                //SandBoxRigidbody rigidbody = new SandBoxRigidbody();
+                //ship.addBehaviour(rigidbody, new SandBoxRigidbodyData());
+                //rigidbody.addTorque(new Vector3d(0, 40000000, 0));
+
                 ship.addBehaviour(
                     new SandBoxTween(),
                     new TweenData((prev, et) -> {
                         SandBoxTransformData next = SandBoxTransformData.copy(prev);
-                        next.position.add(0, Math.sin(et / 2.0), 0);
+                        next.scale.set(Math.sin(et));
+                        //EzDebug.log("server transform:" + next);
                         return next;
                     })
                 );

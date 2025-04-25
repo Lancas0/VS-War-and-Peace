@@ -1,7 +1,6 @@
 package com.lancas.vs_wap.content.blocks.artillery.breech;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.lancas.vs_wap.content.blocks.cartridge.PrimerBlock;
 import com.lancas.vs_wap.content.saved.IBlockRecord;
@@ -35,12 +34,14 @@ public interface IBreech {
     )
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class BreechRecord implements IBlockRecord {
-        @JsonIgnore
-        public static final int COLD_DOWN = 40;
-
+        private int maxColdDown = 0;
         private int coldDown = 0;
+
+        private BreechRecord() { }
+        public BreechRecord(int inMaxColdDown) { maxColdDown = inMaxColdDown; }
+
         public boolean isCold() { return coldDown <= 0; }
-        public void startColdDown() { coldDown = COLD_DOWN; }
+        public void startColdDown() { coldDown = maxColdDown; }
 
         @Override
         public boolean shouldTick() { return true; }
@@ -55,7 +56,7 @@ public interface IBreech {
 
     public boolean getLoadedMunitionData(Level level, BlockPos breechBp, Dest<Ship> munitionShip, Dest<Boolean> isTriggered, Dest<Direction> munitionDirInShip);
     public boolean isDockerLoadable(Level level, BlockPos breechBp, ItemStack stack);
-    public void getMunitionPlaceData(Level level, BlockPos breechBp, BlockState state, Dest<Vector3d> placePos, Dest<Vector3d> placeDir);
+    public void loadMunition(Level level, BlockPos breechBp, BlockState state, Dest<Vector3d> placePos, Dest<Vector3d> placeDir);
 
     //public void ejectShell(Level level, BlockPos breechBp);
     //public Set<BlockPos> findBarrelWithBreechPoses(Level level, BlockPos breechPos, BlockState breechState);

@@ -21,9 +21,9 @@ public class PropertyAdder<T extends Comparable<T>> extends AbstractPropertyAdde
     public T getDefaultValue() {
         return defaultValue;
     }
-    @Override
+    /*@Override
     public BlockState getStateForPlacement(BlockPlaceContext ctx, BlockState dest) {
         //todo may break nbt?
         return dest.setValue(property, defaultValue);
-    }
+    }*/
 }

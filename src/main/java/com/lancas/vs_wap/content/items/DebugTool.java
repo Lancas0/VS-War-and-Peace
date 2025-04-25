@@ -12,6 +12,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
+import org.valkyrienskies.core.api.ships.ServerShip;
 import org.valkyrienskies.core.api.ships.Ship;
 
 public class DebugTool extends ShipInteractableItem {
@@ -25,8 +26,9 @@ public class DebugTool extends ShipInteractableItem {
             new ShipBuilder(player.getOnPos().offset(0, 10, 10), level, 1.0, false).addBlock(new BlockPos(0, 0, 0), Blocks.IRON_BLOCK.defaultBlockState());
         }*/
         if (!(level instanceof ServerLevel sLevel)) return InteractionResult.PASS;
+        if (!(ship instanceof ServerShip sShip)) return InteractionResult.PASS;
 
-        boolean hasDisabled = RetrievableDisabledCollisionMgr.hasDisabledCollision(sLevel, ship.getId());
+        /*boolean hasDisabled = RetrievableDisabledCollisionMgr.hasDisabledCollision(sLevel, ship.getId());
         EzDebug.log("has disabled:" + hasDisabled);
 
         if (hasDisabled) {
@@ -34,7 +36,8 @@ public class DebugTool extends ShipInteractableItem {
             EzDebug.log("retrive:" + ret);
         } else {
             RetrievableDisabledCollisionMgr.disableCollisionBetween(sLevel, ship.getId(), ShipUtil.getGroundId(sLevel));
-        }
+        }*/
+        EzDebug.log("Interia of ship:" + sShip.getInertiaData().getMomentOfInertiaTensor());
 
         return InteractionResult.CONSUME;
     }

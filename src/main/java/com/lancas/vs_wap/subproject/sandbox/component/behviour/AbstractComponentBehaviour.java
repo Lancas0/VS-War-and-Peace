@@ -1,8 +1,7 @@
 package com.lancas.vs_wap.subproject.sandbox.component.behviour;
 
 import com.lancas.vs_wap.subproject.sandbox.component.data.IComponentData;
-import com.lancas.vs_wap.subproject.sandbox.component.data.IExposedComponentData;
-import com.lancas.vs_wap.subproject.sandbox.ship.ISandBoxShip;
+import com.lancas.vs_wap.subproject.sandbox.component.data.exposed.IExposedComponentData;
 import com.lancas.vs_wap.subproject.sandbox.ship.SandBoxServerShip;
 import net.minecraft.nbt.CompoundTag;
 
@@ -16,8 +15,8 @@ public abstract class AbstractComponentBehaviour<D extends IComponentData<D> & I
     protected abstract D makeData();
 
 
-    @Override
-    public IExposedComponentData<D> getReadOnlyData() { return data; }
+    //@Override
+    //public IExposedComponentData<D> getExposedData() { return data; }
 
     @Override
     public CompoundTag getSavedData() { return data.saved(); }
@@ -26,5 +25,6 @@ public abstract class AbstractComponentBehaviour<D extends IComponentData<D> & I
     public void loadData(SandBoxServerShip inShip, D src) {
         ship = inShip;
         data.copyData(src);
+        data.overwriteDataByShip(ship);
     }
 }

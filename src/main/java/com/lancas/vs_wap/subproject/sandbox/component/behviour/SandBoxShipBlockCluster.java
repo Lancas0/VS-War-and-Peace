@@ -1,20 +1,26 @@
 package com.lancas.vs_wap.subproject.sandbox.component.behviour;
 
 import com.lancas.vs_wap.debug.EzDebug;
+import com.lancas.vs_wap.foundation.BiTuple;
 import com.lancas.vs_wap.subproject.sandbox.component.data.SandBoxBlockClusterData;
+import com.lancas.vs_wap.subproject.sandbox.component.data.exposed.IExposedBlockClusterData;
+import com.lancas.vs_wap.subproject.sandbox.component.data.exposed.IExposedComponentData;
 import com.lancas.vs_wap.subproject.sandbox.event.SandBoxEventMgr;
-import com.lancas.vs_wap.subproject.sandbox.ship.ISandBoxShip;
 import com.lancas.vs_wap.subproject.sandbox.ship.SandBoxServerShip;
 import com.lancas.vs_wap.util.JomlUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector3i;
 import org.joml.Vector3ic;
 import org.joml.primitives.AABBi;
 import org.joml.primitives.AABBic;
 
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiConsumer;
 
 //todo sync
 public class SandBoxShipBlockCluster extends AbstractComponentBehaviour<SandBoxBlockClusterData> {
@@ -23,7 +29,7 @@ public class SandBoxShipBlockCluster extends AbstractComponentBehaviour<SandBoxB
     //private final SandBoxBlockClusterData data = new SandBoxBlockClusterData();
     private AABBi localAABB = null;
 
-    public BlockState setBlock(BlockPos localPos, BlockState state) {
+    public BlockState setBlock(Vector3ic localPos, BlockState state) {
         if (state == null || state.isAir()) {
             return removeBlock(localPos);
         }
@@ -34,14 +40,13 @@ public class SandBoxShipBlockCluster extends AbstractComponentBehaviour<SandBoxB
 
         if (prevState != null) return prevState;  //there is a prev state in this pos, no need to update localAABB
 
-        Vector3ic localPosI = JomlUtil.i(localPos);
         if (localAABB == null)
-            localAABB = new AABBi(localPosI, localPosI);
-        else localAABB.union(localPosI);
+            localAABB = new AABBi(localPos, localPos);
+        else localAABB.union(localPos);
 
         return prevState;
     }
-    public BlockState removeBlock(BlockPos localPos) {
+    public BlockState removeBlock(Vector3ic localPos) {
         BlockState oldState = data.removeBlock(localPos);
 
         if (oldState != null)  //if fail to remove(prestate is already null), don't invoke
@@ -68,21 +73,20 @@ public class SandBoxShipBlockCluster extends AbstractComponentBehaviour<SandBoxB
         }
 
         if (localAABB == null) localAABB = new AABBi();
-        int ix = 0;
-        for (var blockEntry : data.allBlocks()) {
-            Vector3ic curLocPosI = JomlUtil.i(blockEntry.getKey());
-            if (ix == 0) {
-                localAABB.setMin(curLocPosI);
-                localAABB.setMax(curLocPosI);
+        AtomicInteger ix = new AtomicInteger();
+        data.foreach((localPos, state) -> {
+            if (ix.get() == 0) {
+                localAABB.setMin(localPos);
+                localAABB.setMax(localPos);
             } else {
-                localAABB.union(curLocPosI);
+                localAABB.union(localPos);
             }
 
-            ix++;
-        }
+            ix.getAndIncrement();
+        });
     }
 
-    public BlockState getBlockOrNull(BlockPos localPos) {
+    public BlockState getBlockOrNull(Vector3ic localPos) {
         BlockState state = data.getBlockState(localPos);
         if (state == null) return null;
         if (state.isAir()) {
@@ -93,17 +97,22 @@ public class SandBoxShipBlockCluster extends AbstractComponentBehaviour<SandBoxB
 
         return state;
     }
-    public BlockState getBlockOrAir(BlockPos localPos) {
+    public BlockState getBlockOrAir(Vector3ic localPos) {
         BlockState state = getBlockOrNull(localPos);
         return state == null ? Blocks.AIR.defaultBlockState() : state;
     }
-
-    public Iterable<Map.Entry<BlockPos, BlockState>> allBlocks() {
-        return data.allBlocks();
+    public Iterable<BiTuple<Vector3ic, BlockState>> allBlocks() {
+        return () -> data.blocks.entrySet().stream().map(
+            entry -> new BiTuple<Vector3ic, BlockState>(entry.getKey(), entry.getValue())
+        ).iterator();
+    }
+    public void foreach(@NotNull BiConsumer<Vector3ic, BlockState> consumer) {
+        data.foreach(consumer);
     }
     public Iterable<BlockState> allBlockStates() {
         return data.blocks.values();
     }
+    public int blockCount() { return data.blocks.size(); }
 
     @Nullable
     public AABBic getLocalAABB() { return localAABB; }
@@ -136,4 +145,7 @@ public class SandBoxShipBlockCluster extends AbstractComponentBehaviour<SandBoxB
         super.loadData(ship, src);
         recalculateLocalAABB();
     }
+
+    @Override
+    public IExposedBlockClusterData getExposedData() { return data; }
 }

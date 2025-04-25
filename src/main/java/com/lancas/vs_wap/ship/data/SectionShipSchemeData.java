@@ -20,6 +20,7 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
 import org.joml.Vector3i;
+import org.joml.Vector3ic;
 import org.valkyrienskies.core.api.ships.ServerShip;
 import org.valkyrienskies.mod.common.VSGameUtilsKt;
 
@@ -27,6 +28,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiConsumer;
 
 public class SectionShipSchemeData implements IShipSchemeData {
     @JsonAutoDetect(
@@ -63,12 +65,12 @@ public class SectionShipSchemeData implements IShipSchemeData {
         public void addBlock(BlockPos offsetFromLower, BlockState state, @Nullable BlockEntity be) {
             data.add(NbtBuilder.ofBlock(offsetFromLower, state, be));
         }
-        public void foreach(Level level, @NotNull TriConsumer<BlockPos, BlockState, CompoundTag> consumer) {
+        public void foreach(@NotNull TriConsumer<BlockPos, BlockState, CompoundTag> consumer) {
             data.forEach(tag -> {
                 Dest<BlockPos> offsetFromLower = new Dest<>();
                 Dest<BlockState> state = new Dest<>();
                 Dest<CompoundTag> beTag = new Dest<>();
-                NbtBuilder.getBlock((CompoundTag)tag, level, offsetFromLower, state, beTag);
+                NbtBuilder.getBlock((CompoundTag)tag, offsetFromLower, state, beTag);
 
                 //BlockEntity be = tagDest.hasValue() ? BlockEntity.loadStatic(offsetFromLower.get(), state.get(), tagDest.get()) : null;
                 consumer.accept(offsetFromLower.get(), state.get(), beTag.get());
@@ -102,7 +104,7 @@ public class SectionShipSchemeData implements IShipSchemeData {
 
         NbtBuilder nbtBuilder = NbtBuilder.copy(tag)
             .readEachSimpleJackson("section_locations", SectionXZI.class, locations)
-            .readEachAsList("section_data", SectionData::of, sectionData)
+            .readEachList("section_data", SectionData::of, sectionData)
             .readDouble("scale", scale);
             //.readEachSimpleJackson("section_data", SectionData.class, sectionData);
 
@@ -226,7 +228,6 @@ public class SectionShipSchemeData implements IShipSchemeData {
                 }
             });
         }*/
-
         //todo use a light-weight method
         //ShipBuilder.modify(level, ship).s
 
@@ -249,7 +250,7 @@ public class SectionShipSchemeData implements IShipSchemeData {
             //LevelChunkSection realSection = sectionXZI.getRealSection(level, startChunkX, startChunkZ);
             BlockPos realSectionLower = sectionXZI.getRealChunkLower(level, startChunkX, startChunkZ);
 
-            sectionData.foreach(level, (offsetFromLower, state, beTag) -> {
+            sectionData.foreach((offsetFromLower, state, beTag) -> {
                 //if (offsetFromLower)
                 //EzDebug.log("try to add block at offset:" + StrUtil.getBlockPos(offsetFromLower));
 
@@ -262,13 +263,6 @@ public class SectionShipSchemeData implements IShipSchemeData {
                 }*/
 
                 BlockPos realPos = realSectionLower.offset(offsetFromLower);
-                /*WorldUtil.setBlock(level, realPos, state, beTag);
-                WorldUtil.updateBlock(level, realPos);
-
-                //level.getChunkSource().*/
-
-                //realSection.setBlockState(offsetFromLower.getX(), offsetFromLower.getY(), offsetFromLower.getZ(), state);
-                //level.setBlock()
                 realChunk.setBlockState(realPos, state, true);
                 //level.setBlock(realPos, state, Block.UPDATE_ALL);
                 if (beTag != null) {
@@ -290,6 +284,25 @@ public class SectionShipSchemeData implements IShipSchemeData {
         }
 
         return ship;
+    }
+
+    @Override
+    public void foreachBlock(BiConsumer<Vector3ic, BlockState> consumer) {
+        for (var dataEntry : shipData.entrySet()) {
+            SectionXZI sectionXZI = dataEntry.getKey();
+            SectionData sectionData = dataEntry.getValue();
+
+            int xLower = sectionXZI.chunkXOffset << 4;
+            int yLower = sectionXZI.sectionI << 4;
+            int zLower = sectionXZI.chunkZOffset << 4;
+
+            sectionData.foreach((offsetBp, state, beTag) -> {
+                consumer.accept(
+                    new Vector3i(xLower + offsetBp.getX(), yLower + offsetBp.getY(), zLower + offsetBp.getZ()),
+                    state
+                );
+            });
+        }
     }
 
 

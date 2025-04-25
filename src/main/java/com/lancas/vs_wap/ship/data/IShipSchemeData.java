@@ -1,8 +1,13 @@
 package com.lancas.vs_wap.ship.data;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.block.state.BlockState;
 import org.joml.*;
 import org.valkyrienskies.core.api.ships.ServerShip;
+
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 public interface IShipSchemeData {
 
@@ -78,4 +83,8 @@ public interface IShipSchemeData {
 
     public ServerShip createShip(ServerLevel level);
     public ServerShip overwriteEmptyShip(ServerLevel level, ServerShip ship);
+
+    //I find a serious thing: NbtUtils serialize block don't serialzie blockProps. todo use ISandBoxBlock for save/load, and add fallback and proxy for vanilla or othermod's blocks
+    public void foreachBlock(BiConsumer<Vector3ic, BlockState> consumer);
+
 }

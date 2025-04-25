@@ -89,7 +89,7 @@ public class EjectingBreech extends BlockPlus implements IBreech/*, IBE<BreechBE
             }*/
         }, true),
         IBreech.breechInteraction(),
-        new RefreshBlockRecordAdder(BreechRecord::new)
+        new RefreshBlockRecordAdder(() -> new BreechRecord(40))
     );
     @Override
     public Iterable<IBlockAdder> getAdders() { return providers; }
@@ -124,7 +124,7 @@ public class EjectingBreech extends BlockPlus implements IBreech/*, IBE<BreechBE
     }
 
     @Override
-    public void getMunitionPlaceData(Level level, BlockPos breechBp, BlockState state, Dest<Vector3d> placePos, Dest<Vector3d> placeDir) {
+    public void loadMunition(Level level, BlockPos breechBp, BlockState state, Dest<Vector3d> placePos, Dest<Vector3d> placeDir) {
         placePos.set(WorldUtil.getWorldCenter(level, breechBp));
         placeDir.set(WorldUtil.getWorldDirection(level, breechBp, state.getValue(DirectionAdder.FACING)));
     }

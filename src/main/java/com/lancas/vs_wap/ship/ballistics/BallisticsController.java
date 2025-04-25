@@ -220,8 +220,7 @@ public class BallisticsController implements ShipForcesInducer {  //apply on pro
             //double projectArea = shipData.getProjectArea(physShipTransform.getWorldToShip(), velInWorld);
             //double dragForceLen = 0.5 * projectArea * sqVelLenInWorld * airDragMultiplierCalInServer;
             //Vector3d airDragForce = velInWorld.normalize(-dragForceLen, new Vector3d());
-            //todo remove
-            Vector3d airDragForce = null;
+            Vector3d airDragForce = null;  //todo
 
             if (airDragForce != null && airDragForce.isFinite()) {
                 Vector3d linearDrag = new Vector3d();

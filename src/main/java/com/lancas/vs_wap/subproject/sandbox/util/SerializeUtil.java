@@ -1,11 +1,6 @@
 package com.lancas.vs_wap.subproject.sandbox.util;
 
 import com.lancas.vs_wap.debug.EzDebug;
-import com.lancas.vs_wap.subproject.sandbox.component.data.SandBoxBlockClusterData;
-import com.lancas.vs_wap.subproject.sandbox.component.data.SandBoxTransformData;
-import com.lancas.vs_wap.subproject.sandbox.ship.ISandBoxShip;
-import com.lancas.vs_wap.subproject.sandbox.ship.SandBoxServerShip;
-import com.lancas.vs_wap.subproject.sandbox.ship.ShipFactory;
 import com.lancas.vs_wap.util.NbtBuilder;
 import net.minecraft.nbt.CompoundTag;
 import org.apache.logging.log4j.util.TriConsumer;
@@ -21,9 +16,9 @@ public class SerializeUtil {
     public static CompoundTag saveTransformLike(Vector3dc pos, Quaterniondc rot, Vector3dc scale) {
         //no need to save aabb, it is initialy dirty
         return new NbtBuilder()
-            .putVector3("pos", pos)
+            .putVector3d("pos", pos)
             .putQuaternion("rot", rot)
-            .putVector3("scale", scale)
+            .putVector3d("scale", scale)
             .get();
     }
     public static void loadTransformLike(CompoundTag tag, TriConsumer<Vector3d, Quaterniond, Vector3d> loader) {

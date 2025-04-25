@@ -24,8 +24,8 @@ public class SandBoxLevelRenderMixin {
     private void renderShips(PoseStack poseStack, float partialTicks, long finishTimeNano, boolean drawBlockOutline, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f projectionMatrix, CallbackInfo ci) {
         MultiBufferSource.BufferSource bufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
 
-        AtomicInteger count = new AtomicInteger();
-        SandBoxClientWorld.INSTANCE.allRenderers().forEach(ship -> count.incrementAndGet());
+        //AtomicInteger count = new AtomicInteger();
+        //SandBoxClientWorld.INSTANCE.allRenderers().forEach(ship -> count.incrementAndGet());
         //EzDebug.log("render ship count:" +  count.get());
 
         for (ShipClientRenderer renderer : SandBoxClientWorld.INSTANCE.allRenderers()) {

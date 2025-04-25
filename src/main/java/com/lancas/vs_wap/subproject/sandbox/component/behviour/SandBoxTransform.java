@@ -1,7 +1,8 @@
 package com.lancas.vs_wap.subproject.sandbox.component.behviour;
 
+import com.lancas.vs_wap.debug.EzDebug;
 import com.lancas.vs_wap.subproject.sandbox.api.UUIDParamWrapper;
-import com.lancas.vs_wap.subproject.sandbox.component.data.IExposedTransformData;
+import com.lancas.vs_wap.subproject.sandbox.component.data.exposed.IExposedTransformData;
 import com.lancas.vs_wap.subproject.sandbox.component.data.SandBoxTransformData;
 import com.lancas.vs_wap.subproject.sandbox.event.SandBoxEventMgr;
 import com.lancas.vs_wap.subproject.sandbox.ship.SandBoxServerShip;
@@ -26,7 +27,7 @@ public class SandBoxTransform extends AbstractComponentBehaviour<SandBoxTransfor
 
     @Override
     protected SandBoxTransformData makeData() { return new SandBoxTransformData(); }
-
+    @Override
     public IExposedTransformData getExposedData() { return data; }
 
 
@@ -49,6 +50,11 @@ public class SandBoxTransform extends AbstractComponentBehaviour<SandBoxTransfor
     public Vector3d localToWorldPos(Vector3d localPos) { return getLocalToWorld().transformPosition(localPos); }
     public Vector3d worldToLocalPos(Vector3d worldPos) { return getWorldToLocal().transformPosition(worldPos); }
     public Vector3d localToWorldPos(BlockPos localPos, Vector3d dest) { return getLocalToWorld().transformPosition(JomlUtil.dLowerCorner(localPos), dest); }
+
+    public Vector3d localToWorldNoScaleDir(Vector3dc dir, Vector3d dest) { return getRotation().transform(dir, dest); }
+    public Vector3d localToWorldNoScaleDir(Vector3d dir) { return getRotation().transform(dir); }
+    public Vector3d localToWorldNoScaleDir(Vector3ic dir, Vector3d dest) { return getRotation().transform(new Vector3d(dir), dest); }
+
     private void updateMatrix() {
         //need for translation: related to (0, 0, 0)
         /*cachedLocalToWorld.translationRotateScale(
@@ -89,7 +95,7 @@ public class SandBoxTransform extends AbstractComponentBehaviour<SandBoxTransfor
         isMatrixDirty.set(true);
         return this;
     }
-    public SandBoxTransform setRotation(Quaterniondc newRot) {
+    public SandBoxTransform setRotation(Quaterniondc newRot) {  //todo check rot normilized?
         synchronized (data) {
             data.rotation.set(newRot);
             SandBoxEventMgr.onServerShipTransformDirty.schedule(ship.getUuid(), UUIDParamWrapper.of(ship.getUuid()), data);
@@ -99,6 +105,11 @@ public class SandBoxTransform extends AbstractComponentBehaviour<SandBoxTransfor
         return this;
     }
     public SandBoxTransform setScale(Vector3dc newScale) {
+        if (newScale.x() < 0 || newScale.y() < 0 || newScale.z() < 0) {
+            EzDebug.warn("can't set scale with a negative number!");
+            return this;
+        }
+
         synchronized (data) {
             data.scale.set(newScale);
             SandBoxEventMgr.onServerShipTransformDirty.schedule(ship.getUuid(), UUIDParamWrapper.of(ship.getUuid()), data);
@@ -128,6 +139,38 @@ public class SandBoxTransform extends AbstractComponentBehaviour<SandBoxTransfor
     public SandBoxTransform set(SandBoxTransformData inData) {
         synchronized (data) {
             data.set(inData.getPosition(), inData.getRotation(), inData.getScale());
+            SandBoxEventMgr.onServerShipTransformDirty.schedule(ship.getUuid(), UUIDParamWrapper.of(ship.getUuid()), data);
+        }
+
+        isMatrixDirty.set(true);
+        return this;
+    }
+    public SandBoxTransform move(Vector3dc movement) {
+        synchronized (data) {
+            data.position.add(movement);
+            SandBoxEventMgr.onServerShipTransformDirty.schedule(ship.getUuid(), UUIDParamWrapper.of(ship.getUuid()), data);
+        }
+
+        isMatrixDirty.set(true);
+        return this;
+    }
+    public SandBoxTransform rotate(Quaterniondc rotation) {  //todo check rot normilized?
+        synchronized (data) {
+            data.rotation.mul(rotation).normalize();  //should normalize?
+            SandBoxEventMgr.onServerShipTransformDirty.schedule(ship.getUuid(), UUIDParamWrapper.of(ship.getUuid()), data);
+        }
+
+        isMatrixDirty.set(true);
+        return this;
+    }
+    public SandBoxTransform scale(Vector3dc scale) {
+        if (scale.x() < 0 || scale.y() < 0 || scale.z() < 0) {
+            EzDebug.warn("can't scale with a negative number!");
+            return this;
+        }
+
+        synchronized (data) {
+            data.scale.mul(scale);
             SandBoxEventMgr.onServerShipTransformDirty.schedule(ship.getUuid(), UUIDParamWrapper.of(ship.getUuid()), data);
         }
 

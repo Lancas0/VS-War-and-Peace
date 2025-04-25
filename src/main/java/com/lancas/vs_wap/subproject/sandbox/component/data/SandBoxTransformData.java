@@ -1,6 +1,7 @@
 package com.lancas.vs_wap.subproject.sandbox.component.data;
 
 import com.lancas.vs_wap.event.api.ILazyEventParam;
+import com.lancas.vs_wap.subproject.sandbox.component.data.exposed.IExposedTransformData;
 import com.lancas.vs_wap.subproject.sandbox.util.SerializeUtil;
 import com.lancas.vs_wap.util.StrUtil;
 import net.minecraft.nbt.CompoundTag;
@@ -10,17 +11,6 @@ public class SandBoxTransformData implements ILazyEventParam<SandBoxTransformDat
     @Override
     public SandBoxTransformData copyData(SandBoxTransformData src) { return this.set(src); }
 
-    /*
-    public static class DataAccessor {
-        public final Vector3d position;
-        public final Quaterniond rotation;
-        public final Vector3d scale;
-        private DataAccessor(SandBoxTransformData data) {
-            position = data.position;
-            rotation = data.rotation;
-            scale = data.scale;
-        }
-    }*/
 
     public final Vector3d position = new Vector3d();
     public final Quaterniond rotation = new Quaterniond();

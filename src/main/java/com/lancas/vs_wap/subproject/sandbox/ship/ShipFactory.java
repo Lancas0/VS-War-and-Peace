@@ -1,5 +1,6 @@
 package com.lancas.vs_wap.subproject.sandbox.ship;
 
+/*
 import com.lancas.vs_wap.subproject.sandbox.component.data.SandBoxBlockClusterData;
 import com.lancas.vs_wap.subproject.sandbox.component.data.SandBoxTransformData;
 
@@ -24,11 +25,12 @@ public class ShipFactory {
         return this;
     }
 
-    /*public SandBoxClientShip createAsClient() {
+    public SandBoxClientShip createAsClient() {
         return new SandBoxClientShip(uuidSupplier.get(), transformDataSupplier.get(), blockClusterDataSupplier.get());
-    }*/
+    }
     public SandBoxServerShip createAsServer() {
         return new SandBoxServerShip(uuidSupplier.get(), transformDataSupplier.get(), blockClusterDataSupplier.get());
     }
 
 }
+*/

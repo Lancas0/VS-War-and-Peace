@@ -9,9 +9,8 @@ import com.lancas.vs_wap.debug.EzDebug;
 import com.lancas.vs_wap.foundation.BiTuple;
 import com.lancas.vs_wap.foundation.api.Dest;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.registries.Registries;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.*;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
@@ -46,6 +45,65 @@ public class NbtBuilder {
     }
     public static Long getValueOfLong(CompoundTag tag, String key) { return tag.getLong(key); }
     public static String getValueOfString(CompoundTag tag, String key) { return tag.getString(key); }
+
+    public static CompoundTag tagOfVector3d(Vector3dc v) {
+        CompoundTag tag = new CompoundTag();
+        tag.putDouble("x", v.x());
+        tag.putDouble("y", v.y());
+        tag.putDouble("z", v.z());
+        return tag;
+    }
+    public static CompoundTag tagOfVector3f(Vector3fc v) {
+        CompoundTag tag = new CompoundTag();
+        tag.putFloat("x", v.x());
+        tag.putFloat("y", v.y());
+        tag.putFloat("z", v.z());
+        return tag;
+    }
+    public static CompoundTag tagOfVector3i(Vector3ic v) {
+        CompoundTag tag = new CompoundTag();
+        tag.putInt("x", v.x());
+        tag.putInt("y", v.y());
+        tag.putInt("z", v.z());
+        return tag;
+    }
+    public static Vector3d vector3dOf(CompoundTag tag, Vector3d dest) {
+        dest.x = tag.getDouble("x");
+        dest.y = tag.getDouble("y");
+        dest.z = tag.getDouble("z");
+        return dest;
+    }
+    public static Vector3f vector3fOf(CompoundTag tag, Vector3f dest) {
+        dest.x = tag.getFloat("x");
+        dest.y = tag.getFloat("y");
+        dest.z = tag.getFloat("z");
+        return dest;
+    }
+    public static Vector3i vector3iOf(CompoundTag tag, Vector3i dest) {
+        dest.x = tag.getInt("x");
+        dest.y = tag.getInt("y");
+        dest.z = tag.getInt("z");
+        return dest;
+    }
+    public static Vector3d vector3dOf(CompoundTag tag) { return vector3dOf(tag, new Vector3d()); }
+    public static Vector3f vector3fOf(CompoundTag tag) { return vector3fOf(tag, new Vector3f()); }
+    public static Vector3i vector3iOf(CompoundTag tag) { return vector3iOf(tag, new Vector3i()); }
+
+    public static CompoundTag tagOfMatrix3d(Matrix3dc matrix3dc) {
+        CompoundTag tag = new CompoundTag();
+        tag.putDouble("m00", matrix3dc.m00()); tag.putDouble("m01", matrix3dc.m01()); tag.putDouble("m02", matrix3dc.m02());
+        tag.putDouble("m10", matrix3dc.m10()); tag.putDouble("m11", matrix3dc.m11()); tag.putDouble("m12", matrix3dc.m12());
+        tag.putDouble("m20", matrix3dc.m20()); tag.putDouble("m21", matrix3dc.m21()); tag.putDouble("m22", matrix3dc.m22());
+        return tag;
+    }
+    public static Matrix3d matrix3dOf(CompoundTag tag, Matrix3d dest) {
+        dest.m00 = tag.getDouble("m00"); dest.m01 = tag.getDouble("m01"); dest.m02 = tag.getDouble("m02");
+        dest.m10 = tag.getDouble("m10"); dest.m11 = tag.getDouble("m11"); dest.m12 = tag.getDouble("m12");
+        dest.m20 = tag.getDouble("m20"); dest.m21 = tag.getDouble("m21"); dest.m22 = tag.getDouble("m22");
+        return dest;
+    }
+    public static Matrix3d matrix3dOf(CompoundTag tag) { return matrix3dOf(tag, new Matrix3d()); }
+
 
     private NbtBuilder(Supplier<CompoundTag> nbtSupplier) { nbt = nbtSupplier.get(); }
     public static NbtBuilder copy(CompoundTag tag) {
@@ -152,63 +210,47 @@ public class NbtBuilder {
     }
 
 
-    public NbtBuilder putVector3(String key, Vector3dc vec) {
-        return this.putCompound(key, new NbtBuilder()
-            .putNumber("x", vec.x())
-            .putNumber("y", vec.y())
-            .putNumber("z", vec.z())
-            .get()
-        );
+    public NbtBuilder putVector3d(String key, Vector3dc vec) {
+        return this.putCompound(key, tagOfVector3d(vec));
     }
-    public NbtBuilder putVector3(String key, Vector3fc vec) {
-        return this.putCompound(key, new NbtBuilder()
-            .putNumber("x", vec.x())
-            .putNumber("y", vec.y())
-            .putNumber("z", vec.z())
-            .get()
-        );
+    public NbtBuilder putVector3f(String key, Vector3fc vec) {
+        return this.putCompound(key, tagOfVector3f(vec));
     }
-    public NbtBuilder putVector3(String key, Vector3ic vec) {
-        return this.putCompound(key, new NbtBuilder()
-            .putNumber("x", vec.x())
-            .putNumber("y", vec.y())
-            .putNumber("z", vec.z())
-            .get()
-        );
+    public NbtBuilder putVector3i(String key, Vector3ic vec) {
+        return this.putCompound(key, tagOfVector3i(vec));
     }
-    public NbtBuilder readVector3d(String key, Vector3d vec) {
-        Dest<CompoundTag> vTagDest = new Dest<>();
-        this.readCompound(key, vTagDest);
-
-        NbtBuilder.modify(vTagDest.get())
-            .readDoubleDo("x", v -> vec.x = v)
-            .readDoubleDo("y", v -> vec.y = v)
-            .readDoubleDo("z", v -> vec.z = v);
-
+    public NbtBuilder readVector3d(String key, Vector3d dest) {
+        CompoundTag nbt = this.getCompound(key);
+        dest.set(vector3dOf(nbt));
         return this;
     }
-    public NbtBuilder readVector3f(String key, Vector3f vec) {
-        Dest<CompoundTag> vTagDest = new Dest<>();
-        this.readCompound(key, vTagDest);
-
-        NbtBuilder.modify(vTagDest.get())
-            .readFloatDo("x", v -> vec.x = v)
-            .readFloatDo("y", v -> vec.y = v)
-            .readFloatDo("z", v -> vec.z = v);
-
+    public NbtBuilder readVector3f(String key, Vector3f dest) {
+        CompoundTag nbt = this.getCompound(key);
+        dest.set(vector3fOf(nbt));
         return this;
     }
-    public NbtBuilder readVector3i(String key, Vector3i vec) {
-        Dest<CompoundTag> vTagDest = new Dest<>();
-        this.readCompound(key, vTagDest);
-
-        NbtBuilder.modify(vTagDest.get())
-            .readIntDo("x", v -> vec.x = v)
-            .readIntDo("y", v -> vec.y = v)
-            .readIntDo("z", v -> vec.z = v);
-
+    public NbtBuilder readVector3i(String key, Vector3i dest) {
+        CompoundTag nbt = this.getCompound(key);
+        dest.set(vector3iOf(nbt));
         return this;
     }
+    public Vector3d getVector3d(String key, Vector3d dest) {
+        CompoundTag nbt = this.getCompound(key);
+        return dest.set(vector3dOf(nbt));
+    }
+    public Vector3f getVector3f(String key, Vector3f dest) {
+        CompoundTag nbt = this.getCompound(key);
+        return dest.set(vector3fOf(nbt));
+    }
+    public Vector3i getVector3i(String key, Vector3i dest) {
+        CompoundTag nbt = this.getCompound(key);
+        return dest.set(vector3iOf(nbt));
+    }
+
+    public NbtBuilder putMatrix3d(String key, Matrix3dc matrix) { return this.putCompound(key, tagOfMatrix3d(matrix)); }
+    public NbtBuilder readMatrix3d(String key, Matrix3d dest) { matrix3dOf(getCompound(key), dest); return this; }
+    public Matrix3d getMatrix3d(String key, Matrix3d dest) { return matrix3dOf(getCompound(key), dest); }
+    public Matrix3d getMatrix3d(String key) { return matrix3dOf(getCompound(key), new Matrix3d()); }
 
     public NbtBuilder putAABBi(String key, AABBic aabb) {
         nbt.put(key, new NbtBuilder()
@@ -310,10 +352,10 @@ public class NbtBuilder {
     }
 
 
-    public NbtBuilder putBoolean(String key, boolean v) {
-        nbt.putBoolean(key, v);
-        return this;
-    }
+    public NbtBuilder putBoolean(String key, boolean v) { nbt.putBoolean(key, v); return this; }
+    public NbtBuilder readBoolean(String key, Dest<Boolean> dest) { dest.set(nbt.getBoolean(key)); return this; }
+    public NbtBuilder readBooleanDo(String key, Consumer<Boolean> consumer) { consumer.accept(nbt.getBoolean(key)); return this; }
+    public Boolean getBoolean(String key) { return nbt.getBoolean(key); }
 
     public <T> NbtBuilder putEach(String key, Iterable<T> list, Function<T, Tag> nbtCreator) {
         ListTag listTag = new ListTag();
@@ -324,7 +366,6 @@ public class NbtBuilder {
         return this;
     }
     private <T> NbtBuilder readEachImpl(String key, Function<Tag, T> nbtReader, byte target, Collection<T> dest) {
-        dest.clear();
         ListTag listTag = nbt.getList(key, target);
         if (listTag.isEmpty()) return this;
 
@@ -333,10 +374,14 @@ public class NbtBuilder {
         }
         return this;
     }
-    public <T> NbtBuilder readEachAsCompound(String key, Function<CompoundTag, T> nbtReader, Collection<T> dest) {
+    public <T> NbtBuilder readEachCompound(String key, Function<CompoundTag, T> nbtReader, Collection<T> dest) {
         return readEachImpl(key, (tag) -> nbtReader.apply((CompoundTag)tag), Tag.TAG_COMPOUND, dest);
     }
-    public <T> NbtBuilder readEachAsList(String key, Function<ListTag, T> nbtReader, Collection<T> dest) {
+    public <T> NbtBuilder readEachCompoundOverwrite(String key, Function<CompoundTag, T> nbtReader, Collection<T> dest) {
+        dest.clear();
+        return readEachImpl(key, (tag) -> nbtReader.apply((CompoundTag)tag), Tag.TAG_COMPOUND, dest);
+    }
+    public <T> NbtBuilder readEachList(String key, Function<ListTag, T> nbtReader, Collection<T> dest) {
         return readEachImpl(key, (tag) -> nbtReader.apply((ListTag)tag), Tag.TAG_LIST, dest);
     }
 
@@ -393,9 +438,9 @@ public class NbtBuilder {
             tag.put("be", be.saveWithFullMetadata());
         return tag;
     }
-    public static void getBlock(CompoundTag tag, Level level, Dest<BlockPos> bpDest, Dest<BlockState> stateDest, Dest<CompoundTag> beTag) {
+    public static void getBlock(CompoundTag tag, Dest<BlockPos> bpDest, Dest<BlockState> stateDest, Dest<CompoundTag> beTag) {
         bpDest.set(new BlockPos(tag.getInt("x"), tag.getInt("y"), tag.getInt("z")));
-        stateDest.set(NbtUtils.readBlockState(level.holderLookup(Registries.BLOCK), tag.getCompound("state")));
+        stateDest.set(NbtUtils.readBlockState(BuiltInRegistries.BLOCK.asLookup(), tag.getCompound("state")));
 
         if (tag.contains("be")) {
             beTag.set(tag.getCompound("be"));
@@ -454,7 +499,7 @@ public class NbtBuilder {
         return jacksonTreeToValueRethrown(root, type, mapper);
     }
     public <T> NbtBuilder readEachJacksonWhileDo(String key, Class<T> type, ObjectMapper mapper, Consumer<JsonNode> doWhat, Collection<T> dest) {
-        return this.readEachAsCompound(key,
+        return this.readEachCompound(key,
             nbt -> {
                 String json = NbtBuilder.getValueOfString(nbt, "json");
                 JsonNode root = jacksonReadTreeRethrown(json, mapper);
@@ -468,7 +513,7 @@ public class NbtBuilder {
         );
     }
     public <T> NbtBuilder readEachJacksonWhileDo(String key, JavaType type, ObjectMapper mapper, Consumer<JsonNode> doWhat, Collection<T> dest) {
-        return this.readEachAsCompound(key,
+        return this.readEachCompound(key,
             nbt -> {
                 String json = (nbt).getString(key);
                 JsonNode root = jacksonReadTreeRethrown(json, mapper);
@@ -490,14 +535,14 @@ public class NbtBuilder {
         });
     }
     public <T> NbtBuilder readEachSimpleJackson(String key, Class<T> type, Collection<T> dest) {
-        return this.readEachAsCompound(key, nbt -> {
+        return this.readEachCompound(key, nbt -> {
             String json = getValueOfString(nbt, "json");
             return jacksonReadRethrown(json, type, SIMPLE_MAPPER);
         }, dest);
     }
     public <T> NbtBuilder readEachSimpleJackson(String key, TypeReference<T> type, Collection<T> dest) {
         //todo it's not good to directly cast
-        return this.readEachAsCompound(key, nbt -> {
+        return this.readEachCompound(key, nbt -> {
             String json = getValueOfString(nbt, "json");
             return jacksonReadRethrown(json, type, SIMPLE_MAPPER);
         }, dest);
@@ -510,13 +555,13 @@ public class NbtBuilder {
         });
     }
     public <T> NbtBuilder readEachJackson(String key, Class<T> type, ObjectMapper mapper, Collection<T> dest) {
-        return this.readEachAsCompound(key, nbt -> {
+        return this.readEachCompound(key, nbt -> {
             String json = getValueOfString(nbt, "json");
             return jacksonReadRethrown(json, type, mapper);
         }, dest);
     }
     public <T> NbtBuilder readEachJackson(String key, TypeReference<T> type, ObjectMapper mapper, Collection<T> dest) {
-        return this.readEachAsCompound(key, nbt -> {
+        return this.readEachCompound(key, nbt -> {
             String json = getValueOfString(nbt, "json");
             return jacksonReadRethrown(json, type, mapper);
         }, dest);

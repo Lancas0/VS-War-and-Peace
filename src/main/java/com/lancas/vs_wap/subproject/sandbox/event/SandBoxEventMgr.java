@@ -19,6 +19,7 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import org.joml.Vector3ic;
 import org.valkyrienskies.mod.common.VSGameUtilsKt;
 
 @Mod.EventBusSubscriber
@@ -27,7 +28,7 @@ public class SandBoxEventMgr {
     public static BiEventImpl<ServerLevel, SandBoxServerShip> onAddNewShipInServerWorld = new BiEventImpl<>();
     public static BiEventImpl<ServerLevel, SandBoxServerShip> onRemoveShipFromServerWorld = new BiEventImpl<>();
     //目前能保证当删除一个空方块时不会触发
-    public static QuadEventImpl<SandBoxServerShip, BlockPos, BlockState, BlockState> onShipBlockReplaced = new QuadEventImpl<>();
+    public static QuadEventImpl<SandBoxServerShip, Vector3ic, BlockState, BlockState> onShipBlockReplaced = new QuadEventImpl<>();
     //public static
 
     @SubscribeEvent

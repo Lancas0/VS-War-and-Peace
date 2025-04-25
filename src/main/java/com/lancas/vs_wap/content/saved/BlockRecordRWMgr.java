@@ -69,7 +69,7 @@ public class BlockRecordRWMgr extends SavedData {
 
             nbtBuilder.readCompound("tick_records", recordsDest);
             NbtBuilder.copy(recordsDest.get())
-                .readEachAsCompound("block_poses", NbtBuilder::blockPosValueOf, bps)
+                .readEachCompound("block_poses", NbtBuilder::blockPosValueOf, bps)
                 .readEachSimpleJackson("record_values", IBlockRecord.class, records);
 
             if (bps.size() != records.size()) { EzDebug.error("block pos count don't match dataVals size"); return; }
@@ -85,7 +85,7 @@ public class BlockRecordRWMgr extends SavedData {
 
             nbtBuilder.readCompound("rw_records", recordsDest);
             NbtBuilder.copy(recordsDest.get())
-                .readEachAsCompound("block_poses", NbtBuilder::blockPosValueOf, bps)
+                .readEachCompound("block_poses", NbtBuilder::blockPosValueOf, bps)
                 .readEachSimpleJackson("record_values", IBlockRecord.class, records);
 
             if (bps.size() != records.size()) { EzDebug.error("block pos count don't match dataVals size"); return; }

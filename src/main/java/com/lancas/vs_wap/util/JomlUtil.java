@@ -170,7 +170,7 @@ public class JomlUtil {
 
     public static Direction nearestDir(Vec3 v) { return Direction.getNearest(v.x, v.y, v.z); }
     public static Direction nearestDir(Vector3dc v) { return Direction.getNearest(v.x(), v.y(), v.z()); }
-
+    public static Direction nearestDir(Vector3ic v) { return Direction.getNearest(v.x(), v.y(), v.z()); }
 
     private static AABBd boundsFaceImpl(AABBdc bounds, Direction face) {
         return switch (face) {

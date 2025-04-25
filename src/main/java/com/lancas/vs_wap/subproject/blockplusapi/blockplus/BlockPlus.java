@@ -1,5 +1,6 @@
 package com.lancas.vs_wap.subproject.blockplusapi.blockplus;
 
+import com.lancas.vs_wap.subproject.blockplusapi.blockplus.adder.AbstractPropertyAdder;
 import com.lancas.vs_wap.subproject.blockplusapi.blockplus.adder.IBlockAdder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -11,7 +12,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -58,11 +58,19 @@ public abstract class BlockPlus extends Block {
 
         var adders = getAdders();
         if (adders == null) {
-            throw new RuntimeException("BlockPlus can't have null adders! You can set adders a empty list. Remember that if you want to a list variable, set it to static");
+            throw new RuntimeException("BlockPlus can't have null adders! You can set adders a empty list. Remember that if you want to a list variable, set it to static, or simply use BLockPlus::addersIfAbsent");
         }
-        getAdders().forEach(p -> {
+
+        AtomicReference<BlockState> defaultState = new AtomicReference<>(this.stateDefinition.any());
+        adders.forEach(p -> {
+            defaultState.set(p.setValueForDefaultState(defaultState.get()));
+        });
+        this.registerDefaultState(defaultState.get());
+
+        /*getAdders().forEach(p -> {
             p.onInit(this);
         });
+        this.registerDefaultState(this.stateDefinition.any());*/
 
         instances.put(this.getClass(), this);
     }
@@ -77,17 +85,40 @@ public abstract class BlockPlus extends Block {
         return addersCache.get(type);
     }
 
-
-    public <T extends Comparable<T>> void acceptPropertyForDefaultState(Property<T> property, T defaultVal) {
-        this.stateDefinition.any().setValue(property, defaultVal);
-        /*if (property instanceof BooleanProperty bp) {
-            throw new RuntimeException("prop:" + bp.getName() + ", val:" + defaultVal);
-        }*/
-    }
+    /*public <T extends Comparable<T>> void acceptPropertyForDefaultState(Property<T> property, T defaultVal) {
+        //this.stateDefinition.any().setValue(property, defaultVal);
+    }*/
+    /*private BlockState buildDefaultState() {
+        BlockState baseState = super.defaultBlockState();
+        StateDefinition.Builder<Block, BlockState> builder = new
+        // 复制原版属性
+        baseState.getProperties().forEach(prop ->
+            builder.setValue(prop, baseState.getValue(prop))
+        );
+        // 添加 PropertyAdder 的默认值
+        getAdders().forEach(adder -> {
+            if (adder instanceof AbstractPropertyAdder) {
+                AbstractPropertyAdder<?> propAdder = (AbstractPropertyAdder<?>) adder;
+                builder.setValue(propAdder.getProperty(), propAdder.getDefaultValue());
+            }
+        });
+        return builder.create();
+    }*/
     /*public void acceptPropertyForStateDefinition(StateDefinition.Builder<Block, BlockState> builder, Property<?> property) {
         builder.add(property);
+    }
+    // 如果直接使用acceptPropertyForDedaultState(必须在super之后)，那么会导致提前注册defaultState后再向defaultState中注册property
+    // 重写 registerDefaultState 以正确设置默认值
+    /*@Override
+    public void registerDefaultState(BlockState state) {
+        BlockState.Builder newStateBuilder = new BlockState.Builder(this);
+        getAdders().forEach(adder -> {
+            if (adder instanceof AbstractPropertyAdder<?> propAdder) {
+                newStateBuilder.setValue(propAdder.getProperty(), propAdder.getDefaultValue());
+            }
+        });
+        super.registerDefaultState(newStateBuilder.create());
     }*/
-
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         getAdders().forEach(p -> {
