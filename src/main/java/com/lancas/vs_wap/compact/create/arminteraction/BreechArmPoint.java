@@ -55,10 +55,7 @@ public class BreechArmPoint extends AllArmInteractionPointTypes.DepositOnlyArmIn
             EzDebug.warn("can't get breechRecord at " + pos.toShortString());
             return stack;
         }
-        if (!record.isCold()) {
-            //EzDebug.light("breech is colding");
-            return stack;
-        }
+        if (!record.isCold())  return stack;
 
         if (!breech.isDockerLoadable(level, pos, stack))
             return stack;
@@ -69,25 +66,35 @@ public class BreechArmPoint extends AllArmInteractionPointTypes.DepositOnlyArmIn
         Dest<Direction> prevMunitionDirInShip = new Dest<>();
         boolean hasPrevMunition = breech.getLoadedMunitionData(level, pos, prevMunitionShip, isPrevTriggered, prevMunitionDirInShip);
 
-        //EzDebug.light("get prevMunition:" + prevMunitionShip.get() + ", triggered:" + isPrevTriggered.get());
-
         if (hasPrevMunition && !isPrevTriggered.get()) {
-            //EzDebug.warn("can not insert because has unTriggered prev");
             return stack;  //has munition that's not triggered
         }
 
-        Dest<Vector3d> placePos = new Dest<>();
-        Dest<Vector3d> placeDir = new Dest<>();
-        breech.loadMunition(sLevel, pos, breechState, placePos, placeDir);
-        return loadMunition(sLevel, placePos.get(), placeDir.get(), stack, (ServerShip)prevMunitionShip.get(), prevMunitionDirInShip.get(), simulate);
+        IBreech iBreech = WorldUtil.getBlockInterface(sLevel, pos, null);
+        if (prevMunitionShip.hasValue() && !simulate) {
+            iBreech.unloadShell(sLevel, (ServerShip)prevMunitionShip.get(), prevMunitionDirInShip.get(), pos);
+        }
+
+        if (!simulate) {
+            iBreech.loadMunition(sLevel, pos, breechState, stack);
+            record.startColdDown();
+        }
+        return ItemStack.EMPTY;
+
+        //Dest<Vector3d> placePos = new Dest<>();
+        //Dest<Vector3d> placeDir = new Dest<>();
+        //breech.loadMunition(sLevel, pos, breechState, placePos, placeDir);
+        //return loadMunition(sLevel, stack, (ServerShip)prevMunitionShip.get(), prevMunitionDirInShip.get(), simulate);
     }
 
-    private ItemStack loadMunition(ServerLevel sLevel, Vector3dc newMunitionPlacePos, Vector3dc breechWorldForward, ItemStack stack, @Nullable ServerShip prevMunition, @Nullable Direction prevMunitionShipDir, boolean simulate) {
-        //has prevMunition and not simulate,
+    /*private ItemStack loadMunition(ServerLevel sLevel, ItemStack stack, @Nullable ServerShip prevMunition, @Nullable Direction prevMunitionShipDir, boolean simulate) {
+        IBreech iBreech = WorldUtil.getBlockInterface(sLevel, pos, null);
+
         if (prevMunition != null && !simulate) {
-            IBreech iBreech = WorldUtil.getBlockInterface(sLevel, pos, null);
             iBreech.unloadShell(sLevel, prevMunition, prevMunitionShipDir, pos);
         }
+
+        iBreech.loadMunition();
 
         if (!simulate) {
             //make ship since it's not simulated
@@ -126,5 +133,5 @@ public class BreechArmPoint extends AllArmInteractionPointTypes.DepositOnlyArmIn
         }
 
         return ItemStack.EMPTY;
-    }
+    }*/
 }

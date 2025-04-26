@@ -101,5 +101,5 @@ public class ShelledPropellant extends BlockPlus implements IPropellant {
         //level.setBlockAndUpdate(pos, state.setValue(EMPTY, true));
     }
     @Override
-    public double getPower(BlockState state) { return WapBlockInfos.propellant_power.valueOrDefaultOf(state); }
+    public double getEnergy(BlockState state) { return WapBlockInfos.propellant_power.valueOrDefaultOf(state); }
 }

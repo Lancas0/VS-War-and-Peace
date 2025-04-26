@@ -9,5 +9,5 @@ public interface IPropellant {
 
     public void setAsEmpty(ServerLevel level, BlockPos pos, BlockState state);
     //public void setEmpty(BlockState state, boolean val);
-    public double getPower(BlockState state);
+    public double getEnergy(BlockState state);
 }

@@ -3,7 +3,7 @@ package com.lancas.vs_wap.compact.create.arminteraction;
 import com.lancas.vs_wap.content.WapItems;
 import com.lancas.vs_wap.content.blocks.cartridge.ShellFrame;
 import com.lancas.vs_wap.content.items.docker.IDocker;
-import com.lancas.vs_wap.content.items.docker.RefDocker;
+import com.lancas.vs_wap.content.items.docker.RefWithFallbackDocker;
 import com.lancas.vs_wap.content.saved.BlockRecordRWMgr;
 import com.lancas.vs_wap.debug.EzDebug;
 import com.lancas.vs_wap.ship.attachment.HoldableAttachment;
@@ -33,7 +33,7 @@ public class ShellFrameArmPoint extends ArmInteractionPoint {
     public ItemStack insert(ItemStack stack, boolean simulate) {
         if (!(level instanceof ServerLevel sLevel)) return stack;  //the ship deleting must be in server
         //todo the interface provider a method, getting if it can be insert to shellFrame with arm
-        if (!(stack.getItem() instanceof RefDocker refDocker)) return stack;
+        if (!(stack.getItem() instanceof RefWithFallbackDocker refDocker)) return stack;
 
         ShellFrame.ShellFrameRecord record = BlockRecordRWMgr.getRecord(sLevel, pos);
         if (record == null) {
@@ -80,10 +80,6 @@ public class ShellFrameArmPoint extends ArmInteractionPoint {
     public ItemStack extract(int slot, int amount, boolean simulate) {
         if (!(level instanceof ServerLevel sLevel)) return ItemStack.EMPTY;  //the ship deleting must be in server
 
-        /*if (!(sLevel.getBlockEntity(pos) instanceof ShellFrameBE be)) {
-            EzDebug.warn("Breech Arm Point is not on a breech");
-            return ItemStack.EMPTY;
-        }*/
         ShellFrame.ShellFrameRecord record = BlockRecordRWMgr.getRecord(sLevel, pos);
         if (record == null) {
             EzDebug.warn("shell frame has no record at " + pos.toShortString());
@@ -93,8 +89,7 @@ public class ShellFrameArmPoint extends ArmInteractionPoint {
         if (record.lockingShipId < 0) return ItemStack.EMPTY;
 
         //todo return a loadable docker, and do not really get the actual docker when simulating
-        if (simulate) return WapItems.Docker.REF_DOCKER.asStack();  //todo loadable docker
-
+        if (simulate) return WapItems.Docker.REF_WITH_FALLBACK_DOCKER.asStack();  //todo loadable docker
 
         long releasedShip = ShellFrame.releaseShip(sLevel, pos);
         ServerShip ship = ShipUtil.getServerShipByID(sLevel, releasedShip);
@@ -102,11 +97,8 @@ public class ShellFrameArmPoint extends ArmInteractionPoint {
             EzDebug.warn("the released ship id is " + releasedShip + " but get null ship");
             return ItemStack.EMPTY;
         }
-        ItemStack extractStack = RefDocker.stackOf(sLevel, ship);//DockerItem.stackOfShip(sLevel, ship);
-        //ShipPool.ResetAndSet.farawayAndNoConstraint.accept(sLevel, ship);
-        //ShipUtil.deleteShip(sLevel, ship);
-        //todo use pool
-        //ShipPool.getOrCreatePool(sLevel).returnShipAndSetEmpty(ship, ShipPool.DefaultReset.farawayAndNoConstraint);
+
+        ItemStack extractStack = RefWithFallbackDocker.stackOf(sLevel, ship);
         return extractStack;
     }
 }

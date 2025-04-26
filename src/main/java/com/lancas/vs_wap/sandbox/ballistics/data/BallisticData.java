@@ -1,19 +1,13 @@
-package com.lancas.vs_wap.sandbox.component.ballistic.data;
+package com.lancas.vs_wap.sandbox.ballistics.data;
 
-import com.lancas.vs_wap.sandbox.component.ballistic.ISandBoxBallisticBlock;
 import com.lancas.vs_wap.subproject.sandbox.component.data.IComponentData;
 import com.lancas.vs_wap.subproject.sandbox.component.data.exposed.IExposedComponentData;
 import com.lancas.vs_wap.subproject.sandbox.ship.SandBoxServerShip;
 import com.lancas.vs_wap.util.NbtBuilder;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.level.block.Block;
-import org.joml.Vector3i;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class BallisticData implements IComponentData<BallisticData>, IExposedComponentData<BallisticData> {
-    public final BallisticInitialStateSubData initialStateData = new BallisticInitialStateSubData();
+    public final BallisticInitialStateSubData initialStateData = BallisticInitialStateSubData.createDefault();
     public final BallisticBarrelContextSubData barrelCtx = new BallisticBarrelContextSubData();
     public final AirDragSubData airDragData = new AirDragSubData();
 

@@ -2,6 +2,7 @@ package com.lancas.vs_wap.foundation.network;
 
 import com.lancas.vs_wap.ModMain;
 import com.lancas.vs_wap.foundation.network.client2server.*;
+import com.lancas.vs_wap.foundation.network.debug.NetworkRunnable;
 import com.lancas.vs_wap.foundation.network.debug.ForceOnPosDebugS2C;
 import com.lancas.vs_wap.foundation.network.server2client.*;
 import com.lancas.vs_wap.ship.ballistics.network.BallisticIdSyncPacketS2C;
@@ -214,6 +215,14 @@ public class NetworkHandler {
             CreateShipAtPlayerFromClientPacketC2S::encode,
             CreateShipAtPlayerFromClientPacketC2S::decode,
             CreateShipAtPlayerFromClientPacketC2S::handle
+        );
+
+        channel.registerMessage(
+            packetId++,
+            NetworkRunnable.class,
+            NetworkRunnable::encode,
+            NetworkRunnable::decode,
+            NetworkRunnable::handle
         );
 
 

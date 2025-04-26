@@ -13,6 +13,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import org.apache.logging.log4j.util.TriConsumer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.*;
@@ -421,13 +422,14 @@ public class NbtBuilder {
 
 
     public NbtBuilder putBlock(String key, BlockPos pos, BlockState state, @Nullable BlockEntity be) {
-        nbt.put(key, ofBlock(pos, state, be));
+        nbt.put(key, tagOfBlock(pos, state, be));
         return this;
     }
 
     public static CompoundTag ofBlockPos(BlockPos pos) { return NbtUtils.writeBlockPos(pos); }
     public static BlockPos blockPosValueOf(CompoundTag tag) { return NbtUtils.readBlockPos(tag); }
-    public static CompoundTag ofBlock(BlockPos pos, BlockState state, @Nullable BlockEntity be) {
+
+    public static CompoundTag tagOfBlock(BlockPos pos, BlockState state, @Nullable BlockEntity be) {
         CompoundTag tag = new CompoundTag();
         tag.putInt("x", pos.getX());
         tag.putInt("y", pos.getY());
@@ -438,13 +440,31 @@ public class NbtBuilder {
             tag.put("be", be.saveWithFullMetadata());
         return tag;
     }
-    public static void getBlock(CompoundTag tag, Dest<BlockPos> bpDest, Dest<BlockState> stateDest, Dest<CompoundTag> beTag) {
+    public static CompoundTag tagOfBlock(BlockPos pos, BlockState state, @Nullable CompoundTag beNbt) {
+        CompoundTag tag = new CompoundTag();
+        tag.putInt("x", pos.getX());
+        tag.putInt("y", pos.getY());
+        tag.putInt("z", pos.getZ());
+
+        tag.put("state", NbtUtils.writeBlockState(state));
+        if (beNbt != null)
+            tag.put("be", beNbt);
+        return tag;
+    }
+    public static void blockOfTag(CompoundTag tag, Dest<BlockPos> bpDest, Dest<BlockState> stateDest, Dest<CompoundTag> beTag) {
         bpDest.set(new BlockPos(tag.getInt("x"), tag.getInt("y"), tag.getInt("z")));
         stateDest.set(NbtUtils.readBlockState(BuiltInRegistries.BLOCK.asLookup(), tag.getCompound("state")));
 
         if (tag.contains("be")) {
             beTag.set(tag.getCompound("be"));
         }
+    }
+    public static void blockOfTagDo(CompoundTag tag, TriConsumer<BlockPos, BlockState, CompoundTag> consumer) {
+        consumer.accept(
+            new BlockPos(tag.getInt("x"), tag.getInt("y"), tag.getInt("z")),
+            NbtUtils.readBlockState(BuiltInRegistries.BLOCK.asLookup(), tag.getCompound("state")),
+            tag.contains("be") ? null : tag.getCompound("be")
+        );
     }
 
     public NbtBuilder putCompound(String key, CompoundTag compound) {

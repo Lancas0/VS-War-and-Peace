@@ -9,6 +9,7 @@
     "ShipCollisionMixin",
     "accessor.ChunkAccessor",
     "accessor.ClipCtxAccessor",
+    "valkyrien.MixinEntity",
     "valkyrien.ShipUnloadMixin"
   ],
   "client": [

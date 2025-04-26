@@ -45,11 +45,12 @@ public class SandBoxTransform extends AbstractComponentBehaviour<SandBoxTransfor
         }
         return cachedLocalToWorld;
     }
+    public Vector3d localToWorldPos(Vector3ic localPos, Vector3d dest) { return getLocalToWorld().transformPosition(dest.set(localPos)); }
     public Vector3d localToWorldPos(Vector3dc localPos, Vector3d dest) { return getLocalToWorld().transformPosition(localPos, dest); }
     public Vector3d worldToLocalPos(Vector3dc worldPos, Vector3d dest) { return getWorldToLocal().transformPosition(worldPos, dest); }
     public Vector3d localToWorldPos(Vector3d localPos) { return getLocalToWorld().transformPosition(localPos); }
     public Vector3d worldToLocalPos(Vector3d worldPos) { return getWorldToLocal().transformPosition(worldPos); }
-    public Vector3d localToWorldPos(BlockPos localPos, Vector3d dest) { return getLocalToWorld().transformPosition(JomlUtil.dLowerCorner(localPos), dest); }
+    //public Vector3d localToWorldPos(BlockPos localPos, Vector3d dest) { return getLocalToWorld().transformPosition(JomlUtil.dLowerCorner(localPos), dest); }
 
     public Vector3d localToWorldNoScaleDir(Vector3dc dir, Vector3d dest) { return getRotation().transform(dir, dest); }
     public Vector3d localToWorldNoScaleDir(Vector3d dir) { return getRotation().transform(dir); }

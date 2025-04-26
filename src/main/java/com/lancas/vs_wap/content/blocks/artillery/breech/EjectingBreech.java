@@ -2,10 +2,13 @@ package com.lancas.vs_wap.content.blocks.artillery.breech;
 
 import com.lancas.vs_wap.content.WapBlockEntites;
 import com.lancas.vs_wap.content.blocks.blockplus.RefreshBlockRecordAdder;
+import com.lancas.vs_wap.content.blocks.cartridge.PrimerBlock;
 import com.lancas.vs_wap.content.items.docker.DockerItem;
 import com.lancas.vs_wap.foundation.api.Dest;
+import com.lancas.vs_wap.ship.attachment.HoldableAttachment;
 import com.lancas.vs_wap.ship.ballistics.BallisticsServerMgr;
 import com.lancas.vs_wap.ship.ballistics.handler.ShellTriggerHandler;
+import com.lancas.vs_wap.ship.feature.pool.ShipPool;
 import com.lancas.vs_wap.ship.type.ProjectileWrapper;
 import com.lancas.vs_wap.ship.helper.builder.ShipBuilder;
 import com.lancas.vs_wap.subproject.blockplusapi.blockplus.adder.DirectionAdder;
@@ -29,6 +32,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3d;
+import org.joml.Vector3dc;
 import org.joml.primitives.AABBd;
 import org.valkyrienskies.core.api.ships.ServerShip;
 import org.valkyrienskies.core.api.ships.Ship;
@@ -124,9 +128,35 @@ public class EjectingBreech extends BlockPlus implements IBreech/*, IBE<BreechBE
     }
 
     @Override
-    public void loadMunition(Level level, BlockPos breechBp, BlockState state, Dest<Vector3d> placePos, Dest<Vector3d> placeDir) {
-        placePos.set(WorldUtil.getWorldCenter(level, breechBp));
-        placeDir.set(WorldUtil.getWorldDirection(level, breechBp, state.getValue(DirectionAdder.FACING)));
+    public void loadMunition(ServerLevel level, BlockPos breechBp, BlockState breechState, ItemStack munitionDocker) {
+        @Nullable ServerShip artilleryShip = ShipUtil.getServerShipAt(level, breechBp);
+
+        Vector3dc placePos = WorldUtil.getWorldCenter(level, breechBp);
+        Vector3dc placeDir = WorldUtil.getWorldDirection(level, breechBp, breechState.getValue(DirectionAdder.FACING));
+
+        ServerShip newMunition = DockerItem.makeShipFromStackWithPool(level, munitionDocker, placePos, placeDir);
+        //todo pre check if have holdable
+        var holdable = newMunition.getAttachment(HoldableAttachment.class);
+        if (holdable == null) {
+            ShipPool.getOrCreatePool(level).returnShipAndSetEmpty(newMunition, ShipPool.ResetAndSet.farawayAndNoConstraint);
+            newMunition = null;
+        }
+
+        if (newMunition == null) {
+            EzDebug.warn("fail to load munition ship");
+            return;
+        } else {
+            EzDebug.highlight("successfully make ship and place at:" + newMunition.getTransform().getPositionInWorld());
+        }
+
+        Direction breechDirInWorldOrShip = level.getBlockState(breechBp).getValue(DirectionAdder.FACING);
+        //todo lock more effective, todo not foreach
+        ServerShip finalNewMunition = newMunition;
+        ShipBuilder.modify(level, finalNewMunition).foreachBlock((curBp, state, be) -> {
+            if (state.getBlock() instanceof PrimerBlock primer) {
+                PrimerBlock.createConstraints(level, curBp, artilleryShip, finalNewMunition, breechBp, breechDirInWorldOrShip, holdable);
+            }
+        });
     }
 
     @Override

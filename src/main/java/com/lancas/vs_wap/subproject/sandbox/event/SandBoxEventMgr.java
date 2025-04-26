@@ -81,6 +81,7 @@ public class SandBoxEventMgr {
 
     public static void register() {
         onServerShipTransformDirty.addListener((uuid, transformData) -> {
+            //sync in server world thread.
             NetworkHandler.sendToAllPlayers(new UpdateShipTransformPacketS2C(uuid.uuid, transformData));
         });
 

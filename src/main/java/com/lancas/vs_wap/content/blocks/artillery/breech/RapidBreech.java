@@ -1,21 +1,28 @@
 package com.lancas.vs_wap.content.blocks.artillery.breech;
 
-/*
+
 import com.lancas.vs_wap.content.blocks.blockplus.RefreshBlockRecordAdder;
 import com.lancas.vs_wap.content.blocks.cartridge.IPrimer;
 import com.lancas.vs_wap.content.items.docker.DockerItem;
-import com.lancas.vs_wap.content.items.docker.IDocker;
+import com.lancas.vs_wap.content.items.docker.ShipDataDocker;
 import com.lancas.vs_wap.debug.EzDebug;
 import com.lancas.vs_wap.foundation.api.Dest;
+import com.lancas.vs_wap.handler.MunitionShipHandler;
+import com.lancas.vs_wap.sandbox.ballistics.behaviour.BallisticBehaviour;
+import com.lancas.vs_wap.sandbox.ballistics.data.AirDragSubData;
+import com.lancas.vs_wap.sandbox.ballistics.data.BallisticBarrelContextSubData;
+import com.lancas.vs_wap.sandbox.ballistics.data.BallisticData;
+import com.lancas.vs_wap.sandbox.ballistics.data.BallisticInitialStateSubData;
 import com.lancas.vs_wap.ship.feature.pool.ShipPool;
 import com.lancas.vs_wap.subproject.blockplusapi.blockplus.BlockPlus;
 import com.lancas.vs_wap.subproject.blockplusapi.blockplus.adder.DirectionAdder;
 import com.lancas.vs_wap.subproject.blockplusapi.blockplus.adder.IBlockAdder;
-import com.lancas.vs_wap.subproject.blockplusapi.blockplus.adder.RedstonePoweredAdder;
-import com.lancas.vs_wap.util.JomlUtil;
-import com.lancas.vs_wap.util.ShapeBuilder;
-import com.lancas.vs_wap.util.ShipUtil;
-import com.lancas.vs_wap.util.WorldUtil;
+import com.lancas.vs_wap.subproject.sandbox.SandBoxServerWorld;
+import com.lancas.vs_wap.subproject.sandbox.component.data.SandBoxBlockClusterData;
+import com.lancas.vs_wap.subproject.sandbox.component.data.SandBoxRigidbodyData;
+import com.lancas.vs_wap.subproject.sandbox.component.data.SandBoxTransformData;
+import com.lancas.vs_wap.subproject.sandbox.ship.SandBoxServerShip;
+import com.lancas.vs_wap.util.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -26,12 +33,15 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.items.ItemHandlerHelper;
-import org.joml.Vector3d;
+import org.joml.Quaterniond;
 import org.joml.Vector3dc;
+import org.joml.Vector3i;
+import org.joml.Vector3ic;
 import org.valkyrienskies.core.api.ships.ServerShip;
 import org.valkyrienskies.core.api.ships.Ship;
 
 import java.util.List;
+import java.util.UUID;
 
 public class RapidBreech extends BlockPlus implements IBreech {
     @Override
@@ -39,30 +49,12 @@ public class RapidBreech extends BlockPlus implements IBreech {
         return BlockPlus.addersIfAbsent(RapidBreech.class,
             () -> List.of(
                 new DirectionAdder(false, true, ShapeBuilder.ofCubicRing(0, 0, 0, 2, 16).get()),
-                /*new RedstonePoweredAdder((level, breechBp, state, hasSignal) -> {
-                    if (!hasSignal || level.isClientSide) return;
-
-
-                    ///find primer around and try to trigger it
-                    Dest<IPrimer> primerDest = new Dest<>();
-                    Dest<BlockPos> primerBpDest = new Dest<>();
-                    Dest<Ship> primerShipDest = new Dest<>();
-
-                    if (findPrimerAround(level, breechBp, primerDest, primerBpDest, primerShipDest)) {
-                        fire((ServerLevel)level, breechBp, (ServerShip)primerShipDest.get(), primerDest.get(), primerBpDest.get());
-                        return;
-                    }
-
-                }, true),*./ //no need for redstone power
                 //IBreech.breechInteraction(),  //not interactable, or todo: fire immedate interact
                 new RefreshBlockRecordAdder(() -> new IBreech.BreechRecord(0))
             )
         );
     }
-    protected RapidBreech(Properties p_49795_) {
-        super(p_49795_);
-    }
-
+    public RapidBreech(Properties p_49795_) { super(p_49795_); }
 
 
     @Override
@@ -71,7 +63,7 @@ public class RapidBreech extends BlockPlus implements IBreech {
     }
     @Override
     public boolean isDockerLoadable(Level level, BlockPos breechBp, ItemStack stack) {
-        return stack.getItem() instanceof DockerItem;  //todo
+        return stack.getItem() instanceof ShipDataDocker;  //todo
     }
     /*@Override
     public void loadMunition(Level level, BlockPos breechBp, BlockState breechState, ItemStack stack) { //todo remain itemStack?
@@ -83,7 +75,7 @@ public class RapidBreech extends BlockPlus implements IBreech {
         }
 
         //shipScheme.foreachBlock();
-    }*./
+    }*/
     @Override
     public void unloadShell(ServerLevel level, ServerShip shellShip, Direction shellDirInShip, BlockPos breechBp) {
         Ship artilleryShip = ShipUtil.getShipAt(level, breechBp);
@@ -118,5 +110,82 @@ public class RapidBreech extends BlockPlus implements IBreech {
         itemE.setDeltaMovement(0, -0.1, 0);
         level.addFreshEntity(itemE);
     }
+    @Override
+    public void loadMunition(ServerLevel level, BlockPos breechBp, BlockState breechState, ItemStack munitionStack) {
+        if (!(munitionStack.getItem() instanceof ShipDataDocker docker)) return;
+
+        //directly fire
+        var shipScheme = docker.getShipSchemeData(munitionStack);
+        if (shipScheme == null) {
+            EzDebug.warn("the item has no shipSchemeData!");
+            return;
+        }
+
+        Vector3dc worldBreechPos = WorldUtil.getWorldCenter(level, breechBp);
+        Vector3dc worldLaunchDir = WorldUtil.getWorldDirection(level, breechBp, breechState.getValue(DirectionAdder.FACING));
+        //SandBoxTransformData transformData = new SandBoxTransformData().setPos(worldBreechPos).setRotation(new Quaterniond());  //todo use factory avoid destroycal data setting?
+        SandBoxBlockClusterData blockData = new SandBoxBlockClusterData();
+
+        //我估计遍历两次和记录一次后再遍历一次差不多
+        Vector3ic[] primerRecordPos = new Vector3ic[] { null };
+        Vector3ic[] munitionLocalDir = new Vector3ic[] { null };
+
+        var shipSchemeRA = shipScheme.getRandomAccessor();
+        shipSchemeRA.foreachBlock((recordPos, state) -> {
+            if (state.getBlock() instanceof IPrimer) {
+                Direction primerDir = state.getValue(DirectionAdder.FACING);
+
+                primerRecordPos[0] = JomlUtil.i(recordPos);
+                munitionLocalDir[0] = JomlUtil.iNormal(primerDir);
+                EzDebug.log("primer record pos:" + StrUtil.poslike(recordPos) + ", dir:" + primerDir);
+            }
+
+            EzDebug.log("have block:" + StrUtil.poslike(recordPos) + ", state:" + StrUtil.getBlockName(state));
+        });
+        if (primerRecordPos[0] == null) {  //没找到底火
+            EzDebug.warn("fail to find primer");
+            return;  //don't create ship
+        }
+
+        //获取发射药总能量
+        //Vector3i curRecordPos = new Vector3i(primerRecordPos[0]).add(munitionLocalDir[0]);
+        Dest<Double> propellantEnergyDest = new Dest<>();
+        Dest<Vector3i> projectileStartDest = new Dest<>();
+        MunitionShipHandler.foreachPropellant(
+            primerRecordPos[0],
+            munitionLocalDir[0],
+            recordPos -> shipSchemeRA.getBlockState(JomlUtil.bp(recordPos)),
+            null,  //no need to set empty (todo spawn empty shell docker or something)
+            propellantEnergyDest,
+            projectileStartDest
+        );
+        //获取弹头部分，并分配到blockData
+        MunitionShipHandler.foreachFromProjectileStart(
+            projectileStartDest.get(),
+            munitionLocalDir[0],
+            p -> shipSchemeRA.getBlockState(JomlUtil.bp(p)),
+            (recordPos, state) -> {
+                blockData.setBlock(
+                    recordPos.sub(primerRecordPos[0], new Vector3i()),
+                    state
+                );
+            }
+        );
+
+        //since no rotated is no rotated, the worldNoRotated is equal to local
+        Vector3dc worldMunitionDirNoRotated = JomlUtil.d(munitionLocalDir[0]);
+
+        SandBoxServerShip ship = new SandBoxServerShip(
+            UUID.randomUUID(),
+            new SandBoxTransformData().setPos(worldBreechPos).setRotation(new Quaterniond().rotateTo(worldMunitionDirNoRotated, worldLaunchDir)),
+            blockData,
+            SandBoxRigidbodyData.createNoGravity()
+        );
+        ship.addBehaviour(new BallisticBehaviour(), new BallisticData(
+            new BallisticInitialStateSubData(worldBreechPos, munitionLocalDir[0], worldLaunchDir, propellantEnergyDest.get()),
+            new BallisticBarrelContextSubData(),
+            new AirDragSubData()
+        ));
+        SandBoxServerWorld.addShip(level, ship);
+    }
 }
-*/

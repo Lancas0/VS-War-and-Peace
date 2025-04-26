@@ -25,6 +25,7 @@ public class RenderHelper {
         Minecraft mc = Minecraft.getInstance();
         Level level = mc.level;
         Camera camera = mc.gameRenderer.getMainCamera();
+        if (level == null) return;
 
         poseStack.pushPose();
         //将相对于摄像机的poseStack转换为相对世界的poseStack
@@ -48,6 +49,7 @@ public class RenderHelper {
 
             //需要world blockpos 来获取正确光照
             Vector3d blockWorldCenter = localToWorld.transformPosition(JomlUtil.d(localPos), new Vector3d());
+            //EzDebug.log("render block at " + StrUtil.F2(blockWorldCenter));
 
             // 偏移到方块中心
             double x = localPos.x() - 0.5;

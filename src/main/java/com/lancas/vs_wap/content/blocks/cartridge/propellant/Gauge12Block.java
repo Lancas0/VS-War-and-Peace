@@ -40,7 +40,7 @@ public class Gauge12Block extends BlockPlus implements IPropellant {
 
 
     @Override
-    public double getPower(BlockState state) { return WapBlockInfos.propellant_power.valueOrDefaultOf(state); }
+    public double getEnergy(BlockState state) { return WapBlockInfos.propellant_power.valueOrDefaultOf(state); }
     @Override
     public boolean isEmpty(BlockState state) { return false; }
 

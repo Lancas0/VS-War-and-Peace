@@ -42,7 +42,7 @@ public class DockerItem extends ShipInteractableItem {
         if (stack == null || ship == null) return;
 
         SectionShipSchemeData data = new SectionShipSchemeData().readShip(level, ship);
-        stack.getOrCreateTag().put(DATA_TAG_KEY, data.toCompound());
+        stack.getOrCreateTag().put(DATA_TAG_KEY, data.saved());
 
         var holdable = ship.getAttachment(HoldableAttachment.class);
         if (holdable != null) {
@@ -56,7 +56,7 @@ public class DockerItem extends ShipInteractableItem {
     }
     public static IShipSchemeData getShipSchemeData(ItemStack stack) {
         if (!hasShipData(stack)) return null;
-        return SectionShipSchemeData.fromCompound(stack.getTag().getCompound(DATA_TAG_KEY));
+        return new SectionShipSchemeData().load(stack.getTag().getCompound(DATA_TAG_KEY));
     }
     @Nullable
     public static HoldableAttachment applyHoldable(ItemStack stack, ShipBuilder shipBuilder) {

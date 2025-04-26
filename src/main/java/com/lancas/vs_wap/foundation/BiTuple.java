@@ -44,6 +44,7 @@ public class BiTuple<T, U> {
     protected T first;
     protected U second;
 
+    public BiTuple() { first = null; second = null; }
     public BiTuple(T inFirst, U inSecond) {
         first = inFirst;
         second = inSecond;

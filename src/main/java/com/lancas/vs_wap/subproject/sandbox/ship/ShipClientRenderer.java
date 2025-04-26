@@ -70,7 +70,7 @@ public class ShipClientRenderer {
         latestNetworkTransformData.set(networkTransformData);
     }
     public void postRender() {
-        var nextTD = curTransformData.lerp(latestNetworkTransformData, 0.7, new SandBoxTransformData());
+        var nextTD = curTransformData.lerp(latestNetworkTransformData, 0.4, new SandBoxTransformData());
         prevTransformData.set(curTransformData);
         curTransformData.set(nextTD);
     }

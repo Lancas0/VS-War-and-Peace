@@ -14,5 +14,5 @@ public interface IEmptyPropellant extends IPropellant {
         EzDebug.warn("a empty propellant shouldn't be called setAsEmpty");
     }
     @Override
-    public default double getPower(BlockState state) { return 0; }
+    public default double getEnergy(BlockState state) { return 0; }
 }

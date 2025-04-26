@@ -3,12 +3,15 @@ package com.lancas.vs_wap.subproject.sandbox;
 import com.lancas.vs_wap.ModMain;
 import com.lancas.vs_wap.debug.EzDebug;
 import com.lancas.vs_wap.foundation.BiTuple;
+import com.lancas.vs_wap.foundation.network.NetworkHandler;
 import com.lancas.vs_wap.subproject.sandbox.component.behviour.IComponentBehaviour;
 import com.lancas.vs_wap.subproject.sandbox.event.SandBoxEventMgr;
+import com.lancas.vs_wap.subproject.sandbox.network.UpdateShipTransformPacketS2C;
 import com.lancas.vs_wap.subproject.sandbox.ship.ISandBoxShip;
 import com.lancas.vs_wap.subproject.sandbox.ship.SandBoxServerShip;
 import com.lancas.vs_wap.subproject.sandbox.util.SerializeUtil;
 import com.lancas.vs_wap.util.NbtBuilder;
+import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.saveddata.SavedData;
@@ -50,12 +53,12 @@ public class SandBoxServerWorld extends SavedData implements ISandBoxWorld {
         return level.getDataStorage().computeIfAbsent(
             tag -> {
                 var world = new SandBoxServerWorld(level).load(tag);
-                world.initialized.set(true);
+                world.initialized = true;
                 return world;
             },
             () -> {
                 var world = new SandBoxServerWorld(level);
-                world.initialized.set(true);
+                world.initialized = true;
                 return world;
             },
 
@@ -65,8 +68,9 @@ public class SandBoxServerWorld extends SavedData implements ISandBoxWorld {
 
     private final Map<UUID, SandBoxServerShip> serverShips = new ConcurrentHashMap<>();
     private final ServerLevel level;
-    private final AtomicBoolean initialized = new AtomicBoolean(false);  //make sure ship are fully loaded before tick event
+    //private final AtomicBoolean initialized = new AtomicBoolean(false);  //make sure ship are fully loaded before tick event
     //private final AtomicBoolean started = new AtomicBoolean(false);
+    private volatile boolean initialized = false;
     private SandBoxServerWorld(ServerLevel inLevel) {
         level = inLevel;
         allWorlds.put(VSGameUtilsKt.getDimensionId(level), this);
@@ -114,15 +118,23 @@ public class SandBoxServerWorld extends SavedData implements ISandBoxWorld {
     }
     public static boolean deleteShip(ServerLevel level, UUID shipUuid) {
         SandBoxServerWorld world = SandBoxServerWorld.getOrCreate(level);
-
-        SandBoxServerShip removedShip = world.serverShips.remove(shipUuid);
+        return world.deleteShipImpl(shipUuid);
+    }
+    private boolean deleteShipImpl(UUID shipUuid) {
+        SandBoxServerShip removedShip = serverShips.remove(shipUuid);
         if (removedShip != null) {
             SandBoxEventMgr.onRemoveShipFromServerWorld.invokeAll(level, removedShip);
-            world.setDirty();
+            setDirty();
             return true;
         }
 
         return false;
+    }
+    public static void removeAllShip(ServerLevel level) {
+        SandBoxServerWorld world = SandBoxServerWorld.getOrCreate(level);
+        for (UUID key : world.serverShips.keySet()) {
+            world.deleteShipImpl(key);
+        }
     }
 
 
@@ -131,7 +143,7 @@ public class SandBoxServerWorld extends SavedData implements ISandBoxWorld {
         if (event.phase != TickEvent.Phase.END) return;
 
         for (SandBoxServerWorld world : allWorlds.values()) {
-            if (!world.initialized.get()) continue;
+            if (!world.initialized) continue;
 
             var shipsIt = world.serverShips.values().iterator();
             while (shipsIt.hasNext()) {
@@ -149,15 +161,22 @@ public class SandBoxServerWorld extends SavedData implements ISandBoxWorld {
         }
     }
     private static void physTick() {
+        if (Minecraft.getInstance().isPaused())  //can it work in multiplayer?
+            return;
+
         // 物理帧行为
         for (SandBoxServerWorld world : allWorlds.values()) {
-            if (!world.initialized.get()) continue;
+            if (!world.initialized) continue;
 
             for (SandBoxServerShip ship : world.serverShips.values()) {
                 if (ship.isDestroyMarked()) continue;
 
                 ship.getRigidbody().physTick();
                 ship.getAllBehaviours().forEach(IComponentBehaviour::physTick);
+
+                //NetworkHandler.sendToAllPlayers(new UpdateShipTransformPacketS2C(ship.getUuid(), transformData));
+                //todo temp: i just want to see if it's smooth
+                SandBoxEventMgr.onServerShipTransformDirty.invokeAll();
             }
         }
     }

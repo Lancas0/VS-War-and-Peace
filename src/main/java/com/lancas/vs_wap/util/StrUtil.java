@@ -5,6 +5,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.border.WorldBorder;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
 import org.joml.*;
 import org.joml.primitives.AABBd;
 import org.joml.primitives.AABBic;
@@ -14,6 +15,10 @@ import java.util.Locale;
 
 public class StrUtil {
     public static String poslike(double x, double y, double z) { return String.format("(%.2f, %.2f, %.2f)", x, y, z); }
+    public static String poslike(int x, int y, int z) { return String.format("(%d, %d, %d)", x, y, z); }
+    public static String poslike(Vector3ic p) { return String.format("(%d, %d, %d)", p.x(), p.y(), p.z()); }
+    public static String poslike(BlockPos p) { return String.format("(%d, %d, %d)", p.getX(), p.getY(), p.getZ()); }
+
     public static String F2(Vector3dc v) {
         return String.format("(%.2f, %.2f, %.2f)", v.x(), v.y(), v.z());
     }
@@ -51,7 +56,7 @@ public class StrUtil {
         return aabb == null ? "null" : aabb.toString(format());
     }
 
-    public static String getBlockName(BlockState state) { return state.getBlock().getName().getString(); }
+    public static String getBlockName(@Nullable BlockState state) { return state == null ? "Null" : state.getBlock().getName().getString(); }
     public static String getBlockPos(BlockPos bp) { return String.format("(%d, %d, %d)", bp.getX(), bp.getY(), bp.getZ()); }
     public static String getBlockPos(SavedBlockPos bp) { return getBlockPos(bp.toBp()); }
 

@@ -1,7 +1,9 @@
-package com.lancas.vs_wap.sandbox.component.ballistic.behaviour;
+package com.lancas.vs_wap.sandbox.ballistics.behaviour;
 
+import com.lancas.vs_wap.debug.EzDebug;
 import com.lancas.vs_wap.foundation.api.Dest;
-import com.lancas.vs_wap.sandbox.component.ballistic.data.BallisticData;
+import com.lancas.vs_wap.sandbox.ballistics.data.BallisticData;
+import com.lancas.vs_wap.sandbox.ballistics.trigger.SandBoxTriggerInfo;
 import com.lancas.vs_wap.ship.ballistics.api.TriggerInfo;
 import com.lancas.vs_wap.subproject.sandbox.component.behviour.AbstractComponentBehaviour;
 import com.lancas.vs_wap.subproject.sandbox.component.data.exposed.IExposedComponentData;
@@ -35,6 +37,7 @@ public class BallisticBehaviour extends AbstractComponentBehaviour<BallisticData
 
         synchronized (data.initialStateData.ballisticBlockLocPoses) {
             data.initialStateData.foreachBallisticBlock(ship, (locPos, state, bb) -> bb.physTick(ship));
+            //EzDebug.log("try phys ticks for all block");
         }
     }
 
@@ -48,24 +51,34 @@ public class BallisticBehaviour extends AbstractComponentBehaviour<BallisticData
         //todo reaction force
 
         BarrelCtxUpdateHandler.updateBarrelCtx(level, ship, data);
-        if (!data.barrelCtx.isAbsoluteExitBarrel()) return;
+        if (!data.barrelCtx.isAbsoluteExitBarrel()) {
+            ship.getRigidbody().getExposedData().setNoGravity();
+            return;
+        } else {
+            ship.getRigidbody().getExposedData().setEarthGravity();
+        }
 
-        List<TriggerInfo> infos = new ArrayList<>();
+        List<SandBoxTriggerInfo> infos = new ArrayList<>();
         synchronized (data.initialStateData.ballisticBlockLocPoses) {
+            //warn: may change during foreach
             data.initialStateData.foreachBallisticBlock(ship, (locPos, state, bb) -> {
                 bb.serverTick(level, ship);
-                bb.appendTriggerInfos(locPos, state, ship, infos);
+                bb.appendTriggerInfos(level, locPos, state, ship, infos);
+
+                //EzDebug.log("try server ticks, triggerInfos");
             });
         }
 
 
         boolean needTerminate = false;
-        for (TriggerInfo info : infos) {
+        for (SandBoxTriggerInfo info : infos) {
             Dest<Boolean> curNeedTerminate = new Dest<>(false);
 
             synchronized (data.initialStateData.ballisticBlockLocPoses) {
+                //warn: may change during foreach
                 data.initialStateData.foreachBallisticBlock(ship, (locPos, state, bb) -> {
-                    bb.doTerminalEffect(locPos, state, info, curNeedTerminate);
+                    bb.doTerminalEffect(level, locPos, state, info, curNeedTerminate);
+                    //EzDebug.log("try doTerminalEffect");
                 });
             }
 
@@ -77,7 +90,7 @@ public class BallisticBehaviour extends AbstractComponentBehaviour<BallisticData
         if (needTerminate) {
             data.terminated = true;
             ship.addDestroyMark();
-            //todo terminate server
+            EzDebug.highlight("terminate this ship");
         }
     }
 }

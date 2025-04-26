@@ -1,4 +1,4 @@
-package com.lancas.vs_wap.sandbox.component.ballistic.data;
+package com.lancas.vs_wap.sandbox.ballistics.data;
 
 import com.lancas.vs_wap.subproject.sandbox.component.data.IComponentData;
 import com.lancas.vs_wap.subproject.sandbox.component.data.exposed.IExposedComponentData;

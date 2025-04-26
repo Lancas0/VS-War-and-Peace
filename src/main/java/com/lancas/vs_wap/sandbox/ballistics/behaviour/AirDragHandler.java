@@ -1,10 +1,12 @@
-package com.lancas.vs_wap.sandbox.component.ballistic.behaviour;
+package com.lancas.vs_wap.sandbox.ballistics.behaviour;
 
-import com.lancas.vs_wap.sandbox.component.ballistic.data.AirDragSubData;
-import com.lancas.vs_wap.sandbox.component.ballistic.data.BallisticData;
+import com.lancas.vs_wap.debug.EzDebug;
+import com.lancas.vs_wap.sandbox.ballistics.data.AirDragSubData;
+import com.lancas.vs_wap.sandbox.ballistics.data.BallisticData;
 import com.lancas.vs_wap.subproject.sandbox.component.data.exposed.IExposedRigidbodyData;
 import com.lancas.vs_wap.subproject.sandbox.ship.SandBoxServerShip;
 import com.lancas.vs_wap.util.MathUtil;
+import com.lancas.vs_wap.util.StrUtil;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
 
@@ -38,8 +40,10 @@ public class AirDragHandler {
 
             rigidbody.addForce(linearDrag);
 
-            Vector3d moment = worldAirDragCenter.sub(worldMassCenter, new Vector3d()).cross(rotateDrag);
-            rigidbody.applyTorque(moment);
+            Vector3d torque = worldAirDragCenter.sub(worldMassCenter, new Vector3d()).cross(rotateDrag);
+            rigidbody.applyTorque(torque);
+
+            //EzDebug.log("dragForceLen:" + dragForceLen + "projectArea:" + projectArea + "linearDrag:" + StrUtil.F2(linearDrag) + ", moment:" + StrUtil.F2(torque) + ", locAirDragCenter:" + StrUtil.F2(airDragData.localAirDragCenter));
         }
     }
 
@@ -58,6 +62,8 @@ public class AirDragHandler {
     }*/
     private static double calAirDragAreaInWorld(SandBoxServerShip ship, AirDragSubData data, Vector3dc worldVel) {
         Vector3d localVelDir = ship.getTransform().localToWorldNoScaleDir(worldVel, new Vector3d()).normalize();
+
+        //EzDebug.log("locVelDir:" + StrUtil.F2(localVelDir) + ", shipLocAABB:" + ship.getLocalAABB());
 
         return Math.abs(localVelDir.x) * data.localYzArea * ship.getAreaScale(0) +
             Math.abs(localVelDir.y) * data.localXzArea * ship.getAreaScale(1) +

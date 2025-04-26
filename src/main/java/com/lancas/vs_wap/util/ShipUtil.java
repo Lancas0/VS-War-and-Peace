@@ -207,6 +207,13 @@ public class ShipUtil {
             }
         });
     }
+    public static void foreachChunk(ServerShip ship, ServerLevel level, TriConsumer<Integer, Integer, LevelChunk> consumer) {
+        if (ship == null || level == null) return;
+        ship.getActiveChunksSet().forEach((chunkX, chunkZ) -> {
+            LevelChunk chunk = level.getChunk(chunkX, chunkZ);  //todo check if chunk has only air?
+            consumer.accept(chunkX, chunkZ, chunk);
+        });
+    }
 
     /*public static ServerShip createShipAt(ServerLevel level, BlockPos pos, double scale) {
         ServerShip ship =

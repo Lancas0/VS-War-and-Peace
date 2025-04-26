@@ -1,7 +1,6 @@
-package com.lancas.vs_wap.sandbox.component.ballistic.behaviour;
+package com.lancas.vs_wap.sandbox.ballistics.behaviour;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.lancas.vs_wap.sandbox.component.ballistic.data.BallisticData;
+import com.lancas.vs_wap.sandbox.ballistics.data.BallisticData;
 import com.lancas.vs_wap.subproject.sandbox.ship.SandBoxServerShip;
 import org.joml.Vector3d;
 

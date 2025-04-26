@@ -21,10 +21,7 @@ public class SandBoxRigidbody extends AbstractComponentBehaviour<SandBoxRigidbod
     //private final Vector3d massCenter = new Vector3d();
 
     @Override
-    protected SandBoxRigidbodyData makeData() {
-        return new SandBoxRigidbodyData();
-    }
-
+    protected SandBoxRigidbodyData makeData() { return SandBoxRigidbodyData.createDefault(); }
     /*@Override
     public void loadData(SandBoxServerShip inShip, SandBoxRigidbodyData src) {
         ship = inShip;
@@ -75,10 +72,6 @@ public class SandBoxRigidbody extends AbstractComponentBehaviour<SandBoxRigidbod
 
     @Override
     public void physTick() {
-        if (!isZero(data.omega)) {
-            EzDebug.log("phyTick get non-zero omega:" + data.omega);
-        }
-
         if (isZero(data.mass)) {
             data.applyingForces.clear();
             data.applyingTorques.clear();
@@ -116,6 +109,9 @@ public class SandBoxRigidbody extends AbstractComponentBehaviour<SandBoxRigidbod
             Vector3d movement = data.velocity.mul(PHYS_TICK_TIME_S, new Vector3d());
             ship.getTransform().move(movement);  //todo notice sync
         }
+        if (!isZero(data.gravity))
+            data.velocity.add(data.gravity.mul(PHYS_TICK_TIME_S, new Vector3d()));
+
         if (!data.velocity.isFinite()) EzDebug.warn("ship:" + ship.getUuid() + ", have invalid velocity:" + data.velocity);
 
         // 更新旋转：将角速度转换为四元数增量

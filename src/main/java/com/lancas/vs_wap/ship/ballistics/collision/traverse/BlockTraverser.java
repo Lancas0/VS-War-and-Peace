@@ -282,7 +282,7 @@ public class BlockTraverser<T> {
 
         return hitResult.get();
     }
-    public T traverseFirstHitIncludeShip(Level level, ClipContext ctxInWorld, Set<Long> skipShips) {
+    public T traverseFirstHitIncludeShip(Level level, ClipContext ctxInWorld, @Nullable Set<Long> skipShips) {
         final AtomicReference<T> hitResult = new AtomicReference<>(null);
 
         hitResult.set(traverseFirstHitInWorld(level, ctxInWorld));
@@ -317,7 +317,7 @@ public class BlockTraverser<T> {
         });
         return hitResult.get();
     }
-    private void foreachNearbyShips(Level level, ClipContext ctxInWorld, Set<Long> skipShips, Consumer<Ship> consumer) {
+    private void foreachNearbyShips(Level level, ClipContext ctxInWorld, @Nullable Set<Long> skipShips, Consumer<Ship> consumer) {
         AABBd clipAABB = JomlUtil.correctAABBd(ctxInWorld.getFrom(), ctxInWorld.getTo());
         for (Ship ship : VSGameUtilsKt.getShipObjectWorld(level).getAllShips().getIntersecting(clipAABB)) {
             if (ship == null) continue;  //just for safe

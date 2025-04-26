@@ -56,7 +56,7 @@ public interface IBreech {
 
     public boolean getLoadedMunitionData(Level level, BlockPos breechBp, Dest<Ship> munitionShip, Dest<Boolean> isTriggered, Dest<Direction> munitionDirInShip);
     public boolean isDockerLoadable(Level level, BlockPos breechBp, ItemStack stack);
-    public void loadMunition(Level level, BlockPos breechBp, BlockState state, Dest<Vector3d> placePos, Dest<Vector3d> placeDir);
+    public void loadMunition(ServerLevel level, BlockPos breechBp, BlockState breechState, ItemStack munitionDocker);
 
     //public void ejectShell(Level level, BlockPos breechBp);
     //public Set<BlockPos> findBarrelWithBreechPoses(Level level, BlockPos breechPos, BlockState breechState);
@@ -72,7 +72,6 @@ public interface IBreech {
             .setLocalVelocity(JomlUtil.dNormal(munitionDirInShip, -20));
     }*/
     public void unloadShell(ServerLevel level, ServerShip shellShip, Direction shellDirInShip, BlockPos breechBp);
-
 
     public static InteractableBlockAdder breechInteraction() {
         return new InteractableBlockAdder((level, player, breechBp, breechState) -> {

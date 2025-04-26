@@ -14,7 +14,6 @@ public class TweenData implements IComponentData<TweenData>, IExposedComponentDa
         this.elapsedTime = src.elapsedTime;
         return null;
     }
-
     @Override
     public CompoundTag saved() {
         CompoundTag tag = new CompoundTag();
@@ -34,7 +33,6 @@ public class TweenData implements IComponentData<TweenData>, IExposedComponentDa
 
         return tag;
     }
-
     @Override
     public IComponentData<TweenData> load(CompoundTag tag) {
         elapsedTime = tag.getDouble("elapsed_time");

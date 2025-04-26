@@ -24,7 +24,7 @@ public class BallisticsHitInfo {
     public Vector3dc worldNormal;
     //all hit infos are generated at first, then check each and set speed. so don't record velocity now;
     //public Vector3dc hitVelocity;
-    public double sqDist;
+    public double sqDist;   //the raycast dist(squared)
     public long hitShipId;  //-1 for null
 
     protected BallisticsHitInfo() {

@@ -2,7 +2,7 @@ package com.lancas.vs_wap.content;
 
 import com.lancas.vs_wap.content.items.*;
 import com.lancas.vs_wap.content.items.docker.DockerItem;
-import com.lancas.vs_wap.content.items.docker.RefDocker;
+import com.lancas.vs_wap.content.items.docker.RefWithFallbackDocker;
 import com.lancas.vs_wap.content.items.docker.ShipDataDocker;
 import com.tterrag.registrate.util.entry.ItemEntry;
 
@@ -10,8 +10,8 @@ import static com.lancas.vs_wap.ModMain.REGISTRATE;
 
 public class WapItems {
     public static class Docker {
-        public static final ItemEntry<RefDocker> REF_DOCKER = REGISTRATE
-            .item("ref_docker", RefDocker::new)
+        public static final ItemEntry<RefWithFallbackDocker> REF_WITH_FALLBACK_DOCKER = REGISTRATE
+            .item("ref_docker", RefWithFallbackDocker::new)
             .properties(p -> p.stacksTo(1))
             .register();
 

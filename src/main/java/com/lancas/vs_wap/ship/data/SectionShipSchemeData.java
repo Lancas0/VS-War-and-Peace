@@ -10,6 +10,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
@@ -20,13 +21,13 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
 import org.joml.Vector3i;
-import org.joml.Vector3ic;
 import org.valkyrienskies.core.api.ships.ServerShip;
 import org.valkyrienskies.mod.common.VSGameUtilsKt;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 
@@ -54,6 +55,17 @@ public class SectionShipSchemeData implements IShipSchemeData {
         public BlockPos getRealChunkLower(Level level, int startChunkX, int startChunkZ) { return new BlockPos(
             (chunkXOffset + startChunkX) << 4, getRealBottomY(level), (chunkZOffset + startChunkZ) << 4
         ); }
+
+        @Override
+        public boolean equals(Object o) {
+            if (o == null || getClass() != o.getClass()) return false;
+            SectionXZI that = (SectionXZI) o;
+            return chunkXOffset == that.chunkXOffset && chunkZOffset == that.chunkZOffset && sectionI == that.sectionI;
+        }
+        @Override
+        public int hashCode() {
+            return Objects.hash(chunkXOffset, chunkZOffset, sectionI);
+        }
     }
     @JsonAutoDetect(
         fieldVisibility = JsonAutoDetect.Visibility.ANY, getterVisibility = JsonAutoDetect.Visibility.NONE,
@@ -63,14 +75,14 @@ public class SectionShipSchemeData implements IShipSchemeData {
     public static class SectionData {
         public ListTag data = new ListTag();
         public void addBlock(BlockPos offsetFromLower, BlockState state, @Nullable BlockEntity be) {
-            data.add(NbtBuilder.ofBlock(offsetFromLower, state, be));
+            data.add(NbtBuilder.tagOfBlock(offsetFromLower, state, be));
         }
         public void foreach(@NotNull TriConsumer<BlockPos, BlockState, CompoundTag> consumer) {
             data.forEach(tag -> {
                 Dest<BlockPos> offsetFromLower = new Dest<>();
                 Dest<BlockState> state = new Dest<>();
                 Dest<CompoundTag> beTag = new Dest<>();
-                NbtBuilder.getBlock((CompoundTag)tag, offsetFromLower, state, beTag);
+                NbtBuilder.blockOfTag((CompoundTag)tag, offsetFromLower, state, beTag);
 
                 //BlockEntity be = tagDest.hasValue() ? BlockEntity.loadStatic(offsetFromLower.get(), state.get(), tagDest.get()) : null;
                 consumer.accept(offsetFromLower.get(), state.get(), beTag.get());
@@ -84,42 +96,6 @@ public class SectionShipSchemeData implements IShipSchemeData {
     private HashMap<SectionXZI, SectionData> shipData = new HashMap<>();
     private double scale;  //todo 3d scale
 
-    public CompoundTag toCompound() {
-        AtomicInteger sec_data = new AtomicInteger();
-        NbtBuilder nbt = new NbtBuilder();
-        nbt.putEachSimpleJackson("section_locations", shipData.keySet());
-        nbt.putEach("section_data", shipData.values(), (d) -> { sec_data.getAndIncrement(); return d.getDataTag(); });
-        nbt.putNumber("scale", scale);
-
-        //EzDebug.log("key:" + shipData.keySet().size() + ", val:" + shipData.values().size() + ", loaded:" + ", val:" + sec_data.get());
-        //nbt.putEachSimpleJackson("section_data", shipData.values());
-        return nbt.get();
-    }
-    public static SectionShipSchemeData fromCompound(@Nullable CompoundTag tag) {
-        if (tag == null) return null;
-
-        List<SectionXZI> locations = new ArrayList<>();
-        List<SectionData> sectionData = new ArrayList<>();
-        Dest<Double> scale = new Dest<>();
-
-        NbtBuilder nbtBuilder = NbtBuilder.copy(tag)
-            .readEachSimpleJackson("section_locations", SectionXZI.class, locations)
-            .readEachList("section_data", SectionData::of, sectionData)
-            .readDouble("scale", scale);
-            //.readEachSimpleJackson("section_data", SectionData.class, sectionData);
-
-        if (locations.size() != sectionData.size()) {
-            throw new RuntimeException("location size don't match sectionData, locations:" + locations.size() + ", sectionData:" + sectionData.size());
-        }
-
-        SectionShipSchemeData data = new SectionShipSchemeData();
-        for (int i = 0; i < locations.size(); ++i) {
-            data.shipData.put(locations.get(i), sectionData.get(i));
-        }
-        data.scale = Dest.getIfElse(scale, v -> (v != null && v > 1E-10), 1.0);
-
-        return data;
-    }
 
     @Override
     public SectionShipSchemeData readShip(ServerLevel level, ServerShip ship) {
@@ -287,24 +263,88 @@ public class SectionShipSchemeData implements IShipSchemeData {
     }
 
     @Override
-    public void foreachBlock(BiConsumer<Vector3ic, BlockState> consumer) {
-        for (var dataEntry : shipData.entrySet()) {
-            SectionXZI sectionXZI = dataEntry.getKey();
-            SectionData sectionData = dataEntry.getValue();
+    public CompoundTag saved() {
+        AtomicInteger sec_data = new AtomicInteger();
+        NbtBuilder nbt = new NbtBuilder();
+        nbt.putEachSimpleJackson("section_locations", shipData.keySet());
+        nbt.putEach("section_data", shipData.values(), (d) -> { sec_data.getAndIncrement(); return d.getDataTag(); });
+        nbt.putNumber("scale", scale);
 
-            int xLower = sectionXZI.chunkXOffset << 4;
-            int yLower = sectionXZI.sectionI << 4;
-            int zLower = sectionXZI.chunkZOffset << 4;
-
-            sectionData.foreach((offsetBp, state, beTag) -> {
-                consumer.accept(
-                    new Vector3i(xLower + offsetBp.getX(), yLower + offsetBp.getY(), zLower + offsetBp.getZ()),
-                    state
-                );
-            });
-        }
+        //EzDebug.log("key:" + shipData.keySet().size() + ", val:" + shipData.values().size() + ", loaded:" + ", val:" + sec_data.get());
+        //nbt.putEachSimpleJackson("section_data", shipData.values());
+        return nbt.get();
     }
 
+    @Override
+    public IShipSchemeData load(CompoundTag tag) {
+        if (tag == null) return null;
+
+        List<SectionXZI> locations = new ArrayList<>();
+        List<SectionData> sectionData = new ArrayList<>();
+        Dest<Double> scale = new Dest<>();
+
+        NbtBuilder nbtBuilder = NbtBuilder.copy(tag)
+            .readEachSimpleJackson("section_locations", SectionXZI.class, locations)
+            .readEachList("section_data", SectionData::of, sectionData)
+            .readDouble("scale", scale);
+        //.readEachSimpleJackson("section_data", SectionData.class, sectionData);
+
+        if (locations.size() != sectionData.size()) {
+            throw new RuntimeException("location size don't match sectionData, locations:" + locations.size() + ", sectionData:" + sectionData.size());
+        }
+
+        SectionShipSchemeData data = new SectionShipSchemeData();
+        for (int i = 0; i < locations.size(); ++i) {
+            data.shipData.put(locations.get(i), sectionData.get(i));
+        }
+        data.scale = Dest.getIfElse(scale, v -> (v != null && v > 1E-10), 1.0);
+
+        return data;
+    }
+
+    //it's really really slow
+    @Override
+    public IShipSchemeRandomAccessor getRandomAccessor() {
+        return new IShipSchemeRandomAccessor() {
+            @Override
+            public BlockState getBlockState(BlockPos pos) {
+                SectionXZI xzi = new SectionXZI(pos.getX() >> 4, pos.getY() >> 4, pos.getZ() >> 4);
+                SectionData sectionData = shipData.get(xzi);
+                if (sectionData == null) return Blocks.AIR.defaultBlockState();
+
+                final BlockState[] getState = new BlockState[] { Blocks.AIR.defaultBlockState() };
+                sectionData.foreach((bp, state, beTag) -> {
+                    if (pos.equals(bp))
+                        getState[0] = state;
+                });
+                return getState[0];
+            }
+
+            @Override
+            public void foreachBlock(BiConsumer<BlockPos, BlockState> consumer) {
+                for (var dataEntry : shipData.entrySet()) {
+                    SectionXZI sectionXZI = dataEntry.getKey();
+                    SectionData sectionData = dataEntry.getValue();
+
+                    int xLower = sectionXZI.chunkXOffset << 4;
+                    int yLower = (sectionXZI.sectionI << 4);
+                    int zLower = sectionXZI.chunkZOffset << 4;
+
+                    sectionData.foreach((offsetBp, state, beTag) -> {
+                        consumer.accept(
+                            new BlockPos(xLower + offsetBp.getX(), yLower + offsetBp.getY(), zLower + offsetBp.getZ()),
+                            state
+                        );
+                        EzDebug.log(
+                            "foreach localPos:" + new Vector3i(xLower + offsetBp.getX(), yLower + offsetBp.getY(), zLower + offsetBp.getZ()) +
+                                "xLower:" + xLower + ", yLower:" + yLower + ", zLower:" + zLower +
+                                "offsetBp:" + offsetBp.toShortString()
+                        );
+                    });
+                }
+            }
+        };
+    }
 
     /*@Override
     public void forEach(Level level, TriConsumer<BlockPos, BlockState, CompoundTag> func) {

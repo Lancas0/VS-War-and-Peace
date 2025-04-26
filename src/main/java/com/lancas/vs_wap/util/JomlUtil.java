@@ -44,9 +44,9 @@ public class JomlUtil {
     public static Vector3f f(BlockPos pos) {
         return new Vector3f(pos.getX(), pos.getY(), pos.getZ());
     }
-    public static Vector3i i(BlockPos pos) {
-        return new Vector3i(pos.getX(), pos.getY(), pos.getZ());
-    }
+    public static Vector3i i(BlockPos pos) {  return new Vector3i(pos.getX(), pos.getY(), pos.getZ()); }
+    public static Vector3i i(Vec3i v) { return new Vector3i(v.getX(), v.getY(), v.getZ()); }
+    public static Vector3i iNormal(Direction dir) { return i(dir.getNormal()); }
 
     public static Vec3 v3(Vector3dc v) {
         return new Vec3(v.x(), v.y(), v.z());

@@ -1,16 +1,14 @@
-package com.lancas.vs_wap.sandbox.component.ballistic.data;
+package com.lancas.vs_wap.sandbox.ballistics.data;
 
 import com.lancas.vs_wap.content.info.block.WapBlockInfos;
-import com.lancas.vs_wap.subproject.sandbox.INbtSavedObject;
 import com.lancas.vs_wap.subproject.sandbox.component.data.IComponentData;
 import com.lancas.vs_wap.subproject.sandbox.component.data.exposed.IExposedComponentData;
 import com.lancas.vs_wap.subproject.sandbox.ship.SandBoxServerShip;
 import com.lancas.vs_wap.util.JomlUtil;
-import com.lancas.vs_wap.util.NbtBuilder;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import org.joml.Vector3d;
-import org.joml.primitives.AABBic;
+import org.joml.primitives.AABBdc;
 
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -41,12 +39,10 @@ public class AirDragSubData implements IComponentData<AirDragSubData>, IExposedC
         }
 
         localYzArea = localXzArea = localXyArea = 0;
-        AABBic localAABB = ship.getLocalAABB();
-        if (localAABB != null) {  //must have localAABB - at least one block
-            localYzArea = JomlUtil.sideArea(ship.getLocalAABB(), Direction.EAST);
-            localXzArea = JomlUtil.sideArea(ship.getLocalAABB(), Direction.UP);
-            localXyArea = JomlUtil.sideArea(ship.getLocalAABB(), Direction.SOUTH);
-        }
+        AABBdc localAABB = ship.getLocalAABB();
+        localYzArea = JomlUtil.sideArea(ship.getLocalAABB(), Direction.EAST);
+        localXzArea = JomlUtil.sideArea(ship.getLocalAABB(), Direction.UP);
+        localXyArea = JomlUtil.sideArea(ship.getLocalAABB(), Direction.SOUTH);
         return this;
     }
 

@@ -5,7 +5,6 @@ import com.lancas.vs_wap.content.blocks.cartridge.propellant.IPropellant;
 import com.lancas.vs_wap.debug.EzDebug;
 import com.lancas.vs_wap.foundation.api.Dest;
 import com.lancas.vs_wap.foundation.BiTuple;
-import com.lancas.vs_wap.ship.feature.pool.ShipPool;
 import com.lancas.vs_wap.ship.feature.spilt.DirectionalSplitHandler;
 import com.lancas.vs_wap.ship.helper.builder.ShipBuilder;
 import com.lancas.vs_wap.ship.type.ProjectileWrapper;
@@ -171,7 +170,7 @@ public class ShellTriggerHandler {
             //EzDebug.log("bp:" + propellantBp + ", block:" + propellantState.getBlock().getName().getString() + ", power:" + propellant.getEnergy());
 
             if (!propellant.isEmpty(propellantState)) {
-                totalEnergy += propellant.getPower(propellantState);
+                totalEnergy += propellant.getEnergy(propellantState);
 
                 if (setEmpty)
                     propellant.setAsEmpty(level, propellantBp, propellantState);

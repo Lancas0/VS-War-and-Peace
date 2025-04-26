@@ -11,7 +11,7 @@ public interface ISandBoxShip {
     public UUID getUuid();
 
     public AABBdc getWorldAABB();
-    public AABBic getLocalAABB();
+    public AABBdc getLocalAABB();
 
     public SandBoxTransform getTransform();
     public SandBoxShipBlockCluster getCluster();

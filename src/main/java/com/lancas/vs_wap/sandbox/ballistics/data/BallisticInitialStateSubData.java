@@ -1,7 +1,7 @@
-package com.lancas.vs_wap.sandbox.component.ballistic.data;
+package com.lancas.vs_wap.sandbox.ballistics.data;
 
 import com.lancas.vs_wap.debug.EzDebug;
-import com.lancas.vs_wap.sandbox.component.ballistic.ISandBoxBallisticBlock;
+import com.lancas.vs_wap.sandbox.ballistics.ISandBoxBallisticBlock;
 import com.lancas.vs_wap.subproject.sandbox.component.data.IComponentData;
 import com.lancas.vs_wap.subproject.sandbox.component.data.exposed.IExposedComponentData;
 import com.lancas.vs_wap.subproject.sandbox.ship.SandBoxServerShip;
@@ -27,7 +27,8 @@ public class BallisticInitialStateSubData implements IComponentData<BallisticIni
     public double totalPropellingEnergy = 0;
     public final List<Vector3i> ballisticBlockLocPoses = new CopyOnWriteArrayList<>();
 
-    public BallisticInitialStateSubData() {}
+    private BallisticInitialStateSubData() {}
+    public static BallisticInitialStateSubData createDefault() { return new BallisticInitialStateSubData(); }
     public BallisticInitialStateSubData(Vector3dc inLaunchWorldPos, Vector3ic inLocalDirection, Vector3dc inWorldLaunchDir, double inPropellingEnergy) {
         launchWorldPos.set(inLaunchWorldPos);
         localForward.set(inLocalDirection);
@@ -38,7 +39,7 @@ public class BallisticInitialStateSubData implements IComponentData<BallisticIni
 
     public void foreachBallisticBlock(SandBoxServerShip ship, TriConsumer<Vector3i, BlockState, ISandBoxBallisticBlock> consumer) {
         ballisticBlockLocPoses.forEach(localPos -> {
-            BlockState state = ship.getCluster().getBlockOrNull(localPos);
+            BlockState state = ship.getCluster().getBlock(localPos);
             if (state == null || state.isAir() || !(state.getBlock() instanceof ISandBoxBallisticBlock bb)) {
                 EzDebug.warn("fail to get ballistic state at " + localPos);
                 return;

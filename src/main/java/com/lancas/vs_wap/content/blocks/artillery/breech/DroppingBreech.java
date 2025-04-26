@@ -3,11 +3,14 @@ package com.lancas.vs_wap.content.blocks.artillery.breech;
 import com.lancas.vs_wap.content.WapBlockEntites;
 import com.lancas.vs_wap.content.blocks.blockplus.RefreshBlockRecordAdder;
 import com.lancas.vs_wap.content.blocks.cartridge.IPrimer;
+import com.lancas.vs_wap.content.blocks.cartridge.PrimerBlock;
 import com.lancas.vs_wap.content.items.docker.DockerItem;
 import com.lancas.vs_wap.debug.EzDebug;
 import com.lancas.vs_wap.foundation.api.Dest;
+import com.lancas.vs_wap.ship.attachment.HoldableAttachment;
 import com.lancas.vs_wap.ship.ballistics.BallisticsServerMgr;
 import com.lancas.vs_wap.ship.ballistics.handler.ShellTriggerHandler;
+import com.lancas.vs_wap.ship.helper.builder.ShipBuilder;
 import com.lancas.vs_wap.ship.type.ProjectileWrapper;
 import com.lancas.vs_wap.ship.feature.pool.ShipPool;
 import com.lancas.vs_wap.subproject.blockplusapi.blockplus.BlockPlus;
@@ -120,14 +123,39 @@ public class DroppingBreech extends BlockPlus implements IBreech/*, IBE<BreechBE
     @Override
     public boolean isDockerLoadable(Level level, BlockPos breechBp, ItemStack stack) {
         if (!(stack.getItem() instanceof DockerItem)) return false;
-        //if (DockerItem.)
         return true;  //todo: further check if it's really a munition
     }
 
     @Override
-    public void loadMunition(Level level, BlockPos breechBp, BlockState state, Dest<Vector3d> placePos, Dest<Vector3d> placeDir) {
-        placePos.set(WorldUtil.getWorldCenter(level, breechBp));
-        placeDir.set(WorldUtil.getWorldDirection(level, breechBp, state.getValue(DirectionAdder.FACING)));
+    public void loadMunition(ServerLevel level, BlockPos breechBp, BlockState breechState, ItemStack munitionDocker) {
+        @Nullable ServerShip artilleryShip = ShipUtil.getServerShipAt(level, breechBp);
+
+        Vector3dc placePos = WorldUtil.getWorldCenter(level, breechBp);
+        Vector3dc placeDir = WorldUtil.getWorldDirection(level, breechBp, breechState.getValue(DirectionAdder.FACING));
+
+        ServerShip newMunition = DockerItem.makeShipFromStackWithPool(level, munitionDocker, placePos, placeDir);
+        //todo pre check if have holdable
+        var holdable = newMunition.getAttachment(HoldableAttachment.class);
+        if (holdable == null) {
+            ShipPool.getOrCreatePool(level).returnShipAndSetEmpty(newMunition, ShipPool.ResetAndSet.farawayAndNoConstraint);
+            newMunition = null;
+        }
+
+        if (newMunition == null) {
+            EzDebug.warn("fail to load munition ship");
+            return;
+        } else {
+            EzDebug.highlight("successfully make ship and place at:" + newMunition.getTransform().getPositionInWorld());
+        }
+
+        Direction breechDirInWorldOrShip = level.getBlockState(breechBp).getValue(DirectionAdder.FACING);
+        //todo lock more effective, todo not foreach
+        ServerShip finalNewMunition = newMunition;
+        ShipBuilder.modify(level, finalNewMunition).foreachBlock((curBp, state, be) -> {
+            if (state.getBlock() instanceof PrimerBlock primer) {
+                PrimerBlock.createConstraints(level, curBp, artilleryShip, finalNewMunition, breechBp, breechDirInWorldOrShip, holdable);
+            }
+        });
     }
 
     @Override
@@ -156,7 +184,6 @@ public class DroppingBreech extends BlockPlus implements IBreech/*, IBE<BreechBE
                 itemE.setDeltaMovement(0, -0.1, 0);
                 level.addFreshEntity(itemE);
             });
-
             return;
         }
 

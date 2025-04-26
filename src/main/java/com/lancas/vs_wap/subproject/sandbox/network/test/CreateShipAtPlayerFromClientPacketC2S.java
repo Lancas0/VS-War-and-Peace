@@ -72,7 +72,7 @@ public class CreateShipAtPlayerFromClientPacketC2S {
                     uuid,
                     new SandBoxTransformData(JomlUtil.d(player.position()), new Quaterniond(), new Vector3d(1, 1, 1)),
                     blockData,
-                    new SandBoxRigidbodyData()
+                    SandBoxRigidbodyData.createDefault()
                 );
                 EzDebug.log("ship mass:" + ship.getRigidbody().getExposedData().getMass());
                 ship.getRigidbody().applyTorque(new Vector3d(0, 40000000, 0));

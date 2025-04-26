@@ -2,8 +2,9 @@ package com.lancas.vs_wap.content.items;
 
 import com.lancas.vs_wap.content.items.base.ShipInteractableItem;
 import com.lancas.vs_wap.debug.EzDebug;
-import com.lancas.vs_wap.content.saved.RetrievableDisabledCollisionMgr;
-import com.lancas.vs_wap.util.ShipUtil;
+import com.lancas.vs_wap.compact.create.arminteraction.IVSEntityAccessor;
+import com.lancas.vs_wap.util.JomlUtil;
+import com.lancas.vs_wap.util.StrUtil;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
@@ -12,8 +13,12 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Vector3d;
 import org.valkyrienskies.core.api.ships.ServerShip;
 import org.valkyrienskies.core.api.ships.Ship;
+
+import java.lang.reflect.Field;
+import java.util.Arrays;
 
 public class DebugTool extends ShipInteractableItem {
     public DebugTool(Properties p_41383_) {
@@ -37,9 +42,77 @@ public class DebugTool extends ShipInteractableItem {
         } else {
             RetrievableDisabledCollisionMgr.disableCollisionBetween(sLevel, ship.getId(), ShipUtil.getGroundId(sLevel));
         }*/
-        EzDebug.log("Interia of ship:" + sShip.getInertiaData().getMomentOfInertiaTensor());
+        //EzDebug.log("Interia of ship:" + sShip.getInertiaData().getMomentOfInertiaTensor());
+
+
+
+// 使用示例
+        //setMixinField(player, "isModifyingTeleport", true);
+        //setMixinField(player, "isModifyingSetPos", true);
+        //IVSEntityAccessor vsPlayer = (IVSEntityAccessor) player;
+
+        //EzDebug.log(vsPlayer.vs_getIsModifyingSetPos() + ", " + vsPlayer.vs_getIsModifyingTeleport());
+
+        //vsPlayer.vs_setIsModifyingTeleport(true);
+        //vsPlayer.vs_setIsModifyingSetPos(true);
+        //setAsIfTeleportingAndSettingPos(player, true);
+
+        /*Vector3d blockCenter = JomlUtil.dCenter(ctx.getClickedPos());
+        if (JomlUtil.sqDist(player.position(), blockCenter) < 1000) {  //consider as in shipyard: teleport to world
+            Vector3d worldPos = ship.getShipToWorld().transformPosition(blockCenter, new Vector3d());
+            EzDebug.log("teleport to worldPos:" + StrUtil.F2(worldPos));
+            player.teleportTo(worldPos.x, worldPos.y, worldPos.z);
+        } else {  //in world: teleport to shipyard
+            EzDebug.log("teleport to shipyard:" + StrUtil.poslike(ctx.getClickedPos()));
+            player.teleportTo(ctx.getClickedPos().getX(), ctx.getClickedPos().getY() + 1, ctx.getClickedPos().getZ());
+        }*/
+        EzDebug.log("locAABB:" + ship.getShipAABB());
+
+        //setAsIfTeleportingAndSettingPos(player, false);
+
+        //vsPlayer.vs_setIsModifyingTeleport(false);
+        //vsPlayer.vs_setIsModifyingSetPos(false);
+
+
+        //setMixinField(player, "isModifyingTeleport", false);
+        //setMixinField(player, "isModifyingSetPos", false);
 
         return InteractionResult.CONSUME;
+    }
+
+    public static void setMixinField(Entity entity, String fieldName, boolean value) {
+        try {
+            // 获取 MixinEntity 类的 Class 对象
+            Class<?> mixinClass = Class.forName("org.valkyrienskies.mod.mixin.feature.shipyard_entities.MixinEntity");
+
+            // 获取字段
+            Field field = mixinClass.getDeclaredField(fieldName);
+            field.setAccessible(true);
+
+            // 修改字段值
+            field.setBoolean(entity, value);
+        } catch (Exception e) {
+            //.printStackTrace();
+            throw  new RuntimeException(e);
+        }
+    }
+    public static void setAsIfTeleportingAndSettingPos(Entity entity, boolean value) {
+        try {
+            EzDebug.logs(Arrays.stream(entity.getClass().getDeclaredFields()).toList(), f -> f.getName());
+
+            // 获取 Entity 类的 "isModifyingTeleport" 字段
+            Field field = Entity.class.getDeclaredField("isModifyingTeleport");
+
+            field.setAccessible(true);
+            field.setBoolean(entity, value);
+
+            field = Entity.class.getDeclaredField("isModifyingSetPos");
+            field.setAccessible(true);
+            field.setBoolean(entity, value);
+
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
     }
 
     public boolean lazy(ItemStack stack) {

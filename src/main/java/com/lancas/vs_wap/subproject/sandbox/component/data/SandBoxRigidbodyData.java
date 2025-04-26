@@ -13,6 +13,7 @@ import org.joml.*;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.BiConsumer;
+import com.lancas.vs_wap.subproject.sandbox.component.behviour.SandBoxRigidbody;
 
 public class SandBoxRigidbodyData implements IComponentData<SandBoxRigidbodyData>, IExposedRigidbodyData {
     public double mass = 0;
@@ -25,13 +26,26 @@ public class SandBoxRigidbodyData implements IComponentData<SandBoxRigidbodyData
     public final Queue<Vector3d> applyingForces = new ConcurrentLinkedQueue<>();
     public final Queue<Vector3d> applyingTorques = new ConcurrentLinkedQueue<>();
 
+    public final Vector3d gravity = new Vector3d();
+
+    private SandBoxRigidbodyData() {}
+    public static SandBoxRigidbodyData createNoGravity() {
+        return new SandBoxRigidbodyData();  //actually default is no gravity
+    }
+    public static SandBoxRigidbodyData createDefault() { return new SandBoxRigidbodyData(); }
+    public static SandBoxRigidbodyData createEarthGravity() {
+        SandBoxRigidbodyData data = new SandBoxRigidbodyData();
+        data.setGravity(new Vector3d(0, -9.8, 0));
+        return data;
+    }
+
 
     @Override
     public SandBoxRigidbodyData copyData(SandBoxRigidbodyData src) {
         mass = src.mass;
         localPosMassMul.set(src.localPosMassMul);
         inertiaTensor.set(src.inertiaTensor);
-        
+
         velocity.set(src.velocity);
         omega.set(src.omega);
 
@@ -56,6 +70,30 @@ public class SandBoxRigidbodyData implements IComponentData<SandBoxRigidbodyData
         return this;
     }
     public void updateInertia(SandBoxServerShip ship) {
+        inertiaTensor.zero();
+        Vector3d massCenter = ship.getRigidbody().calLocalMassCenter();
+
+        ship.getCluster().foreach((localPos, state) -> {
+            Vector3d delta = JomlUtil.d(localPos).sub(massCenter);
+            double sqDx = delta.x * delta.x, sqDy = delta.y * delta.y, sqDz = delta.z * delta.z;
+            double m = WapBlockInfos.mass.valueOrDefaultOf(state);
+
+            //沟槽的平行轴定理还在追我
+            double self_xxyyzz = 0.01667 * m;//(1.0f/12.0f) * m * 2;// * (Ly*Ly + Lz*Lz);
+            //double self_yy = 0.01667 * m;//(1.0f/12.0f) * m * 2;// * (Lx*Lx + Lz*Lz);
+            //double self_zz = 0.01667 * m;//(1.0f/12.0f) * m * 2;// * (Lx*Lx + Ly*Ly);
+
+            inertiaTensor.m00 += self_xxyyzz + m * (sqDy + sqDz);
+            inertiaTensor.m11 += self_xxyyzz + m * (sqDx + sqDz);
+            inertiaTensor.m22 += self_xxyyzz + m * (sqDx + sqDy);
+
+            // 不考虑非对角项
+            /*I.xy -= m * delta.x * delta.y;
+            I.xz -= m * delta.x * delta.z;
+            I.yz -= m * delta.y * delta.z;*/
+        });
+    }
+    /*public void updateInertia(SandBoxServerShip ship) {
         inertiaTensor.zero();
         if (mass < 1E-10 || ship.getCluster().blockCount() == 0) return;
 
@@ -82,7 +120,7 @@ public class SandBoxRigidbodyData implements IComponentData<SandBoxRigidbodyData
             inertiaTensor.m11 += yy;
             inertiaTensor.m22 += zz;
         });
-        /*for (var blockEntry : ship.getCluster().allBlocks()) {
+        /.*for (var blockEntry : ship.getCluster().allBlocks()) {
 
             //忽略对角项
             //data.inertiaTensor.m10 -= xy;
@@ -97,9 +135,9 @@ public class SandBoxRigidbodyData implements IComponentData<SandBoxRigidbodyData
 
 
             //data.inertiaTensor.
-        }*/
-    }
-    private void updateInertiaOnlyOneBlock(SandBoxServerShip ship) {
+        }*./
+    }*/
+    /*private void updateInertiaOnlyOneBlock(SandBoxServerShip ship) {
         Vector3d massCenter = ship.getRigidbody().calLocalMassCenter();
         BiConsumer<Vector3ic, BlockState> calOneCorner = (localPos, state) -> {
             double cm = WapBlockInfos.mass.valueOrDefaultOf(state) / 8.0;
@@ -122,7 +160,7 @@ public class SandBoxRigidbodyData implements IComponentData<SandBoxRigidbodyData
                         inertiaTensor.m00 += xx;
                         inertiaTensor.m11 += yy;
                         inertiaTensor.m22 += zz;
-                        /*
+                        /.*
                         data.inertiaTensor.m10 -= xy;
                         data.inertiaTensor.m20 -= xz;
 
@@ -131,7 +169,7 @@ public class SandBoxRigidbodyData implements IComponentData<SandBoxRigidbodyData
                         data.inertiaTensor.m21 -= yz;
 
                         data.inertiaTensor.m02 -= xz;
-                        data.inertiaTensor.m12 -= yz;*/
+                        data.inertiaTensor.m12 -= yz;*./
 
                     }
                 }
@@ -139,7 +177,7 @@ public class SandBoxRigidbodyData implements IComponentData<SandBoxRigidbodyData
         };
 
         ship.getCluster().foreach(calOneCorner);
-    }
+    }*/
     @Override
     public CompoundTag saved() {
         return new NbtBuilder()
@@ -150,6 +188,7 @@ public class SandBoxRigidbodyData implements IComponentData<SandBoxRigidbodyData
             .putVector3d("omega", omega)
             .putEach("applying_forces", applyingForces, NbtBuilder::tagOfVector3d)
             .putEach("applying_torque", applyingTorques, NbtBuilder::tagOfVector3d)
+            .putVector3d("gravity", gravity)
             .get();
     }
     @Override
@@ -160,13 +199,13 @@ public class SandBoxRigidbodyData implements IComponentData<SandBoxRigidbodyData
             .readVector3d("velocity", velocity)
             .readVector3d("omega", omega)
             .readEachCompoundOverwrite("applying_forces", NbtBuilder::vector3dOf, applyingForces)
-            .readEachCompoundOverwrite("applying_torque", NbtBuilder::vector3dOf, applyingTorques);
+            .readEachCompoundOverwrite("applying_torque", NbtBuilder::vector3dOf, applyingTorques)
+            .readVector3d("gravity", gravity);
 
         EzDebug.log("load omega: " + omega);
 
         return this;
     }
-
 
 
     @Override
@@ -177,4 +216,14 @@ public class SandBoxRigidbodyData implements IComponentData<SandBoxRigidbodyData
     public Vector3dc getVelocity() { return velocity; }
     @Override
     public Vector3dc getOmega() { return omega; }
+
+    @Override
+    public void setVelocity(Vector3dc newVel) { velocity.set(newVel); }  //todo sync
+    @Override
+    public void setOmega(Vector3dc newOmega) { omega.set(newOmega); }  //todo sync
+
+    @Override
+    public Vector3dc getGravity() { return gravity; }
+    @Override
+    public void setGravity(Vector3dc newGravity) { gravity.set(newGravity); }  //todo sync
 }

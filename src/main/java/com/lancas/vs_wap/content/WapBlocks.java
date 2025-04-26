@@ -4,6 +4,7 @@ import com.lancas.vs_wap.content.behaviour.block.ScopeMovementBehaviour;
 import com.lancas.vs_wap.content.blocks.LocatorBlock;
 import com.lancas.vs_wap.content.blocks.artillery.breech.DroppingBreech;
 import com.lancas.vs_wap.content.blocks.artillery.breech.EjectingBreech;
+import com.lancas.vs_wap.content.blocks.artillery.breech.RapidBreech;
 import com.lancas.vs_wap.content.blocks.cartridge.Rotator;
 import com.lancas.vs_wap.content.blocks.cartridge.ShellFrame;
 import com.lancas.vs_wap.content.blocks.cartridge.ValkyrienAssemblerBlock;
@@ -87,6 +88,14 @@ public class WapBlocks {
 
         public static BlockEntry<DroppingBreech> DROPPING_BREECH = REGISTRATE
             .block("dropping_breech", DroppingBreech::new)
+            .initialProperties(SharedProperties::stone)
+            .properties(p -> p.mapColor(MapColor.STONE))  //todo friction
+            .item()
+            .build()
+            .register();
+
+        public static BlockEntry<RapidBreech> RAPID_BREECH = REGISTRATE
+            .block("rapid_breech", RapidBreech::new)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.STONE))  //todo friction
             .item()

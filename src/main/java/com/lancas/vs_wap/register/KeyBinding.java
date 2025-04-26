@@ -6,8 +6,10 @@ import com.lancas.vs_wap.foundation.network.KeyPressPacket;
 import com.lancas.vs_wap.foundation.network.NetworkHandler;
 import com.lancas.vs_wap.foundation.network.client2server.SwapShipsInSlotC2S;
 import com.lancas.vs_wap.foundation.network.client2server.ThrowShipPacketC2S;
+import com.lancas.vs_wap.foundation.network.debug.NetworkRunnable;
 import com.lancas.vs_wap.ship.feature.hold.ShipHoldSlot;
 import com.lancas.vs_wap.subproject.sandbox.SandBoxClientWorld;
+import com.lancas.vs_wap.subproject.sandbox.SandBoxServerWorld;
 import com.lancas.vs_wap.subproject.sandbox.network.test.CreateShipAtPlayerFromClientPacketC2S;
 import com.lancas.vs_wap.subproject.sandbox.ship.ShipClientRenderer;
 import net.minecraft.client.KeyMapping;
@@ -113,8 +115,12 @@ public enum KeyBinding {
         GLFW.GLFW_KEY_O,
         true,
         (kb, keyDown) -> { if (!keyDown) return;
-            EzDebug.log("try create ship");
-            NetworkHandler.sendToServer(new CreateShipAtPlayerFromClientPacketC2S(1));
+            //EzDebug.log("try create ship");
+            //NetworkHandler.sendToServer(new CreateShipAtPlayerFromClientPacketC2S(1));
+            NetworkHandler.sendToServer(new NetworkRunnable(ctx -> {
+                EzDebug.log("server recieved remove all ships");
+                SandBoxServerWorld.removeAllShip(ctx.getSender().serverLevel());
+            }));
         },
         null, null
     ),
