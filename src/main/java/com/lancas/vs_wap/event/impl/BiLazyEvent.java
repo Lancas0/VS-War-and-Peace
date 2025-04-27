@@ -17,7 +17,7 @@ public class BiLazyEvent<T extends ILazyEventParam<T>, U extends ILazyEventParam
     private final List<BiConsumer<T, U>> listeners = new ArrayList<>();
     private final Set<BiConsumer<T, U>> toRemove = ConcurrentHashMap.newKeySet();
 
-    private final Map<Object, BiTuple<T, U>> waitParams = new Hashtable<>();
+    private final Map<Object, BiTuple<T, U>> waitParams = new ConcurrentHashMap<>();
 
     //@Override
     public void invokeAll() {

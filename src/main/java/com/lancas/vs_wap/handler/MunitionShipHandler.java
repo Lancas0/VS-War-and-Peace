@@ -37,13 +37,13 @@ public class MunitionShipHandler {
         Vector3i propellantStartPos = primerPos.add(munitionDir, new Vector3i());
         Vector3i curPos = new Vector3i(propellantStartPos);
 
-        EzDebug.log("propellantStartPos:" + StrUtil.poslike(propellantStartPos));
+        //EzDebug.log("propellantStartPos:" + StrUtil.poslike(propellantStartPos));
 
         double propellingEnergy = 0;
 
         while (true) {
             BlockState curState = stateGetter.apply(curPos);
-            EzDebug.log("propellant: curPos:" + StrUtil.poslike(curPos) + ", state:" + StrUtil.getBlockName(curState));
+            //EzDebug.log("propellant: curPos:" + StrUtil.poslike(curPos) + ", state:" + StrUtil.getBlockName(curState));
             if (!(curState.getBlock() instanceof IPropellant propellant)) break;
 
 
@@ -64,12 +64,12 @@ public class MunitionShipHandler {
         Function<Vector3ic, BlockState> stateGetter,
         BiConsumer<Vector3ic, BlockState> foreacher
     ) {
-        EzDebug.log("projectileStart:" + StrUtil.poslike(projectileStart));
+        //EzDebug.log("projectileStart:" + StrUtil.poslike(projectileStart));
 
         Vector3i curPos = new Vector3i(projectileStart);
         while (true) {
             BlockState curState = stateGetter.apply(curPos);
-            EzDebug.log("proj: curPos:" + StrUtil.poslike(curPos) + ", state:" + StrUtil.getBlockName(curState));
+            //EzDebug.log("proj: curPos:" + StrUtil.poslike(curPos) + ", state:" + StrUtil.getBlockName(curState));
 
             if (curState == null || curState.isAir()) break;
 

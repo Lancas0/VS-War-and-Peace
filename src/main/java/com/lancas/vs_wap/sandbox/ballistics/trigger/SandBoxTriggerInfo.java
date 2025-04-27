@@ -4,6 +4,7 @@ import com.lancas.vs_wap.ship.ballistics.data.BallisticsHitInfo;
 import net.minecraft.world.level.block.state.BlockState;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
+import org.joml.Vector3i;
 import org.joml.Vector3ic;
 
 import java.util.UUID;
@@ -52,7 +53,7 @@ public class SandBoxTriggerInfo {
 
     public SandBoxTriggerInfo(UUID inProjectileUuid, Vector3ic inSenderLocalPos, BlockState inSenderState/*, TriggerType inTriggerType*/) {
         projectileUuid = inProjectileUuid;
-        senderLocalPos = inSenderLocalPos;
+        senderLocalPos = new Vector3i(inSenderLocalPos);
         senderState = inSenderState;
         //triggerType = inTriggerType;
     }

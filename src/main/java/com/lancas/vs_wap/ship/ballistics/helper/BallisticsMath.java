@@ -237,6 +237,24 @@ public class BallisticsMath {
     }
 
 
+    //由于同时需要和Explosion兼容，normal方向也决定发射角方向
+    //当normal与速度同方向(dot > 0)时，反射速度即为入射速度
+    //dot < 0,为正常反射速度
+    //Explosion对应的法向量为爆炸中心到被炸方块的向量的y轴分量
+    public static Vector3d getBouncedVelNoDecrease(Vector3dc inVel, Vector3dc normal) {
+        if (normal.lengthSquared() < 1E-10) {
+            EzDebug.warn("the normal should never be zero, but it happens.");
+            return new Vector3d();
+        }
+
+        Vector3dc safeNormal = normal.normalize(new Vector3d());
+
+        double dot = inVel.dot(safeNormal);
+        if (dot > 0) return new Vector3d(inVel);
+
+        Vector3d velAddon = safeNormal.mul(2 * -dot, new Vector3d());
+        return inVel.add(velAddon, new Vector3d());
+    }
 
 
 

@@ -105,12 +105,13 @@ public class SandBoxRigidbody extends AbstractComponentBehaviour<SandBoxRigidbod
             }
         }
 
-        if (data.velocity.isFinite() && !isZero(data.velocity)) {
-            Vector3d movement = data.velocity.mul(PHYS_TICK_TIME_S, new Vector3d());
-            ship.getTransform().move(movement);  //todo notice sync
-        }
         if (!isZero(data.gravity))
             data.velocity.add(data.gravity.mul(PHYS_TICK_TIME_S, new Vector3d()));
+        if (data.velocity.isFinite() && !isZero(data.velocity)) {
+            Vector3d movement = data.velocity.mul(PHYS_TICK_TIME_S, new Vector3d());
+
+            ship.getTransform().move(movement);  //todo notice sync
+        }
 
         if (!data.velocity.isFinite()) EzDebug.warn("ship:" + ship.getUuid() + ", have invalid velocity:" + data.velocity);
 

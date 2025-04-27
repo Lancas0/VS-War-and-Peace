@@ -22,7 +22,12 @@
 
   "block.vs_wap.ejecting_breech": "ejecting breech",
   "block.vs_wap.dropping_breech": "dropping breech",
+  "block.vs_wap.rapid_breech": "rapid breech",
   "block.vs_wap.artillery_door": "artillery door",
 
-  "item.vs_wap.vs_wap_wand": "vs_wap wand"
+
+  "item.vs_wap.vs_wap_wand": "vs_wap wand",
+  "item.vs_wap.docker": "docker",
+  "item.vs_wap.ship_data_docker": "ship data docker",
+  "item.vs_wap.ref_docker": "ref docker"
 }

@@ -7,10 +7,14 @@ import com.lancas.vs_wap.util.NbtBuilder;
 import net.minecraft.nbt.CompoundTag;
 
 public class BallisticData implements IComponentData<BallisticData>, IExposedComponentData<BallisticData> {
+    public static final double TIME_OUT_SECONDS = 60;
+    public static final double RANGE_OUT_LOWER_Y = -100;
+
     public final BallisticInitialStateSubData initialStateData = BallisticInitialStateSubData.createDefault();
     public final BallisticBarrelContextSubData barrelCtx = new BallisticBarrelContextSubData();
     public final AirDragSubData airDragData = new AirDragSubData();
 
+    public double elapsedTime = 0;
     public boolean terminated = false;
 
 

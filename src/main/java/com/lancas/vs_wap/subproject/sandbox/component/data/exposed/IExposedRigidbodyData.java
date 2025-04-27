@@ -13,8 +13,8 @@ public interface IExposedRigidbodyData extends IExposedComponentData<SandBoxRigi
     public Vector3dc getVelocity();
     public Vector3dc getOmega();
 
-    public void setVelocity(Vector3dc newVel);
-    public void setOmega(Vector3dc newOmega);
+    public SandBoxRigidbodyData setVelocity(Vector3dc newVel);
+    public SandBoxRigidbodyData setOmega(Vector3dc newOmega);
 
     public Vector3dc getGravity();
     public void setGravity(Vector3dc newGravity);

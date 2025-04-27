@@ -223,7 +223,6 @@ public class WapBlocks {
             .build()
             .register();
 
-
         /*public static BlockEntry<TestModifier> TEST_MODIFIER = REGISTRATE
             .block("test_modifier", TestModifier::new)
             .initialProperties(SharedProperties::stone)
@@ -239,7 +238,6 @@ public class WapBlocks {
             .item()
             .build()
             .register();*/
-
         /*public static BlockEntry<RocketBooster> ROCKET_BOOSTER = REGISTRATE
             .block("rocket_booster", RocketBooster::new)
             .initialProperties(SharedProperties::stone)
@@ -280,13 +278,13 @@ public class WapBlocks {
             .build()
             .register();
 
-        public static BlockEntry<Rotator> ROTATOR = REGISTRATE
+        /*public static BlockEntry<Rotator> ROTATOR = REGISTRATE
             .block("rotator", Rotator::new)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.noOcclusion().mapColor(MapColor.PODZOL))
             .item()
             .build()
-            .register();
+            .register();*/
 
 
 
@@ -299,13 +297,13 @@ public class WapBlocks {
     }
 
     public static class Industrial {
-        public static BlockEntry<ValkyrienAssemblerBlock> V_ASSEMBLE = REGISTRATE
+        /*public static BlockEntry<ValkyrienAssemblerBlock> V_ASSEMBLE = REGISTRATE
             .block("v_assemble", ValkyrienAssemblerBlock::new)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.noOcclusion().mapColor(MapColor.PODZOL))
             .item()
             .build()
-            .register();
+            .register();*/
 
         public static void register() {}
     }
@@ -417,13 +415,13 @@ public class WapBlocks {
         .register();
 
 
-    public static BlockEntry<SignalDetectorBlock> FIRE_DETECTOR_BLOCK = REGISTRATE
+    /*public static BlockEntry<SignalDetectorBlock> FIRE_DETECTOR_BLOCK = REGISTRATE
         .block("fire_detector_block", (p) -> new SignalDetectorBlock(KeyBinding.FireKey, p))
         .initialProperties(SharedProperties::stone)
         .properties(p -> p.mapColor(MapColor.STONE))
         .item()
         .build()
-        .register();
+        .register();*/
 
     /*public static BlockEntry<AmmoHolderBlock> AMMO_HOLDER = REGISTRATE
         .block("ammo_holder", AmmoHolderBlock::new)
@@ -433,13 +431,13 @@ public class WapBlocks {
         .build()
         .register();*/
 
-    public static BlockEntry<LocatorBlock> LOCATOR = REGISTRATE
+    /*public static BlockEntry<LocatorBlock> LOCATOR = REGISTRATE
         .block("locator", LocatorBlock::new)
         .initialProperties(SharedProperties::stone)
         .properties(p -> p.mapColor(MapColor.STONE))  //todo friction
         .item()
         .build()
-        .register();
+        .register();*/
 
 
     public static BlockEntry<Block> DIR_INDICATOR = REGISTRATE

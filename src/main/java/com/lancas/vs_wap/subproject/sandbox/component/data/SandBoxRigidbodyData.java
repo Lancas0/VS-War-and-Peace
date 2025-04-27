@@ -51,6 +51,8 @@ public class SandBoxRigidbodyData implements IComponentData<SandBoxRigidbodyData
 
         applyingForces.clear();  applyingForces.addAll(src.applyingForces);
         applyingTorques.clear(); applyingTorques.addAll(src.applyingTorques);
+
+        gravity.set(src.gravity);
         return this;
     }
     @Override
@@ -218,9 +220,9 @@ public class SandBoxRigidbodyData implements IComponentData<SandBoxRigidbodyData
     public Vector3dc getOmega() { return omega; }
 
     @Override
-    public void setVelocity(Vector3dc newVel) { velocity.set(newVel); }  //todo sync
+    public SandBoxRigidbodyData setVelocity(Vector3dc newVel) { velocity.set(newVel); return this; }  //todo sync
     @Override
-    public void setOmega(Vector3dc newOmega) { omega.set(newOmega); }  //todo sync
+    public SandBoxRigidbodyData setOmega(Vector3dc newOmega) { omega.set(newOmega); return this; }  //todo sync
 
     @Override
     public Vector3dc getGravity() { return gravity; }

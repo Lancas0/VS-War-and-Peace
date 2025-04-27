@@ -93,7 +93,7 @@ public class DebugTool extends ShipInteractableItem {
             field.setBoolean(entity, value);
         } catch (Exception e) {
             //.printStackTrace();
-            throw  new RuntimeException(e);
+            throw new RuntimeException(e);
         }
     }
     public static void setAsIfTeleportingAndSettingPos(Entity entity, boolean value) {

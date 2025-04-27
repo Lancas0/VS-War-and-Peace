@@ -83,12 +83,12 @@ public class CreateShipAtPlayerFromClientPacketC2S {
 
                 ship.addBehaviour(
                     new SandBoxTween(),
-                    new TweenData((prev, et) -> {
+                    new TweenData((prev, t01) -> {
                         SandBoxTransformData next = SandBoxTransformData.copy(prev);
-                        next.scale.set(Math.sin(et));
+                        next.scale.set(Math.sin(t01));
                         //EzDebug.log("server transform:" + next);
                         return next;
-                    })
+                    }, 10)
                 );
             } catch (Exception e) {
                 EzDebug.error("exception when create ship:" + e.toString());

@@ -56,7 +56,7 @@ public class SignalDetectorBlock extends Block implements IBE<SignalDetectorBloc
     @Override
     public Class<SignalDetectorBlockEntity> getBlockEntityClass() { return SignalDetectorBlockEntity.class; }
     @Override
-    public BlockEntityType<? extends SignalDetectorBlockEntity> getBlockEntityType() { return WapBlockEntites.SIGNAL_DETECTOR_BE.get(); }
+    public BlockEntityType<? extends SignalDetectorBlockEntity> getBlockEntityType() { return null;/*todo WapBlockEntites.SIGNAL_DETECTOR_BE.get();*/ }
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         SignalDetectorBlockEntity be = this.getBlockEntityType().create(pos, state);

@@ -137,10 +137,10 @@ public class RapidBreech extends BlockPlus implements IBreech {
 
                 primerRecordPos[0] = JomlUtil.i(recordPos);
                 munitionLocalDir[0] = JomlUtil.iNormal(primerDir);
-                EzDebug.log("primer record pos:" + StrUtil.poslike(recordPos) + ", dir:" + primerDir);
+                //EzDebug.log("primer record pos:" + StrUtil.poslike(recordPos) + ", dir:" + primerDir);
             }
 
-            EzDebug.log("have block:" + StrUtil.poslike(recordPos) + ", state:" + StrUtil.getBlockName(state));
+            //EzDebug.log("have block:" + StrUtil.poslike(recordPos) + ", state:" + StrUtil.getBlockName(state));
         });
         if (primerRecordPos[0] == null) {  //没找到底火
             EzDebug.warn("fail to find primer");

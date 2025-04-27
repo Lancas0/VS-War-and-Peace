@@ -15,19 +15,27 @@ public class SandBoxTween extends AbstractComponentBehaviour<TweenData> {
     }*/
 
     @Override
-    protected TweenData makeData() { return new TweenData(null); }
+    protected TweenData makeData() { return new TweenData(null, 0, false); }
     @Override
     public IExposedComponentData<TweenData> getExposedData() { return data; }
 
     //todo remove the behaviour if exceeds
     @Override
     public void serverTick(ServerLevel level) {
-        if (data.function == null) return;
-        SandBoxTransformData newTransformData = data.function.getNextTransform(ship.getTransform().getExposedData(), data.elapsedTime);
-        if (newTransformData == null) return;
+        if (data.function == null || data.curve == null) return;
+        if (data.elapsedTime > data.duration && !data.loop) return;  //todo remove the behaviour by timeout
 
-        ship.getTransform().set(newTransformData);  //todo sync?
-        float dt = 0.05f;  //todo dt managed by server world
+        double t01InThisLoop = (data.elapsedTime / data.duration);  //todo ping pong loop
+        t01InThisLoop -= (int)t01InThisLoop;
+
+        double curveT01 = data.curve.evaluate(t01InThisLoop);
+        SandBoxTransformData newTransformData = data.function.getNextTransform(ship.getTransform().getExposedData(), curveT01);
+
+        if (newTransformData != null) {
+            ship.getTransform().set(newTransformData);  //todo sync?
+        }
+
+        float dt = 0.05f;  //todo dt managed by server world, as a param in serverTick
         data.elapsedTime += dt;
     }
 }

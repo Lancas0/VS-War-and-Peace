@@ -15,10 +15,10 @@ public class WapBlockEntites {
         .validBlocks(MECH_SCOPE_BLOCK, TELE_SCOPE_BLOCK)
         .register();
 
-    public static final BlockEntityEntry<SignalDetectorBlockEntity> SIGNAL_DETECTOR_BE = REGISTRATE
+    /*public static final BlockEntityEntry<SignalDetectorBlockEntity> SIGNAL_DETECTOR_BE = REGISTRATE
         .blockEntity("signal_detector_block_entity", SignalDetectorBlockEntity::new)
         .validBlock(FIRE_DETECTOR_BLOCK)
-        .register();
+        .register();*/
 
     /*public static final BlockEntityEntry<DelayedExplosiveBlockEntity> DELAYED_EXPLOSIVE_BLOCK_ENTITY = REGISTRATE
         .blockEntity(DelayedExplosiveBlockEntity.ID, DelayedExplosiveBlockEntity::new)

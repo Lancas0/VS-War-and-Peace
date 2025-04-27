@@ -26,6 +26,7 @@ public class SandBoxTransformData implements ILazyEventParam<SandBoxTransformDat
     public SandBoxTransformData setPos(Vector3dc inPos) { position.set(inPos); return this; }
     public SandBoxTransformData setRotation(Quaterniondc inRot) { rotation.set(inRot); return this; }
     public SandBoxTransformData setScale(Vector3dc inScale) { scale.set(inScale); return this; }
+    public SandBoxTransformData setScaleXYZ(double xyz) { scale.set(xyz, xyz, xyz); return this; }
     public SandBoxTransformData set(Vector3dc inPos, Quaterniondc inRot, Vector3dc inScale) {
         position.set(inPos); rotation.set(inRot); scale.set(inScale);
         return this;

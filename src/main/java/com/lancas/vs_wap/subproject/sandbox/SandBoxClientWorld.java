@@ -54,7 +54,7 @@ public class SandBoxClientWorld {
 
     //should only be used for network sync
     public void addRenderer(ShipClientRenderer renderer) {
-        EzDebug.log("add renderer: " + renderer.uuid + " had key:" + renderers.containsKey(renderer.uuid));
+        //EzDebug.log("add renderer: " + renderer.uuid + " had key:" + renderers.containsKey(renderer.uuid));
         synchronized (renderers) { renderers.put(renderer.uuid, renderer); }
     }
     //should only be used for network sync

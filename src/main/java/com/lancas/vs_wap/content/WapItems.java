@@ -51,10 +51,10 @@ public class WapItems {
         .register();
         */
 
-    public static final ItemEntry<DebugTool> DEBUG_TOOL = REGISTRATE
+    /*public static final ItemEntry<DebugTool> DEBUG_TOOL = REGISTRATE
         .item("debug_tool", DebugTool::new)
         .properties(p -> p.stacksTo(1))
-        .register();
+        .register();*/
 
     /*public static final ItemEntry<BlockItemPlus> WIND_CAP = REGISTRATE
         .item("wind_cap", p -> BlockItemPlus.fromBlockPlus(EinherjarBlocks.Cartridge.WIND_CAP.get(), p))

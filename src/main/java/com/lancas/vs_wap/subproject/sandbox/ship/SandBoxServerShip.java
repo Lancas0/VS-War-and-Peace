@@ -24,6 +24,7 @@ import org.joml.primitives.AABBdc;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class SandBoxServerShip implements ISandBoxShip, INbtSavedObject<SandBoxServerShip> {
     private UUID uuid;
@@ -36,10 +37,15 @@ public class SandBoxServerShip implements ISandBoxShip, INbtSavedObject<SandBoxS
     private final AABBd cachedWorldAABB = new AABBd();
     private boolean worldAABBDirty = true;
 
-    private boolean destroyMark = false;
-    public void addDestroyMark() { destroyMark = true; }
-    public boolean isDestroyMarked() { return destroyMark; }
-
+    private final AtomicInteger timeout = new AtomicInteger(-1);  //todo make it a tick destory. -1 for no destroy, 0 for should, >0 for ticking down
+    public SandBoxServerShip timeOut(int tick) { timeout.set(tick); return this; }
+    public boolean tickDownTimeOut() {
+        return timeout.updateAndGet(x -> {
+            if (x > 0) return x - 1;  //0 or >0
+            return x;  //0 or -1
+        }) == 0;
+    }
+    public boolean isTimeOut() { return timeout.get() == 0; }
 
     public void setPosition(Vector3dc pos)    {
         transform.setPosition(pos);
@@ -53,7 +59,6 @@ public class SandBoxServerShip implements ISandBoxShip, INbtSavedObject<SandBoxS
         transform.setScale(scale);
         worldAABBDirty = true;
     }
-
 
     public void setBlock(Vector3ic localPos, BlockState state) {
         if (state == null || state.isAir()) {
@@ -126,7 +131,7 @@ public class SandBoxServerShip implements ISandBoxShip, INbtSavedObject<SandBoxS
         return blockCluster.getLocalAABB();
     }
 
-    //todo readonly interface
+    //todo readonly interface?
     @Override
     public SandBoxTransform getTransform() { return transform; }  //todo get Exposed Behaviour?
     @Override
@@ -152,7 +157,7 @@ public class SandBoxServerShip implements ISandBoxShip, INbtSavedObject<SandBoxS
     }
 
 
-    //infact it don't inculde transform and block data
+    //in fact it doesn't inculde transform and block data
     public Iterable<IComponentBehaviour<?>> getAllBehaviours() {
         return behaviours;
     }
@@ -183,6 +188,7 @@ public class SandBoxServerShip implements ISandBoxShip, INbtSavedObject<SandBoxS
     public CompoundTag saved() {
         return new NbtBuilder()
             .putUUID("uuid", uuid)
+            .putNumber("timeout", timeout.get())
             .putCompound("transform_data", transform.getSavedData())
             .putCompound("block_data", blockCluster.getSavedData())
             .putCompound("rigidbody_data", rigidbody.getSavedData())
@@ -200,6 +206,7 @@ public class SandBoxServerShip implements ISandBoxShip, INbtSavedObject<SandBoxS
 
         NbtBuilder.modify(tag)
             .readUUIDDo("uuid", v -> uuid = v)
+            .readIntDo("timeout", timeout::set)
             .readCompoundDo("transform_data",
                 t -> transform.loadData(this, new SandBoxTransformData().load(t))
             )

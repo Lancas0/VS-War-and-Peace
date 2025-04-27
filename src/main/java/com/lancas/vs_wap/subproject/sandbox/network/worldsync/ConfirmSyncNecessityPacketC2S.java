@@ -52,6 +52,7 @@ public class ConfirmSyncNecessityPacketC2S {
                     serverWorld.getSavedRenderers()
                 )
             );
+            serverWorld.notifyClientLoading(true);
         });
         ctx.get().setPacketHandled(true);
     }

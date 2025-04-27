@@ -140,7 +140,7 @@ public class ShipDataDocker extends ShipInteractableItem implements IDocker {
         }
         return InteractionResult.CONSUME;
     }
-    @Override
+    /*@Override
     public InteractionResult onItemNotUseOnShip(ItemStack stack, Level level, Player player, UseOnContext ctx) {
         EzDebug.log("docker not use on ship");
 
@@ -174,5 +174,5 @@ public class ShipDataDocker extends ShipInteractableItem implements IDocker {
         });
 
         return InteractionResult.CONSUME;
-    }
+    }*/
 }

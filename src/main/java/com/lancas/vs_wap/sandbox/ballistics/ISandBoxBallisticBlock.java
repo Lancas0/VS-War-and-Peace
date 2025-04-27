@@ -15,7 +15,7 @@ public interface ISandBoxBallisticBlock {
 
     public default void appendTriggerInfos(ServerLevel level, Vector3i localPos, BlockState state, SandBoxServerShip ship, List<SandBoxTriggerInfo> dest) {}
 
-    public default void doTerminalEffect(ServerLevel level, Vector3i localPos, BlockState state, SandBoxTriggerInfo info, Dest<Boolean> terminateByEffect) {
+    public default void doTerminalEffect(ServerLevel level, SandBoxServerShip ship, Vector3i localPos, BlockState state, SandBoxTriggerInfo info, Dest<Boolean> terminateByEffect) {
         terminateByEffect.set(false);
     }
 }

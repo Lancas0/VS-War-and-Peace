@@ -1,6 +1,7 @@
 package com.lancas.vs_wap.sandbox.ballistics.behaviour;
 
 import com.lancas.vs_wap.content.blocks.artillery.IBarrel;
+import com.lancas.vs_wap.debug.EzDebug;
 import com.lancas.vs_wap.sandbox.ballistics.data.BallisticBarrelContextSubData;
 import com.lancas.vs_wap.sandbox.ballistics.data.BallisticData;
 import com.lancas.vs_wap.subproject.sandbox.ship.SandBoxServerShip;
@@ -20,6 +21,9 @@ public class BarrelCtxUpdateHandler {
         var barrelCtx = data.barrelCtx;
         AABBdc localAABB = ship.getLocalAABB();
         AABBdc worldAABB = ship.getWorldAABB();
+
+        //EzDebug.log("barrelCtx, tick:" + barrelCtx.exitedBarrelTicks + ", alws:" + barrelCtx.alwaysInBarrelSinceLaunch);
+
         //localAABB == null : the ship is empty, how can I know if it's in barrel?
         //set barrelCtx after abs exited: for safe
         if (localAABB == null || worldAABB == null || barrelCtx.isAbsoluteExitBarrel()) {

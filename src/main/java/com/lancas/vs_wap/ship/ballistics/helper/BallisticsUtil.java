@@ -539,7 +539,7 @@ public class BallisticsUtil {
 
         return points;
     }
-    public static Iterable<ClipContext> raycastPlaneForBlocks(Vector3dc rayWithLength, AABBdc worldBounds, double step) {
+    public static List<ClipContext> raycastPlaneForBlocks(Vector3dc rayWithLength, AABBdc worldBounds, double step) {
         if (step < MIN_STEP) return new ArrayList<>();
 
         Planed plane = new Planed(worldBounds.center(new Vector3d()), rayWithLength.normalize(new Vector3d()));
