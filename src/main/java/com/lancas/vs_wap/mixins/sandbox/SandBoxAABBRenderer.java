@@ -44,7 +44,7 @@ public class SandBoxAABBRenderer {
             //将相对于摄像机的poseStack转换为船本地空间的poseStack
             poseStack.mulPoseMatrix(new Matrix4f(localToWorld));
 
-            //LevelRenderer.renderLineBox(poseStack, bufferSource.getBuffer(RenderType.LINES), localAABB, 1.0f, 0.0f, 0.0f, 1.0f);
+            LevelRenderer.renderLineBox(poseStack, bufferSource.getBuffer(RenderType.LINES), localAABB, 1.0f, 0.0f, 0.0f, 1.0f);
 
             EzDebug.log("render AABB of ship:" + renderer.uuid + ", loc:" + localAABB + ", render:" + renderAABB);
 
