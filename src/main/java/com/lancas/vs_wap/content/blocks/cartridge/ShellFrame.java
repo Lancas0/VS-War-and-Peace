@@ -26,7 +26,12 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
 import org.apache.logging.log4j.util.TriConsumer;
 import org.jetbrains.annotations.Nullable;
 import org.valkyrienskies.core.api.ships.ServerShip;
@@ -56,23 +61,26 @@ public class ShellFrame extends BlockPlus/* implements IBE<ShellFrameBE>*/ {
     private static final List<IBlockAdder> adders = List.of(
         new DirectionAdder(true, true, ShapeBuilder.cubicRing(0, 0, 0, 2, 16)),
         new RefreshBlockRecordAdder(ShellFrameRecord::new),
-        new InteractableBlockAdder((level, player, bp, state) -> {
-            //todo remove constraint when redstone
+        new InteractableBlockAdder() {
+            @Override
+            public InteractionResult onInteracted(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+                //todo remove constraint when redstone
 
-            //hold/unhold ship must be in server
-            if (!(level instanceof ServerLevel sLevel)) return;
+                //hold/unhold ship must be in server
+                if (!(level instanceof ServerLevel sLevel)) return InteractionResult.PASS;
             /*if (!(level.getBlockEntity(bp) instanceof ShellFrameBE be)) {
                 EzDebug.error("no ShellFrameBe on a shell frame be block? the block:" + StrUtil.getBlockName(state));
                 return;
             }*/
-            ICanHoldShip icanHoldShip = (ICanHoldShip)player;
+                ICanHoldShip icanHoldShip = (ICanHoldShip)player;
 
-            Dest<Long> prevHoldShipId = new Dest<>();
-            icanHoldShip.unholdShipInServer(ShipHoldSlot.MainHand, true, prevHoldShipId);
-            ServerShip holdenShip = ShipUtil.getServerShipByID(sLevel, prevHoldShipId.get());
-            if (holdenShip == null) return;
+                Dest<Long> prevHoldShipId = new Dest<>();
+                icanHoldShip.unholdShipInServer(ShipHoldSlot.MainHand, true, prevHoldShipId);
+                ServerShip holdenShip = ShipUtil.getServerShipByID(sLevel, prevHoldShipId.get());
+                if (holdenShip == null) return InteractionResult.PASS;
 
-            lockShip(sLevel, holdenShip, bp);
+                lockShip(sLevel, holdenShip, pos);
+                return InteractionResult.PASS;
 
             /*HoldableAttachment holdable = holdenShip.getAttachment(HoldableAttachment.class);
             if (holdable == null) {
@@ -99,7 +107,8 @@ public class ShellFrame extends BlockPlus/* implements IBE<ShellFrameBE>*/ {
                 1e20
             );
             shipObjWorld.createNewConstraint(orientationConstraint);*/
-        })
+            }
+        }
     );
     @Override
     public Iterable<IBlockAdder> getAdders() { return adders; }

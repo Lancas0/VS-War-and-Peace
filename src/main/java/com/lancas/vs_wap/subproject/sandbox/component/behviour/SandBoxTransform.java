@@ -6,8 +6,6 @@ import com.lancas.vs_wap.subproject.sandbox.component.data.exposed.IExposedTrans
 import com.lancas.vs_wap.subproject.sandbox.component.data.SandBoxTransformData;
 import com.lancas.vs_wap.subproject.sandbox.event.SandBoxEventMgr;
 import com.lancas.vs_wap.subproject.sandbox.ship.SandBoxServerShip;
-import com.lancas.vs_wap.util.JomlUtil;
-import net.minecraft.core.BlockPos;
 import org.joml.*;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -155,7 +153,17 @@ public class SandBoxTransform extends AbstractComponentBehaviour<SandBoxTransfor
         isMatrixDirty.set(true);
         return this;
     }
-    public SandBoxTransform rotate(Quaterniondc rotation) {  //todo check rot normilized?
+    public SandBoxTransform rotateWorld(Quaterniondc rotation) {  //todo check rot normilized?
+        synchronized (data) {
+            //data.rotation.mul(rotation).normalize();  //should normalize?
+            rotation.mul(data.rotation, data.rotation);
+            SandBoxEventMgr.onServerShipTransformDirty.schedule(ship.getUuid(), UUIDParamWrapper.of(ship.getUuid()), data);
+        }
+
+        isMatrixDirty.set(true);
+        return this;
+    }
+    public SandBoxTransform rotateLocal(Quaterniondc rotation) {  //todo check rot normilized?
         synchronized (data) {
             data.rotation.mul(rotation).normalize();  //should normalize?
             SandBoxEventMgr.onServerShipTransformDirty.schedule(ship.getUuid(), UUIDParamWrapper.of(ship.getUuid()), data);

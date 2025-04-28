@@ -5,7 +5,11 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.function.BiConsumer;
 
-public interface IShipSchemeRandomAccessor {
-    public BlockState getBlockState(BlockPos pos);
+public interface IShipSchemeRandomReader {
+    public IShipSchemeRandomReader getRandomReader();
+
+    public BlockState getBlockStateByLocalBp(BlockPos pos);
     public void foreachBlock(BiConsumer<BlockPos, BlockState> consumer);
+
+    public boolean isEmpty();
 }

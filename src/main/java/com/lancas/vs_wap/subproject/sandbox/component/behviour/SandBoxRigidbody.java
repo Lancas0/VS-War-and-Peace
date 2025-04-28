@@ -80,11 +80,19 @@ public class SandBoxRigidbody extends AbstractComponentBehaviour<SandBoxRigidbod
 
         //todo save invInertia
         //todo check the ineratia?
-        Matrix3d invInertia = new Matrix3d(
+        Matrix3d localInvInertia = new Matrix3d(
             1.0 / data.inertiaTensor.m00, 0.0, 0.0,
             0.0, 1.0 / data.inertiaTensor.m11, 0.0,
             0.0, 0.0, 1.0 / data.inertiaTensor.m22
         );//data.inertiaTensor.invert(new Matrix3d());
+        // 局部转动惯量转换为世界转动惯量
+        //todo can apply world or local torque/force
+        Matrix3d rotationMatrix = ship.getTransform().getRotation().get(new Matrix3d());
+        Matrix3d invInertiaWorld = rotationMatrix.mul(localInvInertia, new Matrix3d()).mul(rotationMatrix.transpose(new Matrix3d()));
+
+        //EzDebug.log("localInvI:" + localInvInertia + "\nworldInvI:" + invInertiaWorld + ", rot:" + );
+        //EzDebug.log("rot:" + StrUtil.F2(ship.getTransform().getRotation().getEulerAnglesXYZ(new Vector3d())) + "\nomega:" + StrUtil.F2(data.omega));
+
 
         while (!data.applyingForces.isEmpty()) {
             Vector3d force = data.applyingForces.poll();
@@ -96,12 +104,18 @@ public class SandBoxRigidbody extends AbstractComponentBehaviour<SandBoxRigidbod
         }
         while (!data.applyingTorques.isEmpty()) {
             Vector3d torque = data.applyingTorques.poll();
-            Vector3d addOmega = torque.mul(invInertia, new Vector3d()).mul(PHYS_TICK_TIME_S);
+            Vector3d addOmega = torque.mul(invInertiaWorld, new Vector3d()).mul(PHYS_TICK_TIME_S);//torque.mul(localInvInertia, new Vector3d()).mul(PHYS_TICK_TIME_S);
+
+            EzDebug.log("localInvInertia:" + localInvInertia +
+                "\nworldInvInertia:" + invInertiaWorld +
+                "\ntorque:" + StrUtil.F2(torque) + ", torMulLocal:" + torque.mul(localInvInertia, new Vector3d()) + ", torMulWorld:" + torque.mul(invInertiaWorld, new Vector3d()) +
+                "\nrotation" + StrUtil.F2(ship.getTransform().getRotation().getEulerAnglesXYZ(new Vector3d())) + ", addOmega:" + StrUtil.F2(addOmega)
+            );
 
             if (addOmega.isFinite()) {
                 data.omega.add(addOmega);
             } else {
-                EzDebug.warn("torque is invalid, torque:" + StrUtil.F2(torque) + "\naddOmega:" + StrUtil.F2(addOmega) + "\ninvInertia:" + invInertia);
+                EzDebug.warn("torque is invalid, torque:" + StrUtil.F2(torque) + "\naddOmega:" + StrUtil.F2(addOmega)/* + "\ninvInertia:" + localInvInertia*/);
             }
         }
 
@@ -124,7 +138,7 @@ public class SandBoxRigidbody extends AbstractComponentBehaviour<SandBoxRigidbod
             Quaterniond deltaQ = new Quaterniond().fromAxisAngleRad(rotateAxis, angle);
 
             if (deltaQ.isFinite()) {
-                ship.getTransform().rotate(deltaQ);  //todo notice sync
+                ship.getTransform().rotateWorld(deltaQ);  //todo notice sync
             } else {
                 EzDebug.error("get invalid dRotate:" + StrUtil.F2(deltaQ) + " by omega:" + StrUtil.F2(data.omega) + ", axis:" + StrUtil.F2(rotateAxis) + ", rad:" + angle);
             }

@@ -16,9 +16,13 @@ import com.lancas.vs_wap.util.ShipUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3d;
 import org.valkyrienskies.core.api.ships.ServerShip;
@@ -74,44 +78,48 @@ public interface IBreech {
     public void unloadShell(ServerLevel level, ServerShip shellShip, Direction shellDirInShip, BlockPos breechBp);
 
     public static InteractableBlockAdder breechInteraction() {
-        return new InteractableBlockAdder((level, player, breechBp, breechState) -> {
-            //todo sometime(in face always) repeat invoke
-            if (!(level instanceof ServerLevel sLevel)) return;
+        return new InteractableBlockAdder() {
+            @Override
+            public InteractionResult onInteracted(BlockState breechState, Level level, BlockPos breechBp, Player player, InteractionHand hand, BlockHitResult hit) {
+                //todo sometime(in face always) repeat invoke
+                if (!(level instanceof ServerLevel sLevel)) return InteractionResult.PASS;
 
-            ICanHoldShip icanHoldShip = (ICanHoldShip)player;
-            Dest<Long> holdingShipId = new Dest<>();
-            icanHoldShip.getHoldingShipId(ShipHoldSlot.MainHand, holdingShipId);
+                ICanHoldShip icanHoldShip = (ICanHoldShip)player;
+                Dest<Long> holdingShipId = new Dest<>();
+                icanHoldShip.getHoldingShipId(ShipHoldSlot.MainHand, holdingShipId);
 
-            ServerShip holdingShip = ShipUtil.getServerShipByID(sLevel, holdingShipId.get());
-            if (holdingShip == null) return;  //not holding ship
-            var munitionHoldable = holdingShip.getAttachment(HoldableAttachment.class);
-            if (munitionHoldable == null) return;  //no holdable
+                ServerShip holdingShip = ShipUtil.getServerShipByID(sLevel, holdingShipId.get());
+                if (holdingShip == null) return InteractionResult.PASS;  //not holding ship
+                var munitionHoldable = holdingShip.getAttachment(HoldableAttachment.class);
+                if (munitionHoldable == null) return InteractionResult.PASS;  //no holdable
 
-            AtomicBoolean shouldLoad = new AtomicBoolean(false);
-            AtomicReference<BlockPos> primerBp = new AtomicReference<>(null);
-            //todo not foreach ship
-            ShipBuilder.modify(sLevel, holdingShip).foreachBlock((posInShip, stateInShip, blockEntity) -> {
-                if (shouldLoad.get()) return;
+                AtomicBoolean shouldLoad = new AtomicBoolean(false);
+                AtomicReference<BlockPos> primerBp = new AtomicReference<>(null);
+                //todo not foreach ship
+                ShipBuilder.modify(sLevel, holdingShip).foreachBlock((posInShip, stateInShip, blockEntity) -> {
+                    if (shouldLoad.get()) return;
 
-                if (stateInShip.getBlock() instanceof PrimerBlock primer) {  //todo not support other primer now
-                    if (!primer.isTriggered(stateInShip)) {
-                        shouldLoad.set(true);
-                        primerBp.set(posInShip);
+                    if (stateInShip.getBlock() instanceof PrimerBlock primer) {  //todo not support other primer now
+                        if (!primer.isTriggered(stateInShip)) {
+                            shouldLoad.set(true);
+                            primerBp.set(posInShip);
+                        }
                     }
+                });
+                if (!shouldLoad.get()) return InteractionResult.PASS;
+
+                @Nullable ServerShip artilleryShip = ShipUtil.getServerShipAt(sLevel, breechBp);
+
+                Direction breechDir = DirectionAdder.getDirection(breechState);  //todo use IBreech to get breech dir?
+                if (breechDir == null) {
+                    EzDebug.fatal("can not get direction of breech");
+                    return InteractionResult.FAIL;
                 }
-            });
-            if (!shouldLoad.get()) return;
 
-            @Nullable ServerShip artilleryShip = ShipUtil.getServerShipAt(sLevel, breechBp);
-
-            Direction breechDir = DirectionAdder.getDirection(breechState);  //todo use IBreech to get breech dir?
-            if (breechDir == null) {
-                EzDebug.fatal("can not get direction of breech");
-                return;
+                PrimerBlock.createConstraints(sLevel, primerBp.get(), artilleryShip, holdingShip, breechBp, breechDir, munitionHoldable);
+                icanHoldShip.unholdShipInServer(ShipHoldSlot.MainHand, true, null);
+                return InteractionResult.PASS;
             }
-
-            PrimerBlock.createConstraints(sLevel, primerBp.get(), artilleryShip, holdingShip, breechBp, breechDir, munitionHoldable);
-            icanHoldShip.unholdShipInServer(ShipHoldSlot.MainHand, true, null);
-        });
+        };
     }
 }

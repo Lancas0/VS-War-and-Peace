@@ -29,10 +29,10 @@ import org.valkyrienskies.core.api.ships.Ship;
 public class BreechArmPoint extends AllArmInteractionPointTypes.DepositOnlyArmInteractionPoint {
     public BreechArmPoint(ArmInteractionPointType type, Level level, BlockPos pos, BlockState state) {
         super(type, level, pos, state);
-        artilleryShip = LazyShip.ofBlockPos(pos);
+        //artilleryShip = LazyShip.ofBlockPos(pos);
     }
 
-    private final LazyShip artilleryShip;
+    //private final LazyShip artilleryShip;
 
     @Override
     public ItemStack insert(ItemStack stack, boolean simulate) {

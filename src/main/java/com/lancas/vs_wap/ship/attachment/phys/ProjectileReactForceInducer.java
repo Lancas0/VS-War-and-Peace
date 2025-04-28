@@ -1,4 +1,4 @@
-package com.lancas.vs_wap.ship.attachment.force;
+package com.lancas.vs_wap.ship.attachment.phys;
 
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3d;

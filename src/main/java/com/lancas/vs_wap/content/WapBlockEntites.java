@@ -70,6 +70,11 @@ public class WapBlockEntites {
         .validBlocks(AP_CORE_WARHEAD, BLUNT_AP_WARHEAD)
         .register();
 
+    public static final BlockEntityEntry<VSProjectorBE> VS_PROJECTOR_BE = REGISTRATE
+        .blockEntity("vs_projector_be", VSProjectorBE::new)
+        .validBlocks(Industrial.VS_PROJECTOR)
+        .register();
+
     public static void register() { }
 
     //Create.REGISTRATE.blockEntity("schematicannon", SchematicannonBlockEntity::new).instance(() -> SchematicannonInstance::new).validBlocks(new NonNullSupplier[]{

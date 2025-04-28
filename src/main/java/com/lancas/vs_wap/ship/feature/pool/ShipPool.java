@@ -106,7 +106,7 @@ public class ShipPool extends SavedData {
 
 
     public static final int WATER_LINE = 50;
-    public static final int FILL_LINE = 8;
+    //public static final int FILL_LINE = 8;
     /*public static class PooledShip {
         public boolean active;
         public long shipId;
@@ -171,7 +171,7 @@ public class ShipPool extends SavedData {
             pool.poolMap.put(ids.get(i), poolValues.get(i));
         }
 
-        pool.fillUntilFillLine();
+        //pool.fillUntilFillLine();
 
         ArrayList<Long> hideIds;
         try {
@@ -238,13 +238,13 @@ public class ShipPool extends SavedData {
         //DefaultReset.moveToFaraway.accept(level, ship);
         return new BlockKeepAlivePooledShip(ship.getId(), shipPos);
     }
-    private void fillUntilFillLine() {
+    /*private void fillUntilFillLine() {
         while (poolMap.size() < FILL_LINE) {
             BlockKeepAlivePooledShip newPooledShip = createNewPooledShip();
             poolMap.put(newPooledShip.shipId, newPooledShip);
         }
         setDirty();
-    }
+    }*/
 
 
     //since the ship may not exist, we can't get loaded ship
@@ -317,6 +317,7 @@ public class ShipPool extends SavedData {
             return;
         }
 
+        //todo add the bp into the center of ship
         AtomicReference<BlockPos> keepAliveBp = new AtomicReference<>();
         ShipBuilder.modify(level, ship).foreachBlock((pos, state, be) -> {
             if (keepAliveBp.get() == null) {

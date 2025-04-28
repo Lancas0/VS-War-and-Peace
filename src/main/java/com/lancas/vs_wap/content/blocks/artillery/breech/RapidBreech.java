@@ -130,7 +130,7 @@ public class RapidBreech extends BlockPlus implements IBreech {
         Vector3ic[] primerRecordPos = new Vector3ic[] { null };
         Vector3ic[] munitionLocalDir = new Vector3ic[] { null };
 
-        var shipSchemeRA = shipScheme.getRandomAccessor();
+        var shipSchemeRA = shipScheme.getRandomReader();
         shipSchemeRA.foreachBlock((recordPos, state) -> {
             if (state.getBlock() instanceof IPrimer) {
                 Direction primerDir = state.getValue(DirectionAdder.FACING);
@@ -154,7 +154,7 @@ public class RapidBreech extends BlockPlus implements IBreech {
         MunitionShipHandler.foreachPropellant(
             primerRecordPos[0],
             munitionLocalDir[0],
-            recordPos -> shipSchemeRA.getBlockState(JomlUtil.bp(recordPos)),
+            recordPos -> shipSchemeRA.getBlockStateByLocalBp(JomlUtil.bp(recordPos)),
             null,  //no need to set empty (todo spawn empty shell docker or something)
             propellantEnergyDest,
             projectileStartDest
@@ -163,7 +163,7 @@ public class RapidBreech extends BlockPlus implements IBreech {
         MunitionShipHandler.foreachFromProjectileStart(
             projectileStartDest.get(),
             munitionLocalDir[0],
-            p -> shipSchemeRA.getBlockState(JomlUtil.bp(p)),
+            p -> shipSchemeRA.getBlockStateByLocalBp(JomlUtil.bp(p)),
             (recordPos, state) -> {
                 blockData.setBlock(
                     recordPos.sub(primerRecordPos[0], new Vector3i()),

@@ -113,9 +113,9 @@ public class BallisticsShipData {
         }*/
     }
 
-    public ServerShip getProjectileShip(ServerLevel level) { return projectileLazyShip.get(level); }
-    public ServerShip getPropellantShip(ServerLevel level) { return propellantLazyShip.get(level); }
-    public ServerShip getArtilleryShip(ServerLevel level)  { return artilleryLazyShip.get(level); }
+    public ServerShip getProjectileShip(ServerLevel level) { return projectileLazyShip.get(level, null); }
+    public ServerShip getPropellantShip(ServerLevel level) { return propellantLazyShip.get(level, null); }
+    public ServerShip getArtilleryShip(ServerLevel level)  { return artilleryLazyShip.get(level, null); }
 
     /*public Vector3d getWorldGeoCenter(Matrix4dc shipToWorld) {
         return projectile.getGeoCenterInWorld(shipToWorld);//shipToWorld.transformPosition(geoCenterInShip, new Vector3d());

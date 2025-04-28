@@ -303,11 +303,12 @@ public class SectionShipSchemeData implements IShipSchemeData {
     }
 
     //it's really really slow
+    /*
     @Override
-    public IShipSchemeRandomAccessor getRandomAccessor() {
-        return new IShipSchemeRandomAccessor() {
+    public IShipSchemeRandomReader getRandom() {
+        return new IShipSchemeRandomReader() {
             @Override
-            public BlockState getBlockState(BlockPos pos) {
+            public BlockState getBlockStateByLocalBp(BlockPos pos) {
                 SectionXZI xzi = new SectionXZI(pos.getX() >> 4, pos.getY() >> 4, pos.getZ() >> 4);
                 SectionData sectionData = shipData.get(xzi);
                 if (sectionData == null) return Blocks.AIR.defaultBlockState();
@@ -344,7 +345,7 @@ public class SectionShipSchemeData implements IShipSchemeData {
                 }
             }
         };
-    }
+    }*/
 
     /*@Override
     public void forEach(Level level, TriConsumer<BlockPos, BlockState, CompoundTag> func) {

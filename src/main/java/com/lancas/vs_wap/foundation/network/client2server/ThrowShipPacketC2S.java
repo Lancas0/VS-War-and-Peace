@@ -4,7 +4,7 @@ import com.lancas.vs_wap.debug.EzDebug;
 import com.lancas.vs_wap.foundation.api.Dest;
 import com.lancas.vs_wap.ship.feature.hold.ICanHoldShip;
 import com.lancas.vs_wap.ship.feature.hold.ShipHoldSlot;
-import com.lancas.vs_wap.ship.attachment.force.ThrowForceInducer;
+import com.lancas.vs_wap.ship.attachment.phys.ThrowForceInducer;
 import com.lancas.vs_wap.util.JomlUtil;
 import com.lancas.vs_wap.util.ShipUtil;
 import net.minecraft.network.FriendlyByteBuf;

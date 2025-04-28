@@ -12,7 +12,7 @@ import com.lancas.vs_wap.ship.ballistics.data.BallisticStateData;
 import com.lancas.vs_wap.ship.ballistics.data.BallisticsComponentData;
 import com.lancas.vs_wap.ship.ballistics.data.BallisticsShipData;
 import com.lancas.vs_wap.ship.ballistics.api.TriggerInfo;
-import com.lancas.vs_wap.ship.attachment.force.ProjectileReactForceInducer;
+import com.lancas.vs_wap.ship.attachment.phys.ProjectileReactForceInducer;
 import com.lancas.vs_wap.ship.type.ProjectileWrapper;
 import com.lancas.vs_wap.util.JomlUtil;
 import com.lancas.vs_wap.util.MathUtil;

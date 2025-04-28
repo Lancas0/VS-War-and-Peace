@@ -1,10 +1,7 @@
 package com.lancas.vs_wap.content.explosion;
 
 import com.lancas.vs_wap.debug.EzDebug;
-import com.lancas.vs_wap.ship.ballistics.helper.BallisticsMath;
-import com.lancas.vs_wap.ship.ballistics.helper.BallisticsUtil;
 import com.lancas.vs_wap.subproject.sandbox.SandBoxServerWorld;
-import com.lancas.vs_wap.subproject.sandbox.component.behviour.SandBoxRigidbody;
 import com.lancas.vs_wap.subproject.sandbox.component.behviour.SandBoxTween;
 import com.lancas.vs_wap.subproject.sandbox.component.data.SandBoxBlockClusterData;
 import com.lancas.vs_wap.subproject.sandbox.component.data.SandBoxRigidbodyData;
@@ -12,20 +9,16 @@ import com.lancas.vs_wap.subproject.sandbox.component.data.SandBoxTransformData;
 import com.lancas.vs_wap.subproject.sandbox.component.data.TweenData;
 import com.lancas.vs_wap.subproject.sandbox.ship.SandBoxServerShip;
 import com.lancas.vs_wap.util.JomlUtil;
-import com.lancas.vs_wap.util.StrUtil;
-import com.mojang.datafixers.util.Pair;
+import com.lancas.vs_wap.util.RandUtil;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import it.unimi.dsi.fastutil.objects.ObjectListIterator;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.ExplosionDamageCalculator;
@@ -36,12 +29,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
-import org.apache.commons.lang3.NotImplementedException;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Quaterniond;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
-import org.joml.Vector3i;
 
 import java.util.*;
 
@@ -110,9 +100,6 @@ public class CustomExplosion extends Explosion {
         if (blowPoses.isEmpty()) return;
 
         List<BlockPos> open = new ArrayList<>();*/
-
-
-
     }
 
     @Override
@@ -147,7 +134,9 @@ public class CustomExplosion extends Explosion {
                 UUID.randomUUID(),
                 new SandBoxTransformData().setPos(spawnPos),  //todo randomize
                 SandBoxBlockClusterData.BlockAtCenter(state),
-                SandBoxRigidbodyData.createEarthGravity().setVelocity(expCenterToBlockDir.mul(level.random.nextGaussian() * (-10)).setComponent(1, level.random.nextInt(10, 20))/*outVelDir.mul(level.random.nextFloat() * 20)*/)  //随机0-20速度
+                SandBoxRigidbodyData.createEarthGravity()
+                    .setVelocity(expCenterToBlockDir.mul(level.random.nextGaussian() * (-10)).setComponent(1, level.random.nextInt(10, 20))/*outVelDir.mul(level.random.nextFloat() * 20)*/)  //随机0-20速度
+                    .setOmega(RandUtil.onRandSphere(1, 8))
             ).timeOut(60);  //todo tween scale animation
             shardShip.addBehaviour(new SandBoxTween(), new TweenData(
                 (transform, t01) -> SandBoxTransformData.copy(transform).setScaleXYZ(1 - t01),

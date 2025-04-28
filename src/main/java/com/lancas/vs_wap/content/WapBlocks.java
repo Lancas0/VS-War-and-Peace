@@ -20,6 +20,8 @@ import com.lancas.vs_wap.content.blocks.cartridge.propellant.empty.EmptyGauge12;
 import com.lancas.vs_wap.content.blocks.cartridge.propellant.empty.EmptyShelledPropellant;
 import com.lancas.vs_wap.content.blocks.cartridge.warhead.*;
 import com.lancas.vs_wap.content.blocks.debug.Block01;
+import com.lancas.vs_wap.content.blocks.industry.ProjectCenter;
+import com.lancas.vs_wap.content.blocks.industry.VSProjector;
 import com.lancas.vs_wap.content.blocks.redstone.ActivatorBlock;
 import com.lancas.vs_wap.content.blocks.scope.MechScopeBlock;
 import com.lancas.vs_wap.content.blocks.SignalDetectorBlock;
@@ -304,6 +306,22 @@ public class WapBlocks {
             .item()
             .build()
             .register();*/
+
+        public static BlockEntry<ProjectCenter> PROJECT_CENTER =  REGISTRATE
+            .block("project_center", ProjectCenter::new)
+            .initialProperties(SharedProperties::stone)
+            .properties(p -> p.noOcclusion().mapColor(MapColor.PODZOL))
+            .item()
+            .build()
+            .register();
+
+        public static BlockEntry<VSProjector> VS_PROJECTOR =  REGISTRATE
+            .block("vs_projector", VSProjector::new)
+            .initialProperties(SharedProperties::stone)
+            .properties(p -> p.noOcclusion().mapColor(MapColor.PODZOL))
+            .item()
+            .build()
+            .register();
 
         public static void register() {}
     }

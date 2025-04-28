@@ -1,10 +1,12 @@
 package com.lancas.vs_wap.subproject.blockplusapi.blockplus;
 
-import com.lancas.vs_wap.subproject.blockplusapi.blockplus.adder.AbstractPropertyAdder;
 import com.lancas.vs_wap.subproject.blockplusapi.blockplus.adder.IBlockAdder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
@@ -12,6 +14,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -121,6 +124,7 @@ public abstract class BlockPlus extends Block {
     }*/
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+        super.createBlockStateDefinition(builder);
         getAdders().forEach(p -> {
             p.onCreateBlockStateDefinition(builder);
         });
@@ -163,6 +167,32 @@ public abstract class BlockPlus extends Block {
     public int getDirectSignal(BlockState state, BlockGetter blockAccess, BlockPos pos, Direction side) {  //todo ?
         return getSignal(state, blockAccess, pos, side);
     }
+    @Override
+    public int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos) {
+        AtomicInteger analogSignal = new AtomicInteger();
+        getAdders().forEach(p -> {
+            analogSignal.addAndGet(p.getAnalogModifySignal(state, level, pos));
+        });
+
+        if (analogSignal.get() <= 0)
+            return 0;
+        if (analogSignal.get() >= 15)
+            return 15;
+        return analogSignal.get();
+    }
+
+
+    @Override
+    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+        AtomicBoolean anyFail = new AtomicBoolean(false);
+        getAdders().forEach(p -> {
+            if (p.onInteracted(state, level, pos, player, hand, hit) == InteractionResult.FAIL)
+                anyFail.set(true);
+        });
+
+        return anyFail.get() ? InteractionResult.FAIL : InteractionResult.PASS;
+    }
+
 
     //todo check redstone signal at place
     @Override

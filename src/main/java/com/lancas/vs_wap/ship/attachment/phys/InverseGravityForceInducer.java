@@ -1,4 +1,4 @@
-package com.lancas.vs_wap.ship.attachment.force;
+package com.lancas.vs_wap.ship.attachment.phys;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;

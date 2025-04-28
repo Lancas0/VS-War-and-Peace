@@ -1,10 +1,7 @@
 package com.lancas.vs_wap.content.blocks.artillery;
 
 import com.lancas.vs_wap.subproject.blockplusapi.blockplus.*;
-import com.lancas.vs_wap.subproject.blockplusapi.blockplus.adder.DirectionAdder;
-import com.lancas.vs_wap.subproject.blockplusapi.blockplus.adder.IBlockAdder;
-import com.lancas.vs_wap.subproject.blockplusapi.blockplus.adder.RedstonePoweredAdder;
-import com.lancas.vs_wap.subproject.blockplusapi.blockplus.adder.ShapeByStateAdder;
+import com.lancas.vs_wap.subproject.blockplusapi.blockplus.adder.*;
 import com.lancas.vs_wap.util.ShapeBuilder;
 import net.minecraft.core.Direction;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -19,9 +16,9 @@ public class ArtilleryDoorBlock extends BlockPlus {
 
             () -> List.of(
                 new DirectionAdder(false, false, null),
-                new RedstonePoweredAdder(null, true),
+                new RedstoneLinkableBlockAdder(),
                 new ShapeByStateAdder(state ->
-                    state.getValue(RedstonePoweredAdder.POWERED) ?
+                    state.getValue(RedstoneOnOffAdder.POWERED) ?
                         POWERED_UP_SHAPE :
                         UNPOWERED_UP_SHAPE.getRotated(state.getValue(DirectionAdder.FACING))
                 )

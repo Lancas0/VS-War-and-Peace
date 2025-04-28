@@ -141,6 +141,7 @@ public class NbtBuilder {
             v.set(nbt.getInt(key));
         return this;
     }
+    public int getInt(String key) { return nbt.getInt(key); }
     public NbtBuilder readLong(String key, @NotNull Dest<Long> v) {
         if (nbt.contains(key))
             v.set(nbt.getLong(key));
@@ -411,6 +412,18 @@ public class NbtBuilder {
 
     public NbtBuilder putList(String key, ListTag listTag) { nbt.put(key, listTag); return this; }
     public NbtBuilder getList(String key, Dest<ListTag> listTagDest) { listTagDest.set((ListTag)nbt.get(key)); return this; }
+    public NbtBuilder addIntoNewIfAbsentList(String key, Tag tag) {
+        var listTag = (ListTag)nbt.get(key);
+        if (listTag == null) {
+            listTag = new ListTag();
+            nbt.put(key, listTag);
+        }
+
+        listTag.add(tag);
+        nbt.put(key, listTag);
+        return this;
+        //listTagDest.set((ListTag)nbt.get(key)); return this;
+    }
 
     public NbtBuilder withTagDo(Consumer<CompoundTag> consumer) {
         if (consumer != null)

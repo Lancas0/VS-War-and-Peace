@@ -1,6 +1,9 @@
 package com.lancas.vs_wap.sandbox.ballistics.behaviour;
 
 import com.lancas.vs_wap.debug.EzDebug;
+import com.lancas.vs_wap.foundation.api.math.ForceOnPos;
+import com.lancas.vs_wap.foundation.network.NetworkHandler;
+import com.lancas.vs_wap.foundation.network.debug.ForceOnPosDebugS2C;
 import com.lancas.vs_wap.sandbox.ballistics.data.AirDragSubData;
 import com.lancas.vs_wap.sandbox.ballistics.data.BallisticData;
 import com.lancas.vs_wap.subproject.sandbox.component.data.exposed.IExposedRigidbodyData;
@@ -42,7 +45,6 @@ public class AirDragHandler {
 
             Vector3d torque = worldAirDragCenter.sub(worldMassCenter, new Vector3d()).cross(rotateDrag);
             rigidbody.applyTorque(torque);
-
             //EzDebug.log("dragForceLen:" + dragForceLen + "projectArea:" + projectArea + "linearDrag:" + StrUtil.F2(linearDrag) + ", moment:" + StrUtil.F2(torque) + ", locAirDragCenter:" + StrUtil.F2(airDragData.localAirDragCenter));
         }
     }

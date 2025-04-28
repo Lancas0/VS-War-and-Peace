@@ -1,6 +1,5 @@
 package com.lancas.vs_wap.content.blocks.artillery.breech;
 
-import com.lancas.vs_wap.content.WapBlockEntites;
 import com.lancas.vs_wap.content.blocks.blockplus.RefreshBlockRecordAdder;
 import com.lancas.vs_wap.content.blocks.cartridge.IPrimer;
 import com.lancas.vs_wap.content.blocks.cartridge.PrimerBlock;
@@ -16,9 +15,8 @@ import com.lancas.vs_wap.ship.feature.pool.ShipPool;
 import com.lancas.vs_wap.subproject.blockplusapi.blockplus.BlockPlus;
 import com.lancas.vs_wap.subproject.blockplusapi.blockplus.adder.DirectionAdder;
 import com.lancas.vs_wap.subproject.blockplusapi.blockplus.adder.IBlockAdder;
-import com.lancas.vs_wap.subproject.blockplusapi.blockplus.adder.RedstonePoweredAdder;
+import com.lancas.vs_wap.subproject.blockplusapi.blockplus.adder.RedstoneOnOffAdder;
 import com.lancas.vs_wap.util.*;
-import com.simibubi.create.foundation.block.IBE;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -26,7 +24,6 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.items.ItemHandlerHelper;
@@ -43,12 +40,14 @@ import java.util.List;
 public class DroppingBreech extends BlockPlus implements IBreech/*, IBE<BreechBE>*/ {
     private static final List<IBlockAdder> adders = List.of(
         new DirectionAdder(false, true, ShapeBuilder.ofCubicRing(0, 0, 0, 2, 16).get()),
-        new RedstonePoweredAdder((level, breechBp, state, hasSignal) -> {
-            if (!hasSignal || level.isClientSide) return;
+        new RedstoneOnOffAdder(true) {
+            @Override
+            public void onPoweredOnOff(Level level, BlockPos breechBp, BlockState state, boolean isOn) {
+                if (!isOn || level.isClientSide) return;
 
-            //ServerShip onShip = ShipUtil.getServerShipAt((ServerLevel)level, breechBp);
+                //ServerShip onShip = ShipUtil.getServerShipAt((ServerLevel)level, breechBp);
 
-            ///get the breech bounds in world and breech center in world for get intersected ships
+                ///get the breech bounds in world and breech center in world for get intersected ships
             /*AABBd worldAABBInBreech;
             Vector3d worldBreechCenter;
             if (onShip == null) {
@@ -63,15 +62,15 @@ public class DroppingBreech extends BlockPlus implements IBreech/*, IBE<BreechBE
                 worldBreechCenter = shipToWorld.transformPosition(JomlUtil.dCenter(breechBp));
             }*/
 
-            ///find primer around and try to trigger it
-            Dest<IPrimer> primerDest = new Dest<>();
-            Dest<BlockPos> primerBpDest = new Dest<>();
-            Dest<Ship> primerShipDest = new Dest<>();
+                ///find primer around and try to trigger it
+                Dest<IPrimer> primerDest = new Dest<>();
+                Dest<BlockPos> primerBpDest = new Dest<>();
+                Dest<Ship> primerShipDest = new Dest<>();
 
-            if (findPrimerAround(level, breechBp, primerDest, primerBpDest, primerShipDest)) {
-                fire((ServerLevel)level, breechBp, (ServerShip)primerShipDest.get(), primerDest.get(), primerBpDest.get());
-                return;
-            }
+                if (findPrimerAround(level, breechBp, primerDest, primerBpDest, primerShipDest)) {
+                    fire((ServerLevel)level, breechBp, (ServerShip)primerShipDest.get(), primerDest.get(), primerBpDest.get());
+                    return;
+                }
 
             /*for (LoadedShip findShip : VSGameUtilsKt.getShipObjectWorld(level).getLoadedShips().getIntersecting(worldAABBInBreech)) {
                 if (onShip != null && findShip.getId() == onShip.getId()) continue;  //skip onShip
@@ -91,7 +90,8 @@ public class DroppingBreech extends BlockPlus implements IBreech/*, IBE<BreechBE
                     return;
                 }
             }*/
-        }, true),
+            }
+        },
         IBreech.breechInteraction(),
         new RefreshBlockRecordAdder(() -> new BreechRecord(40))
     );

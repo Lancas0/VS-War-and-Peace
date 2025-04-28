@@ -6,8 +6,11 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.lancas.vs_wap.debug.EzDebug;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.valkyrienskies.core.api.ships.ServerShip;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @JsonAutoDetect(
@@ -29,22 +32,38 @@ public class NoPlayerCollisionAttachment {  //todo use this thing or someother t
     }*/
 
     private NoPlayerCollisionAttachment() {}
-    public NoPlayerCollisionAttachment(UUID inIgnorePlayer) {
-        ignorePlayerUUID = inIgnorePlayer;
+    public NoPlayerCollisionAttachment(@Nullable List<UUID> inIgnorePlayers, boolean inIgnoreAny) {
+        ignorePlayerUUIDs.clear();
+        if (inIgnorePlayers != null)
+            ignorePlayerUUIDs.addAll(inIgnorePlayers);
+
+        ignoreAnyPlayer = inIgnoreAny;
     }
 
-    public static NoPlayerCollisionAttachment apply(@NotNull ServerShip ship, Player inIgnorePlayer) {
+    public static NoPlayerCollisionAttachment apply(@NotNull ServerShip ship, List<UUID> inIgnorePlayers) {
         var att = ship.getAttachment(NoPlayerCollisionAttachment.class);
         if (att == null) {
-            att = new NoPlayerCollisionAttachment(inIgnorePlayer.getUUID());
+            att = new NoPlayerCollisionAttachment(inIgnorePlayers, false);
             ship.saveAttachment(NoPlayerCollisionAttachment.class, att);
         } else {
-            att.ignorePlayerUUID = inIgnorePlayer.getUUID();
+            att.ignorePlayerUUIDs.clear();
+            att.ignorePlayerUUIDs.addAll(inIgnorePlayers);
         }
 
         return att;
     }
-    public static boolean isCollision(@NotNull ServerShip ship, Player player) {
+    public static NoPlayerCollisionAttachment applyIgnoreAny(@NotNull ServerShip ship) {
+        var att = ship.getAttachment(NoPlayerCollisionAttachment.class);
+        if (att == null) {
+            att = new NoPlayerCollisionAttachment(null, true);
+            ship.saveAttachment(NoPlayerCollisionAttachment.class, att);
+        } else {
+            att.ignoreAnyPlayer = true;
+        }
+
+        return att;
+    }
+    /*public static boolean isCollision(@NotNull ServerShip ship, Player player) {
         if (player == null) return false;
         var att = ship.getAttachment(NoPlayerCollisionAttachment.class);
         if (att == null) return true;
@@ -54,7 +73,9 @@ public class NoPlayerCollisionAttachment {  //todo use this thing or someother t
         if (att.ignorePlayerUUID == null) return true;
         if (att.ignorePlayerUUID.equals(player.getUUID())) return false;
         return true;
-    }
+    }*/
 
-    public UUID ignorePlayerUUID;
+    //public UUID ignorePlayerUUID;
+    private final List<UUID> ignorePlayerUUIDs = new ArrayList<>();
+    private boolean ignoreAnyPlayer = false;
 }

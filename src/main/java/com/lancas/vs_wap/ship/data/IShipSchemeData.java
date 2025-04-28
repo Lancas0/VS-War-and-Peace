@@ -1,14 +1,9 @@
 package com.lancas.vs_wap.ship.data;
 
-import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.level.block.state.BlockState;
 import org.joml.*;
 import org.valkyrienskies.core.api.ships.ServerShip;
-
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 public interface IShipSchemeData {
     //todo rotation
@@ -85,6 +80,4 @@ public interface IShipSchemeData {
 
     public CompoundTag saved();
     public IShipSchemeData load(CompoundTag tag);
-
-    public IShipSchemeRandomAccessor getRandomAccessor();
 }

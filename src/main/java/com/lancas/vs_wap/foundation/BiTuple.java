@@ -40,6 +40,14 @@ public class BiTuple<T, U> {
         public Vec3 getFrom() { return super.getFirst(); }
         public Vec3 getTo() { return super.getSecond(); }
     }
+    public static class ChunkXZ extends BiTuple<Integer, Integer> {
+        public ChunkXZ(int x, int z) {
+            super(x, z);
+        }
+
+        public int getX() { return super.getFirst(); }
+        public int getZ() { return super.getSecond(); }
+    }
 
     protected T first;
     protected U second;

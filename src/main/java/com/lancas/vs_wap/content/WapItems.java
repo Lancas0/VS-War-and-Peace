@@ -45,6 +45,11 @@ public class WapItems {
         .properties(p -> p.stacksTo(1))
         .register();
 
+    public static final ItemEntry<GreenPrint> GREEN_PRINT  = REGISTRATE
+        .item("green_print", GreenPrint::new)
+        .properties(p -> p.stacksTo(1))
+        .register();
+
     /*public static final ItemEntry<ShipRotatorItem> SHIP_ROTATOR = REGISTRATE
         .item(ShipRotatorItem.ID, ShipRotatorItem::new)
         .properties(p -> p.stacksTo(1))

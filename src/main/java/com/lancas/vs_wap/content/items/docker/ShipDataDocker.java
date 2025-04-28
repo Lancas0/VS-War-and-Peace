@@ -3,28 +3,22 @@ package com.lancas.vs_wap.content.items.docker;
 import com.lancas.vs_wap.content.items.base.ShipInteractableItem;
 import com.lancas.vs_wap.debug.EzDebug;
 import com.lancas.vs_wap.ship.attachment.HoldableAttachment;
-import com.lancas.vs_wap.ship.data.IShipSchemeData;
-import com.lancas.vs_wap.ship.data.RAChunkyShipSchemeData;
-import com.lancas.vs_wap.ship.data.SectionShipSchemeData;
+import com.lancas.vs_wap.ship.data.RRWChunkyShipSchemeData;
 import com.lancas.vs_wap.ship.helper.builder.ShipBuilder;
 import com.lancas.vs_wap.ship.feature.pool.ShipPool;
 import com.lancas.vs_wap.util.JomlUtil;
 import com.lancas.vs_wap.util.NbtUtil;
-import com.lancas.vs_wap.util.ShipUtil;
-import com.lancas.vs_wap.util.StrUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Matrix4dc;
 import org.joml.Vector3d;
 import org.valkyrienskies.core.api.ships.ServerShip;
 import org.valkyrienskies.core.api.ships.Ship;
@@ -64,7 +58,7 @@ public class ShipDataDocker extends ShipInteractableItem implements IDocker {
         //if (!stack.getOrCreateTag().contains("ship_data")) return null;
         //CompoundTag shipDataNbt = stack.getOrCreateTag().getCompound("ship_data");
         //IShipSchemeData shipData = new RAChunkyShipSchemeData().load(shipDataNbt);
-        RAChunkyShipSchemeData shipData = getShipSchemeData(stack);
+        RRWChunkyShipSchemeData shipData = getShipSchemeData(stack);
         if (shipData == null) return null;
 
         ShipBuilder shipBuilder = ShipPool
@@ -87,19 +81,19 @@ public class ShipDataDocker extends ShipInteractableItem implements IDocker {
         return shipBuilder;
     }
 
-    public RAChunkyShipSchemeData getShipSchemeData(ItemStack stack) {
+    public RRWChunkyShipSchemeData getShipSchemeData(ItemStack stack) {
         if (!(stack.getItem() instanceof ShipDataDocker)) return null;
         if (!stack.getOrCreateTag().contains("ship_data")) return null;
 
         CompoundTag shipDataNbt = stack.getOrCreateTag().getCompound("ship_data");
-        return new RAChunkyShipSchemeData().load(shipDataNbt);
+        return new RRWChunkyShipSchemeData().load(shipDataNbt);
     }
 
     @Override
     public ItemStack saveShipToStack(ServerLevel level, ServerShip ship, ItemStack stack) {
         if (stack == null || ship == null) return ItemStack.EMPTY;
 
-        RAChunkyShipSchemeData data = new RAChunkyShipSchemeData().readShip(level, ship);
+        RRWChunkyShipSchemeData data = new RRWChunkyShipSchemeData().readShip(level, ship);
         stack.getOrCreateTag().put("ship_data", data.saved());
 
         var holdable = ship.getAttachment(HoldableAttachment.class);
