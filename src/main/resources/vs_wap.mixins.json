@@ -16,6 +16,7 @@
     "CameraMixin",
     "LocalPlayerMixin",
     "client.option.MixinGammaOption",
+    "sandbox.SandBoxAABBRenderer",
     "sandbox.SandBoxBlockHint",
     "sandbox.SandBoxLevelRenderMixin"
   ],

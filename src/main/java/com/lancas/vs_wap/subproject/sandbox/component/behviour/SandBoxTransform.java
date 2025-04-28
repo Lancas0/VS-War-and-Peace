@@ -1,7 +1,7 @@
 package com.lancas.vs_wap.subproject.sandbox.component.behviour;
 
 import com.lancas.vs_wap.debug.EzDebug;
-import com.lancas.vs_wap.subproject.sandbox.api.UUIDParamWrapper;
+import com.lancas.vs_wap.subproject.sandbox.api.UUIDLazyParamWrapper;
 import com.lancas.vs_wap.subproject.sandbox.component.data.exposed.IExposedTransformData;
 import com.lancas.vs_wap.subproject.sandbox.component.data.SandBoxTransformData;
 import com.lancas.vs_wap.subproject.sandbox.event.SandBoxEventMgr;
@@ -67,6 +67,8 @@ public class SandBoxTransform extends AbstractComponentBehaviour<SandBoxTransfor
         }
     }
 
+    public SandBoxTransformData getData() { return data; } //todo temp
+
 
     public Vector3dc getPosition() {
         synchronized (data) {
@@ -88,7 +90,7 @@ public class SandBoxTransform extends AbstractComponentBehaviour<SandBoxTransfor
         //data update must be atomic
         synchronized (data) {
             data.position.set(newPos);
-            SandBoxEventMgr.onServerShipTransformDirty.schedule(ship.getUuid(), UUIDParamWrapper.of(ship.getUuid()), data);
+            //SandBoxEventMgr.onServerShipTransformDirty.schedule(ship.getUuid(), UUIDLazyParamWrapper.of(ship.getUuid()), data);
         }
 
         isMatrixDirty.set(true);
@@ -97,7 +99,7 @@ public class SandBoxTransform extends AbstractComponentBehaviour<SandBoxTransfor
     public SandBoxTransform setRotation(Quaterniondc newRot) {  //todo check rot normilized?
         synchronized (data) {
             data.rotation.set(newRot);
-            SandBoxEventMgr.onServerShipTransformDirty.schedule(ship.getUuid(), UUIDParamWrapper.of(ship.getUuid()), data);
+            //SandBoxEventMgr.onServerShipTransformDirty.schedule(ship.getUuid(), UUIDLazyParamWrapper.of(ship.getUuid()), data);
         }
 
         isMatrixDirty.set(true);
@@ -111,7 +113,7 @@ public class SandBoxTransform extends AbstractComponentBehaviour<SandBoxTransfor
 
         synchronized (data) {
             data.scale.set(newScale);
-            SandBoxEventMgr.onServerShipTransformDirty.schedule(ship.getUuid(), UUIDParamWrapper.of(ship.getUuid()), data);
+            //SandBoxEventMgr.onServerShipTransformDirty.schedule(ship.getUuid(), UUIDLazyParamWrapper.of(ship.getUuid()), data);
         }
 
         isMatrixDirty.set(true);
@@ -120,7 +122,7 @@ public class SandBoxTransform extends AbstractComponentBehaviour<SandBoxTransfor
     public SandBoxTransform set(Vector3dc newPos, Quaterniondc newRot, Vector3dc newScale) {
         synchronized (data) {
             data.set(newPos, newRot, newScale);
-            SandBoxEventMgr.onServerShipTransformDirty.schedule(ship.getUuid(), UUIDParamWrapper.of(ship.getUuid()), data);
+            //SandBoxEventMgr.onServerShipTransformDirty.schedule(ship.getUuid(), UUIDLazyParamWrapper.of(ship.getUuid()), data);
         }
 
         isMatrixDirty.set(true);
@@ -129,7 +131,7 @@ public class SandBoxTransform extends AbstractComponentBehaviour<SandBoxTransfor
     public SandBoxTransform set(SandBoxTransform other) {
         synchronized (data) {
             data.set(other.getPosition(), other.getRotation(), other.getScale());
-            SandBoxEventMgr.onServerShipTransformDirty.schedule(ship.getUuid(), UUIDParamWrapper.of(ship.getUuid()), data);
+            //SandBoxEventMgr.onServerShipTransformDirty.schedule(ship.getUuid(), UUIDLazyParamWrapper.of(ship.getUuid()), data);
         }
 
         isMatrixDirty.set(true);
@@ -138,7 +140,7 @@ public class SandBoxTransform extends AbstractComponentBehaviour<SandBoxTransfor
     public SandBoxTransform set(SandBoxTransformData inData) {
         synchronized (data) {
             data.set(inData.getPosition(), inData.getRotation(), inData.getScale());
-            SandBoxEventMgr.onServerShipTransformDirty.schedule(ship.getUuid(), UUIDParamWrapper.of(ship.getUuid()), data);
+            //SandBoxEventMgr.onServerShipTransformDirty.schedule(ship.getUuid(), UUIDLazyParamWrapper.of(ship.getUuid()), data);
         }
 
         isMatrixDirty.set(true);
@@ -147,7 +149,7 @@ public class SandBoxTransform extends AbstractComponentBehaviour<SandBoxTransfor
     public SandBoxTransform move(Vector3dc movement) {
         synchronized (data) {
             data.position.add(movement);
-            SandBoxEventMgr.onServerShipTransformDirty.schedule(ship.getUuid(), UUIDParamWrapper.of(ship.getUuid()), data);
+            //SandBoxEventMgr.onServerShipTransformDirty.schedule(ship.getUuid(), UUIDLazyParamWrapper.of(ship.getUuid()), data);
         }
 
         isMatrixDirty.set(true);
@@ -157,7 +159,7 @@ public class SandBoxTransform extends AbstractComponentBehaviour<SandBoxTransfor
         synchronized (data) {
             //data.rotation.mul(rotation).normalize();  //should normalize?
             rotation.mul(data.rotation, data.rotation);
-            SandBoxEventMgr.onServerShipTransformDirty.schedule(ship.getUuid(), UUIDParamWrapper.of(ship.getUuid()), data);
+            //SandBoxEventMgr.onServerShipTransformDirty.schedule(ship.getUuid(), UUIDLazyParamWrapper.of(ship.getUuid()), data);
         }
 
         isMatrixDirty.set(true);
@@ -166,7 +168,7 @@ public class SandBoxTransform extends AbstractComponentBehaviour<SandBoxTransfor
     public SandBoxTransform rotateLocal(Quaterniondc rotation) {  //todo check rot normilized?
         synchronized (data) {
             data.rotation.mul(rotation).normalize();  //should normalize?
-            SandBoxEventMgr.onServerShipTransformDirty.schedule(ship.getUuid(), UUIDParamWrapper.of(ship.getUuid()), data);
+            //SandBoxEventMgr.onServerShipTransformDirty.schedule(ship.getUuid(), UUIDLazyParamWrapper.of(ship.getUuid()), data);
         }
 
         isMatrixDirty.set(true);
@@ -180,7 +182,7 @@ public class SandBoxTransform extends AbstractComponentBehaviour<SandBoxTransfor
 
         synchronized (data) {
             data.scale.mul(scale);
-            SandBoxEventMgr.onServerShipTransformDirty.schedule(ship.getUuid(), UUIDParamWrapper.of(ship.getUuid()), data);
+            //SandBoxEventMgr.onServerShipTransformDirty.schedule(ship.getUuid(), UUIDLazyParamWrapper.of(ship.getUuid()), data);
         }
 
         isMatrixDirty.set(true);

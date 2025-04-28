@@ -23,4 +23,6 @@ public class RandUtil {
     public static Vector3d onRandSphere(double lower, double upper) { return onSphere(RANDOM.nextDouble(lower, upper)); }
 
     public static double nextD() { return RANDOM.nextDouble(); }
+    public static double nextG() { return RANDOM.nextGaussian(); }
+    public static double nextG(double mean, double std) { return RANDOM.nextGaussian(mean, std); }
 }

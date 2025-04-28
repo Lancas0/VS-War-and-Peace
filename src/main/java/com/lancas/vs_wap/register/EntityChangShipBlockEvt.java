@@ -47,7 +47,7 @@ public class EntityChangShipBlockEvt {
             }
         }*./
     }*/
-    @SubscribeEvent
+    /*@SubscribeEvent
     public static void onBlockPlace(PlayerInteractEvent.RightClickBlock event) {
         if (!(event.getLevel() instanceof ServerLevel level)) return;
 
@@ -56,18 +56,17 @@ public class EntityChangShipBlockEvt {
         ItemStack stack = event.getItemStack();
 
         //todo设置玩家无法交互投影船上的东西，或者使用SandBox
-        event.setCanceled(true);
+        //event.setCanceled(true);
         //event.setCancellationResult(InteractionResult.SUCCESS);
 
         /*BlockState placedState = ((BlockItem)stack.getItem()).getBlock().defaultBlockState();
         level.setBlock(pos.relative(event.getFace()), placedState, Block.UPDATE_ALL);
 
-
         if () {
             // 播放放置音效
             //todo level.playSound(null, pos, SoundEvents.STONE_PLACE, SoundSource.BLOCKS, 1.0F, 1.0F);
-        }*/
-    }
+        }*./
+    }*/
 
 
     /*@SubscribeEvent
@@ -83,7 +82,7 @@ public class EntityChangShipBlockEvt {
 
 
 
-    @SubscribeEvent
+    /*@SubscribeEvent
     public static void onBlockBreak(BlockEvent.BreakEvent event) {
         if (!(event.getLevel() instanceof ServerLevel level)) return;
         ServerShip ship = ShipUtil.getServerShipAt(level, event.getPos());
@@ -99,6 +98,6 @@ public class EntityChangShipBlockEvt {
 
         event.setCanceled(true); // 取消原版掉落
         event.setExpToDrop(0);
-    }
+    }*/
 
 }

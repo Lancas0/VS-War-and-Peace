@@ -5,6 +5,7 @@ import com.lancas.vs_wap.subproject.sandbox.component.data.exposed.IExposedCompo
 import com.lancas.vs_wap.subproject.sandbox.ship.SandBoxServerShip;
 import com.lancas.vs_wap.util.NbtBuilder;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
 
 public class BallisticData implements IComponentData<BallisticData>, IExposedComponentData<BallisticData> {
     public static final double TIME_OUT_SECONDS = 60;

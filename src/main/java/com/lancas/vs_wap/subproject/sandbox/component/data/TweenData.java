@@ -4,6 +4,7 @@ import com.lancas.vs_wap.debug.EzDebug;
 import com.lancas.vs_wap.subproject.sandbox.component.data.exposed.IExposedComponentData;
 import com.lancas.vs_wap.subproject.sandbox.component.data.exposed.IExposedTransformData;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
 
 import java.io.*;
 

@@ -3,11 +3,16 @@ package com.lancas.vs_wap.subproject.sandbox;
 import com.lancas.vs_wap.ModMain;
 import com.lancas.vs_wap.debug.EzDebug;
 import com.lancas.vs_wap.foundation.BiTuple;
+import com.lancas.vs_wap.foundation.TriTuple;
+import com.lancas.vs_wap.subproject.sandbox.api.AABBdLazyParamWrapper;
+import com.lancas.vs_wap.subproject.sandbox.api.UUIDLazyParamWrapper;
 import com.lancas.vs_wap.subproject.sandbox.component.behviour.IComponentBehaviour;
 import com.lancas.vs_wap.subproject.sandbox.event.SandBoxEventMgr;
 import com.lancas.vs_wap.subproject.sandbox.ship.ISandBoxShip;
 import com.lancas.vs_wap.subproject.sandbox.ship.SandBoxServerShip;
+import com.lancas.vs_wap.subproject.sandbox.ship.ScheduleShipData;
 import com.lancas.vs_wap.util.NbtBuilder;
+import com.lancas.vs_wap.util.SerializeUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
@@ -19,6 +24,7 @@ import org.apache.commons.lang3.time.StopWatch;
 import org.jetbrains.annotations.Nullable;
 import org.valkyrienskies.mod.common.VSGameUtilsKt;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -26,6 +32,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @Mod.EventBusSubscriber
 public class SandBoxServerWorld extends SavedData implements ISandBoxWorld {
+
     //private static Thread physicsThread = new Thread(SandBoxServerWorld::physTick, ModMain.MODID + "SandBox-Physics-Thread");
     //private static final long UPDATE_INTERVAL_NS = 16_666_666; // ≈16.67ms (60Hz)
     public static final long SERVER_TICK_INTERVAL_MS = 50;
@@ -101,6 +108,8 @@ public class SandBoxServerWorld extends SavedData implements ISandBoxWorld {
     }
 
     private final Map<UUID, SandBoxServerShip> serverShips = new ConcurrentHashMap<>();
+    private final Map<UUID, ScheduleShipData> scheduleShips = new ConcurrentHashMap<>();  //map use uuid key avoid add ships with same key
+
     private final ServerLevel level;
     //private final AtomicBoolean initialized = new AtomicBoolean(false);  //make sure ship are fully loaded before tick event
     //private final AtomicBoolean started = new AtomicBoolean(false);
@@ -148,11 +157,32 @@ public class SandBoxServerWorld extends SavedData implements ISandBoxWorld {
     //todo schedule add ship, and add ship only initialized
     public static void addShip(ServerLevel level, SandBoxServerShip ship) {
         SandBoxServerWorld world = SandBoxServerWorld.getOrCreate(level);
-        world.serverShips.put(ship.getUuid(), ship);
-
-        SandBoxEventMgr.onAddNewShipInServerWorld.invokeAll(level, ship);
-        world.setDirty();
+        world.addShipImpl(ship);
     }
+    public void addShipImpl(SandBoxServerShip ship) {
+        UUID addUuid = ship.getUuid();
+        if (serverShips.containsKey(addUuid)) {
+            EzDebug.warn("can't add a ship with a existed uuid:" + addUuid);
+            return;
+        }
+
+        serverShips.put(ship.getUuid(), ship);
+        SandBoxEventMgr.onAddNewShipInServerWorld.invokeAll(level, ship);
+        setDirty();
+    }
+
+    public static void scheduleShipOverwriteIfExisted(ServerLevel level, ScheduleShipData scheduleShipData) {
+        SandBoxServerWorld world = SandBoxServerWorld.getOrCreate(level);
+        world.scheduleShips.put(scheduleShipData.ship.getUuid(), scheduleShipData);
+    }
+    /*public static void scheduleShip(ServerLevel level, SandBoxServerShip ship, int tick, @Nullable SandBoxServerWorld.ScheduleCallback scheduleCb) {
+        SandBoxServerWorld world = SandBoxServerWorld.getOrCreate(level);
+        world.scheduleShips.put(ship.getUuid(), new TriTuple<>(ship, tick, scheduleCb));
+        //world.serverShips.put(ship.getUuid(), ship);
+        //SandBoxEventMgr.onAddNewShipInServerWorld.invokeAll(level, ship);
+        world.setDirty();
+    }*/
+
     public static boolean deleteShip(ServerLevel level, UUID shipUuid) {
         SandBoxServerWorld world = SandBoxServerWorld.getOrCreate(level);
         return world.deleteShipImpl(shipUuid);
@@ -175,7 +205,7 @@ public class SandBoxServerWorld extends SavedData implements ISandBoxWorld {
     }
 
 
-    private AtomicInteger lazy = new AtomicInteger(60);
+    private AtomicInteger lazy = new AtomicInteger(20);
 
     @SubscribeEvent
     public static void serverTick(TickEvent.ServerTickEvent event) {
@@ -194,28 +224,11 @@ public class SandBoxServerWorld extends SavedData implements ISandBoxWorld {
                     continue;
                 }
 
-                var shipsIt = world.serverShips.values().iterator();
-                while (shipsIt.hasNext()) {
-                    SandBoxServerShip ship = shipsIt.next();
-                    if (ship.tickDownTimeOut()) {
-                        //EzDebug.light("time out a ship");
-
-                        SandBoxEventMgr.onRemoveShipFromServerWorld.invokeAll(world.level, ship);
-                        shipsIt.remove();  //hopefully ConcurrentMap will successfully handle this
-                        continue;
-                    }
-
-                    //now rigidbody do nothing in server actullay
-                    ship.getRigidbody().serverTick(world.level);
-                    ship.getAllBehaviours().forEach(beh -> {
-                        //EzDebug.log("handling behaviour:" + beh.getClass().getName());
-                        beh.serverTick(world.level);
-                    });
-                }
+                world.serverTickLoadedShip();
+                world.serverTickScheduleShip();
 
                 world.setDirty();  //todo should set dirty every server tick?
             }
-
             /*if (DO_PHYS_IN_SERVER_THREAD) {
                 physTick();
             }*/
@@ -224,6 +237,69 @@ public class SandBoxServerWorld extends SavedData implements ISandBoxWorld {
             e.printStackTrace();
         }
     }
+    private void serverTickLoadedShip() {
+        var shipsIt = serverShips.values().iterator();
+        while (shipsIt.hasNext()) {
+            SandBoxServerShip ship = shipsIt.next();
+            if (ship.tickDownTimeOut()) {
+                //EzDebug.light("time out a ship");
+
+                SandBoxEventMgr.onRemoveShipFromServerWorld.invokeAll(level, ship);
+                shipsIt.remove();  //hopefully ConcurrentMap will successfully handle this
+                continue;
+            }
+
+            //now rigidbody do nothing in server actually
+            ship.getRigidbody().serverTick(level);
+            ship.getAllBehaviours().forEach(beh -> { beh.serverTick(level); });
+
+            SandBoxEventMgr.onServerShipTransformDirty.schedule(
+                ship.getUuid(),
+                new UUIDLazyParamWrapper(ship.getUuid()),
+                ship.getTransform().getData(),
+                new AABBdLazyParamWrapper(ship.getLocalAABB())
+            );
+        }
+    }
+    private void serverTickScheduleShip() {
+        var scheduleShipIt = scheduleShips.values().iterator();
+        while (scheduleShipIt.hasNext()) {
+            var curSchedule = scheduleShipIt.next();
+
+            curSchedule.scheduleTick(level);
+
+            if (curSchedule.isCanceled()) {
+                scheduleShipIt.remove();
+                continue;
+            }
+            if (curSchedule.shouldSpawn()) {
+                scheduleShipIt.remove();
+                addShipImpl(curSchedule.ship);
+                continue;
+            }
+        }
+    }
+    /*private void scheduleShips() {
+        var schedulingIt = scheduleShips.values().iterator();
+        while (schedulingIt.hasNext()) {
+            var scheduling = schedulingIt.next();
+            SandBoxServerShip ship = scheduling.getFirst();
+            Integer remainTick = scheduling.getSecond();
+            @Nullable var callback = scheduling.getThird();
+
+            if (remainTick < 0) {  //remainTick = 0也会进行一次callback, < 0才加入world
+                EzDebug.highlight("add a scheduled ship!");
+                addShipImpl(ship);
+                schedulingIt.remove();
+                continue;
+            }
+
+            if (callback != null)
+                callback.onScheduling(level, ship, remainTick);
+
+            scheduling.setSecond(remainTick - 1);
+        }
+    }*/
     private static void physTick() {
         if (Minecraft.getInstance().isPaused())  //can it work in multiplayer?
             return;
@@ -245,7 +321,7 @@ public class SandBoxServerWorld extends SavedData implements ISandBoxWorld {
 
                     //NetworkHandler.sendToAllPlayers(new UpdateShipTransformPacketS2C(ship.getUuid(), transformData));
                     //todo temp: i just want to see if it's smooth
-                    //SandBoxEventMgr.onServerShipTransformDirty.invokeAll();
+                    SandBoxEventMgr.onServerShipTransformDirty.invokeAll();
                 }
             } catch (Exception e) {
                 EzDebug.error("server tick failed.");
@@ -259,28 +335,46 @@ public class SandBoxServerWorld extends SavedData implements ISandBoxWorld {
         EzDebug.light("to save server world");
 
         List<SandBoxServerShip> toSaveShips = serverShips.values().stream().filter(ship -> !ship.isTimeOut()).toList();
-        return new NbtBuilder().putEach(
-            "ships",
-            toSaveShips,
-            SandBoxServerShip::saved
-        ).get();
+        return new NbtBuilder().
+            putEach("ships", toSaveShips, ship -> ship.saved(level)).
+            putEach("schedule_ships", scheduleShips.values(), scheduleShip -> scheduleShip.saved(level))
+            .get();
     }
     public SandBoxServerWorld load(CompoundTag tag) {
         List<SandBoxServerShip> loadedShips = new ArrayList<>();
+        List<ScheduleShipData> schedulingShips = new ArrayList<>();
         try {
-            NbtBuilder.modify(tag).readEachCompound(
-                "ships",
-                SandBoxServerShip::new,
-                loadedShips
-            );
+            NbtBuilder.modify(tag)
+                .readEachCompound("ships", t -> new SandBoxServerShip(level, t), loadedShips)
+                .readEachCompound("schedule_ships", t -> new ScheduleShipData(level, t), schedulingShips);
+                /*.readEachCompound("schedule_ships", t -> {
+                    NbtBuilder tReader = NbtBuilder.modify(t);
+                    ScheduleCallback scheduleCb = null;
+
+                    if (tReader.contains("schedule_callback")) {
+                        scheduleCb = SerializeUtil.safeDeserialize(tReader.getBytes("scheduling_callback"));
+                        if (scheduleCb == null) {
+                            EzDebug.warn("fail to read schedule callback");
+                        }
+                    }
+
+                    SandBoxServerShip ship = new SandBoxServerShip(tReader.getCompound("saved_ship"));
+                    int remainTick = tReader.getInt("remain_tick");
+
+                    return new TriTuple<>(ship, remainTick, scheduleCb);
+                }, schedulingShips);*/
         } catch (Exception e) {
             EzDebug.error("fail to load ship.");
             e.printStackTrace();
         }
 
-        for (var ship : loadedShips) {
+        serverShips.clear();
+        for (var ship : loadedShips)
             serverShips.put(ship.getUuid(), ship);
-        }
+
+        scheduleShips.clear();
+        for (var scheduleShip : schedulingShips)
+            scheduleShips.put(scheduleShip.ship.getUuid(), scheduleShip);
 
         return this;
     }

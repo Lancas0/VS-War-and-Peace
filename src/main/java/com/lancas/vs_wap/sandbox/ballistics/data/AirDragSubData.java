@@ -9,6 +9,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import org.joml.Vector3d;
 import org.joml.primitives.AABBdc;
+import org.joml.primitives.AABBic;
 
 import java.util.concurrent.atomic.AtomicReference;
 

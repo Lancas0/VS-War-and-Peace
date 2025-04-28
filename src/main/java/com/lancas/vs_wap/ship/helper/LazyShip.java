@@ -52,7 +52,12 @@ public class LazyShip {
     private static class LazyShipGetterDeserializer extends JsonDeserializer<LazyShipGetter> {
         @Override
         public LazyShipGetter deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JacksonException {
-            return SerializeUtil.deserilaize(p.getBinaryValue());
+            try {
+                return SerializeUtil.deserilaize(p.getBinaryValue());
+            } catch (ClassNotFoundException e) {
+                EzDebug.error("fail to serialize lazy ship getter");
+                throw new RuntimeException(e);
+            }
         }
     }
 

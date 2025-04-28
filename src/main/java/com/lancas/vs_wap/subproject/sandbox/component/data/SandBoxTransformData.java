@@ -5,12 +5,12 @@ import com.lancas.vs_wap.subproject.sandbox.component.data.exposed.IExposedTrans
 import com.lancas.vs_wap.subproject.sandbox.util.SerializeUtil;
 import com.lancas.vs_wap.util.StrUtil;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
 import org.joml.*;
 
 public class SandBoxTransformData implements ILazyEventParam<SandBoxTransformData>, IComponentData<SandBoxTransformData>, IExposedTransformData {
     @Override
     public SandBoxTransformData copyData(SandBoxTransformData src) { return this.set(src); }
-
 
     public final Vector3d position = new Vector3d();
     public final Quaterniond rotation = new Quaterniond();
@@ -63,9 +63,7 @@ public class SandBoxTransformData implements ILazyEventParam<SandBoxTransformDat
     }
 
     @Override
-    public CompoundTag saved() {
-        return SerializeUtil.saveTransformLike(position, rotation, scale);
-    }
+    public CompoundTag saved() { return SerializeUtil.saveTransformLike(position, rotation, scale); }
     @Override
     public SandBoxTransformData load(CompoundTag tag) {
         SerializeUtil.loadTransformLike(tag, this::set);

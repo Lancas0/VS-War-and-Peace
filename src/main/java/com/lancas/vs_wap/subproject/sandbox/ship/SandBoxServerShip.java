@@ -1,7 +1,7 @@
 package com.lancas.vs_wap.subproject.sandbox.ship;
 
 import com.lancas.vs_wap.debug.EzDebug;
-import com.lancas.vs_wap.subproject.sandbox.INbtSavedObject;
+import com.lancas.vs_wap.subproject.sandbox.api.ISavedLevelObject;
 import com.lancas.vs_wap.subproject.sandbox.component.behviour.IComponentBehaviour;
 import com.lancas.vs_wap.subproject.sandbox.component.behviour.SandBoxRigidbody;
 import com.lancas.vs_wap.subproject.sandbox.component.data.IComponentData;
@@ -15,6 +15,7 @@ import com.lancas.vs_wap.subproject.sandbox.util.SerializeUtil;
 import com.lancas.vs_wap.subproject.sandbox.util.TransformUtil;
 import com.lancas.vs_wap.util.NbtBuilder;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.state.BlockState;
 import org.joml.Quaterniondc;
 import org.joml.Vector3dc;
@@ -26,7 +27,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class SandBoxServerShip implements ISandBoxShip, INbtSavedObject<SandBoxServerShip> {
+public class SandBoxServerShip implements ISandBoxShip, ISavedLevelObject<SandBoxServerShip> {
     private UUID uuid;
     private final SandBoxTransform transform = new SandBoxTransform();
     private final SandBoxShipBlockCluster blockCluster = new SandBoxShipBlockCluster();
@@ -100,8 +101,8 @@ public class SandBoxServerShip implements ISandBoxShip, INbtSavedObject<SandBoxS
         blockCluster.loadData(this, clusterData);
         rigidbody.loadData(this, rigidbodyData);
     }
-    public SandBoxServerShip(CompoundTag saved) {
-        load(saved);
+    public SandBoxServerShip(ServerLevel level, CompoundTag saved) {
+        load(level, saved);
     }
 
     public <B extends IComponentBehaviour<D>, D extends IComponentData<D> & IExposedComponentData<D>>
@@ -134,6 +135,7 @@ public class SandBoxServerShip implements ISandBoxShip, INbtSavedObject<SandBoxS
     //todo readonly interface?
     @Override
     public SandBoxTransform getTransform() { return transform; }  //todo get Exposed Behaviour?
+
     @Override
     public SandBoxShipBlockCluster getCluster() { return blockCluster; }
 
@@ -152,7 +154,7 @@ public class SandBoxServerShip implements ISandBoxShip, INbtSavedObject<SandBoxS
 
     public ShipClientRenderer createRenderer() {
         return new ShipClientRenderer(
-            uuid, transform.getExposedData(), blockCluster.allBlocks()
+            uuid, getLocalAABB(), transform.getExposedData(), blockCluster.allBlocks()
         );
     }
 
@@ -185,7 +187,7 @@ public class SandBoxServerShip implements ISandBoxShip, INbtSavedObject<SandBoxS
     }*/
 
     @Override
-    public CompoundTag saved() {
+    public CompoundTag saved(ServerLevel level) {
         return new NbtBuilder()
             .putUUID("uuid", uuid)
             .putNumber("timeout", timeout.get())
@@ -201,7 +203,7 @@ public class SandBoxServerShip implements ISandBoxShip, INbtSavedObject<SandBoxS
             ).get();
     }
     @Override
-    public SandBoxServerShip load(CompoundTag tag) {
+    public SandBoxServerShip load(ServerLevel level, CompoundTag tag) {
         behaviours.clear();
 
         NbtBuilder.modify(tag)

@@ -48,12 +48,15 @@ public class BallisticBehaviour extends AbstractComponentBehaviour<BallisticData
 
     @Override
     public void serverTick(ServerLevel level) {
+        //EzDebug.log("ballstic ticking");
         if (data.terminated) return;
 
         //todo reaction force
 
-
         BarrelCtxUpdateHandler.updateBarrelCtx(level, ship, data);
+
+        //EzDebug.log("barrel ctx updated");
+
         if (!data.barrelCtx.isAbsoluteExitBarrel()) {
             ship.getRigidbody().getExposedData().setNoGravity();
             return;

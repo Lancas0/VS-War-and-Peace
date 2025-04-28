@@ -7,6 +7,7 @@ import com.lancas.vs_wap.subproject.sandbox.component.data.exposed.IExposedCompo
 import com.lancas.vs_wap.subproject.sandbox.ship.SandBoxServerShip;
 import com.lancas.vs_wap.util.NbtBuilder;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import org.apache.logging.log4j.util.TriConsumer;

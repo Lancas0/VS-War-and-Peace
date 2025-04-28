@@ -1,17 +1,17 @@
 package com.lancas.vs_wap.subproject.sandbox.event;
 
 import com.lancas.vs_wap.event.impl.BiEventImpl;
-import com.lancas.vs_wap.event.impl.BiLazyEvent;
 import com.lancas.vs_wap.event.impl.QuadEventImpl;
+import com.lancas.vs_wap.event.impl.TriLazyEvent;
 import com.lancas.vs_wap.foundation.network.NetworkHandler;
+import com.lancas.vs_wap.subproject.sandbox.api.AABBdLazyParamWrapper;
 import com.lancas.vs_wap.subproject.sandbox.component.data.SandBoxTransformData;
-import com.lancas.vs_wap.subproject.sandbox.api.UUIDParamWrapper;
+import com.lancas.vs_wap.subproject.sandbox.api.UUIDLazyParamWrapper;
 import com.lancas.vs_wap.subproject.sandbox.network.SyncAddClientRendererPacketS2C;
 import com.lancas.vs_wap.subproject.sandbox.network.SyncRemoveClientRendererPacketS2C;
 import com.lancas.vs_wap.subproject.sandbox.network.UpdateShipTransformPacketS2C;
 import com.lancas.vs_wap.subproject.sandbox.network.worldsync.SyncClientWorldIfNecessaryPacketS2C;
 import com.lancas.vs_wap.subproject.sandbox.ship.SandBoxServerShip;
-import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.block.state.BlockState;
@@ -20,11 +20,13 @@ import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.joml.Vector3ic;
+import org.joml.primitives.AABBd;
+import org.joml.primitives.AABBi;
 import org.valkyrienskies.mod.common.VSGameUtilsKt;
 
 @Mod.EventBusSubscriber
 public class SandBoxEventMgr {
-    public static BiLazyEvent<UUIDParamWrapper, SandBoxTransformData> onServerShipTransformDirty = new BiLazyEvent<>();
+    public static TriLazyEvent<UUIDLazyParamWrapper, SandBoxTransformData, AABBdLazyParamWrapper> onServerShipTransformDirty = new TriLazyEvent<>();
     public static BiEventImpl<ServerLevel, SandBoxServerShip> onAddNewShipInServerWorld = new BiEventImpl<>();
     public static BiEventImpl<ServerLevel, SandBoxServerShip> onRemoveShipFromServerWorld = new BiEventImpl<>();
     //目前能保证当删除一个空方块时不会触发
@@ -80,9 +82,9 @@ public class SandBoxEventMgr {
     }*/
 
     public static void register() {
-        onServerShipTransformDirty.addListener((uuid, transformData) -> {
+        onServerShipTransformDirty.addListener((uuid, transformData, localAABB) -> {
             //sync in server world thread.
-            NetworkHandler.sendToAllPlayers(new UpdateShipTransformPacketS2C(uuid.uuid, transformData));
+            NetworkHandler.sendToAllPlayers(new UpdateShipTransformPacketS2C(uuid.uuid, transformData, localAABB.getAABB(new AABBd())));
         });
 
         onAddNewShipInServerWorld.addListener((level, ship) -> {

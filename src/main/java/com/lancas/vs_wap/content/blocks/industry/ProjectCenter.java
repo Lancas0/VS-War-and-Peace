@@ -24,7 +24,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 //todo ignored by all Scheme
-public class ProjectCenter extends Block {
+public class ProjectCenter extends Block implements IgnoreByScheme {
     //public Properties AIR = BlockStateProperties.
     public ProjectCenter(Properties p) {
         super(p);

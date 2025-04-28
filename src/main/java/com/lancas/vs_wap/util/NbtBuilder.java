@@ -211,6 +211,11 @@ public class NbtBuilder {
         return nbt.getUUID(key);
     }
 
+    public NbtBuilder putBytes(String key, byte[] bytes) { nbt.putByteArray(key, bytes); return this; }
+    public NbtBuilder readBytes(String key, Dest<byte[]> bytesDest) { Dest.setIfExistDest(bytesDest, nbt.getByteArray(key)); return this; }
+    public NbtBuilder readBytesDo(String key, Consumer<byte[]> consumer) { consumer.accept(nbt.getByteArray(key)); return this; }
+    public byte[] getBytes(String key) { return nbt.getByteArray(key); }
+
 
     public NbtBuilder putVector3d(String key, Vector3dc vec) {
         return this.putCompound(key, tagOfVector3d(vec));

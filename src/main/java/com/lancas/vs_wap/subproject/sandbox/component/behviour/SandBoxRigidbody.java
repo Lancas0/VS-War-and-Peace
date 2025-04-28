@@ -106,11 +106,11 @@ public class SandBoxRigidbody extends AbstractComponentBehaviour<SandBoxRigidbod
             Vector3d torque = data.applyingTorques.poll();
             Vector3d addOmega = torque.mul(invInertiaWorld, new Vector3d()).mul(PHYS_TICK_TIME_S);//torque.mul(localInvInertia, new Vector3d()).mul(PHYS_TICK_TIME_S);
 
-            EzDebug.log("localInvInertia:" + localInvInertia +
+            /*EzDebug.log("localInvInertia:" + localInvInertia +
                 "\nworldInvInertia:" + invInertiaWorld +
                 "\ntorque:" + StrUtil.F2(torque) + ", torMulLocal:" + torque.mul(localInvInertia, new Vector3d()) + ", torMulWorld:" + torque.mul(invInertiaWorld, new Vector3d()) +
                 "\nrotation" + StrUtil.F2(ship.getTransform().getRotation().getEulerAnglesXYZ(new Vector3d())) + ", addOmega:" + StrUtil.F2(addOmega)
-            );
+            );*/
 
             if (addOmega.isFinite()) {
                 data.omega.add(addOmega);

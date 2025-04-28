@@ -4,6 +4,7 @@ import com.lancas.vs_wap.subproject.sandbox.component.data.IComponentData;
 import com.lancas.vs_wap.subproject.sandbox.component.data.exposed.IExposedComponentData;
 import com.lancas.vs_wap.util.NbtBuilder;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
 
 public class BallisticBarrelContextSubData implements IComponentData<BallisticBarrelContextSubData>, IExposedComponentData<BallisticBarrelContextSubData> {
     public static final int ABSOLUTE_EXIT_BARREL_TICK = 4;
