@@ -1,14 +1,16 @@
 package com.lancas.vs_wap.subproject.sandbox.component.data;
 
 import com.lancas.vs_wap.debug.EzDebug;
-import com.lancas.vs_wap.subproject.sandbox.component.data.exposed.IExposedComponentData;
-import com.lancas.vs_wap.subproject.sandbox.component.data.exposed.IExposedTransformData;
+import com.lancas.vs_wap.subproject.sandbox.api.component.IComponentData;
+import com.lancas.vs_wap.subproject.sandbox.api.component.IComponentDataReader;
+import com.lancas.vs_wap.subproject.sandbox.api.data.ITransformPrimitive;
+import com.lancas.vs_wap.subproject.sandbox.api.data.TransformPrimitive;
+import com.lancas.vs_wap.util.SerializeUtil;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.server.level.ServerLevel;
 
 import java.io.*;
 
-public class TweenData implements IComponentData<TweenData>, IExposedComponentData<TweenData> {
+public class TweenData implements IComponentData<TweenData> {
     @Override
     public TweenData copyData(TweenData src) {
         this.function = src.function;  //todo can i remove the ref holding?
@@ -25,21 +27,11 @@ public class TweenData implements IComponentData<TweenData>, IExposedComponentDa
         tag.putDouble("duration", duration);
         tag.putBoolean("loop", loop);
 
-        try {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ObjectOutputStream oos = new ObjectOutputStream(baos);
-            oos.writeObject(function);
-            tag.putByteArray("function", baos.toByteArray());
-
-            oos.reset();
-            oos.writeObject(curve);
-            tag.putByteArray("curve", baos.toByteArray());
-
-            oos.close();
-
-        } catch (Exception e) {
-            EzDebug.error("fail to serialzie function.");
-            e.printStackTrace();
+        byte[] functionBytes = SerializeUtil.safeSerialize(function);
+        if (functionBytes != null && functionBytes.length > 0) {
+            tag.putByteArray("function_bytes", functionBytes);
+        } else {
+            EzDebug.warn("fail to serialize tween function.");
         }
 
         return tag;
@@ -50,20 +42,12 @@ public class TweenData implements IComponentData<TweenData>, IExposedComponentDa
         duration = tag.getDouble("duration");
         loop = tag.getBoolean("loop");
 
-        try {
-            byte[] functionBytes = tag.getByteArray("function");
-            ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(functionBytes));
-            function = (TweenFunction)ois.readObject();
-            ois.close();
+        if (tag.contains("function_bytes")) {
+            function = SerializeUtil.safeDeserialize(tag.getByteArray("function_bytes"));
+        }
 
-            functionBytes = tag.getByteArray("curve");
-            ois = new ObjectInputStream(new ByteArrayInputStream(functionBytes));
-            curve = (Curve) ois.readObject();
-            ois.close();
-
-        } catch (Exception e) {
-            EzDebug.error("fail to deserialzie function.");
-            e.printStackTrace();
+        if (function == null) {
+            EzDebug.warn("fail to deserialize tween function.");
         }
 
         return this;
@@ -73,7 +57,7 @@ public class TweenData implements IComponentData<TweenData>, IExposedComponentDa
     //这个不能捕获非可序列化的参数
     @FunctionalInterface
     public static interface TweenFunction extends Serializable {
-        public SandBoxTransformData getNextTransform(IExposedTransformData prev, double t01);
+        public TransformPrimitive getNextTransform(ITransformPrimitive prev, double t01);
     }
     @FunctionalInterface
     public static interface Curve extends Serializable {

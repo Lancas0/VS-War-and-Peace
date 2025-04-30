@@ -4,6 +4,7 @@ import com.lancas.vs_wap.debug.EzDebug;
 import com.lancas.vs_wap.foundation.network.NetworkHandler;
 import com.lancas.vs_wap.subproject.sandbox.SandBoxClientWorld;
 import com.lancas.vs_wap.subproject.sandbox.SandBoxServerWorld;
+import com.lancas.vs_wap.subproject.sandbox.ship.SandBoxServerShip;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerLevel;
@@ -11,9 +12,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkEvent;
 import org.valkyrienskies.mod.common.VSGameUtilsKt;
 
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Supplier;
 
 public class ConfirmSyncNecessityPacketC2S {
@@ -46,10 +45,13 @@ public class ConfirmSyncNecessityPacketC2S {
             SandBoxServerWorld serverWorld = SandBoxServerWorld.getOrCreate(level);
 
             //now is server
+
+            List<SandBoxServerShip> serverShips = new ArrayList<>();
+            serverWorld.allServerShips().forEach(serverShips::add);
             NetworkHandler.sendToClientPlayer(player,
                 new DoSyncClientWorldPacketS2C(
                     VSGameUtilsKt.getDimensionId(level),
-                    serverWorld.getSavedRenderers()
+                    serverShips
                 )
             );
             serverWorld.notifyClientLoading(true);

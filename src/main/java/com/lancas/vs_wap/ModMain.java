@@ -6,6 +6,7 @@ import com.lancas.vs_wap.content.behaviour.item.DockerDispenseBehaviour;
 import com.lancas.vs_wap.content.WapMass;
 import com.lancas.vs_wap.event.EventMgr;
 import com.lancas.vs_wap.foundation.network.NetworkHandler;
+import com.lancas.vs_wap.sandbox.schedule.ClientShardShipScheduler;
 import com.lancas.vs_wap.subproject.sandbox.SandBoxServerWorld;
 import com.lancas.vs_wap.subproject.sandbox.event.SandBoxEventMgr;
 import com.mojang.logging.LogUtils;
@@ -66,6 +67,9 @@ public class ModMain  {
 
         EventMgr.registerDefault();
         SandBoxEventMgr.register();
+
+
+        ClientShardShipScheduler.register();
 
 
 

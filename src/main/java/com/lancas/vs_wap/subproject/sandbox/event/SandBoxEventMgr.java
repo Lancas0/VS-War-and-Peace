@@ -5,12 +5,13 @@ import com.lancas.vs_wap.event.impl.QuadEventImpl;
 import com.lancas.vs_wap.event.impl.TriLazyEvent;
 import com.lancas.vs_wap.foundation.network.NetworkHandler;
 import com.lancas.vs_wap.subproject.sandbox.api.AABBdLazyParamWrapper;
-import com.lancas.vs_wap.subproject.sandbox.component.data.SandBoxTransformData;
+import com.lancas.vs_wap.subproject.sandbox.api.data.TransformPrimitive;
 import com.lancas.vs_wap.subproject.sandbox.api.UUIDLazyParamWrapper;
-import com.lancas.vs_wap.subproject.sandbox.network.SyncAddClientRendererPacketS2C;
 import com.lancas.vs_wap.subproject.sandbox.network.SyncRemoveClientRendererPacketS2C;
 import com.lancas.vs_wap.subproject.sandbox.network.UpdateShipTransformPacketS2C;
 import com.lancas.vs_wap.subproject.sandbox.network.worldsync.SyncClientWorldIfNecessaryPacketS2C;
+import com.lancas.vs_wap.subproject.sandbox.network.worldsync.SyncServerShipToClientPacket;
+import com.lancas.vs_wap.subproject.sandbox.ship.ISandBoxShip;
 import com.lancas.vs_wap.subproject.sandbox.ship.SandBoxServerShip;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -21,25 +22,25 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.joml.Vector3ic;
 import org.joml.primitives.AABBd;
-import org.joml.primitives.AABBi;
 import org.valkyrienskies.mod.common.VSGameUtilsKt;
 
 @Mod.EventBusSubscriber
 public class SandBoxEventMgr {
-    public static TriLazyEvent<UUIDLazyParamWrapper, SandBoxTransformData, AABBdLazyParamWrapper> onServerShipTransformDirty = new TriLazyEvent<>();
-    public static BiEventImpl<ServerLevel, SandBoxServerShip> onAddNewShipInServerWorld = new BiEventImpl<>();
+    //todo onServerShipComponentUpdate which can update any component data
+    public static TriLazyEvent<UUIDLazyParamWrapper, TransformPrimitive, AABBdLazyParamWrapper> onServerShipTransformDirty = new TriLazyEvent<>();
+    public static BiEventImpl<ServerLevel, SandBoxServerShip> onSyncServerShipToClient = new BiEventImpl<>();
     public static BiEventImpl<ServerLevel, SandBoxServerShip> onRemoveShipFromServerWorld = new BiEventImpl<>();
     //目前能保证当删除一个空方块时不会触发
-    public static QuadEventImpl<SandBoxServerShip, Vector3ic, BlockState, BlockState> onShipBlockReplaced = new QuadEventImpl<>();
+    public static QuadEventImpl<ISandBoxShip, Vector3ic, BlockState, BlockState> onShipBlockReplaced = new QuadEventImpl<>();
     //public static
 
-    @SubscribeEvent
+    /*@SubscribeEvent
     public static void onServerTick(TickEvent.ServerTickEvent event) {
         if (event.phase != TickEvent.Phase.END) return;
 
         onServerShipTransformDirty.invokeAll();
 
-    }
+    }*/
 
     @SubscribeEvent
     public static void onPlayerJoinLevel(EntityJoinLevelEvent event) {
@@ -84,12 +85,13 @@ public class SandBoxEventMgr {
     public static void register() {
         onServerShipTransformDirty.addListener((uuid, transformData, localAABB) -> {
             //sync in server world thread.
-            NetworkHandler.sendToAllPlayers(new UpdateShipTransformPacketS2C(uuid.uuid, transformData, localAABB.getAABB(new AABBd())));
+            //todo only send to player near to the ship with uuid
+            NetworkHandler.sendToAllPlayers(new UpdateShipTransformPacketS2C(uuid.uuid, transformData/*, localAABB.getAABB(new AABBd())*/));
         });
 
-        onAddNewShipInServerWorld.addListener((level, ship) -> {
+        onSyncServerShipToClient.addListener((level, ship) -> {
             NetworkHandler.sendToAllPlayers(
-                new SyncAddClientRendererPacketS2C(VSGameUtilsKt.getDimensionId(level), ship.createRenderer().saved())
+                new SyncServerShipToClientPacket(VSGameUtilsKt.getDimensionId(level), ship)
             );
         });
         onRemoveShipFromServerWorld.addListener(((level, ship) -> {
@@ -99,7 +101,7 @@ public class SandBoxEventMgr {
         }));
 
         onShipBlockReplaced.addListener(((ship, localPos, oldState, newState) -> {
-            ship.getAllBehaviours().forEach(beh -> beh.onBlockReplaced(localPos, oldState, newState));
+            ship.allAddedBehaviours().forEach(beh -> beh.onBlockReplaced(localPos, oldState, newState));
 
             //todo update visible block
         }));

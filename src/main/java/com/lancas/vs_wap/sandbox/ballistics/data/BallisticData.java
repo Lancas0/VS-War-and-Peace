@@ -1,13 +1,13 @@
 package com.lancas.vs_wap.sandbox.ballistics.data;
 
-import com.lancas.vs_wap.subproject.sandbox.component.data.IComponentData;
-import com.lancas.vs_wap.subproject.sandbox.component.data.exposed.IExposedComponentData;
+import com.lancas.vs_wap.subproject.sandbox.api.component.IComponentData;
+import com.lancas.vs_wap.subproject.sandbox.api.component.IComponentDataReader;
+import com.lancas.vs_wap.subproject.sandbox.ship.ISandBoxShip;
 import com.lancas.vs_wap.subproject.sandbox.ship.SandBoxServerShip;
 import com.lancas.vs_wap.util.NbtBuilder;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.server.level.ServerLevel;
 
-public class BallisticData implements IComponentData<BallisticData>, IExposedComponentData<BallisticData> {
+public class BallisticData implements IComponentData<BallisticData>, IComponentDataReader<BallisticData> {
     public static final double TIME_OUT_SECONDS = 60;
     public static final double RANGE_OUT_LOWER_Y = -100;
 
@@ -37,7 +37,7 @@ public class BallisticData implements IComponentData<BallisticData>, IExposedCom
         return this;
     }
     @Override
-    public BallisticData overwriteDataByShip(SandBoxServerShip ship) {
+    public BallisticData overwriteDataByShip(ISandBoxShip ship) {
         initialStateData.overwriteDataByShip(ship);
         barrelCtx.overwriteDataByShip(ship);
         airDragData.overwriteDataByShip(ship);

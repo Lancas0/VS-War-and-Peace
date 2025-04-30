@@ -105,6 +105,23 @@ public class NbtBuilder {
     }
     public static Matrix3d matrix3dOf(CompoundTag tag) { return matrix3dOf(tag, new Matrix3d()); }
 
+    public static CompoundTag tagOfMatrix4d(Matrix4dc matrix) {
+        CompoundTag tag = new CompoundTag();
+        tag.putDouble("m00", matrix.m00()); tag.putDouble("m01", matrix.m01()); tag.putDouble("m02", matrix.m02()); tag.putDouble("m03", matrix.m03());
+        tag.putDouble("m10", matrix.m10()); tag.putDouble("m11", matrix.m11()); tag.putDouble("m12", matrix.m12()); tag.putDouble("m13", matrix.m13());
+        tag.putDouble("m20", matrix.m20()); tag.putDouble("m21", matrix.m21()); tag.putDouble("m22", matrix.m22()); tag.putDouble("m23", matrix.m23());
+        tag.putDouble("m30", matrix.m30()); tag.putDouble("m31", matrix.m31()); tag.putDouble("m32", matrix.m32()); tag.putDouble("m33", matrix.m33());
+        return tag;
+    }
+    public static Matrix4d matrix4dOf(CompoundTag tag, Matrix4d dest) {
+        dest.m00(tag.getDouble("m00")).m01(tag.getDouble("m01")).m02(tag.getDouble("m02")).m03(tag.getDouble("m03"));
+        dest.m10(tag.getDouble("m10")).m11(tag.getDouble("m11")).m12(tag.getDouble("m12")).m13(tag.getDouble("m13"));
+        dest.m20(tag.getDouble("m20")).m21(tag.getDouble("m21")).m22(tag.getDouble("m22")).m23(tag.getDouble("m23"));
+        dest.m30(tag.getDouble("m30")).m31(tag.getDouble("m31")).m32(tag.getDouble("m32")).m33(tag.getDouble("m33"));
+        return dest;
+    }
+    public static Matrix4d matrix4dOf(CompoundTag tag) { return matrix4dOf(tag, new Matrix4d()); }
+
 
     private NbtBuilder(Supplier<CompoundTag> nbtSupplier) { nbt = nbtSupplier.get(); }
     public static NbtBuilder copy(CompoundTag tag) {
@@ -259,6 +276,49 @@ public class NbtBuilder {
     public Matrix3d getMatrix3d(String key, Matrix3d dest) { return matrix3dOf(getCompound(key), dest); }
     public Matrix3d getMatrix3d(String key) { return matrix3dOf(getCompound(key), new Matrix3d()); }
 
+    public NbtBuilder putMatrix4d(String key, Matrix4dc matrix) { return this.putCompound(key, tagOfMatrix4d(matrix)); }
+    public NbtBuilder readMatrix4d(String key, Matrix4d dest) { matrix4dOf(getCompound(key), dest); return this; }
+    public Matrix4d getMatrix4d(String key, Matrix4d dest) { return matrix4dOf(getCompound(key), dest); }
+    public Matrix4d getMatrix4d(String key) { return matrix4dOf(getCompound(key), new Matrix4d()); }
+
+
+    public NbtBuilder putEnum(String key, Enum<?> enumVal) { nbt.putString(key, enumVal.name()); return this; }
+    public <T extends Enum<T>> NbtBuilder readEnum(String key, Class<T> enumType, Dest<T> dest) {
+        String enumName = nbt.getString(key);
+        try {
+            T val = Enum.valueOf(enumType, nbt.getString(key));
+            dest.set(val);
+        } catch (Exception e) {
+            EzDebug.warn("fail to get enum value with type:" + enumType.getName() + ", and name:" + enumName);
+            e.printStackTrace();
+        }
+
+        return this;
+    }
+    public <T extends Enum<T>> NbtBuilder readEnumDo(String key, Class<T> enumType, Consumer<T> consumer) {
+        String enumName = nbt.getString(key);
+        try {
+            T val = Enum.valueOf(enumType, nbt.getString(key));
+            consumer.accept(val);
+        } catch (Exception e) {
+            EzDebug.warn("fail to get enum value with type:" + enumType.getName() + ", and name:" + enumName);
+            e.printStackTrace();
+        }
+
+        return this;
+    }
+    public <T extends Enum<T>> T getEnum(String key, Class<T> enumType) {
+        String enumName = nbt.getString(key);
+        try {
+            return Enum.valueOf(enumType, nbt.getString(key));
+        } catch (Exception e) {
+            EzDebug.warn("fail to get enum value with type:" + enumType.getName() + ", and name:" + enumName);
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
     public NbtBuilder putAABBi(String key, AABBic aabb) {
         nbt.put(key, new NbtBuilder()
             .putNumber("minx", aabb.minX())
@@ -372,12 +432,24 @@ public class NbtBuilder {
         nbt.put(key, listTag);
         return this;
     }
+
+    private <T> NbtBuilder readEachDoImpl(String key, byte target, Consumer<Tag> consumer) {
+        ListTag listTag = nbt.getList(key, target);
+        if (listTag.isEmpty()) return this;
+
+        for (Tag eachNbt : listTag) consumer.accept(eachNbt);
+        return this;
+    }
+    public <T> NbtBuilder readEachCompoundDo(String key, Consumer<CompoundTag> consumer) {
+        return readEachDoImpl(key, Tag.TAG_COMPOUND, t -> consumer.accept((CompoundTag)t));
+    }
+
     private <T> NbtBuilder readEachImpl(String key, Function<Tag, T> nbtReader, byte target, Collection<T> dest) {
         ListTag listTag = nbt.getList(key, target);
         if (listTag.isEmpty()) return this;
 
-        for (Tag itemNbt : listTag) {
-            dest.add(nbtReader.apply(itemNbt));
+        for (Tag eachNbt : listTag) {
+            dest.add(nbtReader.apply(eachNbt));
         }
         return this;
     }
@@ -443,7 +515,6 @@ public class NbtBuilder {
         nbt.put(key, tagOfBlock(pos, state, be));
         return this;
     }
-
     public static CompoundTag ofBlockPos(BlockPos pos) { return NbtUtils.writeBlockPos(pos); }
     public static BlockPos blockPosValueOf(CompoundTag tag) { return NbtUtils.readBlockPos(tag); }
 
@@ -484,6 +555,20 @@ public class NbtBuilder {
             tag.contains("be") ? null : tag.getCompound("be")
         );
     }
+
+    public NbtBuilder putBlockState(String key, BlockState state) { nbt.put(key, NbtUtils.writeBlockState(state)); return this; }
+    public NbtBuilder readBlockState(String key, Dest<BlockState> dest) {
+        dest.set(NbtUtils.readBlockState(BuiltInRegistries.BLOCK.asLookup(), nbt.getCompound(key)));
+        return this;
+    }
+    public NbtBuilder readBlockStateDo(String key, Consumer<BlockState> consumer) {
+        consumer.accept(NbtUtils.readBlockState(BuiltInRegistries.BLOCK.asLookup(), nbt.getCompound(key)));
+        return this;
+    }
+    public BlockState getBlockStat(String key) {
+        return NbtUtils.readBlockState(BuiltInRegistries.BLOCK.asLookup(), nbt.getCompound(key));
+    }
+
 
     public NbtBuilder putCompound(String key, CompoundTag compound) {
         nbt.put(key, compound);

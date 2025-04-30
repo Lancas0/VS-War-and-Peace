@@ -1,53 +1,53 @@
 package com.lancas.vs_wap.subproject.sandbox.ship;
 
-import com.lancas.vs_wap.debug.EzDebug;
 import com.lancas.vs_wap.subproject.sandbox.api.ISavedLevelObject;
-import com.lancas.vs_wap.subproject.sandbox.component.behviour.IComponentBehaviour;
+import com.lancas.vs_wap.subproject.sandbox.api.component.IComponentBehaviour;
+import com.lancas.vs_wap.subproject.sandbox.api.component.IServerBehaviour;
 import com.lancas.vs_wap.subproject.sandbox.component.behviour.SandBoxRigidbody;
-import com.lancas.vs_wap.subproject.sandbox.component.data.IComponentData;
-import com.lancas.vs_wap.subproject.sandbox.component.data.SandBoxRigidbodyData;
-import com.lancas.vs_wap.subproject.sandbox.component.data.exposed.IExposedComponentData;
-import com.lancas.vs_wap.subproject.sandbox.component.data.SandBoxBlockClusterData;
+import com.lancas.vs_wap.subproject.sandbox.api.component.IComponentData;
+import com.lancas.vs_wap.subproject.sandbox.component.data.RigidbodyData;
+import com.lancas.vs_wap.subproject.sandbox.component.data.BlockClusterData;
 import com.lancas.vs_wap.subproject.sandbox.component.behviour.SandBoxShipBlockCluster;
-import com.lancas.vs_wap.subproject.sandbox.component.behviour.SandBoxTransform;
-import com.lancas.vs_wap.subproject.sandbox.component.data.SandBoxTransformData;
-import com.lancas.vs_wap.subproject.sandbox.util.SerializeUtil;
-import com.lancas.vs_wap.subproject.sandbox.util.TransformUtil;
 import com.lancas.vs_wap.util.NbtBuilder;
+import com.lancas.vs_wap.util.SerializeUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.level.block.state.BlockState;
-import org.joml.Quaterniondc;
-import org.joml.Vector3dc;
-import org.joml.Vector3ic;
 import org.joml.primitives.AABBd;
 import org.joml.primitives.AABBdc;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Stream;
 
 public class SandBoxServerShip implements ISandBoxShip, ISavedLevelObject<SandBoxServerShip> {
     private UUID uuid;
-    private final SandBoxTransform transform = new SandBoxTransform();
-    private final SandBoxShipBlockCluster blockCluster = new SandBoxShipBlockCluster();
+    //private final SandBoxTransform transform = new SandBoxTransform();
     private final SandBoxRigidbody rigidbody = new SandBoxRigidbody();
+    private final SandBoxShipBlockCluster blockCluster = new SandBoxShipBlockCluster();
 
-    private final Queue<IComponentBehaviour<?>> behaviours = new ConcurrentLinkedQueue<>();
 
-    private final AABBd cachedWorldAABB = new AABBd();
-    private boolean worldAABBDirty = true;
+    private final Queue<IServerBehaviour<?>> behaviours = new ConcurrentLinkedQueue<>();
 
-    private final AtomicInteger timeout = new AtomicInteger(-1);  //todo make it a tick destory. -1 for no destroy, 0 for should, >0 for ticking down
-    public SandBoxServerShip timeOut(int tick) { timeout.set(tick); return this; }
+    //private final AABBd cachedWorldAABB = new AABBd();
+    //private boolean worldAABBDirty = true;
+    private volatile AABBd worldAABBSnapshot = new AABBd();
+
+    private final AtomicInteger remainLifeTick = new AtomicInteger(-1);  //todo make it a tick destory. -1 for no destroy, 0 for should, >0 for ticking down
+
+    @Override
+    public int getRemainLifeTick() { return remainLifeTick.get(); }
+    @Override
+    public void setRemainLifeTick(int tick) { remainLifeTick.set(tick); }
     public boolean tickDownTimeOut() {
-        return timeout.updateAndGet(x -> {
+        return remainLifeTick.updateAndGet(x -> {
             if (x > 0) return x - 1;  //0 or >0
             return x;  //0 or -1
         }) == 0;
     }
-    public boolean isTimeOut() { return timeout.get() == 0; }
+    public boolean isTimeOut() { return remainLifeTick.get() == 0; }
 
+    /*
     public void setPosition(Vector3dc pos)    {
         transform.setPosition(pos);
         worldAABBDirty = true;
@@ -59,8 +59,8 @@ public class SandBoxServerShip implements ISandBoxShip, ISavedLevelObject<SandBo
     public void setScale(Vector3dc scale)     {
         transform.setScale(scale);
         worldAABBDirty = true;
-    }
-
+    }*/
+    /*
     public void setBlock(Vector3ic localPos, BlockState state) {
         if (state == null || state.isAir()) {
             removeBlock(localPos);
@@ -74,12 +74,11 @@ public class SandBoxServerShip implements ISandBoxShip, ISavedLevelObject<SandBo
         blockCluster.removeBlock(localPos);
         worldAABBDirty = true;
     }
-
+    */
     //@Nullable
     //public BlockState getBlockOrNull(Vector3ic localPos) { return blockData.getBlock(localPos); }
     //@NotNull
     //public BlockState getBlock(Vector3ic localPos) { return blockData.getBlock(localPos); }
-
     /*private SandBoxServerShip() {
         uuid = null;
         transform = new SandBoxTransform();
@@ -95,29 +94,38 @@ public class SandBoxServerShip implements ISandBoxShip, ISavedLevelObject<SandBo
         ship.load(nbt);
         return ship;
     }*/
-    public SandBoxServerShip(UUID inId, SandBoxTransformData transformData, SandBoxBlockClusterData clusterData, SandBoxRigidbodyData rigidbodyData) {
+
+    public SandBoxServerShip(UUID inId, RigidbodyData rigidbodyData, BlockClusterData clusterData) {
         uuid = inId;
-        transform.loadData(this, transformData);
+        //transform.loadData(this, transformData);
         blockCluster.loadData(this, clusterData);
+        //must load blockCluster first because rigidbody mass is calcualted by all blocks of ship
         rigidbody.loadData(this, rigidbodyData);
+
+        worldAABBSnapshot = blockCluster.getDataReader().getLocalAABB().transform(rigidbody.getDataReader().getLocalToWorld(), new AABBd());
     }
     public SandBoxServerShip(ServerLevel level, CompoundTag saved) {
         load(level, saved);
+        worldAABBSnapshot = blockCluster.getDataReader().getLocalAABB().transform(rigidbody.getDataReader().getLocalToWorld(), new AABBd());
     }
 
-    public <B extends IComponentBehaviour<D>, D extends IComponentData<D> & IExposedComponentData<D>>
+    public <B extends IServerBehaviour<D>, D extends IComponentData<D>>
         void addBehaviour(B behaviour, D data) {
             behaviour.loadData(this, data);
             behaviours.add(behaviour);
     }
-    public Iterable<IComponentBehaviour<?>> allBehaviours() { return behaviours; }
+    @Override
+    public Stream<IComponentBehaviour> allAddedBehaviours() {
+        //return () -> behaviours.stream().map(b -> (IComponentBehaviour)b).iterator();
+        return behaviours.stream().map(b -> b);
+    }
 
 
     @Override
     public UUID getUuid() { return uuid; }
 
-    @Override
-    public AABBdc getWorldAABB() {
+    //@Override
+    /*public AABBdc getWorldAABB() {
         if (blockCluster.getLocalAABB() == null) return null;
 
         if (worldAABBDirty) {
@@ -126,43 +134,55 @@ public class SandBoxServerShip implements ISandBoxShip, ISavedLevelObject<SandBo
             worldAABBDirty = true;
         }
         return cachedWorldAABB;
-    }
-    @Override
-    public AABBdc getLocalAABB() {
-        return blockCluster.getLocalAABB();
-    }
+    }*/
+    //@Override
+    public AABBdc getWorldAABB() { return worldAABBSnapshot; }
+    public AABBdc getLocalAABB() { return blockCluster.getDataReader().getLocalAABB(); }
 
     //todo readonly interface?
-    @Override
-    public SandBoxTransform getTransform() { return transform; }  //todo get Exposed Behaviour?
+    //@Override
+    //public SandBoxTransform getTransform() { return transform; }  //todo get Exposed Behaviour?
 
     @Override
-    public SandBoxShipBlockCluster getCluster() { return blockCluster; }
-
     public SandBoxRigidbody getRigidbody() { return rigidbody; }
+    @Override
+    public SandBoxShipBlockCluster getBlockCluster() { return blockCluster; }
+
     //public IExposedRigidbodyData getRigidbodyData() { return rigidbody.getExposedData(); }
 
-    public double getLengthScale(int component) { return transform.getScale().get(component); }
+    public double getLengthScale(int component) { return rigidbody.getDataReader().getScale().get(component); }
     public double getAreaScale(int component) {
-        double scale = transform.getScale().get(component);
+        double scale = rigidbody.getDataReader().getScale().get(component);
         return scale * scale;
     }
     public double getVolumeScale(int component) {
-        double scale = transform.getScale().get(component);
+        double scale = rigidbody.getDataReader().getScale().get(component);
         return scale * scale * scale;
     }
 
-    public ShipClientRenderer createRenderer() {
+    /*public ShipClientRenderer createRenderer() {
         return new ShipClientRenderer(
             uuid, getLocalAABB(), transform.getExposedData(), blockCluster.allBlocks()
         );
-    }
+    }*/
 
-
-    //in fact it doesn't inculde transform and block data
-    public Iterable<IComponentBehaviour<?>> getAllBehaviours() {
+    //in fact it doesn't inculde rigidbody and block data
+    /*public Iterable<IServerBehaviour<?>> getAllBehaviours() {
         return behaviours;
+    }*/
+
+    public void serverTick(ServerLevel level) {
+        rigidbody.serverTick(level);
+        behaviours.forEach(beh -> beh.serverTick(level));
     }
+    public void physTick() {
+        rigidbody.physTick();
+        behaviours.forEach(IComponentBehaviour::physTick);
+
+        //todo move snapshot to server tick?
+        worldAABBSnapshot = getLocalAABB().transform(rigidbody.getDataReader().getLocalToWorld(), new AABBd());
+    }
+
 
 
     /// todo
@@ -190,14 +210,14 @@ public class SandBoxServerShip implements ISandBoxShip, ISavedLevelObject<SandBo
     public CompoundTag saved(ServerLevel level) {
         return new NbtBuilder()
             .putUUID("uuid", uuid)
-            .putNumber("timeout", timeout.get())
-            .putCompound("transform_data", transform.getSavedData())
-            .putCompound("block_data", blockCluster.getSavedData())
+            .putNumber("remain_life_tick", remainLifeTick.get())
             .putCompound("rigidbody_data", rigidbody.getSavedData())
+            //.putCompound("transform_data", transform.getSavedData())
+            .putCompound("block_data", blockCluster.getSavedData())
             .putEach("behaviours", behaviours,
                 beh -> new NbtBuilder()
                     .putString("behaviour_type", beh.getClass().getName())
-                    .putString("data_type", beh.getExposedData().getClass().getName())
+                    .putString("data_type", beh.getDataType().getName())
                     .putCompound("data", beh.getSavedData())
                     .get()
             ).get();
@@ -208,15 +228,15 @@ public class SandBoxServerShip implements ISandBoxShip, ISavedLevelObject<SandBo
 
         NbtBuilder.modify(tag)
             .readUUIDDo("uuid", v -> uuid = v)
-            .readIntDo("timeout", timeout::set)
-            .readCompoundDo("transform_data",
-                t -> transform.loadData(this, new SandBoxTransformData().load(t))
+            .readIntDo("remain_life_tick", remainLifeTick::set)
+            /*.readCompoundDo("transform_data",
+                t -> transform.loadData(this, new TransformData().load(t))
+            )*/
+            .readCompoundDo("rigidbody_data",
+                t -> rigidbody.loadData(this, new RigidbodyData().load(t))
             )
             .readCompoundDo("block_data",
-                t -> blockCluster.loadData(this, new SandBoxBlockClusterData().load(t))
-            )
-            .readCompoundDo("rigidbody_data",
-                t -> rigidbody.loadData(this, SandBoxRigidbodyData.createDefault().load(t))
+                t -> blockCluster.loadData(this, new BlockClusterData().load(t))
             )
             .readEachCompound("behaviours",
                 nbt -> {
@@ -224,9 +244,9 @@ public class SandBoxServerShip implements ISandBoxShip, ISavedLevelObject<SandBo
                     String dataTypename = nbt.getString("data_type");
                     CompoundTag savedData = nbt.getCompound("data");
 
-                    IComponentBehaviour<?> behaviour;
+                    IServerBehaviour<?> behaviour;
                     behaviour = SerializeUtil.createByClassName(typename);
-                    IComponentData<?> data =SerializeUtil.createByClassName(dataTypename);
+                    IComponentData<?> data = SerializeUtil.createByClassName(dataTypename);
 
                     if (behaviour != null && data != null) {
                         data.load(savedData);
@@ -238,8 +258,6 @@ public class SandBoxServerShip implements ISandBoxShip, ISavedLevelObject<SandBo
                 },
                 behaviours
             );
-
-        EzDebug.log("after load omega:" + rigidbody.getExposedData().getOmega());
 
         behaviours.removeIf(Objects::isNull);
         return this;

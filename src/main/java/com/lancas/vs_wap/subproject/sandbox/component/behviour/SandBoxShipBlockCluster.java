@@ -1,25 +1,25 @@
 package com.lancas.vs_wap.subproject.sandbox.component.behviour;
 
 import com.lancas.vs_wap.foundation.BiTuple;
-import com.lancas.vs_wap.subproject.sandbox.component.data.SandBoxBlockClusterData;
-import com.lancas.vs_wap.subproject.sandbox.component.data.exposed.IExposedBlockClusterData;
+import com.lancas.vs_wap.subproject.sandbox.api.component.IComponentDataReader;
+import com.lancas.vs_wap.subproject.sandbox.api.component.IDataReadableBehaviour;
+import com.lancas.vs_wap.subproject.sandbox.component.behviour.abs.BothSideBehaviour;
+import com.lancas.vs_wap.subproject.sandbox.component.data.BlockClusterData;
+import com.lancas.vs_wap.subproject.sandbox.component.data.reader.IBlockClusterDataReader;
 import com.lancas.vs_wap.subproject.sandbox.event.SandBoxEventMgr;
-import com.lancas.vs_wap.subproject.sandbox.ship.SandBoxServerShip;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.joml.Vector3i;
 import org.joml.Vector3ic;
 import org.joml.primitives.AABBdc;
-import org.joml.primitives.AABBi;
-import org.joml.primitives.AABBic;
 
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 
 //todo sync
-public class SandBoxShipBlockCluster extends AbstractComponentBehaviour<SandBoxBlockClusterData> {
+public class SandBoxShipBlockCluster extends BothSideBehaviour<BlockClusterData>
+    implements IDataReadableBehaviour<BlockClusterData> {
 
     public BlockState setBlock(Vector3ic localPos, BlockState state) {
         if (state == null || state.isAir()) {
@@ -42,7 +42,6 @@ public class SandBoxShipBlockCluster extends AbstractComponentBehaviour<SandBoxB
     }
 
 
-
     /*public BlockState getBlockOrNull(Vector3ic localPos) {
         BlockState state = data.getBlockState(localPos);
         if (state == null) return null;
@@ -54,6 +53,7 @@ public class SandBoxShipBlockCluster extends AbstractComponentBehaviour<SandBoxB
 
         return state;
     }*/
+    /*
     public BlockState getBlock(Vector3ic localPos) {  //todo exposed data
         return data.getBlockState(localPos);
     }
@@ -67,10 +67,9 @@ public class SandBoxShipBlockCluster extends AbstractComponentBehaviour<SandBoxB
     }
     public Iterable<BlockState> allBlockStates() {
         return data.blocks.values();
-    }
-
-    public int blockCount() { return data.blocks.size(); }
-    public AABBdc getLocalAABB() { return data.localAABB; }
+    }*/
+    //public int blockCount() { return data.blocks.size(); }
+    //public AABBdc getLocalAABB() { return data.getLocalAABB(); }
 
     /*@Override
     public CompoundTag saved() {
@@ -93,7 +92,18 @@ public class SandBoxShipBlockCluster extends AbstractComponentBehaviour<SandBoxB
     }*/
 
     @Override
-    protected SandBoxBlockClusterData makeData() { return new SandBoxBlockClusterData(); }
+    protected BlockClusterData makeInitialData() { return new BlockClusterData(); }
+
     @Override
-    public IExposedBlockClusterData getExposedData() { return data; }
+    public IBlockClusterDataReader getDataReader() { return data; }
+
+    @Override
+    public Class<BlockClusterData> getDataType() { return BlockClusterData.class; }
+
+
+
+    @Override
+    public synchronized void clientTick(ClientLevel level) { }
+    @Override
+    public synchronized void serverTick(ServerLevel level) { }
 }

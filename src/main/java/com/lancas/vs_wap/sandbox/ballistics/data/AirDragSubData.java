@@ -1,19 +1,19 @@
 package com.lancas.vs_wap.sandbox.ballistics.data;
 
 import com.lancas.vs_wap.content.info.block.WapBlockInfos;
-import com.lancas.vs_wap.subproject.sandbox.component.data.IComponentData;
-import com.lancas.vs_wap.subproject.sandbox.component.data.exposed.IExposedComponentData;
+import com.lancas.vs_wap.subproject.sandbox.api.component.IComponentData;
+import com.lancas.vs_wap.subproject.sandbox.api.component.IComponentDataReader;
+import com.lancas.vs_wap.subproject.sandbox.ship.ISandBoxShip;
 import com.lancas.vs_wap.subproject.sandbox.ship.SandBoxServerShip;
 import com.lancas.vs_wap.util.JomlUtil;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import org.joml.Vector3d;
 import org.joml.primitives.AABBdc;
-import org.joml.primitives.AABBic;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-public class AirDragSubData implements IComponentData<AirDragSubData>, IExposedComponentData<AirDragSubData> {
+public class AirDragSubData implements IComponentData<AirDragSubData>, IComponentDataReader<AirDragSubData> {
     public final Vector3d localAirDragCenter = new Vector3d();
     public double localYzArea = 0;
     public double localXzArea = 0;
@@ -25,11 +25,12 @@ public class AirDragSubData implements IComponentData<AirDragSubData>, IExposedC
         localAirDragCenter.set(src.localAirDragCenter);
         return this;
     }
-    public AirDragSubData overwriteDataByShip(SandBoxServerShip ship) {
+    @Override
+    public AirDragSubData overwriteDataByShip(ISandBoxShip ship) {
         localAirDragCenter.zero();
 
         AtomicReference<Double> totalDragFactor = new AtomicReference<>(0.0);
-        ship.getCluster().foreach((localPos, state) -> {
+        ship.getBlockCluster().getDataReader().seekAllBlocks((localPos, state) -> {
             double dragFactor = WapBlockInfos.drag_factor.valueOrDefaultOf(state);
             localAirDragCenter.add(JomlUtil.d(localPos).mul(dragFactor));
             totalDragFactor.updateAndGet(v -> v + dragFactor);
@@ -40,10 +41,10 @@ public class AirDragSubData implements IComponentData<AirDragSubData>, IExposedC
         }
 
         localYzArea = localXzArea = localXyArea = 0;
-        AABBdc localAABB = ship.getLocalAABB();
-        localYzArea = JomlUtil.sideArea(ship.getLocalAABB(), Direction.EAST);
-        localXzArea = JomlUtil.sideArea(ship.getLocalAABB(), Direction.UP);
-        localXyArea = JomlUtil.sideArea(ship.getLocalAABB(), Direction.SOUTH);
+        AABBdc localAABB = ship.getBlockCluster().getDataReader().getLocalAABB();
+        localYzArea = JomlUtil.sideArea(localAABB, Direction.EAST);
+        localXzArea = JomlUtil.sideArea(localAABB, Direction.UP);
+        localXyArea = JomlUtil.sideArea(localAABB, Direction.SOUTH);
         return this;
     }
 

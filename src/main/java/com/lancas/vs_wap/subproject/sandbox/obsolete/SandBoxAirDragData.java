@@ -1,8 +1,8 @@
-package com.lancas.vs_wap.subproject.sandbox.component.data;
+package com.lancas.vs_wap.subproject.sandbox.obsolete;
 /*
 import com.lancas.vs_wap.content.info.block.WapBlockInfos;
 import com.lancas.vs_wap.ship.type.ProjectileWrapper;
-import com.lancas.vs_wap.subproject.sandbox.component.data.exposed.IExposedComponentData;
+import com.lancas.vs_wap.subproject.sandbox.api.component.IExposedComponentData;
 import com.lancas.vs_wap.util.JomlUtil;
 import com.lancas.vs_wap.util.MathUtil;
 import com.lancas.vs_wap.util.ShipUtil;

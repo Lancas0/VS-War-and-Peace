@@ -1,7 +1,7 @@
 package com.lancas.vs_wap.mixins.sandbox;
 
 import com.lancas.vs_wap.subproject.sandbox.SandBoxClientWorld;
-import com.lancas.vs_wap.subproject.sandbox.ship.ShipClientRenderer;
+import com.lancas.vs_wap.subproject.sandbox.ship.SandBoxClientShip;
 import com.lancas.vs_wap.subproject.sandbox.util.RenderHelper;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Camera;
@@ -12,8 +12,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import java.util.concurrent.atomic.AtomicInteger;
 
 @Mixin(LevelRenderer.class)
 public class SandBoxLevelRenderMixin {
@@ -28,10 +26,10 @@ public class SandBoxLevelRenderMixin {
         //SandBoxClientWorld.INSTANCE.allRenderers().forEach(ship -> count.incrementAndGet());
         //EzDebug.log("render ship count:" +  count.get());
 
-        for (ShipClientRenderer renderer : SandBoxClientWorld.INSTANCE.allRenderers()) {
-            RenderHelper.renderShip(renderer, poseStack, bufferSource, partialTicks);
-            renderer.postRender();
-        }
+        SandBoxClientWorld.INSTANCE.allClientShips().forEach(s -> {
+            RenderHelper.renderShip(s, poseStack, bufferSource, partialTicks);
+            s.postRender();
+        });
     }
 
     /*public void render(PoseStack poseStack, Vector3d centerPos, BlockState state) {

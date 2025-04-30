@@ -1,12 +1,11 @@
 package com.lancas.vs_wap.sandbox.ballistics.data;
 
-import com.lancas.vs_wap.subproject.sandbox.component.data.IComponentData;
-import com.lancas.vs_wap.subproject.sandbox.component.data.exposed.IExposedComponentData;
+import com.lancas.vs_wap.subproject.sandbox.api.component.IComponentData;
+import com.lancas.vs_wap.subproject.sandbox.api.component.IComponentDataReader;
 import com.lancas.vs_wap.util.NbtBuilder;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.server.level.ServerLevel;
 
-public class BallisticBarrelContextSubData implements IComponentData<BallisticBarrelContextSubData>, IExposedComponentData<BallisticBarrelContextSubData> {
+public class BallisticBarrelContextSubData implements IComponentData<BallisticBarrelContextSubData>, IComponentDataReader<BallisticBarrelContextSubData> {
     public static final int ABSOLUTE_EXIT_BARREL_TICK = 4;
 
     public BallisticBarrelContextSubData copyData(BallisticBarrelContextSubData src) {

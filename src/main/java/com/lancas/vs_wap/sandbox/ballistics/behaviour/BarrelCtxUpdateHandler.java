@@ -23,6 +23,9 @@ public class BarrelCtxUpdateHandler {
         AABBdc localAABB = ship.getLocalAABB();
         AABBdc worldAABB = ship.getWorldAABB();
 
+
+
+
         //EzDebug.log("barrelCtx, tick:" + barrelCtx.exitedBarrelTicks + ", alws:" + barrelCtx.alwaysInBarrelSinceLaunch);
 
         //localAABB == null : the ship is empty, how can I know if it's in barrel?
@@ -35,10 +38,11 @@ public class BarrelCtxUpdateHandler {
 
         Direction localForward = JomlUtil.nearestDir(data.initialStateData.localForward);
 
+
         Vector3dc[] checkWorldPoses = new Vector3dc[] {
-            new Vector3d(ship.getTransform().getPosition()),
-            ship.getTransform().localToWorldPos(JomlUtil.dFaceCenter(localAABB, localForward)),
-            ship.getTransform().localToWorldPos(JomlUtil.dFaceCenter(localAABB, localForward.getOpposite()))
+            new Vector3d(ship.getRigidbody().getDataReader().getTransform().getPosition()),
+            ship.getRigidbody().getDataReader().getLocalToWorld().transformPosition(JomlUtil.dFaceCenter(localAABB, localForward)),
+            ship.getRigidbody().getDataReader().getLocalToWorld().transformPosition(JomlUtil.dFaceCenter(localAABB, localForward.getOpposite()))
         };
         //check world
         for (Vector3dc checkWorldPos : checkWorldPoses) {
@@ -65,6 +69,8 @@ public class BarrelCtxUpdateHandler {
                 return;
             }
         }
+
+        //EzDebug.log("loc:" + localAABB + ", wor:" + worldAABB + ", not in barrel");
 
         //the projectile is not in barrel now
         barrelCtx.alwaysInBarrelSinceLaunch = false;

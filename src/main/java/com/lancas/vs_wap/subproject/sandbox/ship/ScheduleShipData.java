@@ -6,8 +6,7 @@ import com.lancas.vs_wap.util.NbtBuilder;
 import com.lancas.vs_wap.util.SerializeUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.Serializable;
@@ -15,33 +14,39 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ScheduleShipData implements ISavedLevelObject<ScheduleShipData> {
-    private static final Logger log = LogManager.getLogger(ScheduleShipData.class);
+    //private static final Logger log = LogManager.getLogger(ScheduleShipData.class);
 
     @FunctionalInterface
     public interface ScheduleCallback extends Serializable {
-        public void onScheduling(ServerLevel level, SandBoxServerShip ship, int remainTick, AtomicBoolean canceled);
+        public void onScheduling(Level level, ISandBoxShip ship, int remainTick, AtomicBoolean canceled);
     }
 
-    public SandBoxServerShip ship;
+    public ISandBoxShip ship;
     private final AtomicInteger remainTick = new AtomicInteger(-1);
     private ScheduleCallback callback;
     private final AtomicBoolean canceled = new AtomicBoolean(false);
 
-    public ScheduleShipData(SandBoxServerShip inShip, int inRemainTick, @Nullable ScheduleCallback inCallback) {
+    private ScheduleShipData() {}
+    public ScheduleShipData(ISandBoxShip inShip, int inRemainTick, @Nullable ScheduleCallback inCallback) {
         ship = inShip;
         remainTick.set(inRemainTick);
         callback = inCallback;
     }
-    public ScheduleShipData(ServerLevel level, CompoundTag tag) { load(level, tag); }
+    public static ScheduleShipData getServerBySavedData(ServerLevel level, CompoundTag tag) {
+        ScheduleShipData data = new ScheduleShipData();
+        return data.load(level, tag);
+    }
+    //public ScheduleShipData(Level level, CompoundTag tag) { load(level, tag); }
 
-    public ScheduleShipData chaseUp(ServerLevel level) {
+    //it should only called in server now.
+    public ScheduleShipData chaseUp(Level level) {
         if (callback == null || canceled.get()) {
             remainTick.set(-1);
             return this;
         }
 
         while (remainTick.get() >= 0) {
-            callback.onScheduling(level, ship, remainTick.get(), canceled);
+            callback.onScheduling((Level)level, ship, remainTick.get(), canceled);
             if (canceled.get()) {
                 return this;
             }
@@ -50,7 +55,7 @@ public class ScheduleShipData implements ISavedLevelObject<ScheduleShipData> {
         }
         return this;
     }
-    public ScheduleShipData scheduleTick(ServerLevel level) {
+    public ScheduleShipData scheduleTick(Level level) {
         if (canceled.get()) return this;
 
         if (callback != null) {
@@ -67,8 +72,15 @@ public class ScheduleShipData implements ISavedLevelObject<ScheduleShipData> {
     public boolean shouldSpawn() { return (remainTick.get() < 0) && (!canceled.get()); }
     public boolean isCanceled() { return canceled.get(); }
 
+    public ScheduleCallback getCallback() { return callback; }
+
     @Override
     public CompoundTag saved(ServerLevel level) {
+        if (!(ship instanceof SandBoxServerShip serverShip)) {
+            EzDebug.warn("a client scheduled ship shouldn't be save!");
+            return new CompoundTag();
+        }
+
         NbtBuilder nbt = new NbtBuilder();
 
         //handle schedulingCb
@@ -83,7 +95,7 @@ public class ScheduleShipData implements ISavedLevelObject<ScheduleShipData> {
         }
 
         return nbt
-            .putCompound("saved_ship", ship.saved(level))
+            .putCompound("saved_ship", serverShip.saved(level))
             .putNumber("remain_tick", remainTick.get())
             .putBoolean("canceled", canceled.get())
             .get();

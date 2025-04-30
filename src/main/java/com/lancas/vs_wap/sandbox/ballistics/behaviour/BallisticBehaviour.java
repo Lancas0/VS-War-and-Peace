@@ -4,23 +4,22 @@ import com.lancas.vs_wap.debug.EzDebug;
 import com.lancas.vs_wap.foundation.api.Dest;
 import com.lancas.vs_wap.sandbox.ballistics.data.BallisticData;
 import com.lancas.vs_wap.sandbox.ballistics.trigger.SandBoxTriggerInfo;
-import com.lancas.vs_wap.ship.ballistics.api.TriggerInfo;
-import com.lancas.vs_wap.subproject.sandbox.SandBoxServerWorld;
-import com.lancas.vs_wap.subproject.sandbox.component.behviour.AbstractComponentBehaviour;
-import com.lancas.vs_wap.subproject.sandbox.component.data.exposed.IExposedComponentData;
-import com.lancas.vs_wap.util.StrUtil;
+import com.lancas.vs_wap.subproject.sandbox.component.behviour.abs.ServerOnlyBehaviour;
 import net.minecraft.server.level.ServerLevel;
 import org.joml.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class BallisticBehaviour extends AbstractComponentBehaviour<BallisticData> {
+public class BallisticBehaviour extends ServerOnlyBehaviour<BallisticData> {
     @Override
-    protected BallisticData makeData() { return BallisticData.makeDefault(); }
+    protected BallisticData makeInitialData() { return BallisticData.makeDefault(); }
 
     @Override
-    public void physTick() {
+    public Class<BallisticData> getDataType() { return BallisticData.class; }
+
+    @Override
+    public synchronized void physTick() {
         if (data.terminated) return;
 
         var rigidbody = ship.getRigidbody();
@@ -31,23 +30,23 @@ public class BallisticBehaviour extends AbstractComponentBehaviour<BallisticData
 
         //damping
         double torqueDamping = 1;
-        Vector3dc omega = rigidbody.getExposedData().getOmega();
-        Matrix3dc inertia = rigidbody.getInertia();
+        Vector3dc omega = rigidbody.getDataReader().getOmega();
+        Matrix3dc inertia = rigidbody.getDataReader().getLocalInertia();
         Vector3d dampingTorque = omega.mul(inertia, new Vector3d()).mul(-torqueDamping);  //τ=I⋅α
-        rigidbody.applyTorque(dampingTorque);
+        rigidbody.getDataWriter().applyWorldTorque(dampingTorque);
 
 
-        synchronized (data.initialStateData.ballisticBlockLocPoses) {
-            data.initialStateData.foreachBallisticBlock(ship, (locPos, state, bb) -> bb.physTick(ship));
+        /*synchronized (data.initialStateData.ballisticBlockLocPoses) {
+
             //EzDebug.log("try phys ticks for all block");
-        }
+        }*/
+        data.initialStateData.foreachBallisticBlock(ship, (locPos, state, bb) ->
+            bb.physTick(ship)
+        );
     }
 
     @Override
-    public IExposedComponentData<BallisticData> getExposedData() { return data; }  //not exposed thou
-
-    @Override
-    public void serverTick(ServerLevel level) {
+    public synchronized void serverTick(ServerLevel level) {
         //EzDebug.log("ballstic ticking");
         if (data.terminated) return;
 
@@ -58,10 +57,10 @@ public class BallisticBehaviour extends AbstractComponentBehaviour<BallisticData
         //EzDebug.log("barrel ctx updated");
 
         if (!data.barrelCtx.isAbsoluteExitBarrel()) {
-            ship.getRigidbody().getExposedData().setNoGravity();
+            ship.getRigidbody().getDataWriter().setNoGravity();
             return;
         } else {
-            ship.getRigidbody().getExposedData().setEarthGravity();
+            ship.getRigidbody().getDataWriter().setEarthGravity();
         }
 
         //EzDebug.log("handling SandBoxTriggerInfo");
@@ -100,13 +99,13 @@ public class BallisticBehaviour extends AbstractComponentBehaviour<BallisticData
         data.elapsedTime += 0.05;  //todo constant;
         if (data.elapsedTime > BallisticData.TIME_OUT_SECONDS)
             needTerminate = true;
-        if (ship.getTransform().getPosition().y() < BallisticData.RANGE_OUT_LOWER_Y)
+        if (ship.getRigidbody().getDataReader().getTransform().getPosition().y() < BallisticData.RANGE_OUT_LOWER_Y)
             needTerminate = true;
 
         //needTerminate || stopped for too long?
         if (needTerminate) {
             data.terminated = true;
-            ship.timeOut(1);
+            ship.setRemainLifeTick(1);
             EzDebug.highlight("terminate this ship");
         }
     }

@@ -274,13 +274,13 @@ dependencies {
     // Jackson Binary Dataformat for Object Serialization
     def jacksonVersion = '2.14.0'
     // forked to remove module-info
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion-rubyfork") { transitive = true }
-    implementation("com.fasterxml.jackson.module:jackson-module-parameter-names:$jacksonVersion") { transitive = true }
-    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-cbor:$jacksonVersion") { transitive = true }
-    implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion") { transitive = true }
-    implementation("com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion") { transitive = true }
-    implementation("com.fasterxml.jackson.core:jackson-core:$jacksonVersion") { transitive = true }
-    implementation("com.github.Rubydesic:jackson-kotlin-dsl:1.2.0") { transitive = true }
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion-rubyfork")
+    implementation("com.fasterxml.jackson.module:jackson-module-parameter-names:$jacksonVersion")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-cbor:$jacksonVersion")
+    implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
+    implementation("com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion")
+    implementation("com.fasterxml.jackson.core:jackson-core:$jacksonVersion")
+    implementation("com.github.Rubydesic:jackson-kotlin-dsl:1.2.0")
 
 
     implementation 'org.joml:joml-primitives:1.10.0'

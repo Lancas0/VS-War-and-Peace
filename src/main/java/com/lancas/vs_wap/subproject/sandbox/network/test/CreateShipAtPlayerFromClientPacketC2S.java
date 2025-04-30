@@ -3,10 +3,10 @@ package com.lancas.vs_wap.subproject.sandbox.network.test;
 import com.lancas.vs_wap.content.WapBlocks;
 import com.lancas.vs_wap.debug.EzDebug;
 import com.lancas.vs_wap.subproject.sandbox.SandBoxServerWorld;
+import com.lancas.vs_wap.subproject.sandbox.api.data.TransformPrimitive;
 import com.lancas.vs_wap.subproject.sandbox.component.behviour.SandBoxTween;
-import com.lancas.vs_wap.subproject.sandbox.component.data.SandBoxBlockClusterData;
-import com.lancas.vs_wap.subproject.sandbox.component.data.SandBoxRigidbodyData;
-import com.lancas.vs_wap.subproject.sandbox.component.data.SandBoxTransformData;
+import com.lancas.vs_wap.subproject.sandbox.component.data.BlockClusterData;
+import com.lancas.vs_wap.subproject.sandbox.component.data.RigidbodyData;
 import com.lancas.vs_wap.subproject.sandbox.component.data.TweenData;
 import com.lancas.vs_wap.subproject.sandbox.ship.SandBoxServerShip;
 import com.lancas.vs_wap.util.JomlUtil;
@@ -50,7 +50,7 @@ public class CreateShipAtPlayerFromClientPacketC2S {
             UUID uuid = UUID.randomUUID();
             SandBoxServerShip ship;
             try {
-                SandBoxBlockClusterData blockData = new SandBoxBlockClusterData();
+                BlockClusterData blockData = new BlockClusterData();
                 Vector3ic p = new Vector3i();
                 for (int i = 0; i < blockCnt; ++i) {
                     blockData.setBlock(p, WapBlocks.Cartridge.PRIMER.getDefaultState());
@@ -70,12 +70,11 @@ public class CreateShipAtPlayerFromClientPacketC2S {
 
                 ship = new SandBoxServerShip(
                     uuid,
-                    new SandBoxTransformData(JomlUtil.d(player.position()), new Quaterniond(), new Vector3d(1, 1, 1)),
-                    blockData,
-                    SandBoxRigidbodyData.createDefault()
+                    new RigidbodyData(new TransformPrimitive(JomlUtil.d(player.position()), new Quaterniond(), new Vector3d(1, 1, 1))),
+                    blockData
                 );
-                EzDebug.log("ship mass:" + ship.getRigidbody().getExposedData().getMass());
-                ship.getRigidbody().applyTorque(new Vector3d(0, 40000000, 0));
+                EzDebug.log("ship mass:" + ship.getRigidbody().getDataReader().getMass());
+                ship.getRigidbody().getDataWriter().applyWorldTorque(new Vector3d(0, 40000000, 0));
 
                 //SandBoxRigidbody rigidbody = new SandBoxRigidbody();
                 //ship.addBehaviour(rigidbody, new SandBoxRigidbodyData());
@@ -84,11 +83,11 @@ public class CreateShipAtPlayerFromClientPacketC2S {
                 ship.addBehaviour(
                     new SandBoxTween(),
                     new TweenData((prev, t01) -> {
-                        SandBoxTransformData next = SandBoxTransformData.copy(prev);
+                        TransformPrimitive next = new TransformPrimitive(prev);
                         next.scale.set(Math.sin(t01));
                         //EzDebug.log("server transform:" + next);
                         return next;
-                    }, 10)
+                    }, 10, true)
                 );
             } catch (Exception e) {
                 EzDebug.error("exception when create ship:" + e.toString());
@@ -97,7 +96,7 @@ public class CreateShipAtPlayerFromClientPacketC2S {
 
             EzDebug.log("create ship with uuid:" + uuid);
 
-            SandBoxServerWorld.addShip(level, ship);
+            SandBoxServerWorld.addShipAndSyncClient(level, ship);
         });
         ctx.get().setPacketHandled(true);
     }

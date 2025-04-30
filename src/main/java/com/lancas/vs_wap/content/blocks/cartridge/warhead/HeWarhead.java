@@ -75,7 +75,7 @@ public class HeWarhead extends BlockPlus implements ITerminalEffector, ISandBoxB
             level,
             null,
             targetPos.x(), targetPos.y(), targetPos.z(),
-            ship.getRigidbody().getExposedData().getVelocity(),
+            ship.getRigidbody().getDataReader().getVelocity(),
             EXPLOSIVE_POWER,
             false,
             Explosion.BlockInteraction.DESTROY

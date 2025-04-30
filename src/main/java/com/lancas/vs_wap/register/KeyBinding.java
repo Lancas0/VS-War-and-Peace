@@ -10,16 +10,27 @@ import com.lancas.vs_wap.foundation.network.debug.NetworkRunnable;
 import com.lancas.vs_wap.ship.feature.hold.ShipHoldSlot;
 import com.lancas.vs_wap.subproject.sandbox.SandBoxClientWorld;
 import com.lancas.vs_wap.subproject.sandbox.SandBoxServerWorld;
+import com.lancas.vs_wap.subproject.sandbox.api.data.TransformPrimitive;
+import com.lancas.vs_wap.subproject.sandbox.component.data.BlockClusterData;
+import com.lancas.vs_wap.subproject.sandbox.component.data.RigidbodyData;
 import com.lancas.vs_wap.subproject.sandbox.network.test.CreateShipAtPlayerFromClientPacketC2S;
-import com.lancas.vs_wap.subproject.sandbox.ship.ShipClientRenderer;
+import com.lancas.vs_wap.subproject.sandbox.ship.SandBoxClientShip;
+import com.lancas.vs_wap.util.JomlUtil;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.client.Minecraft;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import org.joml.Quaterniond;
+import org.joml.Vector3d;
+import org.joml.Vector3i;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.Hashtable;
+import java.util.UUID;
 import java.util.function.BiConsumer;
 
 @Mod.EventBusSubscriber(modid = ModMain.MODID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
@@ -105,7 +116,7 @@ public enum KeyBinding {
         true,
         (kb, keyDown) -> { if (!keyDown) return;
             EzDebug.log("current sandbox client level:" + SandBoxClientWorld.INSTANCE.getCurLevelName());
-            EzDebug.logs(SandBoxClientWorld.INSTANCE.allRenderers(), ShipClientRenderer::toString);
+            EzDebug.logs(() -> SandBoxClientWorld.INSTANCE.allClientShips().iterator(), SandBoxClientShip::toString);
 
         },
         null, null
@@ -117,10 +128,10 @@ public enum KeyBinding {
         (kb, keyDown) -> { if (!keyDown) return;
             //EzDebug.log("try create ship");
             //NetworkHandler.sendToServer(new CreateShipAtPlayerFromClientPacketC2S(1));
-            NetworkHandler.sendToServer(new NetworkRunnable(ctx -> {
+            /*NetworkHandler.sendToServer(new NetworkRunnable(ctx -> {
                 EzDebug.log("server recieved remove all ships");
                 SandBoxServerWorld.removeAllShip(ctx.getSender().serverLevel());
-            }));
+            }));*/
         },
         null, null
     ),
@@ -129,8 +140,17 @@ public enum KeyBinding {
         GLFW.GLFW_KEY_I,
         true,
         (kb, keyDown) -> { if (!keyDown) return;
+            Player player = Minecraft.getInstance().player;
             EzDebug.log("try create ship");
-            NetworkHandler.sendToServer(new CreateShipAtPlayerFromClientPacketC2S(9));
+            //NetworkHandler.sendToServer(new CreateShipAtPlayerFromClientPacketC2S(9));
+            BlockClusterData blockData = new BlockClusterData();
+            blockData.setBlock(new Vector3i(0, 0, 0), Blocks.IRON_BLOCK.defaultBlockState());
+
+            SandBoxClientWorld.INSTANCE.addClientShip(new SandBoxClientShip(
+                UUID.randomUUID(),
+                new RigidbodyData(new TransformPrimitive(JomlUtil.d(player.position()), new Quaterniond(), new Vector3d(1, 1, 1))),
+                blockData
+            ));
         },
         null, null
     );

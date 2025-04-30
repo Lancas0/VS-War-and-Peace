@@ -18,9 +18,9 @@ import com.lancas.vs_wap.subproject.blockplusapi.blockplus.BlockPlus;
 import com.lancas.vs_wap.subproject.blockplusapi.blockplus.adder.DirectionAdder;
 import com.lancas.vs_wap.subproject.blockplusapi.blockplus.adder.IBlockAdder;
 import com.lancas.vs_wap.subproject.sandbox.SandBoxServerWorld;
-import com.lancas.vs_wap.subproject.sandbox.component.data.SandBoxBlockClusterData;
-import com.lancas.vs_wap.subproject.sandbox.component.data.SandBoxRigidbodyData;
-import com.lancas.vs_wap.subproject.sandbox.component.data.SandBoxTransformData;
+import com.lancas.vs_wap.subproject.sandbox.api.data.TransformPrimitive;
+import com.lancas.vs_wap.subproject.sandbox.component.data.BlockClusterData;
+import com.lancas.vs_wap.subproject.sandbox.component.data.RigidbodyData;
 import com.lancas.vs_wap.subproject.sandbox.ship.SandBoxServerShip;
 import com.lancas.vs_wap.util.*;
 import net.minecraft.core.BlockPos;
@@ -33,10 +33,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.items.ItemHandlerHelper;
-import org.joml.Quaterniond;
-import org.joml.Vector3dc;
-import org.joml.Vector3i;
-import org.joml.Vector3ic;
+import org.joml.*;
 import org.valkyrienskies.core.api.ships.ServerShip;
 import org.valkyrienskies.core.api.ships.Ship;
 
@@ -124,7 +121,7 @@ public class RapidBreech extends BlockPlus implements IBreech {
         Vector3dc worldBreechPos = WorldUtil.getWorldCenter(level, breechBp);
         Vector3dc worldLaunchDir = WorldUtil.getWorldDirection(level, breechBp, breechState.getValue(DirectionAdder.FACING));
         //SandBoxTransformData transformData = new SandBoxTransformData().setPos(worldBreechPos).setRotation(new Quaterniond());  //todo use factory avoid destroycal data setting?
-        SandBoxBlockClusterData blockData = new SandBoxBlockClusterData();
+        BlockClusterData blockData = new BlockClusterData();
 
         //我估计遍历两次和记录一次后再遍历一次差不多
         Vector3ic[] primerRecordPos = new Vector3ic[] { null };
@@ -175,17 +172,18 @@ public class RapidBreech extends BlockPlus implements IBreech {
         //since no rotated is no rotated, the worldNoRotated is equal to local
         Vector3dc worldMunitionDirNoRotated = JomlUtil.d(munitionLocalDir[0]);
 
+        //todo scale the projectile by breech scale
+        RigidbodyData rigidbodyData = new RigidbodyData(new TransformPrimitive(worldBreechPos, new Quaterniond().rotateTo(worldMunitionDirNoRotated, worldLaunchDir), new Vector3d(1, 1, 1)));
         SandBoxServerShip ship = new SandBoxServerShip(
             UUID.randomUUID(),
-            new SandBoxTransformData().setPos(worldBreechPos).setRotation(new Quaterniond().rotateTo(worldMunitionDirNoRotated, worldLaunchDir)),
-            blockData,
-            SandBoxRigidbodyData.createNoGravity()
+            rigidbodyData,
+            blockData
         );
         ship.addBehaviour(new BallisticBehaviour(), new BallisticData(
             new BallisticInitialStateSubData(worldBreechPos, munitionLocalDir[0], worldLaunchDir, propellantEnergyDest.get()),
             new BallisticBarrelContextSubData(),
             new AirDragSubData()
         ));
-        SandBoxServerWorld.addShip(level, ship);
+        SandBoxServerWorld.addShipAndSyncClient(level, ship);
     }
 }

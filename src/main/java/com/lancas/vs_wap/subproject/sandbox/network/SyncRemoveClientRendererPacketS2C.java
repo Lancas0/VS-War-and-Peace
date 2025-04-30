@@ -1,6 +1,5 @@
 package com.lancas.vs_wap.subproject.sandbox.network;
 
-import com.lancas.vs_wap.debug.EzDebug;
 import com.lancas.vs_wap.subproject.sandbox.SandBoxClientWorld;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;
@@ -38,7 +37,7 @@ public class SyncRemoveClientRendererPacketS2C {
                 return;  //no need for update because it is not in current level
             }
             //EzDebug.log("remove render:" + uuid);
-            clientWorld.removeRenderer(uuid);
+            clientWorld.markShipDeleted(uuid);
         });
         ctx.get().setPacketHandled(true);
     }

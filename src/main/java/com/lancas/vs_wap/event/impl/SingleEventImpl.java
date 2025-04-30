@@ -7,11 +7,12 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Consumer;
 
 public class SingleEventImpl<T> implements ISingleEvent<T> {
 
-    private final List<Consumer<T>> listeners = new ArrayList<>();
+    private final Queue<Consumer<T>> listeners = new ConcurrentLinkedQueue<>();
     private final Set<Consumer<T>> toRemove = ConcurrentHashMap.newKeySet();
 
     //@Override

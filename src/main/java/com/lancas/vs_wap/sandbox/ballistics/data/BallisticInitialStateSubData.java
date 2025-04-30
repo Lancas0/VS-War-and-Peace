@@ -2,12 +2,12 @@ package com.lancas.vs_wap.sandbox.ballistics.data;
 
 import com.lancas.vs_wap.debug.EzDebug;
 import com.lancas.vs_wap.sandbox.ballistics.ISandBoxBallisticBlock;
-import com.lancas.vs_wap.subproject.sandbox.component.data.IComponentData;
-import com.lancas.vs_wap.subproject.sandbox.component.data.exposed.IExposedComponentData;
+import com.lancas.vs_wap.subproject.sandbox.api.component.IComponentData;
+import com.lancas.vs_wap.subproject.sandbox.api.component.IComponentDataReader;
+import com.lancas.vs_wap.subproject.sandbox.ship.ISandBoxShip;
 import com.lancas.vs_wap.subproject.sandbox.ship.SandBoxServerShip;
 import com.lancas.vs_wap.util.NbtBuilder;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import org.apache.logging.log4j.util.TriConsumer;
@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class BallisticInitialStateSubData implements IComponentData<BallisticInitialStateSubData>, IExposedComponentData<BallisticInitialStateSubData> {
+public class BallisticInitialStateSubData implements IComponentData<BallisticInitialStateSubData>, IComponentDataReader<BallisticInitialStateSubData> {
     //set default dir as SOUTH for safe
     public final Vector3d launchWorldPos = new Vector3d();
     public final Vector3i localForward = new Vector3i(0, 0, 1);  //localDir is the dir from project's tail to head.
@@ -40,7 +40,7 @@ public class BallisticInitialStateSubData implements IComponentData<BallisticIni
 
     public void foreachBallisticBlock(SandBoxServerShip ship, TriConsumer<Vector3i, BlockState, ISandBoxBallisticBlock> consumer) {
         ballisticBlockLocPoses.forEach(localPos -> {
-            BlockState state = ship.getCluster().getBlock(localPos);
+            BlockState state = ship.getBlockCluster().getDataReader().getBlockState(localPos);
             if (state == null || state.isAir() || !(state.getBlock() instanceof ISandBoxBallisticBlock bb)) {
                 EzDebug.warn("fail to get ballistic state at " + localPos);
                 return;
@@ -59,9 +59,9 @@ public class BallisticInitialStateSubData implements IComponentData<BallisticIni
         return this;
     }
     @Override
-    public IComponentData<BallisticInitialStateSubData> overwriteDataByShip(SandBoxServerShip ship) {
+    public IComponentData<BallisticInitialStateSubData> overwriteDataByShip(ISandBoxShip ship) {
         List<Vector3i> ballisticBlocks = new ArrayList<>();
-        ship.getCluster().foreach((localPos, state) -> {
+        ship.getBlockCluster().getDataReader().seekAllBlocks((localPos, state) -> {
             Block block = state.getBlock();
             if (block instanceof ISandBoxBallisticBlock)
                 ballisticBlocks.add(new Vector3i(localPos));

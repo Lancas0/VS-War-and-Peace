@@ -12,28 +12,8 @@ import org.joml.Vector3dc;
 
 import java.lang.reflect.Constructor;
 
-public class SerializeUtil {
-    public static CompoundTag saveTransformLike(Vector3dc pos, Quaterniondc rot, Vector3dc scale) {
-        //no need to save aabb, it is initialy dirty
-        return new NbtBuilder()
-            .putVector3d("pos", pos)
-            .putQuaternion("rot", rot)
-            .putVector3d("scale", scale)
-            .get();
-    }
-    public static void loadTransformLike(CompoundTag tag, TriConsumer<Vector3d, Quaterniond, Vector3d> loader) {
-        //no need to load aabb, it is initialy dirty
-        Vector3d pos = new Vector3d();
-        Quaterniond rot = new Quaterniond();
-        Vector3d scale = new Vector3d();
+//public class SerializeUtil {
 
-        NbtBuilder.modify(tag)
-            .readVector3d("pos", pos)
-            .readQuaternionD("rot", rot)
-            .readVector3d("scale", scale);
-
-        loader.accept(pos, rot, scale);
-    }
 
     /*
     public static SandBoxClientShip deserializeAsClient(CompoundTag nbt) {
@@ -71,18 +51,6 @@ public class SerializeUtil {
             .createAsServer();
     }*/
 
-    @Nullable
-    public static  <T> T createByClassName(String className) {
-        try {
-            Constructor<T> constructor = (Constructor<T>)Class.forName(className).getDeclaredConstructor();
-            constructor.setAccessible(true);
-            return constructor.newInstance();
-        } catch (Exception e) {
-            EzDebug.error("fail to create class:" + className + ", exception:");
-            e.printStackTrace();
-            return null;
-        }
 
-    }
 
-}
+//}

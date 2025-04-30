@@ -1,5 +1,6 @@
 package com.lancas.vs_wap.subproject.sandbox.network;
 
+/*
 import com.lancas.vs_wap.subproject.sandbox.SandBoxClientWorld;
 import com.lancas.vs_wap.subproject.sandbox.ship.ShipClientRenderer;
 import net.minecraft.nbt.CompoundTag;
@@ -37,8 +38,9 @@ public class SyncAddClientRendererPacketS2C {
                 return;  //no need for update because it is not in current level
             }
 
-            clientWorld.addRenderer(new ShipClientRenderer(savedRenderer));
+            clientWorld.addClientShip(new Clietn(savedRenderer));
         });
         ctx.get().setPacketHandled(true);
     }
 }
+*/

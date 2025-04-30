@@ -2,32 +2,41 @@ package com.lancas.vs_wap.subproject.sandbox.network.worldsync;
 
 import com.lancas.vs_wap.debug.EzDebug;
 import com.lancas.vs_wap.subproject.sandbox.SandBoxClientWorld;
+import com.lancas.vs_wap.subproject.sandbox.network.NetSerializeUtil;
+import com.lancas.vs_wap.subproject.sandbox.ship.SandBoxClientShip;
+import com.lancas.vs_wap.subproject.sandbox.ship.SandBoxServerShip;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;
 
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Supplier;
 
 public class DoSyncClientWorldPacketS2C {
     private final String levelName;
-    private final Map<UUID, CompoundTag> savedRenderers;
+    private final List<CompoundTag> savedClientShips;
 
-    public DoSyncClientWorldPacketS2C(String inLevelName, Map<UUID, CompoundTag> inSavedRenderers) {
+    public DoSyncClientWorldPacketS2C(String inLevelName, List<SandBoxServerShip> allSyncingShips) {
         levelName = inLevelName;
-        savedRenderers = inSavedRenderers;
+        savedClientShips = new ArrayList<>();
+        allSyncingShips.forEach(s -> {
+            CompoundTag saved = NetSerializeUtil.serializeShipForSendToClient(s);
+            savedClientShips.add(saved);
+        });
+    }
+    private DoSyncClientWorldPacketS2C(List<CompoundTag> allNetworkNbt, String inLevelName) {
+        levelName = inLevelName;
+        savedClientShips = allNetworkNbt;
     }
 
     public void encode(FriendlyByteBuf buffer) {
-        buffer.writeUtf(levelName)
-            .writeMap(savedRenderers, FriendlyByteBuf::writeUUID, FriendlyByteBuf::writeNbt);
+        buffer.writeCollection(savedClientShips, FriendlyByteBuf::writeNbt);
+        buffer.writeUtf(levelName);
     }
     public static DoSyncClientWorldPacketS2C decode(FriendlyByteBuf buffer) {
         return new DoSyncClientWorldPacketS2C(
-            buffer.readUtf(),
-            buffer.readMap(FriendlyByteBuf::readUUID, FriendlyByteBuf::readNbt)
+            buffer.readCollection(size -> new ArrayList<>(), FriendlyByteBuf::readNbt),
+            buffer.readUtf()
         );
     }
 
@@ -40,8 +49,13 @@ public class DoSyncClientWorldPacketS2C {
             }
 
             //clientWorld.setCurrentLevelKey(levelKey);
-            EzDebug.log("do sync client world");
-            clientWorld.reloadLevel(levelName, savedRenderers);
+            //clientWorld.reloadLevel(levelName, savedRenderers);
+            List<SandBoxClientShip> clientShips = new ArrayList<>();
+            for (CompoundTag nbt : savedClientShips) {
+                clientShips.add(NetSerializeUtil.deserializeAsClientShip(nbt));
+            }
+
+            clientWorld.reloadLevel(levelName, clientShips);
         });
         ctx.get().setPacketHandled(true);
     }

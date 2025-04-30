@@ -117,7 +117,7 @@ public class ImpactFuze extends BlockPlus implements ICollisionTrigger, ISandBox
         setTriggered(state, true);
         ship.setBlock(localPos, state.setValue(TRIGGERED, true));*/
 
-        Vector3dc worldPos = ship.getTransform().localToWorldPos(localPos, new Vector3d());
+        Vector3dc worldPos = ship.getRigidbody().getDataReader().localToWorldPos(localPos);
         BlockPos blockPos = JomlUtil.bpContaining(worldPos);
         BlockState findState = level.getBlockState(blockPos);
 
@@ -125,7 +125,7 @@ public class ImpactFuze extends BlockPlus implements ICollisionTrigger, ISandBox
             var activateInfo = new SandBoxTriggerInfo.ActivateTriggerInfo(ship.getUuid(), localPos, state, worldPos);
             dest.add(activateInfo);
 
-            ship.setBlock(localPos, state.setValue(TRIGGERED, true));
+            ship.getBlockCluster().setBlock(localPos, state.setValue(TRIGGERED, true));
         }
 
         /*EzDebug.log(

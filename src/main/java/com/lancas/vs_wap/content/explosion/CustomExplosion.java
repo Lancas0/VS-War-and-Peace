@@ -1,21 +1,14 @@
 package com.lancas.vs_wap.content.explosion;
 
 import com.lancas.vs_wap.debug.EzDebug;
-import com.lancas.vs_wap.ship.ballistics.helper.BallisticsMath;
-import com.lancas.vs_wap.subproject.sandbox.SandBoxServerWorld;
-import com.lancas.vs_wap.subproject.sandbox.component.behviour.SandBoxTween;
-import com.lancas.vs_wap.subproject.sandbox.component.data.SandBoxBlockClusterData;
-import com.lancas.vs_wap.subproject.sandbox.component.data.SandBoxRigidbodyData;
-import com.lancas.vs_wap.subproject.sandbox.component.data.SandBoxTransformData;
-import com.lancas.vs_wap.subproject.sandbox.component.data.TweenData;
-import com.lancas.vs_wap.subproject.sandbox.ship.SandBoxServerShip;
-import com.lancas.vs_wap.subproject.sandbox.ship.ScheduleShipData;
+import com.lancas.vs_wap.foundation.network.NetworkHandler;
+import com.lancas.vs_wap.sandbox.schedule.ClientShardShipScheduler;
+import com.lancas.vs_wap.subproject.sandbox.network.send.SendScheduleToClientS2C;
+import com.lancas.vs_wap.subproject.sandbox.thread.client.SandBoxClientThread;
 import com.lancas.vs_wap.util.JomlUtil;
-import com.lancas.vs_wap.util.MathUtil;
-import com.lancas.vs_wap.util.RandUtil;
-import com.lancas.vs_wap.util.StrUtil;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.Util;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
@@ -24,7 +17,6 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.ExplosionDamageCalculator;
 import net.minecraft.world.level.Level;
@@ -34,14 +26,10 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
-
-import java.util.*;
 
 //todo change name
 public class CustomExplosion extends Explosion {
@@ -114,14 +102,11 @@ public class CustomExplosion extends Explosion {
     public void finalizeExplosion(boolean spawnParticles) {
         preFinalizeExp(spawnParticles);
 
+        if (level instanceof ClientLevel cLevel) { }
+
         if (!(level instanceof ServerLevel sLevel)) return;
 
-        //do before super finalize
-        //List<BlockPos> toBlow = getToBlow();
-        //Util.shuffle((ObjectArrayList<BlockPos>)toBlow, level.random);
 
-        //toBlow is shuffled in super
-        // 生成物理碎片 gen phys shards
         int spawnCnt = Math.min((int)(noAirBlockPoses.size()), MAX_SHARD_CNT);
         Util.shuffle(noAirBlockPoses, level.random);
         EzDebug.log("to spawn count:" + spawnCnt);
@@ -130,30 +115,34 @@ public class CustomExplosion extends Explosion {
             BlockState state = level.getBlockState(curToBlow);
 
             if (state.isAir()) continue;
-
             //todo compact valkyrien
-
             //Vector3d normal = new Vector3d(0, (expCenterToBlockDir.y > 0 ? 1 : -1), 0);
-
             //Vector3d outVelDir = BallisticsMath.getBouncedVelNoDecrease(expCenterToBlockDir, normal);
+
             Vector3d spawnPos = JomlUtil.dCenter(curToBlow);
+            Vector3d expCenterToBlockDir = spawnPos.sub(cx, cy, cz, new Vector3d()).normalize();
+            if (!expCenterToBlockDir.isFinite())
+                continue;
             //simply groundNormal as inv for proj vel dir
-            Vector3d groundNormal = projectileVelWhenExp.normalize(-1, new Vector3d());
+            /*Vector3d groundNormal = projectileVelWhenExp.normalize(-1, new Vector3d());
             if (!groundNormal.isFinite())
                 groundNormal.set(0, 1, 0);  //default ground normal for safe
 
-            SandBoxServerShip shardShip = new SandBoxServerShip(
+            RigidbodyData rigidbodyData = RigidbodyData.createEarthGravity(new TransformPrimitive().setPosition(spawnPos));
+            rigidbodyData.setOmega(RandUtil.onRandSphere(1, 8));
+            //rigidbodyData.setVelocity(new Vector3d(0, 20, 0));
+
+            SandBoxClientShip shardShip = new SandBoxClientShip(
                 UUID.randomUUID(),
-                new SandBoxTransformData().setPos(spawnPos),  //todo randomize
-                SandBoxBlockClusterData.BlockAtCenter(state),
-                SandBoxRigidbodyData.createEarthGravity().setOmega(RandUtil.onRandSphere(1, 8))
-                    //.setVelocity(expCenterToBlockDir.mul(level.random.nextGaussian() * (-10)).setComponent(1, level.random.nextInt(10, 20))/*outVelDir.mul(level.random.nextFloat() * 20)*/)  //随机0-20速度
-                    //.setOmega(RandUtil.onRandSphere(1, 8))
-            ).timeOut(60);  //todo tween scale animation
+                rigidbodyData,
+                BlockClusterData.BlockAtCenter(state)
+            );
+            shardShip.setRemainLifeTick(60);
             shardShip.addBehaviour(new SandBoxTween(), new TweenData(
-                (transform, t01) -> SandBoxTransformData.copy(transform).setScaleXYZ(1 - t01),
+                (transform, t01) -> new TransformPrimitive(transform).setScale(1 - t01),
                 2.5
             ));
+            //shardShip.getRigidbody().getDataWriter().setVelocity(new Vector3d(0, 20, 0));
 
             //save the blockCenter before schedule callback because the blockPos is not serializable, Vector3d is
             Vector3d blockWorldCenter = JomlUtil.dCenter(curToBlow);  //todo change when compact valkyrien
@@ -163,59 +152,80 @@ public class CustomExplosion extends Explosion {
             if (!expCenterToBlockDir.isFinite())
                 continue;
 
-            //delay for 2 tick to make sure blocks are removed from level(actually 3 tick)
+            //6 tick in client is about 2 ticks in server
+
             ScheduleShipData scheduleShipData = new ScheduleShipData(
-                shardShip, 2, (l, ship, remainTick, canceled) -> {
-                if (remainTick != 0) return;  //only set vel at remain tick 0
-                //cx, cy, cz is serializable and don't change
-                //projectileVelWhenExp is serializable and don't change
+                shardShip, 4,
+                (ScheduleShipData.ScheduleCallback & Serializable)
+                    (l, ship, remainTick, canceled) -> {
+                        if (remainTick != 0) return;  //only set vel at remain tick 0
+                        //cx, cy, cz is serializable and don't change
+                        //projectileVelWhenExp is serializable and don't change
 
-                Vector3d velDirAlongVel = new Vector3d();
-                Vector3d velDirVertToVel = new Vector3d();
-                //沿着速度方向对距离差进行正交分解
-                MathUtil.orthogonality(expCenterToBlockDir, projectileVelWhenExp, velDirAlongVel, velDirVertToVel);
-                velDirAlongVel.normalize(); velDirVertToVel.normalize();
+                        Vector3d velDirAlongVel = new Vector3d();
+                        Vector3d velDirVertToVel = new Vector3d();
+                        //沿着速度方向对距离差进行正交分解
+                        MathUtil.orthogonality(expCenterToBlockDir, projectileVelWhenExp, velDirAlongVel, velDirVertToVel);
+                        velDirAlongVel.normalize(); velDirVertToVel.normalize();
 
-                if (!velDirAlongVel.isFinite() || !velDirVertToVel.isFinite()) {  //cancel ship if the vel is not finite
-                    EzDebug.warn("can't spawn shard ship because invalid vel:" + velDirAlongVel + "," + velDirVertToVel);
-                    canceled.set(true);
-                    return;
-                }
-                /*EzDebug.log(
+                        if (!velDirAlongVel.isFinite() || !velDirVertToVel.isFinite()) {  //cancel ship if the vel is not finite
+                            EzDebug.warn("can't spawn shard ship because invalid vel:" + velDirAlongVel + "," + velDirVertToVel);
+                            canceled.set(true);
+                            return;
+                        }
+                /.*EzDebug.log(
                     "block in level:" + StrUtil.getBlockName(level.getBlockState())
-                );*/
-                //EzDebug.log("ship blocks:");
-                //EzDebug.logs(ship.getCluster().allBlockStates(), StrUtil::getBlockName);
-                Vector3d shardVel =
-                    velDirAlongVel.mul(RandUtil.nextG(15, 4), new Vector3d())
-                    .add(velDirVertToVel.mul(RandUtil.nextG(3, 1.5), new Vector3d()));
+                );*./
+                        //EzDebug.log("ship blocks:");
+                        //EzDebug.logs(ship.getCluster().allBlockStates(), StrUtil::getBlockName);
+                        Vector3d shardVel =
+                            velDirAlongVel.mul(RandUtil.nextG(15, 4), new Vector3d())
+                                .add(velDirVertToVel.mul(RandUtil.nextG(3, 1.5), new Vector3d()));
 
-                //检测可能的碰撞，如果有碰撞则以炮弹速度反方向为法向量计算弹射速度
-                ClipContext ctx = new ClipContext(
-                    JomlUtil.v3(blockWorldCenter),
-                    JomlUtil.v3(shardVel.mul(0.5, new Vector3d()).add(blockWorldCenter)),  //计算0.5s后是否有碰撞
-                    ClipContext.Block.COLLIDER,
-                    ClipContext.Fluid.NONE,
-                    null
-                );
-                BlockHitResult result = l.clip(ctx);
-                if (result.getType() != HitResult.Type.MISS) {
-                    //计算反弹的速度
-                    shardVel.set(BallisticsMath.getBouncedVelNoDecrease(shardVel, groundNormal));
-                    EzDebug.warn(
-                        "worldCenter:" + blockWorldCenter +
-                            "is inside?:" + result.isInside() +
-                            " at " + StrUtil.poslike(result.getBlockPos()) +
-                            ", the state in level at hitpos:" + StrUtil.getBlockName(level.getBlockState(result.getBlockPos()))
-                    );
-                }
-                ship.getRigidbody().getExposedData().setVelocity(shardVel);
-            });
+                        //检测可能的碰撞，如果有碰撞则以炮弹速度反方向为法向量计算弹射速度
+                        ClipContext ctx = new ClipContext(
+                            JomlUtil.v3(blockWorldCenter),
+                            JomlUtil.v3(shardVel.mul(0.5, new Vector3d()).add(blockWorldCenter)),  //计算0.5s后是否有碰撞
+                            ClipContext.Block.COLLIDER,
+                            ClipContext.Fluid.NONE,
+                            null
+                        );
+                        BlockHitResult result = l.clip(ctx);
+                        if (result.getType() != HitResult.Type.MISS) {
+                            //计算反弹的速度
+                            shardVel.set(BallisticsMath.getBouncedVelNoDecrease(shardVel, groundNormal));
+                            EzDebug.warn(
+                                "worldCenter:" + blockWorldCenter +
+                                    "is inside?:" + result.isInside() +
+                                    " at " + StrUtil.poslike(result.getBlockPos()) +
+                                    ", the state in level at hitpos:" + StrUtil.getBlockName(level.getBlockState(result.getBlockPos()))
+                            );
+                        }
+                        ship.getRigidbody().getDataWriter().setVelocity(shardVel);
 
-            SandBoxServerWorld.scheduleShipOverwriteIfExisted(sLevel, scheduleShipData);
-            blowOnBlock(sLevel, curToBlow);
-            //EzDebug.light("spawn at " + StrUtil.F2(spawnPos) + ", vel:" + StrUtil.F2(outVelDir) + ", normal:" + StrUtil.F2(normal) + ", expCenterToBlockDir:" + StrUtil.F2(expCenterToBlockDir));
+            });*/
+            ClientShardShipScheduler.ShardShipScheduleData data = new ClientShardShipScheduler.ShardShipScheduleData(
+                4, //delay about 4 ticks
+                spawnPos,
+                state,
+                expCenterToBlockDir,
+                projectileVelWhenExp
+            );
+            NetworkHandler.sendToAllPlayers(
+                SendScheduleToClientS2C.create(sLevel, SandBoxClientThread.class, data)
+            );//todo send to near players
         }
+
+
+
+        for (var curToBlow : noAirBlockPoses)
+            blowOnBlock(sLevel, curToBlow);
+        //do before super finalize
+        //List<BlockPos> toBlow = getToBlow();
+        //Util.shuffle((ObjectArrayList<BlockPos>)toBlow, level.random);
+
+        //toBlow is shuffled in super
+        // 生成物理碎片 gen phys shards
 
         fireStage();
     }

@@ -1,12 +1,9 @@
 package com.lancas.vs_wap.sandbox.ballistics.behaviour;
 
 import com.lancas.vs_wap.debug.EzDebug;
-import com.lancas.vs_wap.foundation.api.math.ForceOnPos;
-import com.lancas.vs_wap.foundation.network.NetworkHandler;
-import com.lancas.vs_wap.foundation.network.debug.ForceOnPosDebugS2C;
 import com.lancas.vs_wap.sandbox.ballistics.data.AirDragSubData;
 import com.lancas.vs_wap.sandbox.ballistics.data.BallisticData;
-import com.lancas.vs_wap.subproject.sandbox.component.data.exposed.IExposedRigidbodyData;
+import com.lancas.vs_wap.subproject.sandbox.component.data.reader.IRigidbodyDataReader;
 import com.lancas.vs_wap.subproject.sandbox.ship.SandBoxServerShip;
 import com.lancas.vs_wap.util.MathUtil;
 import com.lancas.vs_wap.util.StrUtil;
@@ -21,16 +18,16 @@ public class AirDragHandler {
 
         //gather data
         var rigidbody = ship.getRigidbody();
-        IExposedRigidbodyData rigidbodyData = rigidbody.getExposedData();
+        IRigidbodyDataReader rigidbodyDataReader = rigidbody.getDataReader();
         AirDragSubData airDragData = data.airDragData;
-        Vector3dc velocity = rigidbodyData.getVelocity();
+        Vector3dc velocity = rigidbodyDataReader.getVelocity();
         double velocitySqLen = velocity.lengthSquared();
 
         if (velocitySqLen < 10) return;  //no air drag when vel is too small
 
-        Vector3d worldMassCenter = rigidbody.calWorldMassCenter();
-        Vector3d worldAirDragCenter = ship.getTransform().localToWorldPos(airDragData.localAirDragCenter, new Vector3d());
-        Vector3d worldForward = ship.getTransform().localToWorldNoScaleDir(data.initialStateData.localForward, new Vector3d());
+        Vector3d worldMassCenter = rigidbodyDataReader.getWorldMassCenter(new Vector3d());
+        Vector3d worldAirDragCenter = rigidbodyDataReader.localToWorldPos(airDragData.localAirDragCenter, new Vector3d());
+        Vector3d worldForward = rigidbodyDataReader.localToWorldNoScaleDir(data.initialStateData.localForward);
 
         double projectArea = calAirDragAreaInWorld(ship, airDragData, velocity);
         double dragForceLen = 0.5 * projectArea * velocitySqLen * 1;  //the last arg is air drag multiplier
@@ -41,10 +38,12 @@ public class AirDragHandler {
             Vector3d rotateDrag = new Vector3d();
             MathUtil.orthogonality(airDragForce, worldForward, linearDrag, rotateDrag);
 
-            rigidbody.addForce(linearDrag);
+            rigidbody.getDataWriter().applyWorldForce(linearDrag);
 
             Vector3d torque = worldAirDragCenter.sub(worldMassCenter, new Vector3d()).cross(rotateDrag);
-            rigidbody.applyTorque(torque);
+            rigidbody.getDataWriter().applyWorldTorque(torque);
+
+            //EzDebug.log("worldAirDragCenter:" + StrUtil.F2(worldAirDragCenter) + ", worldMassCenter:" + StrUtil.F2(worldMassCenter));
             //EzDebug.log("dragForceLen:" + dragForceLen + "projectArea:" + projectArea + "linearDrag:" + StrUtil.F2(linearDrag) + ", moment:" + StrUtil.F2(torque) + ", locAirDragCenter:" + StrUtil.F2(airDragData.localAirDragCenter));
         }
     }
@@ -63,7 +62,7 @@ public class AirDragHandler {
         return sumCenter.div(totalWeight.get());
     }*/
     private static double calAirDragAreaInWorld(SandBoxServerShip ship, AirDragSubData data, Vector3dc worldVel) {
-        Vector3d localVelDir = ship.getTransform().localToWorldNoScaleDir(worldVel, new Vector3d()).normalize();
+        Vector3d localVelDir = ship.getRigidbody().getDataReader().localToWorldNoScaleDir(worldVel, new Vector3d()).normalize();
 
         //EzDebug.log("locVelDir:" + StrUtil.F2(localVelDir) + ", shipLocAABB:" + ship.getLocalAABB());
 

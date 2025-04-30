@@ -2,7 +2,7 @@ package com.lancas.vs_wap.mixins.sandbox;
 
 import com.lancas.vs_wap.debug.EzDebug;
 import com.lancas.vs_wap.subproject.sandbox.SandBoxClientWorld;
-import com.lancas.vs_wap.subproject.sandbox.ship.ShipClientRenderer;
+import com.lancas.vs_wap.subproject.sandbox.ship.SandBoxClientShip;
 import com.lancas.vs_wap.util.JomlUtil;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
@@ -27,10 +27,10 @@ public class SandBoxAABBRenderer {
 
         if (!Minecraft.getInstance().getEntityRenderDispatcher().shouldRenderHitBoxes()) return;
 
-        for (ShipClientRenderer renderer : world.allRenderers()) {
+        world.allClientShips().forEach(s -> {
 
-            AABB localAABB = JomlUtil.aabb(renderer.getLocalAABB());
-            AABB renderAABB = JomlUtil.aabb(renderer.getCurWorldAABB());
+            AABB localAABB = JomlUtil.aabb(s.getLocalAABB());
+            AABB renderAABB = JomlUtil.aabb(s.getWorldAABB());
 
             poseStack.pushPose();
             //将相对于摄像机的poseStack转换为相对世界的poseStack
@@ -40,17 +40,17 @@ public class SandBoxAABBRenderer {
 
 
             poseStack.pushPose();
-            Matrix4f localToWorld = renderer.getCurTransformData().makeLocalToWorld(new Matrix4f());
+            Matrix4f localToWorld = s.getCurrentTransform().makeLocalToWorld(new Matrix4f());
             //将相对于摄像机的poseStack转换为船本地空间的poseStack
             poseStack.mulPoseMatrix(new Matrix4f(localToWorld));
 
             LevelRenderer.renderLineBox(poseStack, bufferSource.getBuffer(RenderType.LINES), localAABB, 1.0f, 0.0f, 0.0f, 1.0f);
 
-            EzDebug.log("render AABB of ship:" + renderer.uuid + ", loc:" + localAABB + ", render:" + renderAABB);
+            //EzDebug.log("render AABB of ship:" + s.getUuid() + ", loc:" + localAABB + ", render:" + renderAABB);
 
             poseStack.popPose();
             poseStack.popPose();
-        }
+        });
         bufferSource.endBatch();
     }
 }
