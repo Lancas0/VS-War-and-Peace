@@ -3,7 +3,7 @@ package com.lancas.vs_wap.ship.attachment;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.lancas.vs_wap.content.WapBlocks;
-import com.lancas.vs_wap.content.blocks.industry.ProjectCenter;
+import com.lancas.vs_wap.content.block.blocks.industry.ProjectCenter;
 import com.lancas.vs_wap.debug.EzDebug;
 import com.lancas.vs_wap.foundation.data.SavedBlockPos;
 import com.lancas.vs_wap.ship.helper.LazyShip;

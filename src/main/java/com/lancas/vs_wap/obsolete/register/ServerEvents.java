@@ -1,8 +1,8 @@
 package com.lancas.vs_wap.obsolete.register;
 
 import com.lancas.vs_wap.ModMain;
-import com.lancas.vs_wap.content.blocks.explosive.AbstractExplosiveBlock;
-import com.lancas.vs_wap.content.blocks.cartridge.warhead.IWarheadBlock;
+import com.lancas.vs_wap.content.block.blocks.explosive.AbstractExplosiveBlock;
+import com.lancas.vs_wap.content.block.blocks.cartridge.warhead.IWarheadBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Explosion;

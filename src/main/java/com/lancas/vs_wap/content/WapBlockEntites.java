@@ -1,6 +1,9 @@
 package com.lancas.vs_wap.content;
 
-import com.lancas.vs_wap.content.blockentity.*;
+import com.lancas.vs_wap.content.block.blockentity.ActivatorBlockEntity;
+import com.lancas.vs_wap.content.block.blockentity.ApWarheadBlockEntity;
+import com.lancas.vs_wap.content.block.blockentity.ScopeBE;
+import com.lancas.vs_wap.content.block.blockentity.VSProjectorBE;
 import com.tterrag.registrate.util.entry.BlockEntityEntry;
 
 import static com.lancas.vs_wap.ModMain.REGISTRATE;

@@ -1,7 +1,7 @@
 package com.lancas.vs_wap.compact.create.arminteraction;
 
 import com.lancas.vs_wap.content.WapItems;
-import com.lancas.vs_wap.content.blocks.cartridge.ShellFrame;
+import com.lancas.vs_wap.content.block.blocks.cartridge.ShellFrame;
 import com.lancas.vs_wap.content.items.docker.IDocker;
 import com.lancas.vs_wap.content.items.docker.RefWithFallbackDocker;
 import com.lancas.vs_wap.content.saved.BlockRecordRWMgr;

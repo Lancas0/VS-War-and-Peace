@@ -12,6 +12,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.level.BlockEvent;
@@ -22,19 +23,24 @@ import org.valkyrienskies.core.api.ships.ServerShip;
 @Mod.EventBusSubscriber
 public class EntityChangShipBlockEvt {
 
-    /*@SubscribeEvent
+    /*
+    @SubscribeEvent
     public static void onPlaceOnProjectingShip(BlockEvent.EntityPlaceEvent event) {
         if (!(event.getLevel() instanceof ServerLevel level)) return;
         ServerShip ship = ShipUtil.getServerShipAt(level, event.getPos());
         ProjectingShipAtt att = ProjectingShipAtt.getFrom(ship);
         if (att == null) return;
 
+        event.setCanceled(true);
+        BlockState placedBlock = event.getPlacedBlock();
+
+
         //EzDebug.log("placed block:" + StrUtil.getBlockName(event.getPlacedBlock()) + ", level block:" + StrUtil.getBlockName(event.getLevel().getBlockState(event.getPos())));
         //set cancel然后放方块，这样模拟放置方块但不消耗物品 todo或许不设置玩家放置/摧毁事件也挺好？
 
-        level.setBlockAndUpdate(event.getPos(), event.getPlacedBlock());
-        att.onUpdateBlock(level, event.getPos());
-        /*if (event.getEntity() instanceof Player player/.* && !player.isCreative()*./) {
+        //level.setBlockAndUpdate(event.getPos(), event.getPlacedBlock());
+        //att.onUpdateBlock(level, event.getPos());
+        /.*if (event.getEntity() instanceof Player player/.* && !player.isCreative()*./) {
             ItemStack handStack = player.getItemInHand(player.getUsedItemHand());
 
             EzDebug.log("handStack:" + handStack.getItem().getName(handStack) + ", count:" + handStack.getCount());

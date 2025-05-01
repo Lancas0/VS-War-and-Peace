@@ -1,7 +1,6 @@
 package com.lancas.vs_wap.sandbox.ballistics.behaviour;
 
-import com.lancas.vs_wap.content.blocks.artillery.IBarrel;
-import com.lancas.vs_wap.debug.EzDebug;
+import com.lancas.vs_wap.content.block.blocks.artillery.IBarrel;
 import com.lancas.vs_wap.sandbox.ballistics.data.BallisticBarrelContextSubData;
 import com.lancas.vs_wap.sandbox.ballistics.data.BallisticData;
 import com.lancas.vs_wap.subproject.sandbox.ship.SandBoxServerShip;
@@ -13,7 +12,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
 import org.joml.primitives.AABBdc;
-import org.joml.primitives.AABBic;
 import org.valkyrienskies.core.api.ships.Ship;
 import org.valkyrienskies.mod.common.VSGameUtilsKt;
 

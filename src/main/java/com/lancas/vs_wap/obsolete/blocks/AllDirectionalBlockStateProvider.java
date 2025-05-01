@@ -1,7 +1,7 @@
 package com.lancas.vs_wap.obsolete.blocks;
 
 import com.lancas.vs_wap.content.WapBlocks;
-import com.lancas.vs_wap.content.blocks.abstrac.DirectionalBlockImpl;
+import com.lancas.vs_wap.content.block.blocks.abstrac.DirectionalBlockImpl;
 import com.lancas.vs_wap.debug.EzDebug;
 import com.tterrag.registrate.util.entry.BlockEntry;
 import net.minecraft.data.PackOutput;

@@ -1,6 +1,6 @@
 package com.lancas.vs_wap.content.behaviour.block;
 
-import com.lancas.vs_wap.content.blocks.scope.IScopeBlock;
+import com.lancas.vs_wap.content.block.blocks.scope.IScopeBlock;
 import com.lancas.vs_wap.foundation.network.NetworkHandler;
 import com.lancas.vs_wap.foundation.network.client2server.ScopeOnContraptionPacketC2S;
 import com.lancas.vs_wap.register.KeyBinding;

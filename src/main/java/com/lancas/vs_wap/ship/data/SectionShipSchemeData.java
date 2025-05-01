@@ -2,6 +2,8 @@ package com.lancas.vs_wap.ship.data;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+//import com.lancas.vs_wap.content.blocks.industry.IgnoreByScheme;
+import com.lancas.vs_wap.content.block.blocks.industry.IProjectBlock;
 import com.lancas.vs_wap.debug.EzDebug;
 import com.lancas.vs_wap.foundation.api.Dest;
 import com.lancas.vs_wap.util.*;
@@ -122,6 +124,10 @@ public class SectionShipSchemeData implements IShipSchemeData {
                 for (int y = 0; y <= 15; ++y)
                     for (int z = 0; z <= 15; ++z) {
                         BlockState state = section.getBlockState(x, y, z);
+                        if (state.getBlock() instanceof IProjectBlock projectBlock) {
+                            state = projectBlock.representBlock();    //get the real state if block is projectBlock
+                        }
+
                         if (state.isAir()) continue;
 
                         int localX = x;//(offsetChunkX << 4) + x;

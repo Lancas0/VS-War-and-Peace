@@ -1,7 +1,7 @@
 package com.lancas.vs_wap.ship.ballistics.handler;
 
-import com.lancas.vs_wap.content.blocks.cartridge.IPrimer;
-import com.lancas.vs_wap.content.blocks.cartridge.propellant.IPropellant;
+import com.lancas.vs_wap.content.block.blocks.cartridge.IPrimer;
+import com.lancas.vs_wap.content.block.blocks.cartridge.propellant.IPropellant;
 import com.lancas.vs_wap.debug.EzDebug;
 import com.lancas.vs_wap.foundation.api.Dest;
 import com.lancas.vs_wap.foundation.BiTuple;

@@ -1,8 +1,8 @@
 package com.lancas.vs_wap.compact.create.arminteraction;
 
 import com.lancas.vs_wap.ModMain;
-import com.lancas.vs_wap.content.blocks.artillery.breech.IBreech;
-import com.lancas.vs_wap.content.blocks.cartridge.ShellFrame;
+import com.lancas.vs_wap.content.block.blocks.artillery.breech.IBreech;
+import com.lancas.vs_wap.content.block.blocks.cartridge.ShellFrame;
 import com.simibubi.create.content.kinetics.mechanicalArm.ArmInteractionPoint;
 import com.simibubi.create.content.kinetics.mechanicalArm.ArmInteractionPointType;
 import net.minecraft.core.BlockPos;

@@ -1,8 +1,8 @@
 package com.lancas.vs_wap.event;
 
 import com.lancas.vs_wap.ModMain;
-import com.lancas.vs_wap.content.blocks.cartridge.PrimerBlock;
-import com.lancas.vs_wap.content.blocks.cartridge.ShellFrame;
+import com.lancas.vs_wap.content.block.blocks.cartridge.PrimerBlock;
+import com.lancas.vs_wap.content.block.blocks.cartridge.ShellFrame;
 import com.lancas.vs_wap.content.saved.ConstraintsMgr;
 import com.lancas.vs_wap.debug.EzDebug;
 import com.lancas.vs_wap.event.impl.SingleEventImpl;

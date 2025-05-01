@@ -1,6 +1,6 @@
 package com.lancas.vs_wap.foundation.network;
 
-import com.lancas.vs_wap.content.blocks.SignalDetectorBlock;
+import com.lancas.vs_wap.content.block.blocks.SignalDetectorBlock;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkEvent;

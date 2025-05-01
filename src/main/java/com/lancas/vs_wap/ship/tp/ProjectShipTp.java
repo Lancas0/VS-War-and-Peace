@@ -1,6 +1,6 @@
 package com.lancas.vs_wap.ship.tp;
 
-import com.lancas.vs_wap.content.blockentity.VSProjectorBE;
+import com.lancas.vs_wap.content.block.blockentity.VSProjectorBE;
 import com.lancas.vs_wap.debug.EzDebug;
 import com.lancas.vs_wap.ship.helper.builder.ShipTransformBuilder;
 import com.lancas.vs_wap.util.WorldUtil;

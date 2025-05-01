@@ -3,10 +3,9 @@ package com.lancas.vs_wap.ship.ballistics.data;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.lancas.vs_wap.content.blocks.cartridge.modifier.IModifier;
-import com.lancas.vs_wap.content.blocks.cartridge.ticker.ITicker;
+import com.lancas.vs_wap.content.block.blocks.cartridge.modifier.IModifier;
+import com.lancas.vs_wap.content.block.blocks.cartridge.ticker.ITicker;
 import com.lancas.vs_wap.debug.EzDebug;
-import com.lancas.vs_wap.foundation.BiTuple;
 import com.lancas.vs_wap.foundation.data.SavedBlockPos;
 import com.lancas.vs_wap.ship.ballistics.api.IPhysBehaviour;
 import com.lancas.vs_wap.ship.ballistics.api.IPhysicalBehaviourBlock;
@@ -29,7 +28,6 @@ import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 @JsonAutoDetect(
     fieldVisibility = JsonAutoDetect.Visibility.ANY,
