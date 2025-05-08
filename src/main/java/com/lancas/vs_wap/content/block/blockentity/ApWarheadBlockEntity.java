@@ -138,7 +138,7 @@ public class ApWarheadBlockEntity extends BlockEntity {
 
         double mass = projectile.getInertiaData().getMass();
         Vector3d prevVel = new Vector3d(currentVelocity);
-        Vector3d postVel = terminalCtx.getPostVelocity(randomSrc);  // = shouldBounce ? terminalCtx.getBouncedVelocity(penetrate) : terminalCtx.getPenetratedVel();
+        Vector3d postVel = terminalCtx.getPostVelocity(shouldBounce/*randomSrc*/);  // = shouldBounce ? terminalCtx.getBouncedVelocity(penetrate) : terminalCtx.getPenetratedVel();
         /*if (!penetrate) {
             postVel = terminalCtx.getReboundVel();
         } else if (shouldBounce) {
@@ -171,7 +171,7 @@ public class ApWarheadBlockEntity extends BlockEntity {
         );
 
         if (hitShip != null) {
-            ForcesInducer.apply(hitShip, terminalCtx.getImpactForce());
+            ForcesInducer.applyForce(hitShip, terminalCtx.getImpactForce());
         }
     }
 }

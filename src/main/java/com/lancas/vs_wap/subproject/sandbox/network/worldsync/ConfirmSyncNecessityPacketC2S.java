@@ -1,11 +1,8 @@
 package com.lancas.vs_wap.subproject.sandbox.network.worldsync;
 
-import com.lancas.vs_wap.debug.EzDebug;
 import com.lancas.vs_wap.foundation.network.NetworkHandler;
-import com.lancas.vs_wap.subproject.sandbox.SandBoxClientWorld;
 import com.lancas.vs_wap.subproject.sandbox.SandBoxServerWorld;
 import com.lancas.vs_wap.subproject.sandbox.ship.SandBoxServerShip;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -51,7 +48,8 @@ public class ConfirmSyncNecessityPacketC2S {
             NetworkHandler.sendToClientPlayer(player,
                 new DoSyncClientWorldPacketS2C(
                     VSGameUtilsKt.getDimensionId(level),
-                    serverShips
+                    serverShips,
+                    serverWorld.wrapOrGetGround().getUuid()
                 )
             );
             serverWorld.notifyClientLoading(true);

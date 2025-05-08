@@ -1,20 +1,19 @@
 package com.lancas.vs_wap.content.block.blockentity;
 
 import com.lancas.vs_wap.content.WapBlocks;
-import com.lancas.vs_wap.content.items.GreenPrint;
+import com.lancas.vs_wap.content.item.items.GreenPrint;
 import com.lancas.vs_wap.ship.attachment.NoPlayerCollisionAttachment;
 import com.lancas.vs_wap.ship.attachment.ProjectingShipAtt;
-import com.lancas.vs_wap.ship.helper.LazyShip;
 import com.lancas.vs_wap.ship.helper.builder.ShipBuilder;
 import com.lancas.vs_wap.ship.tp.ProjectShipTp;
 import com.lancas.vs_wap.util.JomlUtil;
 import com.lancas.vs_wap.util.ShipUtil;
+import com.simibubi.create.content.kinetics.base.DirectionalShaftHalvesBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.items.ItemStackHandler;
@@ -22,7 +21,7 @@ import org.jetbrains.annotations.NotNull;
 import org.valkyrienskies.core.api.ships.ServerShip;
 import org.valkyrienskies.mod.common.VSGameUtilsKt;
 
-public class VSProjectorBE extends BlockEntity {
+public class VSProjectorBE extends DirectionalShaftHalvesBlockEntity {
     public VSProjectorBE(BlockEntityType<?> p_155228_, BlockPos p_155229_, BlockState p_155230_) {
         super(p_155228_, p_155229_, p_155230_);
     }
@@ -48,21 +47,38 @@ public class VSProjectorBE extends BlockEntity {
         return shipYOffset;
     }
 
-    private final LazyShip lazyLinkShip = new LazyShip((l, owner) ->
+    /*private final LazyShip lazyLinkShip = new LazyShip((l, owner) ->
         ShipUtil.getShipByID(l, ((VSProjectorBE) owner).linkShipId)
-    );
-
-    @Override
+    );*/
+    /*@Override
     public void load(CompoundTag tag) {
         super.load(tag);
         itemHandler.deserializeNBT(tag.getCompound("content"));
         linkShipId = tag.getLong("link_ship_id");
         shipYOffset = tag.getDouble("ship_y_offset");
     }
-
     @Override
     protected void saveAdditional(CompoundTag tag) {
         super.saveAdditional(tag);
+        tag.put("content", itemHandler.serializeNBT());
+        tag.putLong("link_ship_id", linkShipId);
+        tag.putDouble("ship_y_offset", shipYOffset);
+    }*/
+
+    @Override
+    protected void write(CompoundTag tag, boolean clientPacket) {
+        super.write(tag, clientPacket);
+        if(clientPacket) return;
+
+        itemHandler.deserializeNBT(tag.getCompound("content"));
+        linkShipId = tag.getLong("link_ship_id");
+        shipYOffset = tag.getDouble("ship_y_offset");
+    }
+    @Override
+    protected void read(CompoundTag tag, boolean clientPacket) {
+        super.read(tag, clientPacket);
+        if(clientPacket) return;
+
         tag.put("content", itemHandler.serializeNBT());
         tag.putLong("link_ship_id", linkShipId);
         tag.putDouble("ship_y_offset", shipYOffset);
@@ -96,7 +112,7 @@ public class VSProjectorBE extends BlockEntity {
 
         if (!(level instanceof ServerLevel sLevel)) return;
 
-        ServerShip linkShip = lazyLinkShip.get(sLevel, this);
+        ServerShip linkShip = ShipUtil.getServerShipByID(sLevel, linkShipId);//lazyLinkShip.get(sLevel, this);
         //ProjectingShipAtt att;
         if (linkShip == null) {
             //do not use pool since there will be an attachment added

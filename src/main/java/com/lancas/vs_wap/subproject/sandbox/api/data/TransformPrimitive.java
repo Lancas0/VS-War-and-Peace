@@ -9,6 +9,7 @@ import org.joml.Quaterniond;
 import org.joml.Quaterniondc;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
+import org.valkyrienskies.core.api.ships.properties.ShipTransform;
 
 public class TransformPrimitive implements ITransformPrimitive, ISavedObject<TransformPrimitive>, ILazyEventParam<TransformPrimitive> {
     public final Vector3d position = new Vector3d();
@@ -25,6 +26,9 @@ public class TransformPrimitive implements ITransformPrimitive, ISavedObject<Tra
         position.set(src.getPosition());
         rotation.set(src.getRotation());
         scale.set(src.getScale());
+    }
+    public static TransformPrimitive fromVsTransform(ShipTransform vs) {
+        return new TransformPrimitive(vs.getPositionInWorld(), vs.getShipToWorldRotation(), vs.getShipToWorldScaling());
     }
 
     @Override
@@ -49,6 +53,10 @@ public class TransformPrimitive implements ITransformPrimitive, ISavedObject<Tra
 
     public TransformPrimitive setPosition(Vector3dc newPos) {
         position.set(newPos);
+        return this;
+    }
+    public TransformPrimitive addPosition(Vector3dc movement) {
+        position.add(movement);
         return this;
     }
     public TransformPrimitive setRotation(Quaterniondc newRot) {  //todo check rot normilized?

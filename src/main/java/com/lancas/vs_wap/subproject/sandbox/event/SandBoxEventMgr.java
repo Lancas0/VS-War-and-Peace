@@ -1,9 +1,9 @@
 package com.lancas.vs_wap.subproject.sandbox.event;
 
-import com.lancas.vs_wap.event.impl.BiEventImpl;
-import com.lancas.vs_wap.event.impl.QuadEventImpl;
-import com.lancas.vs_wap.event.impl.TriLazyEvent;
+import com.lancas.vs_wap.event.impl.*;
 import com.lancas.vs_wap.foundation.network.NetworkHandler;
+import com.lancas.vs_wap.subproject.sandbox.ISandBoxWorld;
+import com.lancas.vs_wap.subproject.sandbox.SandBoxServerWorld;
 import com.lancas.vs_wap.subproject.sandbox.api.AABBdLazyParamWrapper;
 import com.lancas.vs_wap.subproject.sandbox.api.data.TransformPrimitive;
 import com.lancas.vs_wap.subproject.sandbox.api.UUIDLazyParamWrapper;
@@ -12,6 +12,7 @@ import com.lancas.vs_wap.subproject.sandbox.network.UpdateShipTransformPacketS2C
 import com.lancas.vs_wap.subproject.sandbox.network.worldsync.SyncClientWorldIfNecessaryPacketS2C;
 import com.lancas.vs_wap.subproject.sandbox.network.worldsync.SyncServerShipToClientPacket;
 import com.lancas.vs_wap.subproject.sandbox.ship.ISandBoxShip;
+import com.lancas.vs_wap.subproject.sandbox.ship.IServerSandBoxShip;
 import com.lancas.vs_wap.subproject.sandbox.ship.SandBoxServerShip;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -27,11 +28,13 @@ import org.valkyrienskies.mod.common.VSGameUtilsKt;
 @Mod.EventBusSubscriber
 public class SandBoxEventMgr {
     //todo onServerShipComponentUpdate which can update any component data
-    public static TriLazyEvent<UUIDLazyParamWrapper, TransformPrimitive, AABBdLazyParamWrapper> onServerShipTransformDirty = new TriLazyEvent<>();
+    public static BiLazyEvent<UUIDLazyParamWrapper, TransformPrimitive/*, AABBdLazyParamWrapper*/> onServerShipTransformDirty = new BiLazyEvent<>();
     public static BiEventImpl<ServerLevel, SandBoxServerShip> onSyncServerShipToClient = new BiEventImpl<>();
-    public static BiEventImpl<ServerLevel, SandBoxServerShip> onRemoveShipFromServerWorld = new BiEventImpl<>();
+    //public static BiEventImpl<ServerLevel, IServerSandBoxShip> onRemoveShipFromServerWorld = new BiEventImpl<>();
     //目前能保证当删除一个空方块时不会触发
     public static QuadEventImpl<ISandBoxShip, Vector3ic, BlockState, BlockState> onShipBlockReplaced = new QuadEventImpl<>();
+
+    public static BiEventImpl<ISandBoxWorld<?>, ISandBoxShip> onRemoveShip = new BiEventImpl<>();
     //public static
 
     /*@SubscribeEvent
@@ -83,7 +86,7 @@ public class SandBoxEventMgr {
     }*/
 
     public static void register() {
-        onServerShipTransformDirty.addListener((uuid, transformData, localAABB) -> {
+        onServerShipTransformDirty.addListener((uuid, transformData/*, localAABB*/) -> {
             //sync in server world thread.
             //todo only send to player near to the ship with uuid
             NetworkHandler.sendToAllPlayers(new UpdateShipTransformPacketS2C(uuid.uuid, transformData/*, localAABB.getAABB(new AABBd())*/));
@@ -94,11 +97,18 @@ public class SandBoxEventMgr {
                 new SyncServerShipToClientPacket(VSGameUtilsKt.getDimensionId(level), ship)
             );
         });
-        onRemoveShipFromServerWorld.addListener(((level, ship) -> {
+        /*onRemoveShipFromServerWorld.addListener(((level, ship) -> {
             NetworkHandler.sendToAllPlayers(
                 new SyncRemoveClientRendererPacketS2C(VSGameUtilsKt.getDimensionId(level), ship.getUuid())
             );
-        }));
+        }));*/
+        onRemoveShip.addListener((world, ship) -> {
+            if (!(world instanceof SandBoxServerWorld)) return;
+
+            NetworkHandler.sendToAllPlayers(
+                new SyncRemoveClientRendererPacketS2C(VSGameUtilsKt.getDimensionId(world.getMcLevel()), ship.getUuid())
+            );
+        });
 
         onShipBlockReplaced.addListener(((ship, localPos, oldState, newState) -> {
             ship.allAddedBehaviours().forEach(beh -> beh.onBlockReplaced(localPos, oldState, newState));

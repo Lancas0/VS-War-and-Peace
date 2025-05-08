@@ -44,6 +44,7 @@ public class BiTuple<T, U> {
         public ChunkXZ(int x, int z) {
             super(x, z);
         }
+        public static ChunkXZ chunkBlockIn(BlockPos bp) { return new ChunkXZ(bp.getX() >> 4, bp.getZ() >> 4); }
 
         public int getX() { return super.getFirst(); }
         public int getZ() { return super.getSecond(); }

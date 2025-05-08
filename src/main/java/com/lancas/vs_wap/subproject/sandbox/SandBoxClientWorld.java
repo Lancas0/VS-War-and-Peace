@@ -2,20 +2,27 @@ package com.lancas.vs_wap.subproject.sandbox;
 
 import com.lancas.vs_wap.debug.EzDebug;
 import com.lancas.vs_wap.event.impl.SingleEventSetImpl;
-import com.lancas.vs_wap.subproject.sandbox.ship.ISandBoxShip;
+import com.lancas.vs_wap.subproject.sandbox.compact.mc.GroundShipWrapped;
+import com.lancas.vs_wap.subproject.sandbox.compact.vs.VsShipsCompactor;
+import com.lancas.vs_wap.subproject.sandbox.compact.vs.WrappedVsShip;
+import com.lancas.vs_wap.subproject.sandbox.constraint.SandBoxConstraintSolver;
+import com.lancas.vs_wap.subproject.sandbox.event.SandBoxEventMgr;
+import com.lancas.vs_wap.subproject.sandbox.ship.IClientSandBoxShip;
 import com.lancas.vs_wap.subproject.sandbox.ship.SandBoxClientShip;
 import com.lancas.vs_wap.subproject.sandbox.thread.SandBoxThreadRegistry;
 import com.lancas.vs_wap.subproject.sandbox.thread.api.ISandBoxThread;
-import com.lancas.vs_wap.subproject.sandbox.thread.client.SandBoxClientPhysThread;
-import com.lancas.vs_wap.subproject.sandbox.thread.client.SandBoxClientThread;
+import com.lancas.vs_wap.subproject.sandbox.thread.impl.client.SandBoxClientPhysThread;
+import com.lancas.vs_wap.subproject.sandbox.thread.impl.client.SandBoxClientThread;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.jetbrains.annotations.Nullable;
+import org.valkyrienskies.core.api.ships.Ship;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -26,7 +33,7 @@ import java.util.stream.Stream;
 
 @OnlyIn(Dist.CLIENT)
 @Mod.EventBusSubscriber
-public class SandBoxClientWorld implements ISandBoxWorld {
+public class SandBoxClientWorld implements ISandBoxWorld<IClientSandBoxShip> {
     public static SandBoxClientWorld INSTANCE = new SandBoxClientWorld();
     private final SandBoxThreadRegistry<SandBoxClientWorld> threadRegistry = new SandBoxThreadRegistry<>();
     @Nullable
@@ -54,11 +61,19 @@ public class SandBoxClientWorld implements ISandBoxWorld {
     private boolean running = false;
     private String curLevelName;  //not actually player level, the unupdated level with all current ship data
     private final Map<UUID, SandBoxClientShip> clientShips = new ConcurrentHashMap<>();
+    //private final Map<UUID, WrappedVsShip> wrappedVsShips = new ConcurrentHashMap<>();
+    private final VsShipsCompactor vsShipsCompactor = new VsShipsCompactor();
+    private GroundShipWrapped wrappedGroundShip;
     private final Set<UUID> toDeleteShips = ConcurrentHashMap.newKeySet();
+
+    private final SandBoxConstraintSolver constraintSolver = new SandBoxConstraintSolver(this);
     //private final Map<UUID, ScheduleShipData> scheduleShips = new ConcurrentHashMap<>();
 
-    public void reloadLevel(String levelName, Iterable<SandBoxClientShip> syncingClientShips/*Map<UUID, CompoundTag> savedRenders*/) {
+    public void reloadLevel(String levelName, Iterable<SandBoxClientShip> syncingClientShips, UUID wrappedGroundShipUuid/*Map<UUID, CompoundTag> savedRenders*/) {
         curLevelName = levelName;
+
+        vsShipsCompactor.clear();
+        wrappedGroundShip = new GroundShipWrapped(wrappedGroundShipUuid);
 
         clientShips.clear();
         for (var syncingShip : syncingClientShips) {
@@ -68,6 +83,9 @@ public class SandBoxClientWorld implements ISandBoxWorld {
 
     public String getCurLevelName() { return curLevelName; }
     public void setCurLevelName(String s) { curLevelName = s; }
+
+    @Override
+    public SandBoxConstraintSolver getConstraintSolver() { return constraintSolver; }
 
 
     @Nullable
@@ -101,7 +119,14 @@ public class SandBoxClientWorld implements ISandBoxWorld {
 
         //todo event?
         toDeleteShips.add(uuid);
+        SandBoxEventMgr.onRemoveShip.invokeAll(this, ship);
     }
+
+    /*public WrappedVsShip wrapVsShip(@NotNull ServerShip vsShip) {
+        WrappedVsShip wrapShip = new WrappedVsShip(UUID.randomUUID(), vsShip.getId());
+        wrappedVsShips.put(wrapShip.getUuid(), wrapShip);
+        return wrapShip;
+    }*/
     //should only be used for network sync
     /*public void removeClientShip(UUID uuid) {
         clientShips.remove(uuid);
@@ -122,8 +147,8 @@ public class SandBoxClientWorld implements ISandBoxWorld {
                 if (world.running) {
                     world.running = false;
                     world.threadRegistry.notifyAllPause();
-                    return;
                 }
+                return;
             }
 
             if (!world.running) {
@@ -222,9 +247,51 @@ public class SandBoxClientWorld implements ISandBoxWorld {
 
 
     @Override
-    public ISandBoxShip getShip(UUID uuid) { return clientShips.get(uuid); }
+    public Level getMcLevel() { return Minecraft.getInstance().level; }
+
     @Override
-    public Stream<ISandBoxShip> allShips() { return allClientShips().map(s -> s); }
+    public IClientSandBoxShip getShip(UUID uuid) {
+        if (!toDeleteShips.isEmpty()) {
+            var toDeleteShipsIt = toDeleteShips.iterator();
+            while (toDeleteShipsIt.hasNext()) {
+                UUID toDelete = toDeleteShipsIt.next();
+                toDeleteShipsIt.remove();
+                clientShips.remove(toDelete);
+                vsShipsCompactor.remove(toDelete);
+            }
+        }
+        return clientShips.get(uuid);
+    }
+    @Override
+    public IClientSandBoxShip getShipIncludeVS(UUID uuid) {
+        IClientSandBoxShip ship = clientShips.get(uuid);
+        return ship == null ? vsShipsCompactor.getWrappedVsShip(uuid) : ship;
+    }
+    @Override
+    public IClientSandBoxShip getShipIncludeVSAndGround(UUID uuid) {
+        IClientSandBoxShip ship = getShipIncludeVS(uuid);
+        if (ship != null) return ship;
+        return wrapOrGetGround().getUuid().equals(uuid) ? wrappedGroundShip : null;
+    }
+
+    @Override
+    public WrappedVsShip wrapOrGetVs(Ship vsShip) {
+        return vsShipsCompactor.wrapOrGet(vsShip);
+    }
+    @Override
+    public GroundShipWrapped wrapOrGetGround() {
+        return wrappedGroundShip;
+    }
+
+    @Override
+    public Stream<IClientSandBoxShip> allShips() { return allClientShips().map(s -> s); }
+
+    @Override
+    public Stream<IClientSandBoxShip> allShipsIncludeVs() {
+        Stream<IClientSandBoxShip> sandBoxShips = allShips();
+        return Stream.concat(sandBoxShips, vsShipsCompactor.allWrapped());
+    }
+
     //use stream to prevent delete operation outside
     public Stream<SandBoxClientShip> allClientShips() {
         if (!toDeleteShips.isEmpty()) {
@@ -233,6 +300,7 @@ public class SandBoxClientWorld implements ISandBoxWorld {
                 UUID toDelete = toDeleteShipsIt.next();
                 toDeleteShipsIt.remove();
                 clientShips.remove(toDelete);
+                vsShipsCompactor.remove(toDelete);
             }
         }
         return clientShips.values().stream();

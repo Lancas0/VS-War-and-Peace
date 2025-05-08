@@ -10,8 +10,9 @@ public interface IEmptyPropellant extends IPropellant {
     @Override
     public default boolean isEmpty(BlockState state) { return true; }
     @Override
-    public default void setAsEmpty(ServerLevel level, BlockPos pos, BlockState state) {
+    public default BlockState getEmptyState(BlockState state) {
         EzDebug.warn("a empty propellant shouldn't be called setAsEmpty");
+        return state;
     }
     @Override
     public default double getEnergy(BlockState state) { return 0; }

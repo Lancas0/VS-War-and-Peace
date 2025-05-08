@@ -212,16 +212,12 @@ public class ShipPool extends SavedData {
     }
     @Override
     public CompoundTag save(CompoundTag tag) {
-        try {
-            return new NbtBuilder()
-                .putSimpleJackson("pool_ids", poolMap.keySet())
-                .putEachSimpleJackson("pool_values", poolMap.values())
-                .putSimpleJackson("hide_ids", hidingShips.keySet())
-                .putEachSimpleJackson("hide_values", hidingShips.values())
-                .get();
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+        return new NbtBuilder()
+            .putSimpleJackson("pool_ids", poolMap.keySet())
+            .putEachSimpleJackson("pool_values", poolMap.values())
+            .putSimpleJackson("hide_ids", hidingShips.keySet())
+            .putEachSimpleJackson("hide_values", hidingShips.values())
+            .get();
     }
 
 

@@ -1,16 +1,15 @@
 package com.lancas.vs_wap.sandbox.ballistics.behaviour;
 
-import com.lancas.vs_wap.debug.EzDebug;
 import com.lancas.vs_wap.sandbox.ballistics.data.AirDragSubData;
 import com.lancas.vs_wap.sandbox.ballistics.data.BallisticData;
 import com.lancas.vs_wap.subproject.sandbox.component.data.reader.IRigidbodyDataReader;
 import com.lancas.vs_wap.subproject.sandbox.ship.SandBoxServerShip;
 import com.lancas.vs_wap.util.MathUtil;
-import com.lancas.vs_wap.util.StrUtil;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
 
 public class AirDragHandler {
+    public static final double DRAG_FACTOR = 0.05;
 
     //todo sort
     public static void applyAirDragIfShould(SandBoxServerShip ship, BallisticData data) {
@@ -30,7 +29,7 @@ public class AirDragHandler {
         Vector3d worldForward = rigidbodyDataReader.localToWorldNoScaleDir(data.initialStateData.localForward);
 
         double projectArea = calAirDragAreaInWorld(ship, airDragData, velocity);
-        double dragForceLen = 0.5 * projectArea * velocitySqLen * 1;  //the last arg is air drag multiplier
+        double dragForceLen = DRAG_FACTOR * projectArea * velocitySqLen * 1;  //the last arg is air drag multiplier
         Vector3d airDragForce = velocity.normalize(-dragForceLen, new Vector3d());
 
         if (airDragForce.isFinite()) {

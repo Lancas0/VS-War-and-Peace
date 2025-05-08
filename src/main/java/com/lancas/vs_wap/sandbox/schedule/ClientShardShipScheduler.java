@@ -5,12 +5,14 @@ import com.lancas.vs_wap.ship.ballistics.helper.BallisticsMath;
 import com.lancas.vs_wap.subproject.sandbox.SandBoxClientWorld;
 import com.lancas.vs_wap.subproject.sandbox.api.ISavedObject;
 import com.lancas.vs_wap.subproject.sandbox.api.data.TransformPrimitive;
+import com.lancas.vs_wap.subproject.sandbox.component.behviour.SandBoxExpireTicker;
 import com.lancas.vs_wap.subproject.sandbox.component.behviour.SandBoxTween;
 import com.lancas.vs_wap.subproject.sandbox.component.data.BlockClusterData;
+import com.lancas.vs_wap.subproject.sandbox.component.data.ExpireTickerData;
 import com.lancas.vs_wap.subproject.sandbox.component.data.RigidbodyData;
 import com.lancas.vs_wap.subproject.sandbox.component.data.TweenData;
 import com.lancas.vs_wap.subproject.sandbox.ship.SandBoxClientShip;
-import com.lancas.vs_wap.subproject.sandbox.thread.client.SandBoxClientThread;
+import com.lancas.vs_wap.subproject.sandbox.thread.impl.client.SandBoxClientThread;
 import com.lancas.vs_wap.subproject.sandbox.thread.schedule.IScheduleData;
 import com.lancas.vs_wap.subproject.sandbox.thread.schedule.ScheduleState;
 import com.lancas.vs_wap.subproject.sandbox.thread.schedule.impl.MultiTimesScheduleData;
@@ -138,7 +140,7 @@ public class ClientShardShipScheduler extends MultiTimesScheduler<SandBoxClientT
             rigidbodyData,
             BlockClusterData.BlockAtCenter(data.shardBlock)
         );
-        ship.setRemainLifeTick(150);
+        ship.addBehaviour(new SandBoxExpireTicker(), new ExpireTickerData(150));
         ship.addBehaviour(new SandBoxTween(), new TweenData(
             (transform, t01) -> new TransformPrimitive(transform).setScale(1 - t01),
             2.5

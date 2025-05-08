@@ -1,7 +1,9 @@
 package com.lancas.vs_wap.register;
 
+import com.lancas.vs_wap.content.block.blocks.industry.ProjectCenter;
 import com.lancas.vs_wap.debug.EzDebug;
 import com.lancas.vs_wap.ship.attachment.ProjectingShipAtt;
+import com.lancas.vs_wap.ship.helper.builder.ShipBuilder;
 import com.lancas.vs_wap.util.ShipUtil;
 import com.lancas.vs_wap.util.StrUtil;
 import net.minecraft.core.BlockPos;
@@ -23,7 +25,7 @@ import org.valkyrienskies.core.api.ships.ServerShip;
 @Mod.EventBusSubscriber
 public class EntityChangShipBlockEvt {
 
-    /*
+
     @SubscribeEvent
     public static void onPlaceOnProjectingShip(BlockEvent.EntityPlaceEvent event) {
         if (!(event.getLevel() instanceof ServerLevel level)) return;
@@ -31,16 +33,17 @@ public class EntityChangShipBlockEvt {
         ProjectingShipAtt att = ProjectingShipAtt.getFrom(ship);
         if (att == null) return;
 
-        event.setCanceled(true);
+        //event.setCanceled(true);
         BlockState placedBlock = event.getPlacedBlock();
+        att.onUpdateBlock(level, event.getPos());
 
 
         //EzDebug.log("placed block:" + StrUtil.getBlockName(event.getPlacedBlock()) + ", level block:" + StrUtil.getBlockName(event.getLevel().getBlockState(event.getPos())));
         //set cancel然后放方块，这样模拟放置方块但不消耗物品 todo或许不设置玩家放置/摧毁事件也挺好？
 
         //level.setBlockAndUpdate(event.getPos(), event.getPlacedBlock());
-        //att.onUpdateBlock(level, event.getPos());
-        /.*if (event.getEntity() instanceof Player player/.* && !player.isCreative()*./) {
+
+        /*if (event.getEntity() instanceof Player player/.* && !player.isCreative()*./) {
             ItemStack handStack = player.getItemInHand(player.getUsedItemHand());
 
             EzDebug.log("handStack:" + handStack.getItem().getName(handStack) + ", count:" + handStack.getCount());
@@ -51,8 +54,8 @@ public class EntityChangShipBlockEvt {
                 player.setItemInHand(player.getUsedItemHand(), handStack);
                 EzDebug.log("before grow:" + player.getItemInHand(player.getUsedItemHand()).getCount());
             }
-        }*./
-    }*/
+        }*/
+    }
     /*@SubscribeEvent
     public static void onBlockPlace(PlayerInteractEvent.RightClickBlock event) {
         if (!(event.getLevel() instanceof ServerLevel level)) return;
@@ -88,22 +91,41 @@ public class EntityChangShipBlockEvt {
 
 
 
-    /*@SubscribeEvent
+    @SubscribeEvent
     public static void onBlockBreak(BlockEvent.BreakEvent event) {
         if (!(event.getLevel() instanceof ServerLevel level)) return;
         ServerShip ship = ShipUtil.getServerShipAt(level, event.getPos());
         EzDebug.log("event state:" + StrUtil.getBlockName(event.getState()) + ", isAir:" + event.getState().isAir());
         ProjectingShipAtt att = ProjectingShipAtt.getFrom(ship);
-        if (att == null) return;
+        if (att == null) {
+            EzDebug.warn("att is null");
+            return;
+        }
 
         //EzDebug.log("before set:" + StrUtil.getBlockName(level.getBlockState(event.getPos())));
         //event.getState().getBlock().playerDestroy(level, event.getPlayer(), event.getPos(), false);  //就先不设置玩家放置了，这样不会掉东西，以后找更好的办法todo或许不设置玩家放置/摧毁事件也挺好？
-        level.setBlock(event.getPos(), Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL_IMMEDIATE);
+
         //EzDebug.log("after set:" + StrUtil.getBlockName(level.getBlockState(event.getPos())));
+
+        //it's impossible to remove project center in a projecting ship
+        EzDebug.log("it's project center?: " + (event.getState().getBlock() instanceof ProjectCenter));
+        if (event.getState().getBlock() instanceof ProjectCenter) {
+            event.setCanceled(true);
+            EzDebug.highlight("cancel the event");
+        }
+
+        EzDebug.highlight("update projecting ship");
+        level.setBlock(event.getPos(), Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL_IMMEDIATE);
         att.onUpdateBlock(level, event.getPos());
 
-        event.setCanceled(true); // 取消原版掉落
-        event.setExpToDrop(0);
-    }*/
+        //level.setBlock(event.getPos(), Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL_IMMEDIATE);
+
+        /*
+        boolean empty = ShipBuilder.modify(level, ship).isEmpty();
+        EzDebug.log("is ship empty?:" + empty);*/
+
+        //event.setCanceled(true); // 取消原版掉落
+        //event.setExpToDrop(0);
+    }
 
 }

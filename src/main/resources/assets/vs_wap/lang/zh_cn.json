@@ -20,11 +20,17 @@
   "block.vs_wap.artillery_part1": "火炮部件2",
   "block.vs_wap.ejecting_breech": "抛壳式炮闩",
   "block.vs_wap.dropping_breech": "无抛壳炮闩",
-  "block.vs_wap.rapid_breech": "速射炮闩(测试)",
+  "block.vs_wap.rapid_breech": "速射炮闩",
+  "block.vs_wap.hell_breech": "地狱火炮",
+  "block.vs_wap.valkyrien_breech": "瓦尔基里大炮(未完成)",
   "block.vs_wap.artillery_door": "投弹仓(未完成)",
+
+  "block.vs_wap.project_center": "投影中心(技术物品)",
+  "block.vs_wap.vs_projector": "vs投影仪(未完成)",
 
   "item.vs_wap.vs_wap_wand": "很有武德的杖",
   "item.vs_wap.docker": "Docker",
-  "item.vs_wap.ship_data_docker": "速射炮闩专用Docker(测试)",
-  "item.vs_wap.ref_docker": "动力臂搬运专用Docker(测试)"
+  "item.vs_wap.ship_data_docker": "Docker",
+  "item.vs_wap.ref_docker": "动力臂搬运专用Docker(技术物品)",
+  "item.vs_wap.green_print": "绿图(未完成)"
 }

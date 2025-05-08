@@ -23,9 +23,15 @@ public abstract class ServerOnlyBehaviour<D extends IComponentData<D>> implement
     @Override
     public CompoundTag getSavedData() { return data.saved(); }
     @Override
-    public void loadData(ISandBoxShip inShip, D src) {
+    public void loadSavedData(ISandBoxShip inShip, CompoundTag saved) {
         ship = (SandBoxServerShip)inShip;
-        data.copyData(src);
+        data.load(saved);
+        data.overwriteDataByShip(ship);
+    }
+    @Override
+    public void loadData(ISandBoxShip inShip, D dataSrc) {
+        ship = (SandBoxServerShip)inShip;
+        data.copyData(dataSrc);
         data.overwriteDataByShip(ship);
     }
 }

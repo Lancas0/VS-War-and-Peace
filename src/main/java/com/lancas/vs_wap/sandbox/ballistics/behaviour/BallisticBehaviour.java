@@ -4,12 +4,15 @@ import com.lancas.vs_wap.debug.EzDebug;
 import com.lancas.vs_wap.foundation.api.Dest;
 import com.lancas.vs_wap.sandbox.ballistics.data.BallisticData;
 import com.lancas.vs_wap.sandbox.ballistics.trigger.SandBoxTriggerInfo;
+import com.lancas.vs_wap.subproject.sandbox.SandBoxServerWorld;
 import com.lancas.vs_wap.subproject.sandbox.component.behviour.abs.ServerOnlyBehaviour;
+import com.lancas.vs_wap.subproject.sandbox.ship.ISandBoxShip;
 import net.minecraft.server.level.ServerLevel;
 import org.joml.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class BallisticBehaviour extends ServerOnlyBehaviour<BallisticData> {
     @Override
@@ -29,7 +32,7 @@ public class BallisticBehaviour extends ServerOnlyBehaviour<BallisticData> {
 
 
         //damping
-        double torqueDamping = 1;
+        double torqueDamping = 1.5;
         Vector3dc omega = rigidbody.getDataReader().getOmega();
         Matrix3dc inertia = rigidbody.getDataReader().getLocalInertia();
         Vector3d dampingTorque = omega.mul(inertia, new Vector3d()).mul(-torqueDamping);  //τ=I⋅α
@@ -71,7 +74,7 @@ public class BallisticBehaviour extends ServerOnlyBehaviour<BallisticData> {
         }*/
         data.initialStateData.foreachBallisticBlock(ship, (locPos, state, bb) -> {
             //EzDebug.log("foreach block:" + StrUtil.getBlockName(state));
-            bb.serverTick(level, ship);
+            bb.serverTick(level, ship, locPos);
             bb.appendTriggerInfos(level, locPos, state, ship, infos);
 
             //EzDebug.log("try server ticks, triggerInfos");
@@ -79,33 +82,38 @@ public class BallisticBehaviour extends ServerOnlyBehaviour<BallisticData> {
 
 
 
-        boolean needTerminate = false;
-        for (SandBoxTriggerInfo info : infos) {
+        AtomicBoolean needTerminate = new AtomicBoolean(false);
+        data.initialStateData.foreachBallisticBlock(ship, (locPos, state, bb) -> {
+            Dest<Boolean> curNeedTerminate = new Dest<>(false);
+            bb.doTerminalEffect(level, ship, locPos, state, infos, curNeedTerminate);
+
+            if (curNeedTerminate.get())
+                needTerminate.set(true);
+        });
+
+        /*for (SandBoxTriggerInfo info : infos) {
             Dest<Boolean> curNeedTerminate = new Dest<>(false);
 
-            /*synchronized (data.initialStateData.ballisticBlockLocPoses) {
-                //warn: may change during foreach
-            }*/
             data.initialStateData.foreachBallisticBlock(ship, (locPos, state, bb) -> {
-                bb.doTerminalEffect(level, ship, locPos, state, info, curNeedTerminate);
+
                 //EzDebug.log("try doTerminalEffect");
             });
 
             if (curNeedTerminate.get())
-                needTerminate = true;
-        }
+                needTerminate.set(true);
+        }*/
 
 
-        data.elapsedTime += 0.05;  //todo constant;
+        data.elapsedTime += 0.05;  //todo provided by method arg;
         if (data.elapsedTime > BallisticData.TIME_OUT_SECONDS)
-            needTerminate = true;
+            needTerminate.set(true);
         if (ship.getRigidbody().getDataReader().getTransform().getPosition().y() < BallisticData.RANGE_OUT_LOWER_Y)
-            needTerminate = true;
+            needTerminate.set(true);
 
         //needTerminate || stopped for too long?
-        if (needTerminate) {
+        if (needTerminate.get()) {
             data.terminated = true;
-            ship.setRemainLifeTick(1);
+            SandBoxServerWorld.getOrCreate(level).markShipDeleted(ship.getUuid());
             EzDebug.highlight("terminate this ship");
         }
     }

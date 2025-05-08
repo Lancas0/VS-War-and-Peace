@@ -1,9 +1,11 @@
 package com.lancas.vs_wap.content;
 
-import com.lancas.vs_wap.content.items.*;
-import com.lancas.vs_wap.content.items.docker.DockerItem;
-import com.lancas.vs_wap.content.items.docker.RefWithFallbackDocker;
-import com.lancas.vs_wap.content.items.docker.ShipDataDocker;
+//import com.lancas.vs_wap.content.items.docker.DockerItem;
+import com.lancas.vs_wap.content.item.items.DebugTool;
+import com.lancas.vs_wap.content.item.items.EinherjarWand;
+import com.lancas.vs_wap.content.item.items.GreenPrint;
+import com.lancas.vs_wap.content.item.items.docker.RefWithFallbackDocker;
+import com.lancas.vs_wap.content.item.items.docker.ShipDataDocker;
 import com.tterrag.registrate.util.entry.ItemEntry;
 
 import static com.lancas.vs_wap.ModMain.REGISTRATE;
@@ -26,7 +28,7 @@ public class WapItems {
     public static final ItemEntry<EinherjarWand>
 
         EINHERJAR_WAND = REGISTRATE
-            .item("einherjar_wand", EinherjarWand::new)
+            .item("vs_wap_wand", EinherjarWand::new)
             .properties(p -> p.stacksTo(1))
             .register();
 
@@ -40,10 +42,10 @@ public class WapItems {
         .properties(p -> p.stacksTo(1))
         .register();*/
 
-    public static final ItemEntry<DockerItem> DOCKER = REGISTRATE
+    /*public static final ItemEntry<DockerItem> DOCKER = REGISTRATE
         .item(DockerItem.ID, DockerItem::new)
         .properties(p -> p.stacksTo(1))
-        .register();
+        .register();*/
 
     public static final ItemEntry<GreenPrint> GREEN_PRINT  = REGISTRATE
         .item("green_print", GreenPrint::new)
@@ -56,10 +58,10 @@ public class WapItems {
         .register();
         */
 
-    /*public static final ItemEntry<DebugTool> DEBUG_TOOL = REGISTRATE
+    public static final ItemEntry<DebugTool> DEBUG_TOOL = REGISTRATE
         .item("debug_tool", DebugTool::new)
         .properties(p -> p.stacksTo(1))
-        .register();*/
+        .register();
 
     /*public static final ItemEntry<BlockItemPlus> WIND_CAP = REGISTRATE
         .item("wind_cap", p -> BlockItemPlus.fromBlockPlus(EinherjarBlocks.Cartridge.WIND_CAP.get(), p))
@@ -101,6 +103,7 @@ public class WapItems {
         "ship_scheme_saver",
         () -> new ShipSchemeSaverItem(new Item.Properties().stacksTo(1))
     );
+
 
     public static final RegistryObject<Item> ShipSchemeItem = ITEMS.register(
         "ship_scheme_item",

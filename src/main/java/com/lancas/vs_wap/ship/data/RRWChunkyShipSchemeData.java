@@ -18,6 +18,8 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
 import org.joml.Vector3i;
+import org.joml.primitives.AABBi;
+import org.joml.primitives.AABBic;
 import org.valkyrienskies.core.api.ships.ServerShip;
 import org.valkyrienskies.mod.common.VSGameUtilsKt;
 
@@ -25,15 +27,18 @@ import java.util.Hashtable;
 import java.util.function.BiConsumer;
 
 public class RRWChunkyShipSchemeData implements IShipSchemeData, IShipSchemeRandomReader, IShipSchemeRandomWriter {
+    public static final AABBic EMPTY_AABB = new AABBi();
+
     //compount tag is nullable (no be)
     //private LinkedHashMap<BlockPos, BiTuple<BlockState, CompoundTag>> shipData = new LinkedHashMap<>();
     private final Hashtable<BiTuple.ChunkXZ, Hashtable<BlockPos, BiTuple<BlockState, CompoundTag>>> shipData = new Hashtable<>();
     private final Vector3d scale = new Vector3d(1, 1, 1);
+    private final AABBi localAABB = new AABBi();
 
 
     @Override
     public RRWChunkyShipSchemeData readShip(ServerLevel level, ServerShip ship) {
-        //保证一个区块内所有方块在一个区段内
+        localAABB.set(EMPTY_AABB);
         shipData.clear();
 
         //todo: should I worry if the height is out the limit?
@@ -53,6 +58,7 @@ public class RRWChunkyShipSchemeData implements IShipSchemeData, IShipSchemeRand
             shipData.computeIfAbsent(chunkXZ, k -> new Hashtable<>());
             var chunkyData = shipData.get(chunkXZ);
 
+
             int bottomY = i << 4;
             for (int x = 0; x <= 15; ++x)
                 for (int y = 0; y <= 15; ++y)
@@ -63,9 +69,11 @@ public class RRWChunkyShipSchemeData implements IShipSchemeData, IShipSchemeRand
                         }
                         if (state.isAir()) continue;
 
+                        //note that offset pos is offset from the start chunk lower corner
                         int offsetX = (offsetChunkX << 4) + x;
                         int offsetY = bottomY + y;
                         int offsetZ = (offsetChunkZ << 4) + z;
+                        //EzDebug.log("offset bp:" + StrUtil.poslike(offsetX, offsetY, offsetZ));
 
                         int realX = (chunkX << 4) + x;
                         int realY = bottomY + y + level.getMinBuildHeight();
@@ -80,13 +88,15 @@ public class RRWChunkyShipSchemeData implements IShipSchemeData, IShipSchemeRand
                         chunkyData.put(offsetBp,
                             new BiTuple<>(state, be == null ? null : be.saveWithFullMetadata())
                         );
+                        localAABB.union(offsetX, offsetY, offsetZ);
+                        EzDebug.log("aabb union " + StrUtil.poslike(offsetX, offsetY, offsetZ) + ", aabb:" + localAABB);
 
                         //EzDebug.log("add block:" + StrUtil.getBlockName(state) + " at " + StrUtil.getBlockPos(offsetBp) + ".at world " + );
 
-                        EzDebug.log(
+                        /*EzDebug.log(
                             "chunk:" + StrUtil.poslike(chunkX, i, chunkZ) + ", offsetChunk:" + StrUtil.poslike(offsetChunkX, i, offsetChunkZ) +
                                 "\nrealBp:" + realBp.toShortString() + ", offset:" + offsetBp.toShortString()
-                        );
+                        );*/
 
                     }
         });
@@ -118,9 +128,12 @@ public class RRWChunkyShipSchemeData implements IShipSchemeData, IShipSchemeRand
         int startChunkX = startRealBp.getX() >> 4;
         int startChunkZ = startRealBp.getZ() >> 4;
 
-        LevelChunk cachedChunk = null;
-        int cachedChunkX = 0;
-        int cachedChunkZ = 0;
+        //offset pos is offset from the start chunk lower corner
+        BlockPos startChunkLowerCorner = new BlockPos(startChunkX << 4, level.getMinBuildHeight(), startChunkZ << 4);
+
+        //LevelChunk cachedChunk = null;
+        //int cachedChunkX = 0;
+        //int cachedChunkZ = 0;
 
         EzDebug.log("place ship at chunk:" + StrUtil.poslike(startChunkX, 0, startChunkZ));
 
@@ -128,29 +141,37 @@ public class RRWChunkyShipSchemeData implements IShipSchemeData, IShipSchemeRand
             var chunkOffsetXZ = chunkData.getKey();
             var chunkBlocks = chunkData.getValue();
 
+            int curRealChunkX = startChunkX + chunkOffsetXZ.getX();
+            int curRealChunkZ = startChunkZ + chunkOffsetXZ.getZ();
+
+            LevelChunk curChunk = level.getChunk(curRealChunkX, curRealChunkZ);
+
+            //EzDebug.log("curChunkLowerCorner:" + StrUtil.poslike(curChunkLowerCorner));
+
             for (var chunkBlock : chunkBlocks.entrySet()) {
                 BlockPos offsetBp = chunkBlock.getKey();//dataEntry.getKey();
                 BlockState curState = chunkBlock.getValue().getFirst();
                 CompoundTag beNbt = chunkBlock.getValue().getSecond();
 
-                int curRealChunkX = (offsetBp.getX() >> 4) + startChunkX;
-                int curRealChunkZ = (offsetBp.getZ() >> 4) + startChunkZ;
+                //int curRealChunkX = (offsetBp.getX() >> 4) + startChunkX;
+                //int curRealChunkZ = (offsetBp.getZ() >> 4) + startChunkZ;
 
-                if (cachedChunk == null || cachedChunkX != curRealChunkX || cachedChunkZ != curRealChunkZ) {
+                /*if (cachedChunk == null || cachedChunkX != curRealChunkX || cachedChunkZ != curRealChunkZ) {
                     cachedChunk =  level.getChunk(curRealChunkX, curRealChunkZ);
                     cachedChunkX = curRealChunkX;
                     cachedChunkZ = curRealChunkZ;
-                }
+                }*/
 
-                BlockPos curRealBp = startRealBp.offset(offsetBp);
+                BlockPos curRealBp = startChunkLowerCorner.offset(offsetBp);//startRealBp.offset(offsetBp);
+                //EzDebug.log("offset bp:" + offsetBp.toShortString() + ", curRealBp:" + curRealBp.toShortString());
 
                 //目前无法更改履带等方块，可能需要和vmod一样做一个延时更新机制
-                cachedChunk.setBlockState(curRealBp, curState, true);
+                curChunk.setBlockState(curRealBp, curState, true);
                 //level.setBlock(realPos, state, Block.UPDATE_ALL);
                 if (beNbt != null) {
                     BlockEntity be = BlockEntity.loadStatic(curRealBp, curState, beNbt);
                     if (be != null)
-                        cachedChunk.addAndRegisterBlockEntity(be);
+                        curChunk.addAndRegisterBlockEntity(be);
                 }
                 level.getChunkSource().blockChanged(curRealBp);
 
@@ -186,6 +207,7 @@ public class RRWChunkyShipSchemeData implements IShipSchemeData, IShipSchemeRand
                         .get()
             )
             .putVector3d("scale", scale)
+            .putAABBi("local_aabb", localAABB)
             .get();
     }
     @Override
@@ -211,13 +233,19 @@ public class RRWChunkyShipSchemeData implements IShipSchemeData, IShipSchemeRand
                 },
                 shipData
             )
-            .readVector3d("scale", scale);
+            .readVector3d("scale", scale)
+            .readAABBi("local_aabb", localAABB);
+
         return this;
     }
 
 
     @Override
     public IShipSchemeRandomReader getRandomReader() { return this; }
+
+    @Override
+    public AABBic getLocalAABB() { return localAABB; }
+
     @Override
     public IShipSchemeRandomReader getRandomWriter() { return this; }
 
@@ -234,7 +262,7 @@ public class RRWChunkyShipSchemeData implements IShipSchemeData, IShipSchemeRand
         return blockData.getFirst();
     }
     @Override
-    public void foreachBlock(BiConsumer<BlockPos, BlockState> consumer) {
+    public void foreachBlockInLocal(BiConsumer<BlockPos, BlockState> consumer) {
         shipData.forEach(((chunkXZ, chunkData) -> {
             chunkData.forEach((localBp, blockData) -> {
                 consumer.accept(localBp, blockData.getFirst());
@@ -263,8 +291,36 @@ public class RRWChunkyShipSchemeData implements IShipSchemeData, IShipSchemeRand
             if (chunkyData.isEmpty()) {
                 shipData.remove(chunkXZ);  //remove the chunkData if chunk is empty
             }
+            //recalculate localAABB
+            recalculateAABB();
         } else {
             chunkyData.put(localBp, new BiTuple<>(state, beNbt));
+            //increasment update localAABB
+            localAABB.union(JomlUtil.i(localBp));
         }
     }
+
+    private void recalculateAABB() {
+        localAABB.set(EMPTY_AABB);
+        shipData.values().forEach(
+            x -> x.keySet().forEach(
+                p ->
+                    localAABB.union(JomlUtil.i(p))
+            )
+        );
+    }
+
+    /*
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        RRWChunkyShipSchemeData that = (RRWChunkyShipSchemeData) o;
+        return Objects.equals(shipData, that.shipData) && Objects.equals(scale, that.scale);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(shipData, scale);
+    }*/
 }

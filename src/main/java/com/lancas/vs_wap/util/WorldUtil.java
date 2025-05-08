@@ -204,6 +204,11 @@ public class WorldUtil {
         if (ship == null) return bp;
         return JomlUtil.bpContaining(ship.getShipToWorld().transformPosition(pos, new Vector3d()));
     }
+    public static double getScaleOfShipOrWorld(Level level, BlockPos bp) {
+        Ship ship = ShipUtil.getShipAt(level, bp);
+        if (ship == null) return 1;
+        return ship.getTransform().getShipToWorldScaling().x();
+    }
 
     public static void copyBlock(Level level, BlockPos from, BlockPos to) {
         BlockState state = level.getBlockState(from);

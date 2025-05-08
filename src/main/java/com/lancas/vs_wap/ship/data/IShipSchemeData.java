@@ -80,4 +80,5 @@ public interface IShipSchemeData {
 
     public CompoundTag saved();
     public IShipSchemeData load(CompoundTag tag);
+
 }

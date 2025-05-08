@@ -2,12 +2,19 @@ package com.lancas.vs_wap.debug;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Dictionary;
+import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+@Mod.EventBusSubscriber
 public class EzDebug {
     private static boolean NOT_DEBUG = false;
     private static boolean alwaysDebug;
@@ -15,6 +22,17 @@ public class EzDebug {
     private EzDebug(boolean inAlwaysDebug) { alwaysDebug = inAlwaysDebug; }
     public static final EzDebug DEFAULT = new EzDebug(false);
     public static final EzDebug ALWAYS_DEBUG = new EzDebug(true);
+
+    private static Hashtable<Object, String> scheduleLog = new Hashtable<>();
+    public static EzDebug schedule(Object key, String log) {
+        scheduleLog.put(key, log);
+        return DEFAULT;
+    }
+    @SubscribeEvent
+    public static void tickLog(TickEvent event) {
+        scheduleLog.values().forEach(EzDebug::log);
+        scheduleLog.clear();
+    }
 
     public static EzDebug log(String str) {
         if (NOT_DEBUG) return DEFAULT;
@@ -125,6 +143,8 @@ public class EzDebug {
         System.out.println(str.startsWith("[Fatal]") ? str : "[Fatal]" + str);
         return DEFAULT;
     }
+
+    public static EzDebug notImpl(String methodName) { return error("the method [" + methodName + "] is not impl!"); }
 
 
 

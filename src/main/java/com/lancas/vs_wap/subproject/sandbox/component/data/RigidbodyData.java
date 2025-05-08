@@ -5,10 +5,8 @@ import com.lancas.vs_wap.debug.EzDebug;
 import com.lancas.vs_wap.subproject.sandbox.api.component.IComponentData;
 import com.lancas.vs_wap.subproject.sandbox.api.data.ITransformPrimitive;
 import com.lancas.vs_wap.subproject.sandbox.api.data.TransformPrimitive;
-import com.lancas.vs_wap.subproject.sandbox.component.data.reader.IRigidbodyDataReader;
 import com.lancas.vs_wap.subproject.sandbox.component.data.writer.IRigidbodyDataWriter;
 import com.lancas.vs_wap.subproject.sandbox.ship.ISandBoxShip;
-import com.lancas.vs_wap.subproject.sandbox.ship.SandBoxServerShip;
 import com.lancas.vs_wap.util.JomlUtil;
 import com.lancas.vs_wap.util.NbtBuilder;
 import com.lancas.vs_wap.util.SerializeUtil;
@@ -16,13 +14,14 @@ import net.minecraft.nbt.CompoundTag;
 import org.joml.*;
 
 import java.io.Serializable;
+import java.lang.Math;
 import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
 
-public class RigidbodyData implements IComponentData<RigidbodyData>, IRigidbodyDataReader, IRigidbodyDataWriter {
+public class RigidbodyData implements IComponentData<RigidbodyData>, IRigidbodyData {
     @FunctionalInterface
     public interface RigidbodyUpdate extends Serializable {
         void update(RigidbodyData data);
@@ -30,6 +29,7 @@ public class RigidbodyData implements IComponentData<RigidbodyData>, IRigidbodyD
 
     public final TransformPrimitive transform = new TransformPrimitive();
     public volatile Matrix4d localToWorldSnapshot = new Matrix4d();
+    public volatile Matrix4d worldToLocalSnapshot = new Matrix4d();
 
     public double mass = 0;
     public final Vector3d localPosMassMul = new Vector3d();  //todo may exceed limit, sync
@@ -78,6 +78,7 @@ public class RigidbodyData implements IComponentData<RigidbodyData>, IRigidbodyD
         transform.set(src.transform);
         //localToWorldSnapshot.set(src.localToWorldSnapshot);
         localToWorldSnapshot = src.transform.makeLocalToWorld(new Matrix4d());
+        worldToLocalSnapshot = src.transform.makeWorldToLocal(new Matrix4d());
 
         velocity.set(src.velocity);
         omega.set(src.omega);
@@ -86,6 +87,7 @@ public class RigidbodyData implements IComponentData<RigidbodyData>, IRigidbodyD
         isStatic.set(src.isStatic.get());
 
         applyingForces.clear();  applyingForces.addAll(src.applyingForces);
+        EzDebug.log("applying force is cleared");
         applyingTorques.clear(); applyingTorques.addAll(src.applyingTorques);
         updates.clear();         updates.addAll(src.updates);
 
@@ -103,9 +105,9 @@ public class RigidbodyData implements IComponentData<RigidbodyData>, IRigidbodyD
             mass += curMass;
             localPosMassMul.add(JomlUtil.d(localPos).mul(curMass));
 
-            //EzDebug.log("mass add " + curMass);
+            //EzDebug.log("shipType:" + ship.getClass().getSimpleName() + ", state:" + StrUtil.getBlockName(state) + "mass add " + curMass);
         });
-        //EzDebug.log("mass by ship is :" + mass + ", cnt:" + ship.getBlockCluster().getDataReader().getBlockCnt());
+        //EzDebug.log("shipType:" + ship.getClass().getSimpleName() + ", mass by ship is :" + mass + ", cnt:" + ship.getBlockCluster().getDataReader().getBlockCnt());
 
         updateInertia(ship);  //todo dirty inertia
         return this;
@@ -226,6 +228,7 @@ public class RigidbodyData implements IComponentData<RigidbodyData>, IRigidbodyD
         return new NbtBuilder()
             .putCompound("transform", transform.saved())
             .putMatrix4d("local_to_world_snapshot", localToWorldSnapshot)
+            .putMatrix4d("world_to_local_snapshot", worldToLocalSnapshot)
             //.putNumber("mass", mass)
             //.putVector3d("local_pos_mass_mul", localPosMassMul)  //note localPosMassMul and inertiaTensor are setted by ship
             //.putMatrix3d()
@@ -254,6 +257,7 @@ public class RigidbodyData implements IComponentData<RigidbodyData>, IRigidbodyD
         NbtBuilder.modify(tag)
             .readCompoundDo("transform", transform::load)
             .readMatrix4d("local_to_world_snapshot", localToWorldSnapshot)
+            .putMatrix4d("world_to_local_snapshot", worldToLocalSnapshot)
             //.readDoubleDo("mass", v -> mass = v)
             //.readVector3d("local_pos_mass_mul", localPosMassMul);
             .readVector3d("velocity", velocity)
@@ -274,8 +278,6 @@ public class RigidbodyData implements IComponentData<RigidbodyData>, IRigidbodyD
 
         return this;
     }
-
-
 
 
     @Override
@@ -301,10 +303,13 @@ public class RigidbodyData implements IComponentData<RigidbodyData>, IRigidbodyD
 
     @Override
     public Matrix4dc getLocalToWorld() { return localToWorldSnapshot; }
+    @Override
+    public Matrix4dc getWorldToLocal() { return worldToLocalSnapshot; }
 
 
     @Override
     public Vector3dc getVelocity() { return velocity; }
+
     @Override
     public Vector3dc getOmega() { return omega; }
     @Override
@@ -321,8 +326,9 @@ public class RigidbodyData implements IComponentData<RigidbodyData>, IRigidbodyD
 
     @Override
     public IRigidbodyDataWriter setVelocity(Vector3dc v) {
-        Vector3dc newVelImmutable = new Vector3d(v);
+        Vector3d newVelImmutable = new Vector3d(v);
         updates.add(d -> d.velocity.set(newVelImmutable));
+
         return this;
     }
     @Override
@@ -339,7 +345,7 @@ public class RigidbodyData implements IComponentData<RigidbodyData>, IRigidbodyD
     }
 
     @Override
-    public void setStatic(boolean newVal) { isStatic.set(newVal); }
+    public IRigidbodyDataWriter setStatic(boolean newVal) { isStatic.set(newVal); return this; }
 
     @Override
     public IRigidbodyDataWriter setPosition(Vector3dc p) {
@@ -367,9 +373,42 @@ public class RigidbodyData implements IComponentData<RigidbodyData>, IRigidbodyD
     }
 
     @Override
-    public IRigidbodyDataWriter applyWorldForce(Vector3dc v) { applyingForces.add(new Vector3d(v)); return this; }
+    public IRigidbodyDataWriter applyWorldForce(Vector3dc f) {
+        applyingForces.add(new Vector3d(f));
+        //EzDebug.log("applying forces:" + applyingForces.size());
+        return this;
+    }
     @Override
-    public IRigidbodyDataWriter applyWorldTorque(Vector3dc v) { applyingTorques.add(new Vector3d(v)); return this; }
+    public IRigidbodyDataWriter applyWorldTorque(Vector3dc t) { applyingTorques.add(new Vector3d(t)); return this; }
+
+    @Override
+    public IRigidbodyDataWriter applyWork(double work) {
+        updates.add(d -> {
+            double postVelSqLen = 2 * work / d.mass + d.velocity.lengthSquared();
+            double postVelLen = Math.sqrt(Math.abs(postVelSqLen)) * Math.signum(postVelSqLen);
+            Vector3d postVel = d.velocity.normalize(postVelLen, new Vector3d());
+            if (!postVel.isFinite()) {
+                EzDebug.warn("the velocity is invalid after apply work " + work + "J.");
+                return;
+            }
+            d.velocity.set(postVel);
+        });
+        return this;
+    }
+
+
+    @Override
+    public IRigidbodyDataWriter moveLocalPosToWorld(Vector3dc localPos, Vector3dc toWorld) {
+        Vector3d localPosImmutable = new Vector3d(localPos);
+        Vector3d toWorldImmutable = new Vector3d(toWorld);
+        updates.add(d -> {
+            Vector3d transformedPos = d.localToWorldPos(localPosImmutable, new Vector3d());
+            Vector3d movement = toWorldImmutable.sub(transformedPos, new Vector3d());
+            //the update pos is done sequently, don't worry the concurrent
+            d.transform.addPosition(movement);
+        });
+        return this;
+    }
 
     /*@Override
     public RigidbodyData setVelocity(Vector3dc newVel) { velocity.set(newVel); return this; }  //todo sync

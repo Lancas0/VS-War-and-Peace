@@ -2,11 +2,17 @@ package com.lancas.vs_wap.content.saved;
 
 import com.lancas.vs_wap.ModMain;
 import com.lancas.vs_wap.debug.EzDebug;
+import com.lancas.vs_wap.event.impl.BiEventImpl;
+import com.lancas.vs_wap.event.impl.SingleEventImpl;
+import com.lancas.vs_wap.event.impl.TriEventImpl;
+import com.lancas.vs_wap.foundation.BiTuple;
 import com.lancas.vs_wap.foundation.api.Dest;
 import com.lancas.vs_wap.util.NbtBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -14,15 +20,63 @@ import net.minecraftforge.fml.common.Mod;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 @Mod.EventBusSubscriber
 public class BlockRecordRWMgr extends SavedData {
+    public static class BlockRecordEvents {
+        private BlockRecordEvents() {}
+
+        public final Map<BiTuple.ChunkXZ, SingleEventImpl<ServerLevel>> chunkLoadedServerTickEvt = new ConcurrentHashMap<>();
+        //event arg1: level, arg2: isChunkLoaded
+        public final Map<BiTuple.ChunkXZ, BiEventImpl<ServerLevel, Boolean>> serverTickEvt = new ConcurrentHashMap<>();
+
+        public void addChunkLoadedServerTicker(BlockPos bp, @NotNull Consumer<ServerLevel> listener) {
+            chunkLoadedServerTickEvt.computeIfAbsent(BiTuple.ChunkXZ.chunkBlockIn(bp), k -> new SingleEventImpl<>())
+                .addListener(listener);
+        }
+        public void addServerTicker(BlockPos bp, @NotNull BiConsumer<ServerLevel, Boolean> listener) {
+            serverTickEvt.computeIfAbsent(BiTuple.ChunkXZ.chunkBlockIn(bp), k -> new BiEventImpl<>())
+                .addListener(listener);
+        }
+        public void removeChunkLoadedServerTicker(BlockPos bp, @NotNull Consumer<ServerLevel> listener) {
+            chunkLoadedServerTickEvt.computeIfAbsent(BiTuple.ChunkXZ.chunkBlockIn(bp), k -> new SingleEventImpl<>())
+                .remove(listener);
+        }
+        public void removeServerTicker(BlockPos bp, @NotNull BiConsumer<ServerLevel, Boolean> listener) {
+            serverTickEvt.computeIfAbsent(BiTuple.ChunkXZ.chunkBlockIn(bp), k -> new BiEventImpl<>())
+                .remove(listener);
+        }
+
+
+        public void invokeAll(ServerLevel level) {
+            try {
+                ServerChunkCache chunkSrc = level.getChunkSource();
+                for (var chunkLoadedTickEvt : chunkLoadedServerTickEvt.entrySet()) {
+                    BiTuple.ChunkXZ chunkXZ = chunkLoadedTickEvt.getKey();
+                    boolean isChunkLoaded = chunkSrc.hasChunk(chunkXZ.getX(), chunkXZ.getZ());
+
+                    if (isChunkLoaded) chunkLoadedTickEvt.getValue().invokeAll(level);
+                }
+
+                for (var serverTickEvt : serverTickEvt.entrySet()) {
+                    BiTuple.ChunkXZ chunkXZ = serverTickEvt.getKey();
+                    boolean isChunkLoaded = chunkSrc.hasChunk(chunkXZ.getX(), chunkXZ.getZ());
+
+                    serverTickEvt.getValue().invokeAll(level, isChunkLoaded);
+                }
+            } catch (Exception e) {
+                EzDebug.log("fail to invoke evetn, exception:" + e.toString());
+                e.printStackTrace();
+            }
+        }
+    }
+    //public static Timer asyncTimer = new Timer();
+
     public static BlockRecordRWMgr getOrCreate(ServerLevel inLevel) {
         return inLevel.getDataStorage().computeIfAbsent(
             nbt -> {
@@ -35,66 +89,50 @@ public class BlockRecordRWMgr extends SavedData {
         );
     }
 
-    private ServerLevel level;
-    private Map<BlockPos, IBlockRecord> rwRecords = new ConcurrentHashMap<>();
-    private Map<BlockPos, IBlockRecord> tickRecords = new ConcurrentHashMap<>();
+    //private ServerLevel level;
+    private final Map<BlockPos, IBlockRecord> allRecords = new ConcurrentHashMap<>();
+    public final BlockRecordEvents events = new BlockRecordEvents();
+    //private final Map<BiTuple.ChunkXZ, Map<BlockPos, IBlockRecord>> tickRecords = new ConcurrentHashMap<>();
+    /*private final Map<BiTuple.ChunkXZ, Map<BlockPos, IBlockRecord.ChunkLoadedTicker>> chunkLoadedTickers = new ConcurrentHashMap<>();
+    private final Map<BiTuple.ChunkXZ, Map<BlockPos, IBlockRecord.AlwaysTicker>> chunkAlwaysTickers = new ConcurrentHashMap<>();
+    private final Map<BlockPos, TimerTask> asyncTickers = new ConcurrentHashMap<>();*/
+
+
+    //public final BiEventImpl<ServerLevel, BlockPos> eternalServer
+    //public final TriEventImpl<ServerLevel, BlockPos, BlockState> withBlockState
+
 
     @Override
     public CompoundTag save(CompoundTag compoundTag) {
         try {
             return new NbtBuilder()
-                .putCompound("tick_records",
-                    new NbtBuilder().putEach("block_poses", tickRecords.keySet(), NbtBuilder::ofBlockPos)
-                        .putEachSimpleJackson("record_values", tickRecords.values())
+                .putMap("records", allRecords,
+                    (k, v) -> new NbtBuilder()
+                        .putBlockPos("bp", k)
+                        .putSimpleJackson("record", v)
                         .get()
-                )
-                .putCompound("rw_records",
-                    new NbtBuilder().putEach("block_poses", rwRecords.keySet(), NbtBuilder::ofBlockPos)
-                        .putEachSimpleJackson("record_values", rwRecords.values())
-                        .get()
-                )
-                .get();
-
+                ).get();
         } catch (Exception e) {
             EzDebug.error("fail to load block data, will lose all data. exception:" + e.toString());
+            e.printStackTrace();
+            return new CompoundTag();
         }
-        return new CompoundTag();
     }
     public void load(CompoundTag tag) {
         try {
             NbtBuilder nbtBuilder = NbtBuilder.copy(tag);
-            List<BlockPos> bps = new ArrayList<>();
-            List<IBlockRecord> records = new ArrayList<>();
-            Dest<CompoundTag> recordsDest = new Dest<>();
 
-            nbtBuilder.readCompound("tick_records", recordsDest);
-            NbtBuilder.copy(recordsDest.get())
-                .readEachCompound("block_poses", NbtBuilder::blockPosValueOf, bps)
-                .readEachSimpleJackson("record_values", IBlockRecord.class, records);
+            nbtBuilder.readMapDo("records",
+                t -> {
+                    BiTuple<BlockPos, IBlockRecord> entryTuple = new BiTuple<>();
+                    NbtBuilder.modify(t)
+                        .readBlockPosDo("bp", entryTuple::setFirst)
+                        .readSimpleJacksonDo("record", IBlockRecord.class, entryTuple::setSecond);
 
-            if (bps.size() != records.size()) { EzDebug.error("block pos count don't match dataVals size"); return; }
-            else {
-                for (int i = 0; i < bps.size(); ++i) {
-                    tickRecords.put(bps.get(i), records.get(i));
-                }
-            }
-
-            bps.clear();
-            records.clear();
-            recordsDest.set(null);
-
-            nbtBuilder.readCompound("rw_records", recordsDest);
-            NbtBuilder.copy(recordsDest.get())
-                .readEachCompound("block_poses", NbtBuilder::blockPosValueOf, bps)
-                .readEachSimpleJackson("record_values", IBlockRecord.class, records);
-
-            if (bps.size() != records.size()) { EzDebug.error("block pos count don't match dataVals size"); return; }
-            else {
-                for (int i = 0; i < bps.size(); ++i) {
-                    rwRecords.put(bps.get(i), records.get(i));
-                }
-            }
-
+                    return entryTuple;
+                },
+                this::putRecordImpl
+            );
         } catch (Exception e) {
             EzDebug.error("fail to load block data, will lose all data. exception:" + e.toString());
         }
@@ -109,24 +147,85 @@ public class BlockRecordRWMgr extends SavedData {
         BlockRecordRWMgr mgr = getOrCreate(level);
         mgr.putRecordImpl(bp, record);
     }
-    private void putRecordImpl(BlockPos bp, IBlockRecord data) {
-        if (data.shouldTick()) {
-            tickRecords.put(bp, data);
-            setDirty();
-            return;
+    private void putRecordImpl(BlockPos bp, IBlockRecord record) {
+        allRecords.put(bp, record);
+        record.onAdded(bp, this);
+
+        EzDebug.log("put record at " + bp.toShortString());
+
+        /*var chunkLoadedTicker = record.chunkLoadedTicker();
+        if (chunkLoadedTicker != null) {
+            chunkLoadedTickers.computeIfAbsent(
+                BiTuple.ChunkXZ.chunkBlockIn(bp),
+                k -> new ConcurrentHashMap<>()
+            ).put(bp, chunkLoadedTicker);
         }
 
-        rwRecords.put(bp, data);
+        var alwaysTicker = record.alwaysTicker();
+        if (alwaysTicker != null) {
+            chunkAlwaysTickers.computeIfAbsent(
+                BiTuple.ChunkXZ.chunkBlockIn(bp),
+                k -> new ConcurrentHashMap<>()
+            ).put(bp, alwaysTicker);
+        }
+
+        Dest<Long> intervalMs = new Dest<>();
+        var asyncTicker = record.asyncTicker(intervalMs);
+        if (alwaysTicker != null && intervalMs.hasValue()) {
+            TimerTask newTask = new TimerTask() {
+                @Override
+                public void run() {
+                    try {
+                        asyncTicker.tick(bp);
+                    } catch (Exception e) {
+                        EzDebug.error("fail to async tick");
+                        e.printStackTrace();
+                    }
+                }
+            };
+
+            TimerTask prevTask = asyncTickers.put(bp, newTask);
+            if (prevTask != null)
+                prevTask.cancel();
+
+            asyncTimer.scheduleAtFixedRate(newTask, 0, intervalMs.get());
+        }*/
+
         setDirty();
     }
 
     public static <T extends IBlockRecord> T removeRecord(ServerLevel level, BlockPos bp) {
         BlockRecordRWMgr mgr = getOrCreate(level);
-        T record = mgr.getRecordImpl(bp);
-        mgr.rwRecords.remove(bp);
-        mgr.tickRecords.remove(bp);
+        //IBlockRecord record = mgr.getRecordImpl(bp);
+        IBlockRecord record = mgr.allRecords.remove(bp);
+
+        if (record != null)
+            record.onRemoved(bp, mgr);
+        /*var chunk = BiTuple.ChunkXZ.chunkBlockIn(bp);
+        var chunkTickers = mgr.chunkLoadedTickers.get(chunk);
+        if (chunkTickers != null) {
+            chunkTickers.remove(bp);
+            if (chunkTickers.isEmpty())
+                mgr.chunkLoadedTickers.remove(chunk);  //save memory
+        }
+
+        var alwaysTickers = mgr.chunkAlwaysTickers.get(chunk);
+        if (alwaysTickers != null) {
+            alwaysTickers.remove(bp);
+            if (alwaysTickers.isEmpty())
+                mgr.chunkAlwaysTickers.remove(chunk);  //save memory
+        }
+
+        TimerTask scheduled = mgr.asyncTickers.remove(bp);
+        if (scheduled != null)
+            scheduled.cancel();*/
         mgr.setDirty();
-        return record;
+
+        EzDebug.log("remove record at " + bp.toShortString());
+
+        try {
+            return (T)record;
+        } catch (Exception e) { return null; }
     }
     @Nullable
     public static <T extends IBlockRecord> T getRecord(ServerLevel level, BlockPos bp) {
@@ -138,6 +237,8 @@ public class BlockRecordRWMgr extends SavedData {
         BlockRecordRWMgr mgr = getOrCreate(level);
         return Objects.requireNonNull(mgr.getRecordImpl(bp));
     }
+    //what's the meaning to have this method?
+    //I can just get the reference and set the value.
     public static <T extends IBlockRecord> void changeIfExist(ServerLevel level, BlockPos bp, Function<T, T> changer) {
         BlockRecordRWMgr mgr = getOrCreate(level);
 
@@ -152,14 +253,14 @@ public class BlockRecordRWMgr extends SavedData {
 
     @Nullable
     private <T extends IBlockRecord> T getRecordImpl(BlockPos bp) {
-        IBlockRecord data = rwRecords.get(bp);
-        if (data == null) {
+        IBlockRecord data = allRecords.get(bp);
+        /*if (data == null) {
             data = tickRecords.get(bp);
-        }
+        }*/
 
         if (data == null) {
-            EzDebug.warn("can't get record at " + bp.toShortString() + ", hasRWKey?:" + rwRecords.containsKey(bp) + ", hasTickKey?:" + tickRecords.containsKey(bp));
-            EzDebug.logs(rwRecords.keySet(), null);
+            EzDebug.warn("can't get record at " + bp.toShortString());
+            EzDebug.logs(allRecords.keySet(), null);
             return null;
         }
 
@@ -182,20 +283,31 @@ public class BlockRecordRWMgr extends SavedData {
         if (event.phase != TickEvent.Phase.END) return;
 
         for (ServerLevel curLevel : event.getServer().getAllLevels()) {
+
             BlockRecordRWMgr mgr = BlockRecordRWMgr.getOrCreate(curLevel);
 
-            for (var tickRecord : mgr.tickRecords.entrySet()) {
-                BlockPos bp = tickRecord.getKey();
-                IBlockRecord record = tickRecord.getValue();
+            mgr.events.invokeAll(curLevel);
 
-                if (!record.shouldTick()) {
-                    EzDebug.warn("there is a record in should tick records is shouldn't tick! Maybe it's tempory disabled for effecient?");
-                    continue;
+            /*for (var chunkTickers : mgr.chunkLoadedTickers.entrySet()) {
+                var chunk = chunkTickers.getKey();
+                if (!chunkSrc.hasChunk(chunk.getX(), chunk.getZ())) continue;  //don't tick if chunk is not loaded
+
+                for (var chunkTicker : chunkTickers.getValue().entrySet()) {
+                    BlockPos bp = chunkTicker.getKey();
+                    chunkTicker.getValue().tick(curLevel, bp);
                 }
-
-                record.onTick(bp);
-                mgr.setDirty();
             }
+            for (var alwaysTickers : mgr.chunkAlwaysTickers.entrySet()) {
+                var chunk = alwaysTickers.getKey();
+                boolean chunkLoaded = chunkSrc.hasChunk(chunk.getX(), chunk.getZ());
+
+                for (var chunkTicker : alwaysTickers.getValue().entrySet()) {
+                    BlockPos bp = chunkTicker.getKey();
+                    chunkTicker.getValue().tick(curLevel, bp, chunkLoaded);
+                }
+            }*/
+
+            mgr.setDirty();
         }
     }
 }

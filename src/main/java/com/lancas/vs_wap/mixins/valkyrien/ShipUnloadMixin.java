@@ -1,6 +1,7 @@
 package com.lancas.vs_wap.mixins.valkyrien;
 
 import com.lancas.vs_wap.debug.EzDebug;
+import com.lancas.vs_wap.event.EventMgr;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -30,6 +31,8 @@ public class ShipUnloadMixin {
             ship -> {
                 unloadingShipCnt.getAndIncrement();
                 str.updateAndGet(s -> s + ship.getId() + ", ");
+
+                EventMgr.Server.onVsShipUnloaded.invokeAll(ship.getId());
             }
         );
 

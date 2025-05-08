@@ -22,7 +22,7 @@ import static com.lancas.vs_wap.subproject.sandbox.SandBoxServerWorld.PHYS_TICK_
 //todo make it a necessary behaviour?
 public class SandBoxRigidbody
     extends BothSideBehaviour<RigidbodyData>
-    implements IDataReadableBehaviour<RigidbodyData>, IDataWritableBehaviour<RigidbodyData> {
+    implements IRigidbodyBehaviour {
     //private boolean massCenterDirty = true;
     //private final Vector3d massCenter = new Vector3d();
 
@@ -88,7 +88,8 @@ public class SandBoxRigidbody
         applyUpdates();
 
         //EzDebug.log("mass:" + data.mass + ", static:" + data.isStatic.get());
-        if (isZero(data.mass) || data.isStatic.get()) {
+        if (isZero(data.mass) || data.isStatic()) {
+            //EzDebug.log("applying force is cleared due to zeroMass or static, mass:" + data.mass + ", static?:" + data.isStatic);
             data.applyingForces.clear();
             data.applyingTorques.clear();
         } else {
@@ -103,7 +104,7 @@ public class SandBoxRigidbody
             data.transform.rotation,
             data.transform.scale
         );
-        //EzDebug.log("snapshot localToWorld");
+        data.worldToLocalSnapshot = data.localToWorldSnapshot.invert(new Matrix4d());
     }
     private boolean isZero(Vector3dc v) { return isZero(v.x()) && isZero(v.y()) && isZero(v.z()); }
     private boolean isZero(double x) { return Math.abs(x) < 1E-4; }
@@ -130,8 +131,10 @@ public class SandBoxRigidbody
 
         while (!data.applyingForces.isEmpty()) {
             Vector3d force = data.applyingForces.poll();
-            //EzDebug.log("rigidbody applying force:" + StrUtil.F2(force));
+            //EzDebug.log("polled rigidbody applying force:" + StrUtil.F2(force));
+
             Vector3d addVelocity = force.div(data.mass, new Vector3d()).mul(PHYS_TICK_TIME_S);
+            //EzDebug.log("force:" + StrUtil.F2(force) + ", addVel:" + StrUtil.F2(addVelocity));
             if (force.isFinite())
                 data.velocity.add(addVelocity);
             else

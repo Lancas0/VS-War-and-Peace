@@ -1,6 +1,6 @@
 package com.lancas.vs_wap.content.behaviour.item;
 
-import com.lancas.vs_wap.content.items.docker.DockerItem;
+import com.lancas.vs_wap.content.item.items.docker.IDocker;
 import com.lancas.vs_wap.debug.EzDebug;
 import com.lancas.vs_wap.ship.helper.builder.ShipBuilder;
 import com.lancas.vs_wap.ship.data.IShipSchemeData;
@@ -24,16 +24,16 @@ public class DockerDispenseBehaviour implements DispenseItemBehavior {
         EzDebug.log("docker dispense beh is called");
 
         if (source.getLevel().isClientSide) return stack;  // 只在服务端执行
-        if (!(stack.getItem() instanceof DockerItem)) return stack;
+        if (!(stack.getItem() instanceof IDocker docker)) return stack;
 
-        if (!DockerItem.hasShipData(stack)) return stack;
+        if (!docker.hasShipData(stack)) return stack;
 
         //发射器信息
         /*Direction direction = source.getBlockState().getValue(DispenserBlock.FACING);
         BlockPos targetPos = source.getPos().relative(direction);
         ServerLevel level = source.getLevel();*/
 
-        boolean success = dispenseHandle(source, DockerItem.getShipSchemeData(stack));
+        boolean success = dispenseHandle(source, docker.getShipData(stack));
 
         if (success)
             stack.shrink(1);

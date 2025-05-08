@@ -20,12 +20,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class BallisticInitialStateSubData implements IComponentData<BallisticInitialStateSubData>, IComponentDataReader<BallisticInitialStateSubData> {
+public class BallisticInitialStateSubData implements IComponentData<BallisticInitialStateSubData> {
+
+
     //set default dir as SOUTH for safe
     public final Vector3d launchWorldPos = new Vector3d();
     public final Vector3i localForward = new Vector3i(0, 0, 1);  //localDir is the dir from project's tail to head.
     public final Vector3d worldLaunchDir = new Vector3d(0, 0, 1);
     public double totalPropellingEnergy = 0;
+    //public double exitVelocity = 0;
     public final List<Vector3i> ballisticBlockLocPoses = new CopyOnWriteArrayList<>();
 
     private BallisticInitialStateSubData() {}
@@ -34,6 +37,7 @@ public class BallisticInitialStateSubData implements IComponentData<BallisticIni
         launchWorldPos.set(inLaunchWorldPos);
         localForward.set(inLocalDirection);
         worldLaunchDir.set(inWorldLaunchDir);
+
         totalPropellingEnergy = inPropellingEnergy;
     }
 

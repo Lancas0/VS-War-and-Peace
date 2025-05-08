@@ -2,8 +2,8 @@ package com.lancas.vs_wap.compact.create.arminteraction;
 
 import com.lancas.vs_wap.content.WapItems;
 import com.lancas.vs_wap.content.block.blocks.cartridge.ShellFrame;
-import com.lancas.vs_wap.content.items.docker.IDocker;
-import com.lancas.vs_wap.content.items.docker.RefWithFallbackDocker;
+import com.lancas.vs_wap.content.item.items.docker.IDocker;
+import com.lancas.vs_wap.content.item.items.docker.RefWithFallbackDocker;
 import com.lancas.vs_wap.content.saved.BlockRecordRWMgr;
 import com.lancas.vs_wap.debug.EzDebug;
 import com.lancas.vs_wap.ship.attachment.HoldableAttachment;
@@ -54,7 +54,7 @@ public class ShellFrameArmPoint extends ArmInteractionPoint {
             Vector3d shellFrameWorldPos = WorldUtil.getWorldCenter(sLevel, pos);
             Vector3d shellFrameWorldDir = WorldUtil.getWorldDirection(sLevel, pos, DirectionAdder.getDirection(state));
 
-            ShipBuilder shipBuilder = refDocker.makeShipBuilderFromStack(sLevel, stack);
+            ShipBuilder shipBuilder = refDocker.makeShipBuilder(sLevel, stack);
             HoldableAttachment holdable = shipBuilder.get().getAttachment(HoldableAttachment.class);
             IDocker.setShipTransformByHoldable(shipBuilder, holdable, shellFrameWorldPos, shellFrameWorldDir);
 

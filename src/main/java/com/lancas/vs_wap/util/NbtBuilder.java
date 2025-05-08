@@ -351,8 +351,8 @@ public class NbtBuilder {
             .readIntDo("miny", v -> min.y = v)
             .readIntDo("minz", v -> min.z = v)
             .readIntDo("maxx", v -> max.x = v)
-            .readIntDo("maxy", v -> max.x = v)
-            .readIntDo("maxz", v -> max.x = v);
+            .readIntDo("maxy", v -> max.y = v)
+            .readIntDo("maxz", v -> max.z = v);
 
         dest.setMin(min);
         dest.setMax(max);
@@ -366,8 +366,8 @@ public class NbtBuilder {
             .readDoubleDo("miny", v -> min.y = v)
             .readDoubleDo("minz", v -> min.z = v)
             .readDoubleDo("maxx", v -> max.x = v)
-            .readDoubleDo("maxy", v -> max.x = v)
-            .readDoubleDo("maxz", v -> max.x = v);
+            .readDoubleDo("maxy", v -> max.y = v)
+            .readDoubleDo("maxz", v -> max.z = v);
 
         dest.setMin(min);
         dest.setMax(max);
@@ -476,6 +476,16 @@ public class NbtBuilder {
         dest.clear();
         return readMapAppend(key, entryNbtReader, dest);
     }
+    public <K, V> NbtBuilder readMapDo(String key, Function<CompoundTag, BiTuple<K, V>> entryNbtReader, BiConsumer<K, V> consumer) {
+        ListTag listTag = nbt.getList(key, Tag.TAG_COMPOUND);
+        if (listTag.isEmpty()) return this;
+
+        for (Tag itemNbt : listTag) {
+            BiTuple<K, V> entry = entryNbtReader.apply((CompoundTag)itemNbt);
+            consumer.accept(entry.getFirst(), entry.getSecond());
+        }
+        return this;
+    }
     public <K, V> NbtBuilder readMapAppend(String key, Function<CompoundTag, BiTuple<K, V>> entryNbtReader, Map<K, V> dest) {
         ListTag listTag = nbt.getList(key, Tag.TAG_COMPOUND);
         if (listTag.isEmpty()) return this;
@@ -515,7 +525,7 @@ public class NbtBuilder {
         nbt.put(key, tagOfBlock(pos, state, be));
         return this;
     }
-    public static CompoundTag ofBlockPos(BlockPos pos) { return NbtUtils.writeBlockPos(pos); }
+    public static CompoundTag tagOfBlockPos(BlockPos pos) { return NbtUtils.writeBlockPos(pos); }
     public static BlockPos blockPosValueOf(CompoundTag tag) { return NbtUtils.readBlockPos(tag); }
 
     public static CompoundTag tagOfBlock(BlockPos pos, BlockState state, @Nullable BlockEntity be) {
@@ -565,10 +575,14 @@ public class NbtBuilder {
         consumer.accept(NbtUtils.readBlockState(BuiltInRegistries.BLOCK.asLookup(), nbt.getCompound(key)));
         return this;
     }
-    public BlockState getBlockStat(String key) {
+    public BlockState getBlockState(String key) {
         return NbtUtils.readBlockState(BuiltInRegistries.BLOCK.asLookup(), nbt.getCompound(key));
     }
 
+    public NbtBuilder putBlockPos(String key, BlockPos bp) { nbt.put(key, tagOfBlockPos(bp)); return this; }
+    public NbtBuilder readBlockPos(String key, Dest<BlockPos> dest) { dest.set(blockPosValueOf(nbt.getCompound(key))); return this; }
+    public NbtBuilder readBlockPosDo(String key, Consumer<BlockPos> consumer) { consumer.accept(blockPosValueOf(nbt.getCompound(key))); return this; }
+    public BlockPos getBlockPos(String key) { return blockPosValueOf(nbt.getCompound(key)); }
 
     public NbtBuilder putCompound(String key, CompoundTag compound) {
         nbt.put(key, compound);
@@ -586,17 +600,22 @@ public class NbtBuilder {
 
 
 
-    public <T> NbtBuilder putSimpleJackson(String key, T obj) throws JsonProcessingException {
-        nbt.putString(key, SIMPLE_MAPPER.writeValueAsString(obj));
+    public <T> NbtBuilder putSimpleJackson(String key, T obj) {
+        nbt.putString(key, jacksonWriteAsStringRethrown(obj, SIMPLE_MAPPER));
         return this;
     }
-    public <T> T readSimpleJackson(String key, Class<T> type) throws JsonProcessingException {
+    public <T> T readSimpleJackson(String key, Class<T> type) {
         String json = nbt.getString(key);
-        return SIMPLE_MAPPER.readValue(json, type);
+        return jacksonReadRethrown(json, type, SIMPLE_MAPPER);// SIMPLE_MAPPER.readValue(json, type);
     }
-    public <T> T readSimpleJackson(String key, TypeReference<T> typeRef) throws JsonProcessingException {
+    public <T> NbtBuilder readSimpleJacksonDo(String key, Class<T> type, Consumer<T> consumer) {
         String json = nbt.getString(key);
-        return SIMPLE_MAPPER.readValue(json, typeRef);
+        consumer.accept(jacksonReadRethrown(json, type, SIMPLE_MAPPER));// SIMPLE_MAPPER.readValue(json, type);
+        return this;
+    }
+    public <T> T readSimpleJackson(String key, TypeReference<T> type) {
+        String json = nbt.getString(key);
+        return jacksonReadRethrown(json, type, SIMPLE_MAPPER);//SIMPLE_MAPPER.readValue(json, typeRef);
     }
 
 

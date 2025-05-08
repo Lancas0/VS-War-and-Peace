@@ -28,7 +28,7 @@ public class MunitionShipHandler {
         Vector3ic primerPos,
         Vector3ic munitionDir,
         Function<Vector3ic, BlockState> stateGetter,
-        @Nullable BiConsumer<Vector3ic, BlockState> propellantEmptySetter,
+        @Nullable BiConsumer<Vector3ic, BlockState> propellantCallback,
         @Nullable Dest<Double> propellingEnergyDest,
         @Nullable Dest<Vector3i> projectileStartDest
     ) {
@@ -46,8 +46,8 @@ public class MunitionShipHandler {
 
 
             propellingEnergy += propellant.getEnergy(curState);
-            if (propellantEmptySetter != null)
-                propellantEmptySetter.accept(curPos, curState);
+            if (propellantCallback != null)
+                propellantCallback.accept(curPos, curState);
 
             curPos.add(munitionDir);
         }
@@ -60,7 +60,8 @@ public class MunitionShipHandler {
         Vector3ic projectileStart,
         Vector3ic munitionDir,
         Function<Vector3ic, BlockState> stateGetter,
-        BiConsumer<Vector3ic, BlockState> foreacher
+        BiConsumer<Vector3ic, BlockState> foreacher,
+        @Nullable BiConsumer<Vector3ic, BlockState> projectileHeadCleaner
     ) {
         //EzDebug.log("projectileStart:" + StrUtil.poslike(projectileStart));
 
@@ -72,6 +73,9 @@ public class MunitionShipHandler {
             if (curState == null || curState.isAir()) break;
 
             foreacher.accept(curPos, curState);
+
+            if (projectileHeadCleaner != null)
+                projectileHeadCleaner.accept(curPos, curState);
 
             curPos.add(munitionDir);
         }

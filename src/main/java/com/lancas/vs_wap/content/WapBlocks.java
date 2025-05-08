@@ -8,6 +8,8 @@ import com.lancas.vs_wap.content.block.blocks.artillery.CartridgeRailBlock;
 import com.lancas.vs_wap.content.block.blocks.artillery.breech.DroppingBreech;
 import com.lancas.vs_wap.content.block.blocks.artillery.breech.EjectingBreech;
 import com.lancas.vs_wap.content.block.blocks.artillery.breech.RapidBreech;
+import com.lancas.vs_wap.content.block.blocks.artillery.breech.valkyiren.HellBreech;
+import com.lancas.vs_wap.content.block.blocks.artillery.breech.valkyiren.ValkyrienBreech;
 import com.lancas.vs_wap.content.block.blocks.cartridge.ShellFrame;
 import com.lancas.vs_wap.content.block.blocks.cartridge.modifier.WindCap;
 import com.lancas.vs_wap.content.block.blocks.cartridge.propellant.CombustiblePropellantBlock;
@@ -111,6 +113,22 @@ public class WapBlocks {
             .item()
             .build()
             .register();*/
+
+        public static BlockEntry<HellBreech> HELL_BREECH = REGISTRATE
+            .block("hell_breech", HellBreech::new)
+            .initialProperties(SharedProperties::stone)
+            .properties(p -> p.mapColor(MapColor.STONE))  //todo friction
+            .item()
+            .build()
+            .register();
+
+        public static BlockEntry<ValkyrienBreech> VALKYRIEN_BREECH = REGISTRATE
+            .block("valkyrien_breech", ValkyrienBreech::new)
+            .initialProperties(SharedProperties::stone)
+            .properties(p -> p.mapColor(MapColor.STONE))  //todo friction
+            .item()
+            .build()
+            .register();
 
         public static void register() { }
     }

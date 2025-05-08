@@ -61,6 +61,7 @@ public class ModMain  {
         WapItems.register();
         WapBlocks.register();
         WapBlockEntites.register();
+        WapUI.register();
         ArmInteractionTypes.register();
 
         WapMass.INSTANCE.register();
@@ -101,8 +102,8 @@ public class ModMain  {
         Config.items.forEach((item) -> LOGGER.info("ITEM >> {}", item.toString()));
 
 
-        //todo temp
-        DispenserBlock.registerBehavior(WapItems.DOCKER.get(), new DockerDispenseBehaviour());
+        //RefWithFallback don't have the behaviour
+        DispenserBlock.registerBehavior(WapItems.Docker.SHIP_DATA_DOCKER.get(), new DockerDispenseBehaviour());
     }
 
     // Add the example block item to the building blocks tab

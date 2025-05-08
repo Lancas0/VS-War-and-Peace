@@ -23,9 +23,9 @@ public abstract class ClientOnlyBehaviour<D extends IComponentData<D>> implement
     @Override
     public CompoundTag getSavedData() { return data.saved(); }
     @Override
-    public void loadData(ISandBoxShip inShip, D src) {
+    public void loadSavedData(ISandBoxShip inShip, CompoundTag saved) {
         ship = (SandBoxClientShip)inShip;
-        data.copyData(src);
+        data.load(saved);
         data.overwriteDataByShip(ship);
     }
 }

@@ -5,6 +5,7 @@ import com.lancas.vs_wap.foundation.api.math.ForceOnPos;
 import com.lancas.vs_wap.foundation.BiTuple;
 import com.lancas.vs_wap.foundation.TriTuple;
 import com.lancas.vs_wap.util.JomlUtil;
+import com.lancas.vs_wap.util.RandUtil;
 import net.minecraft.core.Direction;
 import org.jetbrains.annotations.Nullable;
 import org.joml.*;
@@ -121,8 +122,8 @@ public class BallisticsMath {
         }*/
 
         //todo 转正角度
-        public boolean isBounce(Random random) {
-            double nextFloat = random.nextFloat();
+        public boolean isBounce(@Nullable Random random) {
+            double nextFloat = (random == null ? RandUtil.nextF() : random.nextFloat());
             double probability = getBounceProbability();
             EzDebug.light("nextFloat:" + nextFloat + ", prob:" + probability);
             return nextFloat < probability;
@@ -144,9 +145,9 @@ public class BallisticsMath {
 
             return bouncedVelDir.mul(startBounceVel.length() * Math.cos(incidenceRad), new Vector3d());
         }
-        public Vector3d getPostVelocity(Random random) {
+        public Vector3d getPostVelocity(boolean bounce) {
             boolean penetrate = canPenetrate();
-            boolean bounce = isBounce(random);
+            //boolean bounce = isBounce(random);
             //无法过穿
             if (!penetrate) {
                 if (bounce)

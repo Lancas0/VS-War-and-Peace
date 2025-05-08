@@ -1,5 +1,6 @@
 package com.lancas.vs_wap.subproject.sandbox.ship;
 
+import com.lancas.vs_wap.debug.EzDebug;
 import com.lancas.vs_wap.subproject.sandbox.api.ISavedLevelObject;
 import com.lancas.vs_wap.subproject.sandbox.api.component.IComponentBehaviour;
 import com.lancas.vs_wap.subproject.sandbox.api.component.IServerBehaviour;
@@ -12,15 +13,15 @@ import com.lancas.vs_wap.util.NbtBuilder;
 import com.lancas.vs_wap.util.SerializeUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
+import org.jetbrains.annotations.Nullable;
 import org.joml.primitives.AABBd;
 import org.joml.primitives.AABBdc;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
-public class SandBoxServerShip implements ISandBoxShip, ISavedLevelObject<SandBoxServerShip> {
+public class SandBoxServerShip implements IServerSandBoxShip, ISavedLevelObject<SandBoxServerShip> {
     private UUID uuid;
     //private final SandBoxTransform transform = new SandBoxTransform();
     private final SandBoxRigidbody rigidbody = new SandBoxRigidbody();
@@ -33,9 +34,8 @@ public class SandBoxServerShip implements ISandBoxShip, ISavedLevelObject<SandBo
     //private boolean worldAABBDirty = true;
     private volatile AABBd worldAABBSnapshot = new AABBd();
 
-    private final AtomicInteger remainLifeTick = new AtomicInteger(-1);  //todo make it a tick destory. -1 for no destroy, 0 for should, >0 for ticking down
-
-    @Override
+    //private final AtomicInteger remainLifeTick = new AtomicInteger(-1);  //todo make it a tick destory. -1 for no destroy, 0 for should, >0 for ticking down
+    /*@Override
     public int getRemainLifeTick() { return remainLifeTick.get(); }
     @Override
     public void setRemainLifeTick(int tick) { remainLifeTick.set(tick); }
@@ -45,8 +45,7 @@ public class SandBoxServerShip implements ISandBoxShip, ISavedLevelObject<SandBo
             return x;  //0 or -1
         }) == 0;
     }
-    public boolean isTimeOut() { return remainLifeTick.get() == 0; }
-
+    public boolean isTimeOut() { return remainLifeTick.get() == 0; }*/
     /*
     public void setPosition(Vector3dc pos)    {
         transform.setPosition(pos);
@@ -115,7 +114,7 @@ public class SandBoxServerShip implements ISandBoxShip, ISavedLevelObject<SandBo
             behaviours.add(behaviour);
     }
     @Override
-    public Stream<IComponentBehaviour> allAddedBehaviours() {
+    public Stream<IComponentBehaviour<?>> allAddedBehaviours() {
         //return () -> behaviours.stream().map(b -> (IComponentBehaviour)b).iterator();
         return behaviours.stream().map(b -> b);
     }
@@ -148,6 +147,20 @@ public class SandBoxServerShip implements ISandBoxShip, ISavedLevelObject<SandBo
     @Override
     public SandBoxShipBlockCluster getBlockCluster() { return blockCluster; }
 
+    @Nullable
+    public <T extends IComponentBehaviour<?>> T getBehaviour(Class<T> type) {
+        try {
+            return (T)behaviours.stream()
+                .filter(x -> type.isAssignableFrom(x.getClass()))
+                .findFirst()
+                .orElseGet(() -> null);
+        } catch (Exception e) {
+            EzDebug.warn("type convert exception during get ship behaviour." + e.toString());
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     //public IExposedRigidbodyData getRigidbodyData() { return rigidbody.getExposedData(); }
 
     public double getLengthScale(int component) { return rigidbody.getDataReader().getScale().get(component); }
@@ -171,10 +184,12 @@ public class SandBoxServerShip implements ISandBoxShip, ISavedLevelObject<SandBo
         return behaviours;
     }*/
 
+    @Override
     public void serverTick(ServerLevel level) {
         rigidbody.serverTick(level);
         behaviours.forEach(beh -> beh.serverTick(level));
     }
+    @Override
     public void physTick() {
         rigidbody.physTick();
         behaviours.forEach(IComponentBehaviour::physTick);
@@ -210,14 +225,14 @@ public class SandBoxServerShip implements ISandBoxShip, ISavedLevelObject<SandBo
     public CompoundTag saved(ServerLevel level) {
         return new NbtBuilder()
             .putUUID("uuid", uuid)
-            .putNumber("remain_life_tick", remainLifeTick.get())
+            //.putNumber("remain_life_tick", remainLifeTick.get())
             .putCompound("rigidbody_data", rigidbody.getSavedData())
             //.putCompound("transform_data", transform.getSavedData())
             .putCompound("block_data", blockCluster.getSavedData())
             .putEach("behaviours", behaviours,
                 beh -> new NbtBuilder()
                     .putString("behaviour_type", beh.getClass().getName())
-                    .putString("data_type", beh.getDataType().getName())
+                    //.putString("data_type", beh.getDataType().getName())
                     .putCompound("data", beh.getSavedData())
                     .get()
             ).get();
@@ -228,15 +243,16 @@ public class SandBoxServerShip implements ISandBoxShip, ISavedLevelObject<SandBo
 
         NbtBuilder.modify(tag)
             .readUUIDDo("uuid", v -> uuid = v)
-            .readIntDo("remain_life_tick", remainLifeTick::set)
+            //.readIntDo("remain_life_tick", remainLifeTick::set)
             /*.readCompoundDo("transform_data",
                 t -> transform.loadData(this, new TransformData().load(t))
             )*/
-            .readCompoundDo("rigidbody_data",
-                t -> rigidbody.loadData(this, new RigidbodyData().load(t))
-            )
+            //load block data first, because the mass of rigidbody is calculated from blockCluster
             .readCompoundDo("block_data",
-                t -> blockCluster.loadData(this, new BlockClusterData().load(t))
+                t -> blockCluster.loadSavedData(this, t)
+            )
+            .readCompoundDo("rigidbody_data",
+                t -> rigidbody.loadSavedData(this, t)
             )
             .readEachCompound("behaviours",
                 nbt -> {
@@ -246,15 +262,18 @@ public class SandBoxServerShip implements ISandBoxShip, ISavedLevelObject<SandBo
 
                     IServerBehaviour<?> behaviour;
                     behaviour = SerializeUtil.createByClassName(typename);
-                    IComponentData<?> data = SerializeUtil.createByClassName(dataTypename);
+                    //IComponentData<?> data = SerializeUtil.createByClassName(dataTypename);
 
-                    if (behaviour != null && data != null) {
+                    /*if (behaviour != null && data != null) {
                         data.load(savedData);
                         behaviour.loadDataUnsafe(this, data);
                         return behaviour;
                     } else {
                         return null;
-                    }
+                    }*/
+                    if (behaviour == null) return null;
+                    behaviour.loadSavedData(this, savedData);
+                    return behaviour;
                 },
                 behaviours
             );

@@ -173,7 +173,7 @@ public class ShellTriggerHandler {
                 totalEnergy += propellant.getEnergy(propellantState);
 
                 if (setEmpty)
-                    propellant.setAsEmpty(level, propellantBp, propellantState);
+                    level.setBlockAndUpdate(propellantBp, propellant.getEmptyState(propellantState));
             }
         }
 

@@ -45,8 +45,10 @@ public class Gauge12Block extends BlockPlus implements IPropellant {
     public boolean isEmpty(BlockState state) { return false; }
 
     @Override
-    public void setAsEmpty(ServerLevel level, BlockPos pos, BlockState state) {
-        ServerShip onShip = ShipUtil.getServerShipAt(level, pos);
+    public BlockState getEmptyState(BlockState state) {
+        Direction dir = state.getValue(DirectionAdder.FACING);
+        return EMPTY_GAUGE12.getDefaultState().setValue(DirectionAdder.FACING, dir);
+        /*ServerShip onShip = ShipUtil.getServerShipAt(level, pos);
         if (onShip == null) {
             EzDebug.error("gauge should be on ship");
             return;
@@ -61,6 +63,8 @@ public class Gauge12Block extends BlockPlus implements IPropellant {
         );
 
         Direction dir = state.getValue(DirectionAdder.FACING);
-        level.setBlock(pos, EMPTY_GAUGE12.getDefaultState().setValue(DirectionAdder.FACING, dir), Block.UPDATE_ALL);
+        level.setBlock(pos, EMPTY_GAUGE12.getDefaultState().setValue(DirectionAdder.FACING, dir), Block.UPDATE_ALL);*/
+        //todo spawn particle on set empty
+
     }
 }

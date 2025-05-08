@@ -55,6 +55,8 @@ public class StrUtil {
     public static String toNormalString(AABBd aabb) {
         return aabb == null ? "null" : aabb.toString(format());
     }
+    public static String toNormalString(Matrix4d m) { return m == null ? "null" : m.toString(format()); }
+    public static String toNormalString(Matrix4dc m) { return m == null ? "null" : m.get(new Matrix4d()).toString(format()); }
 
     public static String getBlockName(@Nullable BlockState state) { return state == null ? "Null" : state.getBlock().getName().getString(); }
     public static String getBlockPos(BlockPos bp) { return String.format("(%d, %d, %d)", bp.getX(), bp.getY(), bp.getZ()); }

@@ -58,9 +58,7 @@ public class CombustiblePropellantBlock extends BlockPlus implements IPropellant
     public boolean isEmpty(BlockState state) { return false; }
 
     @Override
-    public void setAsEmpty(ServerLevel level, BlockPos pos, BlockState state) {
-        level.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
-    }
+    public BlockState getEmptyState(BlockState state) { return Blocks.AIR.defaultBlockState(); }
     @Override
     public double getEnergy(BlockState state) { return WapBlockInfos.propellant_power.valueOrDefaultOf(state); }
 }

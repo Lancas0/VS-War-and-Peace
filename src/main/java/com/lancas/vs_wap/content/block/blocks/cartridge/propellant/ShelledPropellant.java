@@ -95,9 +95,10 @@ public class ShelledPropellant extends BlockPlus implements IPropellant {
     @Override
     public boolean isEmpty(BlockState state) { return state.getValue(EMPTY); }
     @Override
-    public void setAsEmpty(ServerLevel level, BlockPos pos, BlockState state) {
+    public BlockState getEmptyState(BlockState state) {
         Direction dir = state.getValue(DirectionAdder.FACING);
-        level.setBlock(pos, EMPTY_PROPELLANT.getDefaultState().setValue(DirectionAdder.FACING, dir), Block.UPDATE_ALL);
+        return EMPTY_PROPELLANT.getDefaultState().setValue(DirectionAdder.FACING, dir);
+        //level.setBlock(pos, EMPTY_PROPELLANT.getDefaultState().setValue(DirectionAdder.FACING, dir), Block.UPDATE_ALL);
         //level.setBlockAndUpdate(pos, state.setValue(EMPTY, true));
     }
     @Override

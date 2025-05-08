@@ -1,6 +1,8 @@
 package com.lancas.vs_wap.ship.helper.builder;
 
 import com.lancas.vs_wap.debug.EzDebug;
+import com.lancas.vs_wap.subproject.sandbox.api.data.ITransformPrimitive;
+import com.lancas.vs_wap.subproject.sandbox.api.data.TransformPrimitive;
 import net.minecraft.world.level.Level;
 import org.joml.Quaterniond;
 import org.joml.Quaterniondc;
@@ -61,8 +63,17 @@ public class TeleportDataBuilder {
 
     public TeleportDataBuilder addPos(Vector3dc add) { worldPos.add(add); return this; }
 
-    public ShipTeleportDataImpl withVel(Vector3dc inVel) { return setVel(inVel).get(); }
     public ShipTeleportDataImpl withPos(Vector3dc inPos) { return setPos(inPos).get(); }
+    public ShipTeleportDataImpl withRot(Quaterniondc inRot) { return setRotation(inRot).get(); }
+    public ShipTeleportDataImpl withScale(double inScale) { return setScale(inScale).get(); }
+    public ShipTeleportDataImpl withVel(Vector3dc inVel) { return setVel(inVel).get(); }
+    public ShipTeleportDataImpl withOmega(Vector3dc inOmega) { return setOmega(inOmega).get(); }
+    public ShipTeleportDataImpl withTransform(ITransformPrimitive inTransform) {
+        return setPos(inTransform.getPosition())
+            .setRotation(inTransform.getRotation())
+            .setScale(inTransform.getScale().x())  //todo 3d scale
+            .get();
+    }
 
     public TeleportDataBuilder defaultRotation() { rotation.set(0, 0, 0, 1); return this; }
 

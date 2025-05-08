@@ -24,6 +24,7 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
 import org.joml.Vector3i;
+import org.joml.Vector3ic;
 import org.joml.primitives.AABBd;
 import org.valkyrienskies.core.api.ships.ServerShip;
 
@@ -91,7 +92,7 @@ public class ImpactFuze extends BlockPlus implements ICollisionTrigger, ISandBox
 
 
     @Override
-    public void appendTriggerInfos(ServerLevel level, Vector3i localPos, BlockState state, SandBoxServerShip ship, List<SandBoxTriggerInfo> dest) {
+    public void appendTriggerInfos(ServerLevel level, Vector3ic localPos, BlockState state, SandBoxServerShip ship, List<SandBoxTriggerInfo> dest) {
         if (isTriggered(state)) return;
 
         /*Vector3dc velocity = ship.getRigidbody().getExposedData().getVelocity();
@@ -115,7 +116,7 @@ public class ImpactFuze extends BlockPlus implements ICollisionTrigger, ISandBox
         setTriggered(state, true);
         ship.setBlock(localPos, state.setValue(TRIGGERED, true));*/
 
-        Vector3dc worldPos = ship.getRigidbody().getDataReader().localToWorldPos(localPos);
+        Vector3dc worldPos = ship.getRigidbody().getDataReader().localIToWorldPos(localPos);
         BlockPos blockPos = JomlUtil.bpContaining(worldPos);
         BlockState findState = level.getBlockState(blockPos);
 

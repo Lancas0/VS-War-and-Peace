@@ -1,12 +1,13 @@
 package com.lancas.vs_wap.subproject.sandbox.thread.impl;
 
+import com.lancas.vs_wap.debug.EzDebug;
 import com.lancas.vs_wap.subproject.sandbox.ISandBoxWorld;
 import com.lancas.vs_wap.subproject.sandbox.thread.api.ISandBoxThread;
 
 import java.util.Timer;
 import java.util.TimerTask;
 
-public abstract class TimerBasedThread<TWorld extends ISandBoxWorld> implements ISandBoxThread<TWorld> {
+public abstract class TimerBasedThread<TWorld extends ISandBoxWorld<?>> implements ISandBoxThread<TWorld> {
     protected TWorld world;
     public TWorld getWorld() { return world; }
 

@@ -256,6 +256,14 @@ public class NetworkHandler {
             SendScheduleToClientS2C::handle
         );
 
+        channel.registerMessage(
+            packetId++,
+            ValkyrienBreechLaunchUsePackC2S.class,
+            ValkyrienBreechLaunchUsePackC2S::encode,
+            ValkyrienBreechLaunchUsePackC2S::decode,
+            ValkyrienBreechLaunchUsePackC2S::handle
+        );
+
 
 
     }

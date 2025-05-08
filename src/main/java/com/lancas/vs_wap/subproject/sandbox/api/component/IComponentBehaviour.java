@@ -1,19 +1,19 @@
 package com.lancas.vs_wap.subproject.sandbox.api.component;
 
 import com.lancas.vs_wap.subproject.sandbox.ship.ISandBoxShip;
-import com.lancas.vs_wap.subproject.sandbox.ship.SandBoxServerShip;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.state.BlockState;
 import org.joml.Vector3ic;
 
 public interface IComponentBehaviour<D extends IComponentData<D>> {
     public CompoundTag getSavedData();
-    public void loadData(ISandBoxShip ship, D src);
-    public default void loadDataUnsafe(ISandBoxShip ship, Object src) {
+    public void loadSavedData(ISandBoxShip ship, CompoundTag saved);
+    public void loadData(ISandBoxShip inShip, D dataSrc);
+    /*public default void loadDataUnsafe(ISandBoxShip ship, Object src) {
         loadData(ship, (D)src);
-    }
+    }*/
 
-    public Class<D> getDataType();
+    public Class<?> getDataType();
 
     //todo spread the method around different list like vs?
     //public default void serverTick(ServerLevel level) {}

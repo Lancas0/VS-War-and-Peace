@@ -17,6 +17,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import org.joml.Vector3dc;
 import org.joml.Vector3i;
+import org.joml.Vector3ic;
 
 import java.util.List;
 import java.util.Set;
@@ -64,23 +65,25 @@ public class HeWarhead extends BlockPlus implements ITerminalEffector, ISandBoxB
     }
 
     @Override
-    public void doTerminalEffect(ServerLevel level, SandBoxServerShip ship, Vector3i localPos, BlockState state, SandBoxTriggerInfo info, Dest<Boolean> terminateByEffect) {
-        if (!(info instanceof SandBoxTriggerInfo.ActivateTriggerInfo activateInfo)) return;
-        Vector3dc targetPos = activateInfo.targetPos;
-        level.explode(null, activateInfo.targetPos.x, activateInfo.targetPos.y, activateInfo.targetPos.z, EXPLOSIVE_POWER, Level.ExplosionInteraction.BLOCK);
-        //EzDebug.highlight("explode at pos:" + StrUtil.F2(activateInfo.targetPos));
-        CustomExplosion exp = new CustomExplosion(
-            level,
-            null,
-            targetPos.x(), targetPos.y(), targetPos.z(),
-            ship.getRigidbody().getDataReader().getVelocity(),
-            EXPLOSIVE_POWER,
-            false,
-            Explosion.BlockInteraction.DESTROY
-        );
-        exp.explode();
-        exp.finalizeExplosion(true);
+    public void doTerminalEffect(ServerLevel level, SandBoxServerShip ship, Vector3ic localPos, BlockState state, List<SandBoxTriggerInfo> infos, Dest<Boolean> terminateByEffect) {
+        infos.forEach(info -> {
+            if (!(info instanceof SandBoxTriggerInfo.ActivateTriggerInfo activateInfo)) return;
+            Vector3dc targetPos = activateInfo.targetPos;
+            level.explode(null, activateInfo.targetPos.x, activateInfo.targetPos.y, activateInfo.targetPos.z, EXPLOSIVE_POWER, Level.ExplosionInteraction.BLOCK);
+            //EzDebug.highlight("explode at pos:" + StrUtil.F2(activateInfo.targetPos));
+            CustomExplosion exp = new CustomExplosion(
+                level,
+                null,
+                targetPos.x(), targetPos.y(), targetPos.z(),
+                ship.getRigidbody().getDataReader().getVelocity(),
+                EXPLOSIVE_POWER,
+                false,
+                Explosion.BlockInteraction.DESTROY
+            );
+            exp.explode();
+            exp.finalizeExplosion(true);
 
-        terminateByEffect.set(true);
+            terminateByEffect.set(true);
+        });
     }
 }

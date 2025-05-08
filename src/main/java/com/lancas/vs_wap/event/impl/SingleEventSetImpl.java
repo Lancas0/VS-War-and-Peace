@@ -2,7 +2,7 @@ package com.lancas.vs_wap.event.impl;
 
 import com.lancas.vs_wap.debug.EzDebug;
 import com.lancas.vs_wap.event.api.ISingleEvent;
-import com.lancas.vs_wap.event.listener.SingleRemoveAfterSuccessListener;
+import com.lancas.vs_wap.event.listener.ICancelableListener;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -23,11 +23,15 @@ public class SingleEventSetImpl<T> implements ISingleEvent<T> {
             var listener = listenersIt.next();
 
             listener.accept(t);
-            if (listener instanceof SingleRemoveAfterSuccessListener<T> listenerType1) {
+            /* if (listener instanceof SingleRemoveAfterSuccessListener<T> listenerType1) {
                 if (listenerType1.isSuccess()) {
                     listenersIt.remove();
                     EzDebug.light("successfully remove after success");
                 }
+            }*/
+            if (listener instanceof ICancelableListener cancelable && cancelable.shouldCancel()) {
+                listenersIt.remove();
+                EzDebug.light("successfully remove listener");
             }
         }
     }

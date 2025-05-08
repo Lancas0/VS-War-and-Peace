@@ -1,6 +1,5 @@
 package com.lancas.vs_wap.subproject.sandbox.ship;
 
-import com.lancas.vs_wap.debug.EzDebug;
 import com.lancas.vs_wap.subproject.sandbox.api.component.IClientBehaviour;
 import com.lancas.vs_wap.subproject.sandbox.api.component.IComponentBehaviour;
 import com.lancas.vs_wap.subproject.sandbox.api.component.IComponentData;
@@ -10,7 +9,6 @@ import com.lancas.vs_wap.subproject.sandbox.component.behviour.SandBoxRigidbody;
 import com.lancas.vs_wap.subproject.sandbox.component.behviour.SandBoxShipBlockCluster;
 import com.lancas.vs_wap.subproject.sandbox.component.data.BlockClusterData;
 import com.lancas.vs_wap.subproject.sandbox.component.data.RigidbodyData;
-import com.lancas.vs_wap.util.StrUtil;
 import net.minecraft.client.multiplayer.ClientLevel;
 import org.joml.primitives.AABBd;
 import org.joml.primitives.AABBdc;
@@ -23,7 +21,7 @@ import java.util.stream.Stream;
 
 //note that client ship will not be saved
 //todo extract a abstract ship from serverShip and clientShip
-public class SandBoxClientShip implements ISandBoxShip {
+public class SandBoxClientShip implements IClientSandBoxShip {
     private UUID uuid;
     private final SandBoxRigidbody rigidbody = new SandBoxRigidbody();
     private final SandBoxShipBlockCluster blockCluster = new SandBoxShipBlockCluster();
@@ -44,7 +42,7 @@ public class SandBoxClientShip implements ISandBoxShip {
 
     private final AtomicInteger remainLifeTick = new AtomicInteger(-1);  //todo make it a tick destory. -1 for no destroy, 0 for should, >0 for ticking down
 
-    @Override
+    /*@Override
     public int getRemainLifeTick() { return remainLifeTick.get(); }
     @Override
     public void setRemainLifeTick(int tick) { remainLifeTick.set(tick); }
@@ -55,7 +53,7 @@ public class SandBoxClientShip implements ISandBoxShip {
             return x;  //0 or -1
         }) == 0;
     }
-    public boolean isTimeOut() { return remainLifeTick.get() == 0; }
+    public boolean isTimeOut() { return remainLifeTick.get() == 0; }*/
 
     /*
     public void setPosition(Vector3dc pos)    {
@@ -126,7 +124,7 @@ public class SandBoxClientShip implements ISandBoxShip {
             behaviours.add(behaviour);
     }
     @Override
-    public Stream<IComponentBehaviour> allAddedBehaviours() {
+    public Stream<IComponentBehaviour<?>> allAddedBehaviours() {
         //return () -> behaviours.stream().map(b -> (IComponentBehaviour)b).iterator();
         return behaviours.stream().map(b -> b);
     }
@@ -203,10 +201,12 @@ public class SandBoxClientShip implements ISandBoxShip {
     public ITransformPrimitive getCurrentTransform() { return curTransform; }
 
 
+    @Override
     public void clientTick(ClientLevel level) {
         rigidbody.clientTick(level);
         behaviours.forEach(b -> b.clientTick(level));
     }
+    @Override
     public void physTick() {
         //EzDebug.log("client phys tick, uuid:" + uuid + ", pos:" + StrUtil.F2(rigidbody.getDataReader().getPosition()));
         rigidbody.physTick();

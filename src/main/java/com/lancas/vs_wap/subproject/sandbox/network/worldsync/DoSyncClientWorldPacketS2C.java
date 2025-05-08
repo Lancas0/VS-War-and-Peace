@@ -15,27 +15,32 @@ import java.util.function.Supplier;
 public class DoSyncClientWorldPacketS2C {
     private final String levelName;
     private final List<CompoundTag> savedClientShips;
+    private final UUID wrappedGroundShipUuid;
 
-    public DoSyncClientWorldPacketS2C(String inLevelName, List<SandBoxServerShip> allSyncingShips) {
+    public DoSyncClientWorldPacketS2C(String inLevelName, List<SandBoxServerShip> allSyncingShips, UUID inWrappedGroundShipUuid) {
         levelName = inLevelName;
         savedClientShips = new ArrayList<>();
         allSyncingShips.forEach(s -> {
             CompoundTag saved = NetSerializeUtil.serializeShipForSendToClient(s);
             savedClientShips.add(saved);
         });
+        wrappedGroundShipUuid = inWrappedGroundShipUuid;
     }
-    private DoSyncClientWorldPacketS2C(List<CompoundTag> allNetworkNbt, String inLevelName) {
+    private DoSyncClientWorldPacketS2C(List<CompoundTag> allNetworkNbt, UUID inWrappedGroundShipUuid, String inLevelName) {
         levelName = inLevelName;
         savedClientShips = allNetworkNbt;
+        wrappedGroundShipUuid = inWrappedGroundShipUuid;
     }
 
     public void encode(FriendlyByteBuf buffer) {
         buffer.writeCollection(savedClientShips, FriendlyByteBuf::writeNbt);
+        buffer.writeUUID(wrappedGroundShipUuid);
         buffer.writeUtf(levelName);
     }
     public static DoSyncClientWorldPacketS2C decode(FriendlyByteBuf buffer) {
         return new DoSyncClientWorldPacketS2C(
             buffer.readCollection(size -> new ArrayList<>(), FriendlyByteBuf::readNbt),
+            buffer.readUUID(),
             buffer.readUtf()
         );
     }
@@ -55,7 +60,7 @@ public class DoSyncClientWorldPacketS2C {
                 clientShips.add(NetSerializeUtil.deserializeAsClientShip(nbt));
             }
 
-            clientWorld.reloadLevel(levelName, clientShips);
+            clientWorld.reloadLevel(levelName, clientShips, wrappedGroundShipUuid);
         });
         ctx.get().setPacketHandled(true);
     }

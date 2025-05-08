@@ -4,7 +4,7 @@ import com.lancas.vs_wap.debug.EzDebug;
 import com.lancas.vs_wap.foundation.network.NetworkHandler;
 import com.lancas.vs_wap.sandbox.schedule.ClientShardShipScheduler;
 import com.lancas.vs_wap.subproject.sandbox.network.send.SendScheduleToClientS2C;
-import com.lancas.vs_wap.subproject.sandbox.thread.client.SandBoxClientThread;
+import com.lancas.vs_wap.subproject.sandbox.thread.impl.client.SandBoxClientThread;
 import com.lancas.vs_wap.util.JomlUtil;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.Util;

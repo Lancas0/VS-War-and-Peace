@@ -4,6 +4,7 @@ import com.lancas.vs_wap.debug.EzDebug;
 import com.lancas.vs_wap.event.api.IBiEvent;
 import com.lancas.vs_wap.event.api.ITriEvent;
 import com.lancas.vs_wap.event.listener.BiRemoveAfterSuccessListener;
+import com.lancas.vs_wap.event.listener.ICancelableListener;
 import com.lancas.vs_wap.event.listener.TriRemoveAfterSuccessListener;
 import org.apache.logging.log4j.util.TriConsumer;
 import org.jetbrains.annotations.NotNull;
@@ -31,13 +32,24 @@ public class BiEventImpl<T, U> implements IBiEvent<T, U> {
                 continue;
             }
 
+            boolean removed = false;
+
             listener.accept(t, u);
             if (listener instanceof BiRemoveAfterSuccessListener<T, U> listenerType1) {
-                if (listenerType1.isSuccess()) {
+                if (listenerType1.isSuccess() && !removed) {
+                    removed = true;
                     listenersIt.remove();
                     EzDebug.light("successfully remove after success");
                 }
             }
+            if (listener instanceof ICancelableListener cancelable) {
+                if (cancelable.shouldCancel() && !removed) {
+                    removed = true;
+                    listenersIt.remove();
+                    EzDebug.light("successfully remove listener");
+                }
+            }
+
         }
     }
 

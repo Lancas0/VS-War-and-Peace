@@ -6,6 +6,8 @@ import com.lancas.vs_wap.subproject.sandbox.ship.ISandBoxShip;
 import com.lancas.vs_wap.subproject.sandbox.ship.SandBoxServerShip;
 import com.lancas.vs_wap.util.NbtBuilder;
 import net.minecraft.nbt.CompoundTag;
+import org.joml.Vector3d;
+import org.joml.Vector3dc;
 
 public class BallisticData implements IComponentData<BallisticData>, IComponentDataReader<BallisticData> {
     public static final double TIME_OUT_SECONDS = 60;
@@ -61,4 +63,6 @@ public class BallisticData implements IComponentData<BallisticData>, IComponentD
             .readBooleanDo("terminated", v -> terminated = v);
         return this;
     }
+
+
 }

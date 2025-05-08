@@ -1,9 +1,6 @@
 package com.lancas.vs_wap.content;
 
-import com.lancas.vs_wap.content.block.blockentity.ActivatorBlockEntity;
-import com.lancas.vs_wap.content.block.blockentity.ApWarheadBlockEntity;
-import com.lancas.vs_wap.content.block.blockentity.ScopeBE;
-import com.lancas.vs_wap.content.block.blockentity.VSProjectorBE;
+import com.lancas.vs_wap.content.block.blockentity.*;
 import com.tterrag.registrate.util.entry.BlockEntityEntry;
 
 import static com.lancas.vs_wap.ModMain.REGISTRATE;
@@ -35,6 +32,11 @@ public class WapBlockEntites {
 
     public static final BlockEntityEntry<ActivatorBlockEntity> ACTIVATOR_BE = REGISTRATE
         .blockEntity("activator_be", ActivatorBlockEntity::new)
+        .validBlocks(ACTIVATOR)
+        .register();
+
+    public static final BlockEntityEntry<ValkyrienBreechBE> VALKYRIEN_BREECH_BE = REGISTRATE
+        .blockEntity("valkyrien_be", ValkyrienBreechBE::new)
         .validBlocks(ACTIVATOR)
         .register();
 

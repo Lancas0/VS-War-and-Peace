@@ -32,16 +32,6 @@ public class BluntApWarhead extends AbstractApWarhead {
     public CollisionDetectMethod getCollisionMethod(BlockState state) {
         return CollisionDetectMethod.NearestFirstUnlimited(0.15, 0.2);
     }*/
-
-    @Override
-    public Iterable<IBlockAdder> getAdders() {
-        return BlockPlus.addersIfAbsent(
-            BluntApWarhead.class,
-            () -> List.of(
-                new DefaultCartridgeAdder()
-            )
-        );
-    }
 }
 /*
 public class ApWarhead extends BlockPlus implements ICollisionTrigger, ITerminalEffector, IBE<ApWarheadBlockEntity>/.* ICollisionDetector*./ {

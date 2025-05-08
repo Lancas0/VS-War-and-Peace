@@ -49,6 +49,7 @@ public class ConstraintsMgr extends SavedData {
     }*/
 
     //no iterate or manual sync when interating
+
     private final Map<String, SavedConstraint> addingConstraints = new ConcurrentHashMap<>();
     private final Map<String, SavedConstraint> constraintsInLevel = new ConcurrentHashMap<>();
 
@@ -57,6 +58,7 @@ public class ConstraintsMgr extends SavedData {
 
     public ConstraintsMgr(ServerLevel inSLevel) {
         serverLevel = inSLevel;
+        EventMgr.Server.onVsShipUnloaded.addListener(this::removeAllConstraintWithImpl);
     }
 
     @Override

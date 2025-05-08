@@ -25,5 +25,9 @@ public interface ITransformPrimitive {
         );
     }
 
+    public default Matrix4d makeWorldToLocal(Matrix4d dest) {
+        return dest.translationRotateScaleInvert(getPosition(), getRotation(), getScale());
+    }
+
     public ITransformPrimitive lerp(ITransformPrimitive target, double t, TransformPrimitive dest);
 }

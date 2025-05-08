@@ -22,6 +22,8 @@ public class EventMgr {
         public static final HoldShipEvent holdShipEvent = new HoldShipEvent();
         public static final SingleEventImpl<TickEvent.ServerTickEvent> serverEndTickEvent = new SingleEventImpl<>();
         public static final SingleEventImpl<TickEvent.ServerTickEvent> serverStartTickEvent = new SingleEventImpl<>();
+
+        public static final SingleEventImpl<Long> onVsShipUnloaded = new SingleEventImpl<>();
     }
 
 

@@ -1,7 +1,7 @@
 package com.lancas.vs_wap.content.block.blocks.industry;
 
 import com.lancas.vs_wap.content.block.blockentity.VSProjectorBE;
-import com.lancas.vs_wap.content.items.GreenPrint;
+import com.lancas.vs_wap.content.item.items.GreenPrint;
 import com.lancas.vs_wap.debug.EzDebug;
 import com.lancas.vs_wap.subproject.blockplusapi.blockplus.BlockPlus;
 import com.lancas.vs_wap.subproject.blockplusapi.blockplus.adder.AnalogSignalAdder;

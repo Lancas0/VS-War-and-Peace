@@ -2,9 +2,15 @@ package com.lancas.vs_wap.content.block.blocks.cartridge.warhead;
 
 //import com.lancas.einherjar.content.blockentity.ApWarheadBE;
 import com.lancas.vs_wap.content.block.blocks.blockplus.DefaultCartridgeAdder;
+import com.lancas.vs_wap.foundation.api.Dest;
+import com.lancas.vs_wap.sandbox.ballistics.ISandBoxBallisticBlock;
+import com.lancas.vs_wap.sandbox.ballistics.trigger.SandBoxTriggerInfo;
 import com.lancas.vs_wap.subproject.blockplusapi.blockplus.BlockPlus;
 import com.lancas.vs_wap.subproject.blockplusapi.blockplus.adder.IBlockAdder;
+import com.lancas.vs_wap.subproject.sandbox.ship.SandBoxServerShip;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.state.BlockState;
+import org.joml.Vector3i;
 import org.joml.primitives.AABBd;
 
 import java.util.List;
@@ -32,16 +38,14 @@ public class ApCoreWarhead extends AbstractApWarhead {
         return CollisionDetectMethod.NearestFirstUnlimited(0.2, 0.2);
     }*/
 
-    @Override
-    public Iterable<IBlockAdder> getAdders() {
-        return BlockPlus.addersIfAbsent(
-            ApCoreWarhead.class,
-            () -> List.of(
-                new DefaultCartridgeAdder()
-            )
-        );
-    }
+
+
 }
+
+
+
+
+
 /*
 public class ApWarhead extends BlockPlus implements ICollisionTrigger, ITerminalEffector, IBE<ApWarheadBlockEntity>/.* ICollisionDetector*./ {
     public static final Random randomSrc = new Random();
