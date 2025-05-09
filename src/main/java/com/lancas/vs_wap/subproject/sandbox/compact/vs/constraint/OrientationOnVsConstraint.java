@@ -29,7 +29,8 @@ public class OrientationOnVsConstraint extends AbstractSaOnVsConstraint {
 
         ISandBoxShip saShip = getSaShip(world);
         if (saShip == null) {
-            EzDebug.warn("[OrientationOnVsConstraint]can't get sa ship");
+            EzDebug.warn("[OrientationOnVsConstraint]can't get sa ship, will remove this constraint");
+            world.getConstraintSolver().markConstraintRemoved(this.selfUuid);
             return;
         }
 

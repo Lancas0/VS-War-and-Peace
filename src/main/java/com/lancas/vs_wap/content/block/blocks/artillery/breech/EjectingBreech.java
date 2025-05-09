@@ -305,7 +305,8 @@ public class EjectingBreech extends BlockPlus implements IBreech, IBarrel/*, IBE
             SandBoxServerWorld.addShipAndSyncClient(level, ship);
 
             //set primer triggered
-            primer.setAsTriggered(level, primerPos, primerState);
+            level.setBlockAndUpdate(primerPos, primer.getTriggeredState(primerState));
+            //todo remove constraints?
 
 
             /*@Nullable ServerShip artilleryShip = ShipUtil.getServerShipAt(level, breechPos);

@@ -24,7 +24,7 @@ public class SandBoxServerThread implements ISandBoxThread<SandBoxServerWorld> {
 
 
     private final Consumer<ServerLevel> serverTickWork = level -> {
-        world.allShipsIncludeVs().forEach(s -> {
+        world.allServerShips().forEach(s -> {
             /*if (s.tickDownTimeOut()) {
                 world.markShipDeleted(s.getUuid());
                 return;
@@ -33,13 +33,13 @@ public class SandBoxServerThread implements ISandBoxThread<SandBoxServerWorld> {
             s.serverTick(level);
 
             //todo move it to sync thread
-            if (!(s instanceof SandBoxServerShip)) return;  //don't try to sync vs wrapped or ground(ground is not contained in allShipsInculdeVs, for safe)
+            /*if (!(s instanceof SandBoxServerShip)) return;  //don't try to sync vs wrapped or ground(ground is not contained in allShipsInculdeVs, for safe)
             onServerShipTransformDirty.schedule(
                 s.getUuid(),
                 new UUIDLazyParamWrapper(s.getUuid()),
                 new TransformPrimitive(s.getRigidbody().getDataReader().getTransform())//,
                 //new AABBdLazyParamWrapper(s.getLocalAABB())
-            );
+            );*/
             scheduleExecutor.doScheduleAll(this);
         });
     };

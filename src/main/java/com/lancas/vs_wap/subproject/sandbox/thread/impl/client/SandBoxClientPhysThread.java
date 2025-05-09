@@ -23,7 +23,7 @@ public class SandBoxClientPhysThread extends TimerBasedThread<SandBoxClientWorld
                     //EzDebug.light("server world phys thread running");
                     //if (s.isTimeOut()) return;  //deleting ship is in server thread
                     world.getConstraintSolver().solve();
-                    world.allShipsIncludeVs().forEach(IClientSandBoxShip::physTick);
+                    world.allClientShips().forEach(IClientSandBoxShip::physTick);
                 } catch (Exception e) {
                     EzDebug.error("client phys thread failed.");
                     e.printStackTrace();

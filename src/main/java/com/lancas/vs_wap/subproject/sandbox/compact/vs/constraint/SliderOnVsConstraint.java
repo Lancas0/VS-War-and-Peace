@@ -64,8 +64,9 @@ public class SliderOnVsConstraint extends AbstractSaOnVsConstraint implements IS
         ISandBoxShip saShip = getSaShip(world);
         if (saShip == null) {
             //EzDebug.log("shipA uuid:" +  bodyAuuid + ", world ground:" + world.warpOrGetGround().getUuid());
-            EzDebug.warn("can't find constrainted sa ship");
-            return;  //todo remove the constraint
+            EzDebug.warn("can't find constrainted sa ship, will remove this constraint");
+            world.getConstraintSolver().markConstraintRemoved(this.selfUuid);
+            return;
         }
 
         if (saShip.getRigidbody().getDataReader().isStatic()) return;  //no need to apply constraint

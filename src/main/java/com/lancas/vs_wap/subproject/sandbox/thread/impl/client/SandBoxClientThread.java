@@ -24,7 +24,7 @@ public class SandBoxClientThread implements ISandBoxThread<SandBoxClientWorld>, 
 
     private final Consumer<ClientLevel> clientTickWork = level -> {
         world.getConstraintSolver().tick();
-        world.allShipsIncludeVs().forEach(s -> s.clientTick(level));
+        world.allClientShips().forEach(s -> s.clientTick(level));
         scheduleExecutor.doScheduleAll(this);
         //var shipsIt = world.allShips().iterator();
         //while (shipsIt.hasNext()) {

@@ -15,11 +15,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 public class SandBoxConstraintSolver implements ISavedObject<SandBoxConstraintSolver> {
     public static ObjectMapper constraintMapper = new ObjectMapper();
@@ -85,10 +81,10 @@ public class SandBoxConstraintSolver implements ISavedObject<SandBoxConstraintSo
     }
 
     public void solve() {
-        constraints.removeFlushedValues().parallel().forEach(c -> c.project(world));
+        constraints.values().parallel().forEach(c -> c.project(world));
     }
     public void tick() {
-        constraints.removeFlushedValues().forEach(c -> c.tick(world.getMcLevel(), this));
+        constraints.values().forEach(c -> c.tick(world.getMcLevel(), this));
     }
 
     /*private void flushRemove() {

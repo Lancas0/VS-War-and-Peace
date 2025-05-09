@@ -10,6 +10,7 @@ import com.lancas.vs_wap.ship.data.RRWChunkyShipSchemeData;
 import com.lancas.vs_wap.ship.helper.builder.ShipBuilder;
 import com.lancas.vs_wap.ship.feature.pool.ShipPool;
 import com.lancas.vs_wap.renderer.DockerItemRenderer;
+import com.lancas.vs_wap.subproject.sandbox.ship.ISandBoxShip;
 import com.lancas.vs_wap.util.JomlUtil;
 import com.lancas.vs_wap.util.NbtUtil;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
@@ -38,10 +39,21 @@ public class ShipDataDocker extends ShipInteractableItem implements IDocker {
     }
 
 
-    public static ItemStack stackOf(ServerLevel level, ServerShip ship) {
+    public static ItemStack stackOfVs(ServerLevel level, ServerShip ship) {
         ItemStack stack = WapItems.Docker.SHIP_DATA_DOCKER.asStack();
         ShipDataDocker docker = (ShipDataDocker)stack.getItem();
         return docker.saveShip(level, ship, stack);
+    }
+    public static ItemStack stackOfSa(ServerLevel level, ISandBoxShip ship) {
+        ItemStack stack = WapItems.Docker.SHIP_DATA_DOCKER.asStack();
+        //ShipDataDocker docker = (ShipDataDocker)stack.getItem();
+        RRWChunkyShipSchemeData data = new RRWChunkyShipSchemeData();
+        ship.getBlockCluster().getDataReader().allBlocks().forEach(e -> {
+            data.setBlockAtLocalBp(JomlUtil.bp(e.getKey()), e.getValue(), null);  //todo now can't save be if use sa ship
+        });
+        stack.getOrCreateTag().put("ship_data", data.saved());
+        //todo now can't save att if use sa ship
+        return stack;
     }
 
     @Nullable

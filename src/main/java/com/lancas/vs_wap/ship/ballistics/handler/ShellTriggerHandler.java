@@ -127,7 +127,8 @@ public class ShellTriggerHandler {
 
         //只要开始trigger了，就一定需要设置triggered为true
         //相当于就算子弹哑火，底火也不能再用了
-        primer.setAsTriggered(level, primerBp, primerState);
+        level.setBlockAndUpdate(primerBp, primer.getTriggeredState(primerState));
+        //todo remove constraints?
 
         Dest<BlockPos> propellantEndBpDest = new Dest<>();
         getPropellantData(level, primerBp, true, totalEnergyDest, propellantEndBpDest);

@@ -2,6 +2,7 @@ package com.lancas.vs_wap.subproject.sandbox;
 
 import com.lancas.vs_wap.debug.EzDebug;
 import com.lancas.vs_wap.event.impl.SingleEventSetImpl;
+import com.lancas.vs_wap.foundation.AlwaysSafeRemoveMap;
 import com.lancas.vs_wap.subproject.sandbox.compact.mc.GroundShipWrapped;
 import com.lancas.vs_wap.subproject.sandbox.compact.vs.VsShipsCompactor;
 import com.lancas.vs_wap.subproject.sandbox.compact.vs.WrappedVsShip;
@@ -60,11 +61,14 @@ public class SandBoxClientWorld implements ISandBoxWorld<IClientSandBoxShip> {
 
     private boolean running = false;
     private String curLevelName;  //not actually player level, the unupdated level with all current ship data
-    private final Map<UUID, SandBoxClientShip> clientShips = new ConcurrentHashMap<>();
+
+    private final AlwaysSafeRemoveMap<UUID, SandBoxClientShip> clientShips = new AlwaysSafeRemoveMap<>();
+
+    //private final Map<UUID, SandBoxClientShip> clientShips = new ConcurrentHashMap<>();
     //private final Map<UUID, WrappedVsShip> wrappedVsShips = new ConcurrentHashMap<>();
-    private final VsShipsCompactor vsShipsCompactor = new VsShipsCompactor();
+    //private final VsShipsCompactor vsShipsCompactor = new VsShipsCompactor();
     private GroundShipWrapped wrappedGroundShip;
-    private final Set<UUID> toDeleteShips = ConcurrentHashMap.newKeySet();
+    //private final Set<UUID> toDeleteShips = ConcurrentHashMap.newKeySet();
 
     private final SandBoxConstraintSolver constraintSolver = new SandBoxConstraintSolver(this);
     //private final Map<UUID, ScheduleShipData> scheduleShips = new ConcurrentHashMap<>();
@@ -72,7 +76,7 @@ public class SandBoxClientWorld implements ISandBoxWorld<IClientSandBoxShip> {
     public void reloadLevel(String levelName, Iterable<SandBoxClientShip> syncingClientShips, UUID wrappedGroundShipUuid/*Map<UUID, CompoundTag> savedRenders*/) {
         curLevelName = levelName;
 
-        vsShipsCompactor.clear();
+        //vsShipsCompactor.clear();
         wrappedGroundShip = new GroundShipWrapped(wrappedGroundShipUuid);
 
         clientShips.clear();
@@ -90,11 +94,11 @@ public class SandBoxClientWorld implements ISandBoxWorld<IClientSandBoxShip> {
 
     @Nullable
     public SandBoxClientShip getClientShip(UUID uuid) {
-        if (toDeleteShips.contains(uuid)) {
+        /*if (toDeleteShips.contains(uuid)) {
             toDeleteShips.remove(uuid);
             clientShips.remove(uuid);
             return null;
-        }
+        }*/
 
         return clientShips.get(uuid);
     }
@@ -108,6 +112,7 @@ public class SandBoxClientWorld implements ISandBoxWorld<IClientSandBoxShip> {
         }
 
         //由于是并发环境，还是需要putIfAbsent
+        //clientShips.putIfAbsent(ship.getUuid(), ship);
         clientShips.putIfAbsent(ship.getUuid(), ship);
     }
     public void markShipDeleted(UUID uuid) {
@@ -117,8 +122,7 @@ public class SandBoxClientWorld implements ISandBoxWorld<IClientSandBoxShip> {
             return;
         }
 
-        //todo event?
-        toDeleteShips.add(uuid);
+        clientShips.markKeyRemoved(uuid);
         SandBoxEventMgr.onRemoveShip.invokeAll(this, ship);
     }
 
@@ -251,7 +255,7 @@ public class SandBoxClientWorld implements ISandBoxWorld<IClientSandBoxShip> {
 
     @Override
     public IClientSandBoxShip getShip(UUID uuid) {
-        if (!toDeleteShips.isEmpty()) {
+        /*if (!toDeleteShips.isEmpty()) {
             var toDeleteShipsIt = toDeleteShips.iterator();
             while (toDeleteShipsIt.hasNext()) {
                 UUID toDelete = toDeleteShipsIt.next();
@@ -259,10 +263,10 @@ public class SandBoxClientWorld implements ISandBoxWorld<IClientSandBoxShip> {
                 clientShips.remove(toDelete);
                 vsShipsCompactor.remove(toDelete);
             }
-        }
+        }*/
         return clientShips.get(uuid);
     }
-    @Override
+    /*@Override
     public IClientSandBoxShip getShipIncludeVS(UUID uuid) {
         IClientSandBoxShip ship = clientShips.get(uuid);
         return ship == null ? vsShipsCompactor.getWrappedVsShip(uuid) : ship;
@@ -277,7 +281,7 @@ public class SandBoxClientWorld implements ISandBoxWorld<IClientSandBoxShip> {
     @Override
     public WrappedVsShip wrapOrGetVs(Ship vsShip) {
         return vsShipsCompactor.wrapOrGet(vsShip);
-    }
+    }*/
     @Override
     public GroundShipWrapped wrapOrGetGround() {
         return wrappedGroundShip;
@@ -286,15 +290,24 @@ public class SandBoxClientWorld implements ISandBoxWorld<IClientSandBoxShip> {
     @Override
     public Stream<IClientSandBoxShip> allShips() { return allClientShips().map(s -> s); }
 
-    @Override
+    /*@Override
     public Stream<IClientSandBoxShip> allShipsIncludeVs() {
         Stream<IClientSandBoxShip> sandBoxShips = allShips();
         return Stream.concat(sandBoxShips, vsShipsCompactor.allWrapped());
+    }*/
+
+    @Override
+    public void markAllDeleted() {
+        //clientShips.markRemoveIf((k, v) -> true);
+        clientShips.markRemoveIf((uuid, ship) -> {
+            SandBoxEventMgr.onRemoveShip.invokeAll(this, ship);
+            return true;
+        });
     }
 
     //use stream to prevent delete operation outside
     public Stream<SandBoxClientShip> allClientShips() {
-        if (!toDeleteShips.isEmpty()) {
+        /*if (!toDeleteShips.isEmpty()) {
             var toDeleteShipsIt = toDeleteShips.iterator();
             while (toDeleteShipsIt.hasNext()) {
                 UUID toDelete = toDeleteShipsIt.next();
@@ -302,7 +315,7 @@ public class SandBoxClientWorld implements ISandBoxWorld<IClientSandBoxShip> {
                 clientShips.remove(toDelete);
                 vsShipsCompactor.remove(toDelete);
             }
-        }
-        return clientShips.values().stream();
+        }*/
+        return clientShips.values();
     }
 }

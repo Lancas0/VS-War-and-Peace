@@ -9,7 +9,6 @@ import com.lancas.vs_wap.content.saved.BlockRecordRWMgr;
 import com.lancas.vs_wap.content.saved.IBlockRecord;
 import com.lancas.vs_wap.debug.EzDebug;
 import com.lancas.vs_wap.foundation.BiTuple;
-import com.lancas.vs_wap.foundation.QuadTuple;
 import com.lancas.vs_wap.foundation.TriTuple;
 import com.lancas.vs_wap.foundation.api.Dest;
 import com.lancas.vs_wap.ship.attachment.HoldableAttachment;
@@ -41,6 +40,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
@@ -143,8 +143,14 @@ public interface IBreech {
             }
             saWorld.getConstraintSolver().addConstraint(oriConstraint);
 
-            for (var loadedShipData : loadedShipData) {
-                ISliderConstraint curSliderConstraint = saWorld.getConstraintSolver().getConstraint(loadedShipData.getSecond());
+            for (int i = loadedShipData.size() - 1; i >= 0; --i) {
+                ISliderConstraint curSliderConstraint = saWorld.getConstraintSolver().getConstraint(loadedShipData.get(i).getSecond());
+                if (curSliderConstraint == null) {
+                    EzDebug.warn("the constraint is null, may the ship is already removed, will remove this loaded ship");
+                    loadedShipData.remove(i);
+                    continue;
+                }
+
                 curSliderConstraint.addFixedDistance(loadingLen);
                 EzDebug.warn("add loading len:" + loadingLen);
             }
@@ -353,7 +359,7 @@ public interface IBreech {
         };
     }
 
-    public static boolean foreachMunition(ServerLevel level, BlockPos breechBp, Vector3ic projectileAppendDir, Dest<Double> totPropellingEngDest, BlockClusterData projectileBlockData) {
+    public static boolean foreachMunition(ServerLevel level, BlockPos breechBp, Vector3ic projectileAppendDir, boolean simulate, Dest<Double> totPropellingEngDest, BlockClusterData projectileBlockData) {
         BreechRecord record = BlockRecordRWMgr.getRecord(level, breechBp);
         if (record == null) {
             EzDebug.warn("can't get record at " + breechBp.toShortString());
@@ -367,6 +373,7 @@ public interface IBreech {
         Vector3i curProjectileAppendLocalPos = new Vector3i();
         boolean first = true;
         Stream<BiTuple<Vector3ic, BlockState>> munitionStream = Stream.empty();
+        var loadedShipData = record.loadedShipData;
 
         for (int i = record.loadedShipData.size() - 1; i >= 0; --i) {
             var curData = record.loadedShipData.get(i);
@@ -374,23 +381,30 @@ public interface IBreech {
             UUID shipUuid = shipData.getFirst();
             ISandBoxShip ship = saWorld.getShip(shipUuid);
             if (ship == null) {
-                EzDebug.error("there is a null ship inside breech");
-                return false;
+                EzDebug.warn("there is a null ship inside breech, maybe removed by commands");
+                loadedShipData.remove(i);
+                continue;
             }
+
             IBlockClusterDataReader curShipBlockData = ship.getBlockCluster().getDataReader();
 
             Vector3ic curDir = shipData.getSecond();
             Vector3i curLocalPos = new Vector3i();
 
             if (first) {
-                if (!(curShipBlockData.getBlockState(new Vector3i()).getBlock() instanceof IPrimer)) {
+                BlockState primerState = curShipBlockData.getBlockState(new Vector3i());
+                if (!(primerState.getBlock() instanceof IPrimer primer)) {
                     //there is no primer
                     EzDebug.warn("fail to foreach because munition has no primer");
                     return false;
+                }  else {
+                    if (!simulate) {
+                        ship.getBlockCluster().setBlock(new Vector3i(), primer.getTriggeredState(primerState));
+                    }
                 }
+
+                curLocalPos.add(curDir);  //skip first primer if first (first set false at tail of loop)
             }
-            if (first)
-                curLocalPos.add(curDir);  //skip first primer
 
             while (seekPropellants) {
                 BlockState state = curShipBlockData.getBlockState(curLocalPos);
@@ -403,6 +417,9 @@ public interface IBreech {
                 }
 
                 totPropellingEng += propellant.getEnergy(state);
+                if (!simulate) {
+                    ship.getBlockCluster().setBlock(curLocalPos, propellant.getEmptyState(state));
+                }
                 curLocalPos.add(curDir);
             }
             //don't seeking propellants
@@ -416,6 +433,9 @@ public interface IBreech {
 
                     projectileBlockData.setBlock(curProjectileAppendLocalPos, state);
                     curProjectileAppendLocalPos.add(projectileAppendDir);
+                    if (!simulate) {
+                        ship.getBlockCluster().setBlock(curLocalPos, Blocks.AIR.defaultBlockState());
+                    }
                     curLocalPos.add(curDir);
                 }
             }
@@ -423,6 +443,7 @@ public interface IBreech {
             first = false;
         }
         totPropellingEngDest.set(totPropellingEng);
+        if (first) return false;  //didn't iter any ship
         return true;
     }
     public static void clearLoadedMunition(ServerLevel level, BlockPos breechBp) {

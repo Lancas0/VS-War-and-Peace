@@ -186,7 +186,7 @@ public class RapidBreech extends BlockPlus implements IBreech, IBarrel {
     public void unloadShell(ServerLevel level, ServerShip shellShip, Direction shellDirInShip, BlockPos breechBp) {
         Ship artilleryShip = ShipUtil.getShipAt(level, breechBp);
 
-        ItemStack shellStack = ShipDataDocker.stackOf(level, shellShip);
+        ItemStack shellStack = ShipDataDocker.stackOfVs(level, shellShip);
         ShipPool.getOrCreatePool(level).returnShipAndSetEmpty(shellShip, ShipPool.ResetAndSet.farawayAndNoConstraint);
 
         BlockEntity belowEntity = level.getBlockEntity(breechBp.below());

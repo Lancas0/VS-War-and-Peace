@@ -63,14 +63,15 @@ public class SliderConstraint extends AbstractBiConstraint implements ISliderCon
             return;  //todo remove constraint
         }
 
-        ISandBoxShip shipA = world.getShipIncludeVSAndGround(aUuid);
-        ISandBoxShip shipB = world.getShipIncludeVSAndGround(bUuid);
+        ISandBoxShip shipA = world.getShipOrGround(aUuid);
+        ISandBoxShip shipB = world.getShipOrGround(bUuid);
 
         //EzDebug.log("a is ground:" + bodyAuuid.equals(world.wrapOrGetGround().getUuid()) + ", b is ground:" + bodyBuuid.equals(world.wrapOrGetGround().getUuid()));
 
         if (shipA == null || shipB == null) {
             //EzDebug.log("shipA uuid:" +  bodyAuuid + ", world ground:" + world.warpOrGetGround().getUuid());
-            EzDebug.warn("can't find one of or two of constrainted ship, shipA is null?:" + (shipA == null) + ", shipB null?:" + (shipB == null));
+            EzDebug.warn("can't find one of or two of constrainted ship, shipA is null?:" + (shipA == null) + ", shipB null?:" + (shipB == null) + ", will remove this constraint");
+            world.getConstraintSolver().markConstraintRemoved(this.selfUuid);
             return;  //todo remove the constraint
         }
         if (shipB.getRigidbody().getDataReader().isStatic()) return;  //no need to apply constraint

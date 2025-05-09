@@ -26,6 +26,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.*;
 import java.util.function.*;
+import java.util.stream.Stream;
 
 //todo NbtReader, Writer NbtRW
 public class NbtBuilder {
@@ -424,6 +425,12 @@ public class NbtBuilder {
     public NbtBuilder readBooleanDo(String key, Consumer<Boolean> consumer) { consumer.accept(nbt.getBoolean(key)); return this; }
     public Boolean getBoolean(String key) { return nbt.getBoolean(key); }
 
+    public <T> NbtBuilder putStream(String key, Stream<T> stream, Function<T, Tag> nbtCreator) {
+        ListTag listTag = new ListTag();
+        stream.forEach(x -> listTag.add(nbtCreator.apply(x)));
+        nbt.put(key, listTag);
+        return this;
+    }
     public <T> NbtBuilder putEach(String key, Iterable<T> list, Function<T, Tag> nbtCreator) {
         ListTag listTag = new ListTag();
         for (T item : list) {

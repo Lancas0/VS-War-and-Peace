@@ -18,6 +18,7 @@ import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AddReloadListenerEvent;
+import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -47,10 +48,12 @@ public class ModMain  {
 
     public ModMain() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+        IEventBus forgeBus = Mod.EventBusSubscriber.Bus.FORGE.bus().get();
 
 
         // Register the commonSetup method for modloading
         modEventBus.addListener(this::commonSetup);
+        forgeBus.addListener(this::registerCommands);
 
 
         NetworkHandler.register();
@@ -123,6 +126,18 @@ public class ModMain  {
 
     private void registerResourceManagers(AddReloadListenerEvent event) {
         event.addListener(new DoubleBlockInfoRegister());
+    }
+
+    /*private void registerCommands(RegisterCommandsEvent event) {
+        WapCommands.register(event);
+    }*/
+    private void registerCommands(RegisterCommandsEvent event) {
+        WapCommands.registerServerCommands(event.getDispatcher());
+        /*VSCommands.registerServerCommands(event.dispatcher)
+
+        if (event.commandSelection == ALL || event.commandSelection == INTEGRATED) {
+            VSCommands.registerClientCommands(event.dispatcher)
+        }*/
     }
 
     // You can use EventBusSubscriber to automatically register all static methods in the class annotated with @SubscribeEvent

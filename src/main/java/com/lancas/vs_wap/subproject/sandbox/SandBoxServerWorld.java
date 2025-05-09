@@ -3,6 +3,7 @@ package com.lancas.vs_wap.subproject.sandbox;
 import com.lancas.vs_wap.ModMain;
 import com.lancas.vs_wap.debug.EzDebug;
 import com.lancas.vs_wap.event.impl.SingleEventSetImpl;
+import com.lancas.vs_wap.foundation.AlwaysSafeRemoveMap;
 import com.lancas.vs_wap.subproject.sandbox.compact.mc.GroundShipWrapped;
 import com.lancas.vs_wap.subproject.sandbox.compact.vs.VsShipsCompactor;
 import com.lancas.vs_wap.subproject.sandbox.compact.vs.WrappedVsShip;
@@ -124,12 +125,13 @@ public class SandBoxServerWorld extends SavedData implements ISandBoxWorld<IServ
         );
     }
 
-    private final Map<UUID, SandBoxServerShip> serverShips = new ConcurrentHashMap<>();
-    private final VsShipsCompactor vsShipsCompactor = new VsShipsCompactor();
+    private final AlwaysSafeRemoveMap<UUID, SandBoxServerShip> serverShips = new AlwaysSafeRemoveMap<>();
+    //private final Map<UUID, SandBoxServerShip> serverShips = new ConcurrentHashMap<>();
+    //private final VsShipsCompactor vsShipsCompactor = new VsShipsCompactor();
     private GroundShipWrapped wrappedGroundShip;
 
     //LazyDelete,将会在获取船或者遍历船的时候删除
-    private final Set<UUID> toDeleteShips = ConcurrentHashMap.newKeySet();
+    //private final Set<UUID> toDeleteShips = ConcurrentHashMap.newKeySet();
     //private final Map<UUID, ScheduleShipData> scheduleShips = new ConcurrentHashMap<>();  //map use uuid key avoid add ships with same key
     private final SandBoxConstraintSolver constraintSolver = new SandBoxConstraintSolver(this);
 
@@ -172,7 +174,7 @@ public class SandBoxServerWorld extends SavedData implements ISandBoxWorld<IServ
 
     @Nullable
     public IServerSandBoxShip getShip(UUID uuid) { return getServerShip(uuid); }
-    @Override
+    /*@Override
     public IServerSandBoxShip getShipIncludeVS(UUID uuid) {
         IServerSandBoxShip ship = serverShips.get(uuid);
         return ship == null ? vsShipsCompactor.getWrappedVsShip(uuid) : ship;
@@ -188,7 +190,7 @@ public class SandBoxServerWorld extends SavedData implements ISandBoxWorld<IServ
     public WrappedVsShip wrapOrGetVs(Ship vsShip) {
         //todo setDirty();
         return vsShipsCompactor.wrapOrGet(vsShip);
-    }
+    }*/
     @Override
     public GroundShipWrapped wrapOrGetGround() {
         if (wrappedGroundShip == null) {
@@ -200,11 +202,11 @@ public class SandBoxServerWorld extends SavedData implements ISandBoxWorld<IServ
 
     @Nullable
     public SandBoxServerShip getServerShip(UUID uuid) {
-        if (toDeleteShips.contains(uuid)) {
+        /*if (toDeleteShips.contains(uuid)) {
             serverShips.remove(uuid);
             toDeleteShips.remove(uuid);
             return null;
-        }
+        }*/
 
         return serverShips.get(uuid);
     }
@@ -214,13 +216,20 @@ public class SandBoxServerWorld extends SavedData implements ISandBoxWorld<IServ
     public Stream<IServerSandBoxShip> allShips() {
         return allServerShips().map(s -> s);
     }
+
     @Override
+    public void markAllDeleted() { serverShips.markRemoveIf((uuid, ship) -> {
+        SandBoxEventMgr.onRemoveShip.invokeAll(this, ship);
+        return true;
+    }); }
+
+    /*@Override
     public Stream<IServerSandBoxShip> allShipsIncludeVs() {
         Stream<IServerSandBoxShip> sandBoxShips = allShips();
         return Stream.concat(sandBoxShips, vsShipsCompactor.allWrapped());
-    }
+    }*/
     public Stream<SandBoxServerShip> allServerShips() {
-        if (!toDeleteShips.isEmpty()) {
+        /*if (!toDeleteShips.isEmpty()) {
             var toDeleteShipsIt = toDeleteShips.iterator();
             while (toDeleteShipsIt.hasNext()) {
                 UUID toDeleteUuid = toDeleteShipsIt.next();
@@ -228,8 +237,8 @@ public class SandBoxServerWorld extends SavedData implements ISandBoxWorld<IServ
                 serverShips.remove(toDeleteUuid);
                 vsShipsCompactor.remove(toDeleteUuid);
             }
-        }
-        return serverShips.values().stream();
+        }*/
+        return serverShips.values();
     }
     /*public Map<UUID, CompoundTag> getSavedRenderers() {
         Hashtable<UUID, CompoundTag> allSavedRenderers = new Hashtable<>();
@@ -302,7 +311,7 @@ public class SandBoxServerWorld extends SavedData implements ISandBoxWorld<IServ
         SandBoxServerWorld world = SandBoxServerWorld.getOrCreate(level);
         world.markShipDeleted(shipUuid);
     }
-    public void markShipDeleted(UUID shipUuid) {
+    public void markShipDeleted(UUID uuid) {
         /*SandBoxServerShip removedShip = serverShips.remove(shipUuid);
         if (removedShip != null) {
             SandBoxEventMgr.onRemoveShipFromServerWorld.invokeAll(level, removedShip);
@@ -311,7 +320,7 @@ public class SandBoxServerWorld extends SavedData implements ISandBoxWorld<IServ
         }
 
         return false;*/
-        var toRemoveSandBoxShip = serverShips.get(shipUuid);
+        /*var toRemoveSandBoxShip = serverShips.get(shipUuid);
         if (toRemoveSandBoxShip != null) {
             toDeleteShips.add(shipUuid);
             SandBoxEventMgr.onRemoveShip.invokeAll(this, toRemoveSandBoxShip);
@@ -323,9 +332,15 @@ public class SandBoxServerWorld extends SavedData implements ISandBoxWorld<IServ
             toDeleteShips.add(shipUuid);
             SandBoxEventMgr.onRemoveShip.invokeAll(this, toRemoveVsShip);  //should i invoke the event?
             return;
+        }*/
+        var ship = serverShips.get(uuid);
+        if (ship == null) {
+            EzDebug.warn("the to remove ship don't exist! uuid:" + uuid);
+            return;
         }
 
-        EzDebug.warn("the to remove ship don't exist! uuid:" + shipUuid);
+        serverShips.markKeyRemoved(uuid);
+        SandBoxEventMgr.onRemoveShip.invokeAll(this, ship);
     }
     /*public static void removeAllShip(ServerLevel level) {
         SandBoxServerWorld world = SandBoxServerWorld.getOrCreate(level);
@@ -507,8 +522,8 @@ public class SandBoxServerWorld extends SavedData implements ISandBoxWorld<IServ
         //List<SandBoxServerShip> toSaveShips = serverShips.values().stream().filter(ship -> !ship.isTimeOut()).toList();
         NbtBuilder builder = new NbtBuilder()
             .putCompound("constraint_data", constraintSolver.saved())
-            .putEach("ships", serverShips.values(), ship -> ((SandBoxServerShip)ship).saved(level))
-            .putCompound("vs_compact_ships", vsShipsCompactor.saved());
+            .putStream("ships", serverShips.values(), ship -> ship.saved(level));
+            //.putCompound("vs_compact_ships", vsShipsCompactor.saved());
             //.putEach("schedule_ships", scheduleShips.values(), scheduleShip -> scheduleShip.saved(level));
 
         if (wrappedGroundShip != null) {
@@ -518,13 +533,16 @@ public class SandBoxServerWorld extends SavedData implements ISandBoxWorld<IServ
         return builder.get();
     }
     public SandBoxServerWorld load(CompoundTag tag) {
-        List<SandBoxServerShip> loadedShips = new ArrayList<>();
+        //List<SandBoxServerShip> loadedShips = new ArrayList<>();
         //List<ScheduleShipData> schedulingShips = new ArrayList<>();
         try {
             NbtBuilder builder = NbtBuilder.modify(tag)
                 .readCompoundDo("constraint_data", constraintSolver::load)
-                .readEachCompound("ships", t -> new SandBoxServerShip(level, t), loadedShips)
-                .readCompoundDo("vs_compact_ships", vsShipsCompactor::load);
+                .readEachCompoundDo("ships", t -> {
+                    SandBoxServerShip ship = new SandBoxServerShip(level, t);
+                    serverShips.put(ship.getUuid(), ship);
+                });
+                //.readCompoundDo("vs_compact_ships", vsShipsCompactor::load);
                 //.readEachCompound("schedule_ships", t -> ScheduleShipData.getServerBySavedData(level, t), schedulingShips);
 
             if (builder.contains("ground_ship"))
@@ -551,7 +569,7 @@ public class SandBoxServerWorld extends SavedData implements ISandBoxWorld<IServ
             e.printStackTrace();
         }
 
-        serverShips.clear();
+        /*serverShips.clear();
         for (var ship : loadedShips)
             serverShips.put(ship.getUuid(), ship);
 

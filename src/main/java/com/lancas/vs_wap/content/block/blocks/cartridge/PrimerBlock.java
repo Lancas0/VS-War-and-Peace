@@ -108,9 +108,10 @@ public class PrimerBlock extends BlockPlus implements IPrimer/*, IBE<PrimerBE>*/
         return state.getValue(TRIGGERED);
     }
     @Override
-    public void setAsTriggered(ServerLevel level, BlockPos pos, BlockState state) {
-        level.setBlockAndUpdate(pos, state.setValue(TRIGGERED, true));
-        removeConstraint(level, pos);
+    public BlockState getTriggeredState(BlockState prevState) {
+        //level.setBlockAndUpdate(pos, prevState.setValue(TRIGGERED, true));
+        //removeConstraint(level, pos);
+        return prevState.setValue(TRIGGERED, true);
     }
 
     public static void createConstraints(ServerLevel level, BlockPos primerBp, @Nullable ServerShip artilleryShip, ServerShip munitionShip, BlockPos breechPos/*, Direction primerDir, double primerShapeLen*/, Direction breechDirInShipOrWorld, HoldableAttachment munitionHoldable) {

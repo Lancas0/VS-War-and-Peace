@@ -112,15 +112,6 @@ public class DockerItemRenderer extends BlockEntityWithoutLevelRenderer {
 
             poseStack.popPose();
         });
-        /*Minecraft.getInstance().getBlockRenderer().renderSingleBlock(
-            Blocks.DIRT.defaultBlockState(),
-            poseStack,
-            buffer,
-            packedLight,
-            OverlayTexture.NO_OVERLAY
-        );*/
-
-        //EzDebug.log()
 
         poseStack.popPose();
     }
