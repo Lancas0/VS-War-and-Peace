@@ -6,6 +6,7 @@ import com.lancas.vs_wap.ship.feature.hold.ICanHoldShip;
 import com.lancas.vs_wap.ship.feature.hold.ShipHoldSlot;
 import com.lancas.vs_wap.util.ShipUtil;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
@@ -39,7 +40,11 @@ public class PlayerHoldShipForgeEvent {
         if (ship == null) return;
 
         EzDebug.log("which is null?" + icanHoldShip + ", " + ShipHoldSlot.MainHand + ", ship:" + ship);
-        icanHoldShip.tryHoldInServer(ShipHoldSlot.MainHand, ship.getId(), true);
+        boolean success = icanHoldShip.tryHoldInServer(ShipHoldSlot.MainHand, ship.getId(), true);
+        if (!success) {
+            //todo translate
+            player.sendSystemMessage(Component.literal("你无法拿起这个瓦尔基里载具，也许你需要[很有武德的杖]"));
+        }
     }
 
     @SubscribeEvent
@@ -56,5 +61,7 @@ public class PlayerHoldShipForgeEvent {
         if (!icanHoldShip.isHoldingShip(ShipHoldSlot.MainHand)) return;
 
         icanHoldShip.unholdShipInServer(ShipHoldSlot.MainHand, true, null);
+        //todo translate
+        event.player.sendSystemMessage(Component.literal("你手里有物品，这使你手持的瓦尔基里载具掉了下来"));
     }
 }

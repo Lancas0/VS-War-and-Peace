@@ -76,14 +76,15 @@ public class EjectingBreech extends BlockPlus implements IBreech, IBarrel/*, IBE
             }*/
 
                 ///find primer around and try to trigger it
-                Dest<IPrimer> primerDest = new Dest<>();
+                /*Dest<IPrimer> primerDest = new Dest<>();
                 Dest<BlockPos> primerBpDest = new Dest<>();
                 Dest<Ship> primerShipDest = new Dest<>();
 
                 if (findPrimerAround(level, breechBp, primerDest, primerBpDest, primerShipDest)) {
                     fireOrEject((ServerLevel)level, breechBp, (ServerShip)primerShipDest.get(), primerDest.get(), primerBpDest.get());
                     return;
-                }
+                }*/
+                DroppingBreech.tryFire((ServerLevel)level, breechBp);
 
             /*for (LoadedShip findShip : VSGameUtilsKt.getShipObjectWorld(level).getLoadedShips().getIntersecting(worldAABBInBreech)) {
                 if (onShip != null && findShip.getId() == onShip.getId()) continue;  //skip onShip

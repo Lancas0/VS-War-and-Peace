@@ -62,7 +62,6 @@ public class DroppingBreech extends BlockPlus implements IBreech, IBarrel/*, IBE
                 tryFire((ServerLevel)level, breechBp);
 
                 //ServerShip onShip = ShipUtil.getServerShipAt((ServerLevel)level, breechBp);
-
                 ///get the breech bounds in world and breech center in world for get intersected ships
             /*AABBd worldAABBInBreech;
             Vector3d worldBreechCenter;
@@ -77,17 +76,14 @@ public class DroppingBreech extends BlockPlus implements IBreech, IBarrel/*, IBE
                 );
                 worldBreechCenter = shipToWorld.transformPosition(JomlUtil.dCenter(breechBp));
             }*/
-
                 ///find primer around and try to trigger it
                 /*Dest<IPrimer> primerDest = new Dest<>();
                 Dest<BlockPos> primerBpDest = new Dest<>();
                 Dest<Ship> primerShipDest = new Dest<>();*/
-
                 /*if (findPrimerAround(level, breechBp, primerDest, primerBpDest, primerShipDest)) {
                     fire((ServerLevel)level, breechBp, (ServerShip)primerShipDest.get(), primerDest.get(), primerBpDest.get());
                     return;
                 }*/
-
             /*for (LoadedShip findShip : VSGameUtilsKt.getShipObjectWorld(level).getLoadedShips().getIntersecting(worldAABBInBreech)) {
                 if (onShip != null && findShip.getId() == onShip.getId()) continue;  //skip onShip
 
@@ -258,7 +254,7 @@ public class DroppingBreech extends BlockPlus implements IBreech, IBarrel/*, IBE
         return null;
     }
 
-    private static void tryFire(ServerLevel level, BlockPos breechPos/*, ServerShip primerShip, IPrimer primer, BlockPos primerPos*/) {
+    public static void tryFire(ServerLevel level, BlockPos breechPos/*, ServerShip primerShip, IPrimer primer, BlockPos primerPos*/) {
         //BlockState primerState = level.getBlockState(primerPos);
         //Direction primerDir = primerState.getValue(DirectionAdder.FACING);//directional.getDirection(primerState);
         Vector3d worldBreechPos = WorldUtil.getWorldCenter(level, breechPos);

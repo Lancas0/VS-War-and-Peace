@@ -64,7 +64,7 @@ public class RapidBreech extends BlockPlus implements IBreech, IBarrel {
             () -> List.of(
                 new DirectionAdder(false, true, ShapeBuilder.ofCubicRing(0, 0, 0, 2, 16).get()),
                 //IBreech.breechInteraction(),  //not interactable, or todo: fire immedate interact
-                new InteractableBlockAdder() {
+                /*new InteractableBlockAdder() {
                     @Override
                     public InteractionResult onInteracted(BlockState breechState, Level level, BlockPos breechBp, Player player, InteractionHand hand, BlockHitResult hit) {
                         //todo sometime(in face always) repeat invoke
@@ -155,7 +155,7 @@ public class RapidBreech extends BlockPlus implements IBreech, IBarrel {
 
                         return InteractionResult.PASS;
                     }
-                },
+                },*/
                 new RefreshBlockRecordAdder((bp, state) -> new IBreech.BreechRecord(0))
             )
         );

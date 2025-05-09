@@ -16,7 +16,7 @@ import java.util.function.Function;
 
 @Mod.EventBusSubscriber
 public class EzDebug {
-    private static boolean NOT_DEBUG = false;
+    private static boolean NOT_DEBUG = true;
     private static boolean alwaysDebug;
 
     private EzDebug(boolean inAlwaysDebug) { alwaysDebug = inAlwaysDebug; }

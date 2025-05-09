@@ -108,6 +108,9 @@ public class DockerBakedModel implements BakedModel {
         //EzDebug.log("applying pose:" + poseStack.last().pose());
         //poseStack.popPose();
         //return this.applyTransform(transformType, poseStack, applyLeftHandTransform);
+        if (transformType == ItemDisplayContext.GUI) {
+            return this.existingModel.applyTransform(transformType,poseStack,applyLeftHandTransform);
+        }
         return this;
     }
 }
