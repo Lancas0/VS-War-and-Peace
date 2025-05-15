@@ -38,14 +38,18 @@ public class DirectionAdder extends AbstractPropertyAdder<Direction> {
     public Direction getDefaultValue() { return Direction.UP; }
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext ctx, BlockState dest) {
+        return dest.setValue(FACING, getDirectionForPlacement(ctx));
+    }
+
+    public Direction getDirectionForPlacement(BlockPlaceContext ctx) {
         Direction placeDir = dirOppositeToLook ? ctx.getNearestLookingDirection().getOpposite() : ctx.getNearestLookingDirection();
 
         if (oppositeWhenShift && ctx.getPlayer() != null && ctx.getPlayer().isShiftKeyDown()) {
             placeDir = placeDir.getOpposite();
         }
-
-        return dest.setValue(FACING, placeDir);
+        return placeDir;
     }
+
     @Override
     public VoxelShape appendShape(BlockState state) {
         if (upShape == null || upShape.isEmpty()) return Shapes.empty();

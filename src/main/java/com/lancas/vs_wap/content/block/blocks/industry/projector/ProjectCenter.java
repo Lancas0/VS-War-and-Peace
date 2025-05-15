@@ -1,4 +1,4 @@
-package com.lancas.vs_wap.content.block.blocks.industry;
+package com.lancas.vs_wap.content.block.blocks.industry.projector;
 
 import com.lancas.vs_wap.subproject.blockplusapi.blockplus.BlockPlus;
 import com.lancas.vs_wap.subproject.blockplusapi.blockplus.adder.IBlockAdder;

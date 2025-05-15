@@ -3,7 +3,7 @@ package com.lancas.vs_wap.ship.data;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 //import com.lancas.vs_wap.content.blocks.industry.IgnoreByScheme;
-import com.lancas.vs_wap.content.block.blocks.industry.IProjectBlock;
+import com.lancas.vs_wap.content.block.blocks.industry.projector.IProjectBlock;
 import com.lancas.vs_wap.debug.EzDebug;
 import com.lancas.vs_wap.foundation.api.Dest;
 import com.lancas.vs_wap.util.*;

@@ -2,6 +2,11 @@ package com.lancas.vs_wap.content;
 
 import com.lancas.vs_wap.content.block.blockentity.*;
 import com.lancas.vs_wap.renderer.industry.ProjectorLenRenderer;
+import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
+import com.simibubi.create.content.kinetics.mechanicalArm.ArmBlockEntity;
+import com.simibubi.create.content.kinetics.mechanicalArm.ArmRenderer;
+import com.simibubi.create.content.kinetics.simpleRelays.SimpleKineticBlockEntity;
+import com.simibubi.create.content.kinetics.simpleRelays.encased.EncasedCogRenderer;
 import com.tterrag.registrate.util.entry.BlockEntityEntry;
 
 import static com.lancas.vs_wap.ModMain.REGISTRATE;
@@ -78,14 +83,34 @@ public class WapBlockEntites {
 
     public static final BlockEntityEntry<VSProjectorBE> VS_PROJECTOR_BE = REGISTRATE
         .blockEntity("vs_projector_be", VSProjectorBE::new)
-        .validBlocks(Industrial.VS_PROJECTOR)
+        .validBlocks(Industrial.Projector.VS_PROJECTOR)
         .register();
 
     public static final BlockEntityEntry<ProjectorLenBe> PROJECTOR_LEN_BE = REGISTRATE
         .blockEntity("projector_len_be", ProjectorLenBe::new)
-        .validBlocks(Industrial.PROJECT_LEN)
+        .validBlocks(Industrial.Projector.PROJECT_LEN)
         .renderer(() -> ProjectorLenRenderer::new)
         .register();
+
+    /*public static final BlockEntityEntry<IndustrialRobotArmBe> INDUSTRIAL_ROBOT_ARM_BE = REGISTRATE
+        .blockEntity("industrial_robot_arm_be", IndustrialRobotArmBe::new)
+        .validBlocks(Industrial.Projector.PROJECT_LEN)
+        .renderer(() -> ArmRenderer::new)
+        .register();*/
+    /*public static final BlockEntityEntry<ArmBlockEntity> INDUSTRIAL_ROBOT_ARM_BE = REGISTRATE
+        .blockEntity("industrial_robot_arm_be", ArmBlockEntity::new)
+        //.visual(() -> ArmRenderer::new, false)
+        .validBlocks(Industrial.INDUSTRIAL_ROBOT_ARM)
+        .renderer(() -> ArmRenderer::new)
+        .register();*/
+
+    /*public static final BlockEntityEntry<SimpleKineticBlockEntity> ENCASED_CHAIN_COGWHEEL = REGISTRATE
+        .blockEntity("encased_chain_cogwheel", SimpleKineticBlockEntity::new)
+        //.visual(() -> EncasedCogVisual::small, false)
+        //.validBlocks(CCBlocks.ENCASED_CHAIN_COGWHEEL)
+        .renderer(() -> EncasedCogRenderer::small)
+        .register();*/
+
 
     public static void register() { }
 

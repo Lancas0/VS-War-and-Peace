@@ -1,7 +1,7 @@
 package com.lancas.vs_wap.ship.data;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.lancas.vs_wap.content.block.blocks.industry.IProjectBlock;
+import com.lancas.vs_wap.content.block.blocks.industry.projector.IProjectBlock;
 import com.lancas.vs_wap.debug.EzDebug;
 import com.lancas.vs_wap.foundation.BiTuple;
 import com.lancas.vs_wap.foundation.TriTuple;

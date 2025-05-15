@@ -17,7 +17,7 @@ public class ProjectorLenBe extends SyncedBlockEntity {
 
     public static final double SCALE_TO_RAD = 3.1415926 / 2.0;
     public static final double SCALE_STEP = 0.05;
-    public static final double MIN_SCALE = 0.1;
+    public static final double MIN_SCALE = 0.05;
     public LerpedFloat scale = LerpedFloat.linear().startWithValue(1);
 
 

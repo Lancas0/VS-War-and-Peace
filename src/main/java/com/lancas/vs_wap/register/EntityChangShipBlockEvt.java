@@ -1,7 +1,7 @@
 package com.lancas.vs_wap.register;
 
 import com.lancas.vs_wap.content.WapBlocks;
-import com.lancas.vs_wap.content.block.blocks.industry.ProjectCenter;
+import com.lancas.vs_wap.content.block.blocks.industry.projector.ProjectCenter;
 import com.lancas.vs_wap.debug.EzDebug;
 import com.lancas.vs_wap.ship.attachment.ProjectingShipAtt;
 import com.lancas.vs_wap.ship.helper.builder.ShipBuilder;
@@ -121,7 +121,7 @@ public class EntityChangShipBlockEvt {
         if (prevBreakCnt == 1) {
             event.setCanceled(true);
             level.setBlockAndUpdate(event.getPos(), Blocks.AIR.defaultBlockState());  //must cancel and removeAndUpdate or the ship will disappear
-            level.setBlockAndUpdate(builder.getInitialBP(), WapBlocks.Industrial.PROJECT_CENTER.getDefaultState());  //todo place at really center
+            level.setBlockAndUpdate(builder.getInitialBP(), WapBlocks.Industrial.Projector.PROJECT_CENTER.getDefaultState());  //todo place at really center
         }
 
         //EzDebug.highlight("update projecting ship");

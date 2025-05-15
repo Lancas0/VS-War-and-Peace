@@ -1,5 +1,12 @@
 package com.lancas.vs_wap.subproject.blockplusapi.itemplus;
 
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.Hashtable;
 import java.util.List;
 import java.util.function.Supplier;
@@ -13,5 +20,11 @@ public interface IItemPlus {
             addersCache.put(type, addersSupplier.get());
 
         return addersCache.get(type);
+    }
+
+
+    public default void appendHoverText(@NotNull ItemStack stack, @Nullable Level level, @NotNull List<Component> texts, @NotNull TooltipFlag flag) {
+        stack.getItem().appendHoverText(stack, level, texts, flag);  //super.appendHoverText
+        getAdders().forEach(a -> a.appendHoverText(stack, level, texts, flag));
     }
 }

@@ -226,7 +226,7 @@ public class VSProjectorBE extends DirectionalShaftHalvesBlockEntity {
         ShipBuilder shipBuilder = ShipBuilder.modify(sLevel, linkShip).overwriteByScheme(schemeData);
         if (schemeData.isEmpty()) {
             EzDebug.highlight("set project cetner because schemeData is empty");
-            shipBuilder.addBlock(BlockPos.ZERO, WapBlocks.Industrial.PROJECT_CENTER.getDefaultState());
+            shipBuilder.addBlock(BlockPos.ZERO, WapBlocks.Industrial.Projector.PROJECT_CENTER.getDefaultState());
         }
     /*
     // Container 接口实现

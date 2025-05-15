@@ -22,9 +22,10 @@ import com.lancas.vs_wap.content.block.blocks.cartridge.modifier.TailFin;
 import com.lancas.vs_wap.content.block.blocks.cartridge.propellant.empty.EmptyGauge12;
 import com.lancas.vs_wap.content.block.blocks.cartridge.propellant.empty.EmptyShelledPropellant;
 import com.lancas.vs_wap.content.block.blocks.debug.Block01;
-import com.lancas.vs_wap.content.block.blocks.industry.ProjectCenter;
-import com.lancas.vs_wap.content.block.blocks.industry.ProjectorLen;
-import com.lancas.vs_wap.content.block.blocks.industry.VSProjector;
+import com.lancas.vs_wap.content.block.blocks.industry.IndustrialRobotArm;
+import com.lancas.vs_wap.content.block.blocks.industry.projector.ProjectCenter;
+import com.lancas.vs_wap.content.block.blocks.industry.projector.ProjectorLen;
+import com.lancas.vs_wap.content.block.blocks.industry.projector.VSProjector;
 import com.lancas.vs_wap.content.block.blocks.redstone.ActivatorBlock;
 import com.lancas.vs_wap.content.block.blocks.scope.MechScopeBlock;
 import com.lancas.vs_wap.content.block.blocks.scope.TelescopicScope;
@@ -323,30 +324,40 @@ public class WapBlocks {
             .item()
             .build()
             .register();*/
+        public static class Projector {
+            public static BlockEntry<ProjectCenter> PROJECT_CENTER =  REGISTRATE
+                .block("project_center", ProjectCenter::new)
+                .initialProperties(SharedProperties::stone)
+                .properties(p -> p.noOcclusion().mapColor(MapColor.PODZOL))
+                .item()
+                .build()
+                .register();
 
-        public static BlockEntry<ProjectCenter> PROJECT_CENTER =  REGISTRATE
-            .block("project_center", ProjectCenter::new)
-            .initialProperties(SharedProperties::stone)
+            public static BlockEntry<VSProjector> VS_PROJECTOR =  REGISTRATE
+                .block("vs_projector", VSProjector::new)
+                .initialProperties(SharedProperties::stone)
+                .properties(p -> p.noOcclusion().mapColor(MapColor.PODZOL))
+                .item()
+                .build()
+                .register();
+
+            public static BlockEntry<ProjectorLen> PROJECT_LEN =  REGISTRATE
+                .block("projector_len", ProjectorLen::new)
+                .initialProperties(SharedProperties::stone)
+                .properties(p -> p.noOcclusion().mapColor(MapColor.PODZOL))
+                .item()
+                .build()
+                .register();
+        }
+
+        public static BlockEntry<IndustrialRobotArm> INDUSTRIAL_ROBOT_ARM = REGISTRATE
+            .block("indusrial_robot_arm", IndustrialRobotArm::new)
             .properties(p -> p.noOcclusion().mapColor(MapColor.PODZOL))
-            .item()
+            .item(BlockItemPlus::getOrCreateFrom)
             .build()
             .register();
 
-        public static BlockEntry<VSProjector> VS_PROJECTOR =  REGISTRATE
-            .block("vs_projector", VSProjector::new)
-            .initialProperties(SharedProperties::stone)
-            .properties(p -> p.noOcclusion().mapColor(MapColor.PODZOL))
-            .item()
-            .build()
-            .register();
 
-        public static BlockEntry<ProjectorLen> PROJECT_LEN =  REGISTRATE
-            .block("projector_len", ProjectorLen::new)
-            .initialProperties(SharedProperties::stone)
-            .properties(p -> p.noOcclusion().mapColor(MapColor.PODZOL))
-            .item()
-            .build()
-            .register();
 
 
 

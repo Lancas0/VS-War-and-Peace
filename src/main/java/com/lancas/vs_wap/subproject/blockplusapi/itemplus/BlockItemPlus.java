@@ -10,6 +10,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -47,9 +48,9 @@ public abstract class BlockItemPlus extends BlockItem implements IItemPlus {
         generatedItems.put(block, newGenerate);
         return newGenerate;
     }
-    public static BlockItemPlus get(BlockPlus block) {
+    /*public static BlockItemPlus get(BlockPlus block) {
         return generatedItems.get(block);
-    }
+    }*/
     public ItemStack defaultStack() {
         return getDefaultInstance();
     }
@@ -60,7 +61,7 @@ public abstract class BlockItemPlus extends BlockItem implements IItemPlus {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> texts, TooltipFlag flag) {
+    public void appendHoverText(@NotNull ItemStack stack, @Nullable Level level, @NotNull List<Component> texts, @NotNull TooltipFlag flag) {
         super.appendHoverText(stack, level, texts, flag);
         getAdders().forEach(a -> a.appendHoverText(stack, level, texts, flag));
     }

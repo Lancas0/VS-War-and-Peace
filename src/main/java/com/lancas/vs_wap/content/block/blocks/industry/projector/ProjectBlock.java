@@ -1,4 +1,4 @@
-package com.lancas.vs_wap.content.block.blocks.industry;
+package com.lancas.vs_wap.content.block.blocks.industry.projector;
 
 /*
 import com.lancas.vs_wap.content.block.blockentity.ProjectBlockEntity;
