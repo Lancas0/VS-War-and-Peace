@@ -124,6 +124,11 @@ public class JomlUtil {
     public static int lengthY(AABBic aabb) { return length(aabb, 1); }
     public static int lengthZ(AABBic aabb) { return length(aabb, 2); }
 
+    public static double length(AABBdc aabb, int comp) { return aabb.getMax(comp) - aabb.getMin(comp); }
+    public static double lengthX(AABBdc aabb) { return length(aabb, 0); }
+    public static double lengthY(AABBdc aabb) { return length(aabb, 1); }
+    public static double lengthZ(AABBdc aabb) { return length(aabb, 2); }
+
 
     public static Vector3d dCenter(BlockPos pos) { return JomlUtil.d(pos.getCenter()); }
     public static Vector3d dCenter(AABB aabb) { return JomlUtil.d(aabb.getCenter()); }

@@ -6,8 +6,6 @@ import com.lancas.vs_wap.subproject.sandbox.component.data.reader.IRigidbodyData
 import com.lancas.vs_wap.subproject.sandbox.component.data.writer.IRigidbodyDataWriter;
 import com.lancas.vs_wap.subproject.sandbox.constraint.base.ISliderConstraint;
 import com.lancas.vs_wap.subproject.sandbox.ship.ISandBoxShip;
-import com.lancas.vs_wap.util.JomlUtil;
-import com.simibubi.create.CreateClient;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
 import org.valkyrienskies.core.api.ships.Ship;
@@ -102,8 +100,8 @@ public class SliderOnVsConstraint extends AbstractSaOnVsConstraint implements IS
         //EzDebug.log("saWorldPos:" + worldSaPos + "saLocalPos:" + saLocalPos + "\n saLocalToWorld:" + rigidReader.getLocalToWorld() + ", correctedAttBPos:" + correctedAttBPos);
         //EzDebug.log("vsWorldPos:" + worldVsPos + ", saWorldPos:" + worldSaPos + ", vsShipPos:" + vsShipPos + "\nsaLocalPos:" + saLocalPos);
         //EzDebug.log("worldAttAPos:" + worldAttAPos + ", worldAttBPos:" + worldAttBPos + ", localAttAPos:" + localAttAPos + "localBAttPos:" + localAttBPos);
-        CreateClient.OUTLINER.showAABB("slider-a-worldAtt" + selfUuid, JomlUtil.centerExtended(worldVsPos, 0.5)).lineWidth(1/16f).colored(255);
-        CreateClient.OUTLINER.showAABB("slider-b-worldAtt" + selfUuid, JomlUtil.centerExtended(worldSaPos, 0.5)).lineWidth(1/8f).colored(500);
+        //CreateClient.OUTLINER.showAABB("slider-a-worldAtt" + selfUuid, JomlUtil.centerExtended(worldVsPos, 0.5)).lineWidth(1/16f).colored(255);
+        //CreateClient.OUTLINER.showAABB("slider-b-worldAtt" + selfUuid, JomlUtil.centerExtended(worldSaPos, 0.5)).lineWidth(1/8f).colored(500);
 
         // todo 摩擦处理：沿滑动轴的速度阻尼
         /*Vector3d relativeVel = bRigidReader.getVelocity().sub(aRigidReader.getVelocity(), new Vector3d());

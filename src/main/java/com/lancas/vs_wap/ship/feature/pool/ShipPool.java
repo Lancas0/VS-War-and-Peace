@@ -2,7 +2,6 @@ package com.lancas.vs_wap.ship.feature.pool;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.lancas.vs_wap.ModMain;
 import com.lancas.vs_wap.content.saved.ConstraintsMgr;
@@ -24,6 +23,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.saveddata.SavedData;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 import org.joml.Math;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
@@ -40,7 +40,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class ShipPool extends SavedData {
-    public static enum HideType {
+    public enum HideType {
         StaticAndInvisible(
             toHideShip -> {
                 toHideShip.setStatic(true);
@@ -211,7 +211,7 @@ public class ShipPool extends SavedData {
         return pool;
     }
     @Override
-    public CompoundTag save(CompoundTag tag) {
+    public @NotNull CompoundTag save(@NotNull CompoundTag tag) {
         return new NbtBuilder()
             .putSimpleJackson("pool_ids", poolMap.keySet())
             .putEachSimpleJackson("pool_values", poolMap.values())
@@ -366,6 +366,11 @@ public class ShipPool extends SavedData {
         }
 
         ServerShip toShowShip = ShipUtil.getServerShipByID(level, shipId);
+        if (toShowShip == null) {
+            EzDebug.light("the ship to show is removed");
+            return null;
+        }
+
         hidingShip.hideType.shower.accept(toShowShip);
         hidingShips.remove(shipId);
         setDirty();

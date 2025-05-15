@@ -1,8 +1,6 @@
-package com.lancas.vs_wap.renderer;
+package com.lancas.vs_wap.renderer.docker;
 
 import com.lancas.vs_wap.content.WapItems;
-import com.lancas.vs_wap.content.WapUI;
-import com.lancas.vs_wap.debug.EzDebug;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -34,15 +32,21 @@ public class DockerBakedModel implements BakedModel {
         public static void onModelBaked(ModelEvent.ModifyBakingResult event){
             // wrench item model
             Map<ResourceLocation, BakedModel> modelRegistry = event.getModels();
-            ModelResourceLocation location = new ModelResourceLocation(BuiltInRegistries.ITEM.getKey(WapItems.Docker.SHIP_DATA_DOCKER.get()), "inventory");
-            BakedModel existingModel = modelRegistry.get(location);
-            if (existingModel == null) {
+            ModelResourceLocation location1 = new ModelResourceLocation(BuiltInRegistries.ITEM.getKey(WapItems.Docker.SHIP_DATA_DOCKER.get()), "inventory");
+            ModelResourceLocation location2 = new ModelResourceLocation(BuiltInRegistries.ITEM.getKey(WapItems.Docker.REF_WITH_FALLBACK_DOCKER.get()), "inventory");
+
+            BakedModel existingModel1 = modelRegistry.get(location1);
+            BakedModel existingModel2 = modelRegistry.get(location2);
+            if (existingModel1 == null || existingModel2 == null) {
                 throw new RuntimeException("Did not find Obsidian Hidden in registry");
-            } else if (existingModel instanceof DockerBakedModel) {
+            } else if (existingModel1 instanceof DockerBakedModel || existingModel2 instanceof DockerBakedModel) {
                 throw new RuntimeException("Tried to replaceObsidian Hidden twice");
             } else {
-                DockerBakedModel wrappedBakedModel = new DockerBakedModel(existingModel);
-                event.getModels().put(location, wrappedBakedModel);
+                DockerBakedModel wrappedBakedModel1 = new DockerBakedModel(existingModel1);
+                event.getModels().put(location1, wrappedBakedModel1);
+
+                DockerBakedModel wrappedBakedModel2 = new DockerBakedModel(existingModel2);
+                event.getModels().put(location2, wrappedBakedModel2);
             }
         }
     }

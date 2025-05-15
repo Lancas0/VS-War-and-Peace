@@ -63,6 +63,21 @@ public class TriTuple<T, U, V> {
         public BlockState getBlockState() { return super.getSecond(); }
         public BlockEntity getBlockEntity() { return super.getThird(); }
     }
+    public static class ChunkXZOffsetTuple extends TriTuple<Integer, Integer, BlockPos> {
+        private ChunkXZOffsetTuple() {}
+        public ChunkXZOffsetTuple(int chunkX, int chunkZ, BlockPos offset) { super(chunkX, chunkZ, offset); }
+        public int getChunkX() { return getFirst(); }
+        public int getChunkZ() { return getSecond(); }
+        public BlockPos getOffset() { return getThird(); }
+
+        public BlockPos toRealBp() {
+            return new BlockPos(
+                (getChunkX() >> 4) + getOffset().getX(),
+                getOffset().getY(),
+                (getChunkZ() >> 4) + getOffset().getZ()
+            );
+        }
+    }
 
     protected T first;
     protected U second;

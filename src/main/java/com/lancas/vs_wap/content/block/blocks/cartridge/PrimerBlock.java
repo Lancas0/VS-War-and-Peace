@@ -6,8 +6,6 @@ import com.lancas.vs_wap.content.saved.BlockRecordRWMgr;
 import com.lancas.vs_wap.content.saved.ConstraintsMgr;
 import com.lancas.vs_wap.content.saved.IBlockRecord;
 import com.lancas.vs_wap.debug.EzDebug;
-import com.lancas.vs_wap.event.EventMgr;
-import com.lancas.vs_wap.event.listener.TriRemoveAfterSuccessListener;
 import com.lancas.vs_wap.foundation.api.Dest;
 import com.lancas.vs_wap.ship.attachment.HoldableAttachment;
 import com.lancas.vs_wap.subproject.blockplusapi.blockplus.adder.DirectionAdder;
@@ -21,7 +19,6 @@ import com.lancas.vs_wap.util.StrUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import org.apache.logging.log4j.util.TriConsumer;
@@ -31,7 +28,6 @@ import org.valkyrienskies.core.api.ships.ServerShip;
 import org.valkyrienskies.core.apigame.constraints.VSConstraint;
 
 import java.util.List;
-import java.util.function.Function;
 
 public class PrimerBlock extends BlockPlus implements IPrimer/*, IBE<PrimerBE>*/  {
     /*public static class BallisticHeadIterable implements Iterable<BiTuple<BlockPos, BlockState>>, Iterator<BiTuple<BlockPos, BlockState>> {
@@ -122,6 +118,9 @@ public class PrimerBlock extends BlockPlus implements IPrimer/*, IBE<PrimerBE>*/
         Vector3d attPos0 = JomlUtil.dCenter(breechPos);//JomlUtil.dFaceCenter(breech.getSecond(), primerDir.getOpposite());  //breech
         Vector3d attPos1 = JomlUtil.dCenter(primerBp);//.add(JomlUtil.dNormal(primerDir, 1.0 - primerShapeLen));//JomlUtil.dFaceCenter(worldPosition, primerDir);
 
+        //I suppose both constraint are successfully added
+        BlockRecordRWMgr.putRecord(level, primerBp, new PrimerRecord(attKey.get(), oriKey.get()));
+
         ConstraintsMgr.addAttachment(level, attKey.get(),
             artilleryShip, munitionShip,
             1e-10, attPos0, attPos1,
@@ -133,19 +132,21 @@ public class PrimerBlock extends BlockPlus implements IPrimer/*, IBE<PrimerBE>*/
             HoldableAttachment.rotateForwardToDirection(breechDirInShipOrWorld), HoldableAttachment.rotateForwardToDirection(munitionHoldable.forwardInShip),
             1e10
         );
-
-        //I suppose both constraint are successfully added
-        BlockRecordRWMgr.putRecord(level, primerBp, new PrimerRecord(attKey.get(), oriKey.get()));
     }
-    private static void removeConstraint(ServerLevel level, BlockPos primerBp) {
+    public static void removeConstraint(ServerLevel level, BlockPos primerBp) {
         PrimerRecord record = BlockRecordRWMgr.removeRecord(level, primerBp);
-        if (record == null) return;
+        if (record == null) {
+            EzDebug.warn("[PrimerBlock.removeConstraint] fail to get record at " + primerBp.toShortString());
+            return;
+        }
 
         if (StrUtil.isNotEmpty(record.attConstraintKey)) {
-            ConstraintsMgr.removeInLevelConstraint(level, record.attConstraintKey);
+            boolean s = ConstraintsMgr.removeInLevelConstraint(level, record.attConstraintKey);
+            EzDebug.highlight("successfully remove primer att constraint?:" + s);
         }
         if (StrUtil.isNotEmpty(record.oriConstraintKey)) {
-            ConstraintsMgr.removeInLevelConstraint(level, record.oriConstraintKey);
+            boolean s = ConstraintsMgr.removeInLevelConstraint(level, record.oriConstraintKey);
+            EzDebug.highlight("successfully remove primer ori constraint?:" + s);
         }
     }
     private static void generateKeys(BlockPos pos, Dest<String> attKeyDest, Dest<String> oriKeyDest) {
@@ -184,21 +185,30 @@ public class PrimerBlock extends BlockPlus implements IPrimer/*, IBE<PrimerBE>*/
                 return;
             }*/
 
+            //constraint mgr may remove record by onConstraintRemove event when remove prev constraint
+            PrimerRecord prevRecord = BlockRecordRWMgr.getRecord(sLevel, primerBp.get());
+            if (prevRecord == null) {
+                prevRecord = new PrimerRecord(null, null);
+                BlockRecordRWMgr.putRecord(sLevel, primerBp.get(), prevRecord);
+            }
+
             if (isAttachment.get()) {
-                BlockRecordRWMgr.changeIfExist(sLevel, primerBp.get(),
+                /*BlockRecordRWMgr.changeIfExist(sLevel, primerBp.get(),
                     (Function<PrimerRecord, PrimerRecord>)record -> new PrimerRecord(key, record.oriConstraintKey)
-                );
+                );*/
+                prevRecord.attConstraintKey = key;
             }
             if (isOrientation.get()) {
-                BlockRecordRWMgr.changeIfExist(sLevel, primerBp.get(),
+                /*BlockRecordRWMgr.changeIfExist(sLevel, primerBp.get(),
                     (Function<PrimerRecord, PrimerRecord>)record -> new PrimerRecord(record.attConstraintKey, key)
-                );
+                );*/
+                prevRecord.oriConstraintKey = key;
             }
             if (!isAttachment.get() && !isOrientation.get()) {
                 EzDebug.warn("verified key but no constraint is matched, isAtt:" + isAttachment.get() + ", isOri:" + isOrientation.get() + ", primerBp:" + primerBp.get());
             }
 
-            EventMgr.Server.holdShipEvent.addListener(new TriRemoveAfterSuccessListener<ServerLevel, ServerPlayer, Long>() {
+            /*EventMgr.Server.holdShipEvent.addListener(new TriRemoveAfterSuccessListener<ServerLevel, ServerPlayer, Long>() {
                 private boolean success = false;
                 @Override
                 public void accept(ServerLevel level, ServerPlayer player, Long shipId) {
@@ -207,7 +217,7 @@ public class PrimerBlock extends BlockPlus implements IPrimer/*, IBE<PrimerBE>*/
                 @Override
                 public boolean isSuccess() { EzDebug.log("get success:" + success); return success; }
             });
-            EzDebug.highlight("holdShip event added");
+            EzDebug.highlight("holdShip event added");*/
         };
     public static TriConsumer<ServerLevel, String, VSConstraint> onConstraintRemove =
         (sLevel, key, constraint) -> {
@@ -216,8 +226,18 @@ public class PrimerBlock extends BlockPlus implements IPrimer/*, IBE<PrimerBE>*/
             Dest<BlockPos> primerBp = new Dest<>();
             if (!verifyKey(key, isAttachment, isOrientation, primerBp)) return;
 
-            //I suppose all primer constraints will be removed. clear all constraints' key;
-            BlockRecordRWMgr.removeRecord(sLevel, primerBp.get());
+
+            PrimerRecord prevRecord = BlockRecordRWMgr.getRecord(sLevel, primerBp.get());
+            if (prevRecord == null)
+                return;
+
+            if (isAttachment.get())
+                prevRecord.attConstraintKey = null;
+            if (isOrientation.get())
+                prevRecord.oriConstraintKey = null;
+
+            if (prevRecord.oriConstraintKey == null && prevRecord.attConstraintKey == null)
+                BlockRecordRWMgr.removeRecord(sLevel, primerBp.get());
         };
 
     /*public static TriConsumer<ServerLevel, ServerPlayer, Long> onUnholdShip =

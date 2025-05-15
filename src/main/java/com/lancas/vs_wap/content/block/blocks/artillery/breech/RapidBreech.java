@@ -1,6 +1,6 @@
 package com.lancas.vs_wap.content.block.blocks.artillery.breech;
 
-
+/*
 import com.lancas.vs_wap.content.block.blocks.artillery.IBarrel;
 import com.lancas.vs_wap.content.block.blocks.blockplus.RefreshBlockRecordAdder;
 import com.lancas.vs_wap.content.block.blocks.cartridge.IPrimer;
@@ -64,7 +64,7 @@ public class RapidBreech extends BlockPlus implements IBreech, IBarrel {
             () -> List.of(
                 new DirectionAdder(false, true, ShapeBuilder.ofCubicRing(0, 0, 0, 2, 16).get()),
                 //IBreech.breechInteraction(),  //not interactable, or todo: fire immedate interact
-                /*new InteractableBlockAdder() {
+                /.*new InteractableBlockAdder() {
                     @Override
                     public InteractionResult onInteracted(BlockState breechState, Level level, BlockPos breechBp, Player player, InteractionHand hand, BlockHitResult hit) {
                         //todo sometime(in face always) repeat invoke
@@ -155,7 +155,7 @@ public class RapidBreech extends BlockPlus implements IBreech, IBarrel {
 
                         return InteractionResult.PASS;
                     }
-                },*/
+                },*./
                 new RefreshBlockRecordAdder((bp, state) -> new IBreech.BreechRecord(0))
             )
         );
@@ -171,7 +171,7 @@ public class RapidBreech extends BlockPlus implements IBreech, IBarrel {
     public boolean isDockerLoadable(Level level, BlockPos breechBp, ItemStack stack) {
         return stack.getItem() instanceof ShipDataDocker;  //todo
     }
-    /*@Override
+    /.*@Override
     public void loadMunition(Level level, BlockPos breechBp, BlockState breechState, ItemStack stack) { //todo remain itemStack?
         //directly fire
         var shipScheme = DockerItem.getShipSchemeData(stack);
@@ -181,7 +181,7 @@ public class RapidBreech extends BlockPlus implements IBreech, IBarrel {
         }
 
         //shipScheme.foreachBlock();
-    }*/
+    }*./
     @Override
     public void unloadShell(ServerLevel level, ServerShip shellShip, Direction shellDirInShip, BlockPos breechBp) {
         Ship artilleryShip = ShipUtil.getShipAt(level, breechBp);
@@ -318,3 +318,4 @@ public class RapidBreech extends BlockPlus implements IBreech, IBarrel {
         SandBoxServerWorld.addShipAndSyncClient(level, casingShip);
     }
 }
+*/

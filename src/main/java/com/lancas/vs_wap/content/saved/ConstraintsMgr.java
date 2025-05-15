@@ -241,6 +241,18 @@ public class ConstraintsMgr extends SavedData {
             }
         }
     }
+    public static boolean anyLoadedConstraintWith(ServerLevel level, long shipId) {
+        ConstraintsMgr mgr = getOrCreate(level);
+
+        for (var constraintEntry : mgr.constraintsInLevel.entrySet()) {
+            VSConstraint constraint = constraintEntry.getValue().getConstraint();
+            if (constraint.getShipId0() == shipId || constraint.getShipId1() == shipId) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private static void replaceIfExistedThenAddToInLevel(ServerLevel level, ConstraintsMgr mgr, String key, VSConstraint constraint, int constraintID, Dest<VSConstraint> replaced) {
         ServerShipWorldCore shipWorld = VSGameUtilsKt.getShipObjectWorld(level);
         long groundId = ShipUtil.getGroundId(level);

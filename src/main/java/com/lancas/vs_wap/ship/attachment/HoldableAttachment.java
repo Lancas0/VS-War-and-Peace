@@ -3,6 +3,7 @@ package com.lancas.vs_wap.ship.attachment;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.lancas.vs_wap.foundation.data.SavedBlockPos;
+import com.lancas.vs_wap.ship.data.ISavableAttachment;
 import com.lancas.vs_wap.util.JomlUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -13,6 +14,9 @@ import org.joml.Vector3d;
 import org.joml.Vector3dc;
 import org.valkyrienskies.core.api.ships.ServerShip;
 
+import java.util.List;
+import java.util.stream.Stream;
+
 @JsonAutoDetect(
     fieldVisibility = JsonAutoDetect.Visibility.ANY,
     getterVisibility = JsonAutoDetect.Visibility.NONE,
@@ -20,7 +24,7 @@ import org.valkyrienskies.core.api.ships.ServerShip;
     setterVisibility = JsonAutoDetect.Visibility.NONE
 )
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class HoldableAttachment {
+public class HoldableAttachment implements ISavableAttachment {
     //public UUID playerUUID;
     public SavedBlockPos holdPivotBpInShip;
     public Direction forwardInShip;
@@ -155,6 +159,12 @@ public class HoldableAttachment {
     }
 
 
-
-
+    @Override
+    public Stream<BlockPos> getAllBpInShipToSave() {
+        return Stream.of(holdPivotBpInShip.toBp());
+    }
+    @Override
+    public void loadAllBp(List<BlockPos> bpsInShip) {
+        holdPivotBpInShip = new SavedBlockPos(bpsInShip.get(0));
+    }
 }

@@ -3,7 +3,6 @@ package com.lancas.vs_wap.sandbox.ballistics.data;
 import com.lancas.vs_wap.debug.EzDebug;
 import com.lancas.vs_wap.sandbox.ballistics.ISandBoxBallisticBlock;
 import com.lancas.vs_wap.subproject.sandbox.api.component.IComponentData;
-import com.lancas.vs_wap.subproject.sandbox.api.component.IComponentDataReader;
 import com.lancas.vs_wap.subproject.sandbox.ship.ISandBoxShip;
 import com.lancas.vs_wap.subproject.sandbox.ship.SandBoxServerShip;
 import com.lancas.vs_wap.util.NbtBuilder;
@@ -79,7 +78,7 @@ public class BallisticInitialStateSubData implements IComponentData<BallisticIni
             .putVector3d("launch_world_pos", launchWorldPos)
             .putVector3i("loc_forward", localForward)
             .putVector3d("world_launch_dir", worldLaunchDir)
-            .putNumber("total_propelling_energy", totalPropellingEnergy)
+            .putDouble("total_propelling_energy", totalPropellingEnergy)
             .putEach("ballistic_block_loc_poses", ballisticBlockLocPoses, NbtBuilder::tagOfVector3i)  //todo the block loc poses must be set when added to ship, maybe no need for save?
             .get();
     }

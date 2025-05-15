@@ -1,9 +1,12 @@
 package com.lancas.vs_wap.compact.create.arminteraction;
 
 import com.lancas.vs_wap.content.block.blocks.artillery.breech.IBreech;
+import com.lancas.vs_wap.content.item.items.docker.IDocker;
 import com.lancas.vs_wap.content.saved.BlockRecordRWMgr;
 import com.lancas.vs_wap.debug.EzDebug;
 import com.lancas.vs_wap.foundation.api.Dest;
+import com.lancas.vs_wap.subproject.blockplusapi.blockplus.adder.DirectionAdder;
+import com.lancas.vs_wap.util.ShipUtil;
 import com.lancas.vs_wap.util.WorldUtil;
 import com.simibubi.create.content.kinetics.mechanicalArm.AllArmInteractionPointTypes;
 import com.simibubi.create.content.kinetics.mechanicalArm.ArmInteractionPointType;
@@ -26,11 +29,16 @@ public class BreechArmPoint extends AllArmInteractionPointTypes.DepositOnlyArmIn
 
     @Override
     public ItemStack insert(ItemStack stack, boolean simulate) {
+        if (stack.isEmpty()) return stack;
         if (!(level instanceof ServerLevel sLevel)) return stack;  //the ship deleting must be in server
         //todo the interface provider a method, getting if it can be loaded with arm
         BlockState breechState = level.getBlockState(pos);
         if (!(breechState.getBlock() instanceof IBreech breech)) {
             EzDebug.warn("Breech Arm Point is not on a breech");
+            return stack;
+        }
+        if (!(stack.getItem() instanceof IDocker docker)) {
+            EzDebug.warn("the item is not docker");
             return stack;
         }
 
@@ -46,27 +54,32 @@ public class BreechArmPoint extends AllArmInteractionPointTypes.DepositOnlyArmIn
             return stack;
         }
         if (!record.isCold())  return stack;
-
-        if (!breech.isDockerLoadable(level, pos, stack))
+        if (!breech.canLoadDockerNow(level, pos, stack)) {
+            EzDebug.warn("the docker is not loadable");
             return stack;
+        }
 
 
         Dest<Ship> prevMunitionShip = new Dest<>();
         Dest<Boolean> isPrevTriggered = new Dest<>();
         Dest<Direction> prevMunitionDirInShip = new Dest<>();
-        boolean hasPrevMunition = breech.getLoadedMunitionData(level, pos, prevMunitionShip, isPrevTriggered, prevMunitionDirInShip);
+        //boolean hasPrevMunition = breech.getLoadedMunitionData(level, pos, prevMunitionShip, isPrevTriggered, prevMunitionDirInShip);
 
-        if (hasPrevMunition && !isPrevTriggered.get()) {
+        /*if (hasPrevMunition && !isPrevTriggered.get()) {
+            EzDebug.warn("has prev untriggered munition");
             return stack;  //has munition that's not triggered
-        }
+        }*/
 
         IBreech iBreech = WorldUtil.getBlockInterface(sLevel, pos, null);
-        if (prevMunitionShip.hasValue() && !simulate) {
+        /*if (prevMunitionShip.hasValue() && !simulate) {
             iBreech.unloadShell(sLevel, (ServerShip)prevMunitionShip.get(), prevMunitionDirInShip.get(), pos);
-        }
+        }*/
 
+        ServerShip artilleryShip = ShipUtil.getServerShipAt(sLevel, pos);
+        Direction breechDir = DirectionAdder.getDirection(breechState);//JomlUtil.nearestDir(Objects.requireNonNull(docker.getLocalPivot(stack)));
         if (!simulate) {
             iBreech.loadMunition(sLevel, pos, breechState, stack);
+            //record.loadDockerShip(sLevel, stack, artilleryShip, pos, breechDir);
             record.startColdDown();
         }
         return ItemStack.EMPTY;

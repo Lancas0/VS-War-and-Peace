@@ -34,7 +34,7 @@ public class PlayerHoldShipForgeEvent {
 
         //only invoke when hand is empty
         //check air for safety
-        if (!player.getMainHandItem().isEmpty() || sLevel.getBlockState(interactBp).isAir()) return;
+        if (!player.getMainHandItem().isEmpty() || !player.isShiftKeyDown() || sLevel.getBlockState(interactBp).isAir()) return;
 
         ServerShip ship = ShipUtil.getServerShipAt(sLevel, interactBp);
         if (ship == null) return;

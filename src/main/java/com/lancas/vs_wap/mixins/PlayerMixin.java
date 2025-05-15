@@ -116,14 +116,16 @@ public abstract class PlayerMixin extends LivingEntity implements ICanHoldShip {
 
         ServerShip holdenShip = ShipUtil.getServerShipByID(sLevel, prevHoldShipId.get());
         if (holdenShip == null) {
-            EzDebug.fatal("fail to unhold ship because holdingId>0 but the ship is null");
+            EzDebug.warn("fail to unhold ship because holdingId>0 but the ship is null");
             Dest.setIfExistDest(prevHoldShipIdDest, null);
+            eachSlotHoldShipId.remove(slot.slotName());
             return;
         }
         HoldableAttachment holdable = holdenShip.getAttachment(HoldableAttachment.class);
         if (holdable == null) {
-            EzDebug.log("can't hold ship because no holdable att");
+            EzDebug.fatal("the holden ship has no holdable att");
             Dest.setIfExistDest(prevHoldShipIdDest, null);
+            eachSlotHoldShipId.remove(slot.slotName());
             return;
         }
 

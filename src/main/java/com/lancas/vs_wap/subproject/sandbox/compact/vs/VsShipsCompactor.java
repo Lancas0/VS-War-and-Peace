@@ -1,7 +1,6 @@
 package com.lancas.vs_wap.subproject.sandbox.compact.vs;
 
 import com.lancas.vs_wap.foundation.BiTuple;
-import com.lancas.vs_wap.subproject.sandbox.ISandBoxWorld;
 import com.lancas.vs_wap.subproject.sandbox.api.ISavedObject;
 import com.lancas.vs_wap.subproject.sandbox.ship.ISandBoxShip;
 import com.lancas.vs_wap.util.NbtBuilder;
@@ -69,7 +68,7 @@ public class VsShipsCompactor implements ISavedObject<VsShipsCompactor> {
         return new NbtBuilder()
             .putEach("wrapped_vs_ship", wrappedVsShips.values(), WrappedVsShip::saved)
             .putMap("vs_id_to_uuid", vsIdToUuid, (k, v) ->
-                new NbtBuilder().putNumber("vs_id", k).putUUID("uuid", v).get()
+                new NbtBuilder().putLong("vs_id", k).putUUID("uuid", v).get()
             ).get();
     }
     @Override

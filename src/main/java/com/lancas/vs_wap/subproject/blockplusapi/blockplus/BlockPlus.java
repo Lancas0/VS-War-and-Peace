@@ -123,7 +123,7 @@ public abstract class BlockPlus extends Block {
         super.registerDefaultState(newStateBuilder.create());
     }*/
     @Override
-    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+    protected void createBlockStateDefinition(StateDefinition.@NotNull Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
         getAdders().forEach(p -> {
             p.onCreateBlockStateDefinition(builder);
@@ -138,7 +138,7 @@ public abstract class BlockPlus extends Block {
     }
 
     @Override
-    public VoxelShape getShape(BlockState state, BlockGetter p_60556_, BlockPos p_60557_, CollisionContext p_60558_) {
+    public VoxelShape getShape(@NotNull BlockState state, @NotNull BlockGetter p_60556_, @NotNull BlockPos p_60557_, @NotNull CollisionContext p_60558_) {
         final VoxelShape[] shape = {Shapes.empty()};
         getAdders().forEach(p ->
             shape[0] = Shapes.join(shape[0], p.appendShape(state), BooleanOp.OR)
@@ -147,7 +147,7 @@ public abstract class BlockPlus extends Block {
     }
 
     @Override
-    public int getSignal(BlockState state, BlockGetter blockAccess, BlockPos pos, Direction side) {
+    public int getSignal(@NotNull BlockState state, @NotNull BlockGetter blockAccess, @NotNull BlockPos pos, @NotNull Direction side) {
         final AtomicInteger signal = new AtomicInteger(0);
         getAdders().forEach(p -> signal.addAndGet(p.getRedstoneModifyValue(state, blockAccess, pos, side)));
 
@@ -158,17 +158,17 @@ public abstract class BlockPlus extends Block {
         return signal.get();
     }
     @Override
-    public boolean isSignalSource(BlockState state) {
+    public boolean isSignalSource(@NotNull BlockState state) {
         AtomicBoolean isSrc = new AtomicBoolean(false);
         getAdders().forEach(p -> isSrc.set(isSrc.get() || p.provideRedstoneSrcVerification(state)));
         return isSrc.get();
     }
     @Override
-    public int getDirectSignal(BlockState state, BlockGetter blockAccess, BlockPos pos, Direction side) {  //todo ?
+    public int getDirectSignal(@NotNull BlockState state, @NotNull BlockGetter blockAccess, @NotNull BlockPos pos, @NotNull Direction side) {  //todo ?
         return getSignal(state, blockAccess, pos, side);
     }
     @Override
-    public int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos) {
+    public int getAnalogOutputSignal(@NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos) {
         AtomicInteger analogSignal = new AtomicInteger();
         getAdders().forEach(p -> {
             analogSignal.addAndGet(p.getAnalogModifySignal(state, level, pos));
@@ -183,37 +183,52 @@ public abstract class BlockPlus extends Block {
 
 
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+    public InteractionResult use(@NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull InteractionHand hand, @NotNull BlockHitResult hit) {
         AtomicBoolean anyFail = new AtomicBoolean(false);
+        AtomicBoolean preventLaterAction = new AtomicBoolean(false);
+
         getAdders().forEach(p -> {
-            if (p.onInteracted(state, level, pos, player, hand, hit) == InteractionResult.FAIL)
-                anyFail.set(true);
+            InteractionResult result = p.onInteracted(state, level, pos, player, hand, hit);
+
+            switch (result) {
+                case FAIL -> {
+                    anyFail.set(true);
+                    preventLaterAction.set(true);
+                }
+                case CONSUME, SUCCESS -> preventLaterAction.set(true);
+            }
         });
 
-        return anyFail.get() ? InteractionResult.FAIL : InteractionResult.PASS;
+        //todo success for arm swing animation
+        if (anyFail.get())
+            return InteractionResult.FAIL;
+        if (preventLaterAction.get())
+            return InteractionResult.CONSUME;
+
+        return InteractionResult.PASS;
     }
 
 
     //todo check redstone signal at place
     @Override
-    public void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving) {
+    public void neighborChanged(@NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull Block block, @NotNull BlockPos fromPos, boolean isMoving) {
         super.neighborChanged(state, level, pos, block, fromPos, isMoving);
         getAdders().forEach(p -> p.onNeighborChanged(state, level, pos, block, fromPos, isMoving));
     }
 
     @Override
-    public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
+    public void setPlacedBy(@NotNull Level level, @NotNull BlockPos pos, @NotNull BlockState state, @Nullable LivingEntity placer, @NotNull ItemStack stack) {
         super.setPlacedBy(level, pos, state, placer, stack);
         getAdders().forEach(p -> p.onPlacedBy(level, pos, state, placer, stack));
     }
     @Override
-    public void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean isMoving) {
+    public void onPlace(@NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull BlockState oldState, boolean isMoving) {
         super.onPlace(state, level, pos, oldState, isMoving);
         getAdders().forEach(p -> p.onPlace(state, level, pos, oldState, isMoving));
     }
 
     @Override
-    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
+    public void onRemove(@NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull BlockState newState, boolean isMoving) {
         super.onRemove(state, level, pos, newState, isMoving);
         getAdders().forEach(p -> p.onRemove(state, level, pos, newState, isMoving));
     }

@@ -1,22 +1,14 @@
 package com.lancas.vs_wap.register;
 
+import com.lancas.vs_wap.content.WapBlocks;
 import com.lancas.vs_wap.content.block.blocks.industry.ProjectCenter;
 import com.lancas.vs_wap.debug.EzDebug;
 import com.lancas.vs_wap.ship.attachment.ProjectingShipAtt;
 import com.lancas.vs_wap.ship.helper.builder.ShipBuilder;
 import com.lancas.vs_wap.util.ShipUtil;
 import com.lancas.vs_wap.util.StrUtil;
-import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.FluidState;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -26,16 +18,23 @@ import org.valkyrienskies.core.api.ships.ServerShip;
 public class EntityChangShipBlockEvt {
 
 
-    @SubscribeEvent
-    public static void onPlaceOnProjectingShip(BlockEvent.EntityPlaceEvent event) {
-        if (!(event.getLevel() instanceof ServerLevel level)) return;
+    //@SubscribeEvent
+    //public static void onPlaceOnProjectingShip(BlockEvent.EntityPlaceEvent event) {
+        /*if (!(event.getLevel() instanceof ServerLevel level)) return;
         ServerShip ship = ShipUtil.getServerShipAt(level, event.getPos());
         ProjectingShipAtt att = ProjectingShipAtt.getFrom(ship);
-        if (att == null) return;
+        if (att == null) return;*/
+
+        /*EzDebug.log("place aginst:" + StrUtil.getBlockName(event.getPlacedAgainst()));
+        if (event.getPlacedAgainst().getBlock() instanceof ProjectCenter) {
+            level.setBlock(event.getPos(), Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
+            event.setCanceled(true);
+            return;
+        }*/
 
         //event.setCanceled(true);
-        BlockState placedBlock = event.getPlacedBlock();
-        att.onUpdateBlock(level, event.getPos());
+        //BlockState placedBlock = event.getPlacedBlock();
+        //att.onUpdateBlock(level, event.getPos());
 
 
         //EzDebug.log("placed block:" + StrUtil.getBlockName(event.getPlacedBlock()) + ", level block:" + StrUtil.getBlockName(event.getLevel().getBlockState(event.getPos())));
@@ -55,7 +54,7 @@ public class EntityChangShipBlockEvt {
                 EzDebug.log("before grow:" + player.getItemInHand(player.getUsedItemHand()).getCount());
             }
         }*/
-    }
+    //}
     /*@SubscribeEvent
     public static void onBlockPlace(PlayerInteractEvent.RightClickBlock event) {
         if (!(event.getLevel() instanceof ServerLevel level)) return;
@@ -108,21 +107,29 @@ public class EntityChangShipBlockEvt {
         //EzDebug.log("after set:" + StrUtil.getBlockName(level.getBlockState(event.getPos())));
 
         //it's impossible to remove project center in a projecting ship
-        EzDebug.log("it's project center?: " + (event.getState().getBlock() instanceof ProjectCenter));
+        // EzDebug.log("it's project center?: " + (event.getState().getBlock() instanceof ProjectCenter));
         if (event.getState().getBlock() instanceof ProjectCenter) {
+            //level.setBlock(event.getPos(), Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL_IMMEDIATE);
             event.setCanceled(true);
             EzDebug.highlight("cancel the event");
+            return;
         }
 
-        EzDebug.highlight("update projecting ship");
-        level.setBlock(event.getPos(), Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL_IMMEDIATE);
-        att.onUpdateBlock(level, event.getPos());
+        ShipBuilder builder = ShipBuilder.modify(level, ship);
+        int prevBreakCnt = builder.getBlockCnt();
+
+        if (prevBreakCnt == 1) {
+            event.setCanceled(true);
+            level.setBlockAndUpdate(event.getPos(), Blocks.AIR.defaultBlockState());  //must cancel and removeAndUpdate or the ship will disappear
+            level.setBlockAndUpdate(builder.getInitialBP(), WapBlocks.Industrial.PROJECT_CENTER.getDefaultState());  //todo place at really center
+        }
+
+        //EzDebug.highlight("update projecting ship");
+        //level.setBlock(event.getPos(), Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL_IMMEDIATE);
+        //att.onUpdateBlock(level, event.getPos());
 
         //level.setBlock(event.getPos(), Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL_IMMEDIATE);
 
-        /*
-        boolean empty = ShipBuilder.modify(level, ship).isEmpty();
-        EzDebug.log("is ship empty?:" + empty);*/
 
         //event.setCanceled(true); // 取消原版掉落
         //event.setExpToDrop(0);

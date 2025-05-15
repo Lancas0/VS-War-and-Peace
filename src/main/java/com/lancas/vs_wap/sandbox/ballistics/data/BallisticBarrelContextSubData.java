@@ -24,7 +24,7 @@ public class BallisticBarrelContextSubData implements IComponentData<BallisticBa
     @Override
     public CompoundTag saved() {
         return new NbtBuilder()
-            .putNumber("exited_barrel_ticks", exitedBarrelTicks)
+            .putInt("exited_barrel_ticks", exitedBarrelTicks)
             .putBoolean("in_barrel_since_launch", alwaysInBarrelSinceLaunch)
             .putBoolean("applied_high_pressure_stage", appliedHighPressureStage)
             //.putBoolean("terminated", terminated)

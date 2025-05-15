@@ -12,7 +12,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
@@ -31,7 +30,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.BiConsumer;
 
 public class SectionShipSchemeData implements IShipSchemeData {
     @JsonAutoDetect(
@@ -269,12 +267,17 @@ public class SectionShipSchemeData implements IShipSchemeData {
     }
 
     @Override
+    public boolean isEmpty() {
+        return shipData.isEmpty();  //todo maybe there is empty entry?
+    }
+
+    @Override
     public CompoundTag saved() {
         AtomicInteger sec_data = new AtomicInteger();
         NbtBuilder nbt = new NbtBuilder();
         nbt.putEachSimpleJackson("section_locations", shipData.keySet());
         nbt.putEach("section_data", shipData.values(), (d) -> { sec_data.getAndIncrement(); return d.getDataTag(); });
-        nbt.putNumber("scale", scale);
+        nbt.putDouble("scale", scale);
 
         //EzDebug.log("key:" + shipData.keySet().size() + ", val:" + shipData.values().size() + ", loaded:" + ", val:" + sec_data.get());
         //nbt.putEachSimpleJackson("section_data", shipData.values());

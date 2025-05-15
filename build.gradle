@@ -116,6 +116,10 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
     mavenLocal()
+    flatDir {
+        dir 'libs'
+    }
+
     maven {
         name = 'Kotlin for Forge'
         url = 'https://thedarkcolour.github.io/KotlinForForge/'
@@ -213,9 +217,7 @@ repositories {
 
     // If you have mod jar dependencies in ./libs, you can declare them as a repository like so.
     // See https://docs.gradle.org/current/userguide/declaring_repositories.html#sub:flat_dir_resolver
-    flatDir {
-        dir 'libs'
-    }
+
 }
 
 dependencies {
@@ -264,7 +266,15 @@ dependencies {
     runtimeOnly fg.deobf("maven.modrinth:umyGl7zF:g5igndAv")  //kubejs
     runtimeOnly fg.deobf("maven.modrinth:l6YH9Als:4FXHDE9F")  //spark
     runtimeOnly fg.deobf("maven.modrinth:nvQzSEkH:9gf6jOO0")  //jade
+    //runtimeOnly fg.deobf("maven.modrinth:dCKRaeBC:YncE2C0Y")  //Forgematica
+    //runtimeOnly fg.deobf("maven.modrinth:SKI34J7B:6lS8JYz3")  //MaFgLib
+
     //runtimeOnly fg.deobf("maven.modrinth:qS1ot7R2:FM7dnwSg")  //vmod
+
+    //runtimeOnly fg.deobf("curse.maven:better-tips-nbt-tag-682363:5932570")  //Better Tag NBT Tips
+    //runtimeOnly files("libs/clockwork-1.20.1-0.1.16-forge-b3b22e39fe.jar")
+    //runtimeOnly files("libs:clockwork-1.20.1-0.1.16-forge:b3b22e39fe")
+
 
     //runtimeOnly fg.deobf("maven.modrinth:nR8D9Tc2:a7n43YYk")  //vs addition
     //runtimeOnly fg.deobf("libs:tallyho:3.1.0c4")

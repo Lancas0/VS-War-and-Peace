@@ -1,6 +1,7 @@
 package com.lancas.vs_wap.content;
 
 //import com.lancas.vs_wap.content.items.docker.DockerItem;
+import com.lancas.vs_wap.content.item.items.BreechUnloader;
 import com.lancas.vs_wap.content.item.items.DebugTool;
 import com.lancas.vs_wap.content.item.items.EinherjarWand;
 import com.lancas.vs_wap.content.item.items.GreenPrint;
@@ -60,6 +61,12 @@ public class WapItems {
 
     public static final ItemEntry<DebugTool> DEBUG_TOOL = REGISTRATE
         .item("debug_tool", DebugTool::new)
+        .properties(p -> p.stacksTo(1))
+        .register();
+
+
+    public static final ItemEntry<BreechUnloader> BREECH_UNLOADER = REGISTRATE
+        .item("breech_unloader", BreechUnloader::new)
         .properties(p -> p.stacksTo(1))
         .register();
 

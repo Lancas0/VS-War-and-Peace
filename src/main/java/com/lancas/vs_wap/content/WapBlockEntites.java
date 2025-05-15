@@ -1,6 +1,7 @@
 package com.lancas.vs_wap.content;
 
 import com.lancas.vs_wap.content.block.blockentity.*;
+import com.lancas.vs_wap.renderer.industry.ProjectorLenRenderer;
 import com.tterrag.registrate.util.entry.BlockEntityEntry;
 
 import static com.lancas.vs_wap.ModMain.REGISTRATE;
@@ -78,6 +79,12 @@ public class WapBlockEntites {
     public static final BlockEntityEntry<VSProjectorBE> VS_PROJECTOR_BE = REGISTRATE
         .blockEntity("vs_projector_be", VSProjectorBE::new)
         .validBlocks(Industrial.VS_PROJECTOR)
+        .register();
+
+    public static final BlockEntityEntry<ProjectorLenBe> PROJECTOR_LEN_BE = REGISTRATE
+        .blockEntity("projector_len_be", ProjectorLenBe::new)
+        .validBlocks(Industrial.PROJECT_LEN)
+        .renderer(() -> ProjectorLenRenderer::new)
         .register();
 
     public static void register() { }

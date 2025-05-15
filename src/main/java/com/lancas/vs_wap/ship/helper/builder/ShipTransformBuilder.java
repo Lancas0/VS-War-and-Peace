@@ -1,9 +1,8 @@
 package com.lancas.vs_wap.ship.helper.builder;
 
-import org.joml.Quaterniond;
-import org.joml.Quaterniondc;
-import org.joml.Vector3d;
-import org.joml.Vector3dc;
+import net.minecraft.core.Direction;
+import org.joml.*;
+import org.joml.primitives.AABBic;
 import org.valkyrienskies.core.api.ships.Ship;
 import org.valkyrienskies.core.api.ships.properties.ShipTransform;
 import org.valkyrienskies.core.impl.game.ships.ShipTransformImpl;
@@ -47,6 +46,28 @@ public class ShipTransformBuilder {
         posInWorld.set(inPosInWorld);
         return this;
     }
+    public ShipTransformBuilder moveWorldPos(Vector3dc movement) {
+        posInWorld.add(movement);
+        return this;
+    }
+    public ShipTransformBuilder setWorldPosSoThatFaceCenterAt(AABBic shipAABB, Matrix4dc shipToWorld, Direction face, Vector3dc moveTo) {
+        Vector3d faceCenterInShip = shipAABB.center(new Vector3d());
+        switch (face) {
+            case UP -> faceCenterInShip.setComponent(1, shipAABB.maxY());  //xz upper face, set y max
+            case DOWN -> faceCenterInShip.setComponent(1, shipAABB.minY());
+            case SOUTH -> faceCenterInShip.setComponent(2, shipAABB.maxZ());  //xy forward face, set z max
+            case NORTH -> faceCenterInShip.setComponent(2, shipAABB.minZ());
+            case EAST -> faceCenterInShip.setComponent(0, shipAABB.maxX());  //yz left face, set x max
+            case WEST -> faceCenterInShip.setComponent(0, shipAABB.minX());
+
+            default -> faceCenterInShip.setComponent(1, shipAABB.maxY());  //should never be called
+        }
+
+
+        Vector3d worldFaceCenter = shipToWorld.transformPosition(faceCenterInShip, new Vector3d());
+        Vector3d movement = moveTo.sub(worldFaceCenter, new Vector3d());
+        return moveWorldPos(movement);
+    }
     public ShipTransformBuilder setXInWorld(double x) {
         posInWorld.setComponent(0, x);
         return this;
@@ -65,6 +86,10 @@ public class ShipTransformBuilder {
     }
     public ShipTransformBuilder setRotation(Quaterniondc inRotation) {
         rotation.set(inRotation);
+        return this;
+    }
+    public ShipTransformBuilder rotate(Quaterniondc rot) {
+        rot.mul(rotation, rotation);
         return this;
     }
     public ShipTransformBuilder setScale(Vector3dc inScale) {

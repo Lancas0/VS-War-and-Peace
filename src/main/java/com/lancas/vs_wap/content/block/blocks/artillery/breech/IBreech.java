@@ -5,13 +5,19 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.lancas.vs_wap.content.block.blocks.cartridge.IPrimer;
 import com.lancas.vs_wap.content.block.blocks.cartridge.propellant.IPropellant;
+import com.lancas.vs_wap.content.item.items.docker.IDocker;
+import com.lancas.vs_wap.content.item.items.docker.ShipDataDocker;
 import com.lancas.vs_wap.content.saved.BlockRecordRWMgr;
+import com.lancas.vs_wap.content.saved.ConstraintsMgr;
 import com.lancas.vs_wap.content.saved.IBlockRecord;
 import com.lancas.vs_wap.debug.EzDebug;
 import com.lancas.vs_wap.foundation.BiTuple;
+import com.lancas.vs_wap.foundation.LazyTicks;
 import com.lancas.vs_wap.foundation.TriTuple;
 import com.lancas.vs_wap.foundation.api.Dest;
+import com.lancas.vs_wap.foundation.data.SavedBlockPos;
 import com.lancas.vs_wap.ship.attachment.HoldableAttachment;
+import com.lancas.vs_wap.ship.data.RRWChunkyShipSchemeData;
 import com.lancas.vs_wap.ship.feature.hold.ICanHoldShip;
 import com.lancas.vs_wap.ship.feature.hold.ShipHoldSlot;
 import com.lancas.vs_wap.subproject.blockplusapi.blockplus.adder.DirectionAdder;
@@ -37,6 +43,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -45,16 +52,18 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3d;
+import org.joml.Vector3dc;
 import org.joml.Vector3i;
 import org.joml.Vector3ic;
+import org.joml.primitives.AABBd;
 import org.valkyrienskies.core.api.ships.ServerShip;
 import org.valkyrienskies.core.api.ships.Ship;
 import org.valkyrienskies.mod.common.VSGameUtilsKt;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 public interface IBreech {
@@ -64,28 +73,80 @@ public interface IBreech {
     )
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class BreechRecord implements IBlockRecord {
-        //private BlockPos breechPos;
-        private int maxColdDown = 0;
-        private int coldDown = 0;
+        private SavedBlockPos breechBp;
+        private int maxFireColdDown = 0;
+        private int fireColdDown = 0;
+        private int loadColdDown = 0;
+        private long inShipId = -1;
+        private LazyTicks serverTickLazy = new LazyTicks(1);
 
         //ship data, att constraint uuid, ori constraint uuid, local forward dir
         //ship data: uuid, localDir, length
-        public final List<TriTuple<BiTuple<UUID, Vector3ic>, UUID, UUID>> loadedShipData = new ArrayList<>();
+        public final List<TriTuple<BiTuple<UUID, Vector3i>, UUID, UUID>> loadedShipData = new ArrayList<>();
+        //public final Set<Long> loadedVsShip = new HashSet<>();  //todo remove after hold or remove or fire
         private double loadedLen = 0;  //the len that loaded ships occupied in barrel or breech
 
         @JsonIgnore
-        private final Consumer<ServerLevel> coldDownTicker = l -> {
-            if (coldDown > 0) {
-                coldDown--;
-                EzDebug.log("colding down");
+        private final Consumer<ServerLevel> breechServerTick = l -> {
+            if (fireColdDown > 0) {
+                fireColdDown--;
+                //EzDebug.log("colding down");
+            }
+            if (loadColdDown > 0) {
+                loadColdDown--;
+            }
+
+            if (!serverTickLazy.shouldWork()) return;
+
+            if (canLoad()) {
+                Dest<BlockState> stateDest = new Dest<>();
+                IBreech iBreech = WorldUtil.getBlockInterface(l, breechBp.toBp(), stateDest);
+                if (iBreech == null) {
+                    EzDebug.warn("can't get iBreech at " + breechBp.toBp().toShortString());
+                    return;
+                }
+
+                Vector3d breechWorldPos = WorldUtil.getWorldCenter(l, breechBp.toBp());
+                AABBd breechInnerBound = JomlUtil.dCenterExtended(breechWorldPos, 0.35);  //todo hell breech will reload multi times?
+                //CreateClient.OUTLINER.showAABB("breechInner", JomlUtil.aabb(breechInnerBound)).lineWidth(1/16f);
+                for (Ship ship : VSGameUtilsKt.getShipsIntersecting(l, breechInnerBound)) {
+                    ServerShip sShip = (ServerShip)ship;
+
+                    if (ship.getId() == inShipId || ConstraintsMgr.anyLoadedConstraintWith(l, ship.getId()) || ICanHoldShip.isShipHolden(sShip))
+                        continue;
+
+                    HoldableAttachment holdable = sShip.getAttachment(HoldableAttachment.class);
+                    if (holdable == null)
+                        continue;
+
+                    Vector3dc worldHoldPivotCenter = WorldUtil.getWorldCenter(sShip, holdable.holdPivotBpInShip.toBp());
+                    AABBd holdPivotBound = JomlUtil.dCenterExtended(worldHoldPivotCenter, 0.5);
+
+                    //CreateClient.OUTLINER.showAABB("holdPivotBound", JomlUtil.aabb(holdPivotBound)).lineWidth(1/16f);
+
+                    if (breechInnerBound.intersectsAABB(holdPivotBound)) {
+                        iBreech.loadMunitionShip(l, breechBp.toBp(), stateDest.get(), sShip, false);
+                        //loadedVsShip.add(sShip.getId());
+                    }
+                }
             }
         };
 
         private BreechRecord() { }
-        public BreechRecord(int inMaxColdDown) { /*breechPos = inBreechPos;*/ maxColdDown = inMaxColdDown; }
+        public BreechRecord(ServerLevel level, BlockPos inBreechBp, int inMaxColdDown) {
+            breechBp = new SavedBlockPos(inBreechBp);
+            maxFireColdDown = inMaxColdDown;
 
-        public boolean isCold() { return coldDown <= 0; }
-        public void startColdDown() { coldDown = maxColdDown; }
+            ServerShip inShip = ShipUtil.getServerShipAt(level, inBreechBp);
+            if (inShip != null)
+                inShipId = inShip.getId();
+        }
+
+        public boolean isCold() { return fireColdDown <= 0; }
+        public void startColdDown() { fireColdDown = maxFireColdDown; }
+        public void setLoadColdDown(int cd) { loadColdDown = cd; }
+        public boolean canLoad() { return loadColdDown <= 0; }
+
         public boolean loadShip(ServerLevel level, HoldableAttachment holdable, @Nullable ServerShip artilleryShip, BlockPos breechBp, Direction breechBlockDir) {
             BlockClusterData saShipBlockData = new BlockClusterData();
 
@@ -161,6 +222,119 @@ public interface IBreech {
             loadedLen += loadingLen;
             return true;
         }
+        public boolean loadDockerShip(ServerLevel level, ItemStack stack, @Nullable ServerShip artilleryShip, BlockPos breechBp, Direction breechBlockDir) {
+            if (!(stack.getItem() instanceof IDocker docker))
+                return false;
+
+            //todo testing
+            RRWChunkyShipSchemeData shipDataReader = (RRWChunkyShipSchemeData)docker.getShipDataReader(stack);
+
+            AtomicReference<HoldableAttachment> holdableAtt = new AtomicReference<>(null);
+            //Vector3i startPos = new Vector3i();
+
+            BlockClusterData blockData = shipDataReader.createSaShipBlockData((bData, att, offsetBps) -> {
+                if (!(att instanceof HoldableAttachment holdable)) return;
+
+                offsetBps.findFirst().ifPresentOrElse(
+                    pivot -> {
+                        bData.moveAll(pivot.negate(new Vector3i()));  //move blocks so that pivot will be at (0, 0, 0)
+                        //startPos.set(pivot);
+                        holdableAtt.set(holdable);
+                    },
+                    () -> EzDebug.warn("get holdable but can't find pivot, also holdableAtt wouldn't be set")
+                );
+            });
+
+            if (holdableAtt.get() == null) {
+                EzDebug.warn("can't load because holdableAtt is null");
+                return false;
+            }
+
+            //Vector3ic localDirV = docker.getLocalHoldForward(stack);
+            //Vector3ic startPos = docker.getLocalPivot(stack);
+            //todo temp
+            Vector3ic startPos = new Vector3i(0, 0, 0);  //pivot is at (0, 0, 0) so startPos is (0, 0, 0)
+            Direction localDir = holdableAtt.get().forwardInShip;
+
+            BlockPos.MutableBlockPos curPos = new BlockPos.MutableBlockPos(startPos.x(), startPos.y(), startPos.z());
+
+            shipDataReader.foreachBlockInLocal((blockPos, state) -> {
+                EzDebug.warn("bp:" + StrUtil.poslike(blockPos) + ", block:" + StrUtil.getBlockName(state));
+            });
+
+            /*while (true) {
+                BlockState state = shipDataReader.getBlockStateByLocalPos(curPos);
+                //EzDebug.log("curPos:" + StrUtil.poslike(curPos) + ", get state:" + StrUtil.getBlockName(state));
+                if (state.isAir()) break;
+
+                Vector3i localPos = new Vector3i(curPos.getX() - startPos.x(), curPos.getY() - startPos.y(), curPos.getZ() - startPos.z());
+                saShipBlockData.setBlock(localPos, state);
+                curPos.move(localDir);
+            }
+
+            int loadingLen = saShipBlockData.getBlockCnt();
+            if (loadingLen <= 0) {
+                EzDebug.warn("try to load a 0 length ship!");
+                return false;
+            }*/
+
+            //make sa ship
+            RigidbodyData rigidbodyData = new RigidbodyData();
+            SandBoxServerShip saMunitionShip = new SandBoxServerShip(UUID.randomUUID(), rigidbodyData, blockData);
+
+            SandBoxServerWorld saWorld = SandBoxServerWorld.getOrCreate(level);
+            SandBoxServerWorld.addShipAndSyncClient(level, saMunitionShip);
+
+            ISliderConstraint attConstraint;
+            if (artilleryShip == null) {
+                attConstraint = new SliderConstraint(
+                    UUID.randomUUID(), saWorld.wrapOrGetGround().getUuid(), saMunitionShip.getUuid(),
+                    WorldUtil.getWorldCenter(level, breechBp), new Vector3d(),
+                    JomlUtil.dNormal(breechBlockDir)
+                );
+            } else {
+                attConstraint = new SliderOnVsConstraint(
+                    UUID.randomUUID(), artilleryShip.getId(), saMunitionShip.getUuid(),
+                    JomlUtil.dCenter(breechBp), new Vector3d(),
+                    JomlUtil.dNormal(breechBlockDir)
+                );
+            }
+            attConstraint.setFixedDistance(0.0);
+            saWorld.getConstraintSolver().addConstraint(attConstraint);
+
+            IConstraint oriConstraint;
+            if (artilleryShip == null) {
+                oriConstraint = new OrientationConstraint(
+                    UUID.randomUUID(), saWorld.wrapOrGetGround().getUuid(), saMunitionShip.getUuid(),
+                    HoldableAttachment.rotateForwardToDirection(breechBlockDir), HoldableAttachment.rotateForwardToDirection(localDir)
+                );
+            } else {
+                oriConstraint = new OrientationOnVsConstraint(
+                    UUID.randomUUID(), artilleryShip.getId(), saMunitionShip.getUuid(),
+                    HoldableAttachment.rotateForwardToDirection(breechBlockDir), HoldableAttachment.rotateForwardToDirection(localDir)
+                );
+            }
+            saWorld.getConstraintSolver().addConstraint(oriConstraint);
+
+            int loadingLen = blockData.getBlockCnt();  //todo is blockCnt of blockData the len?
+            for (int i = loadedShipData.size() - 1; i >= 0; --i) {
+                ISliderConstraint curSliderConstraint = saWorld.getConstraintSolver().getConstraint(loadedShipData.get(i).getSecond());
+                if (curSliderConstraint == null) {
+                    EzDebug.warn("the constraint is null, may the ship is already removed, will remove this loaded ship");
+                    loadedShipData.remove(i);
+                    continue;
+                }
+
+                curSliderConstraint.addFixedDistance(loadingLen);
+                EzDebug.warn("add loading len:" + loadingLen);
+            }
+            loadedShipData.add(new TriTuple<>(
+                new BiTuple<>(saMunitionShip.getUuid(), JomlUtil.iNormal(localDir)),
+                attConstraint.getUuid(), oriConstraint.getUuid()
+            ));
+            loadedLen += loadingLen;
+            return true;
+        }
 
 
         /*public ChunkLoadedTicker chunkLoadedTicker() {
@@ -171,18 +345,19 @@ public interface IBreech {
 
         @Override
         public void onAdded(BlockPos bp, BlockRecordRWMgr mgr) {
-            mgr.events.addChunkLoadedServerTicker(bp, coldDownTicker);
+            mgr.events.addChunkLoadedServerTicker(bp, breechServerTick);
         }
         @Override
         public void onRemoved(BlockPos bp, BlockRecordRWMgr mgr) {
-            mgr.events.removeChunkLoadedServerTicker(bp, coldDownTicker);
+            mgr.events.removeChunkLoadedServerTicker(bp, breechServerTick);
         }
     }
 
 
-    public boolean getLoadedMunitionData(Level level, BlockPos breechBp, Dest<Ship> munitionShip, Dest<Boolean> isTriggered, Dest<Direction> munitionDirInShip);
-    public boolean isDockerLoadable(Level level, BlockPos breechBp, ItemStack stack);
+    //public boolean getLoadedMunitionData(Level level, BlockPos breechBp, Dest<Ship> munitionShip, Dest<Boolean> isTriggered, Dest<Direction> munitionDirInShip);
+    public boolean canLoadDockerNow(Level level, BlockPos breechBp, ItemStack stack);
     public void loadMunition(ServerLevel level, BlockPos breechBp, BlockState breechState, ItemStack munitionDocker);
+    public void loadMunitionShip(ServerLevel level, BlockPos breechBp, BlockState breechState, ServerShip vsShip, boolean simulate);
 
     //public void ejectShell(Level level, BlockPos breechBp);
     //public Set<BlockPos> findBarrelWithBreechPoses(Level level, BlockPos breechPos, BlockState breechState);
@@ -197,10 +372,11 @@ public interface IBreech {
             .moveFaceTo(munitionDirInShip, breechWorldPos)
             .setLocalVelocity(JomlUtil.dNormal(munitionDirInShip, -20));
     }*/
-    public void unloadShell(ServerLevel level, ServerShip shellShip, Direction shellDirInShip, BlockPos breechBp);
+    //public void unloadShell(ServerLevel level, BlockPos breechBp, Direction shellDirInShip, BlockPos breechBp);
+    public void unloadShell(ServerLevel level, BlockPos breechBp, BlockState breechState);
 
     //old breech interaction apply constraint on vs ship
-    /*public static InteractableBlockAdder breechInteraction() {
+    /*public static InteractableBlockAdder hellBreechInteraction() {
         return new InteractableBlockAdder() {
             @Override
             public InteractionResult onInteracted(BlockState breechState, Level level, BlockPos breechBp, Player player, InteractionHand hand, BlockHitResult hit) {
@@ -362,7 +538,7 @@ public interface IBreech {
     public static boolean foreachMunition(ServerLevel level, BlockPos breechBp, Vector3ic projectileAppendDir, boolean simulate, Dest<Double> totPropellingEngDest, BlockClusterData projectileBlockData) {
         BreechRecord record = BlockRecordRWMgr.getRecord(level, breechBp);
         if (record == null) {
-            EzDebug.warn("can't get record at " + breechBp.toShortString());
+            EzDebug.warn("[foreachMunition] can't get record at " + breechBp.toShortString());
             return false;
         }
 
@@ -388,6 +564,7 @@ public interface IBreech {
 
             IBlockClusterDataReader curShipBlockData = ship.getBlockCluster().getDataReader();
 
+            Direction projectileBlockDir = JomlUtil.nearestDir(projectileAppendDir);
             Vector3ic curDir = shipData.getSecond();
             Vector3i curLocalPos = new Vector3i();
 
@@ -431,7 +608,11 @@ public interface IBreech {
                         break;
                     }
 
-                    projectileBlockData.setBlock(curProjectileAppendLocalPos, state);
+                    BlockState toPutState = state;
+                    if (toPutState.hasProperty(DirectionAdder.FACING)) {
+                        toPutState = state.setValue(DirectionAdder.FACING, projectileBlockDir);
+                    }
+                    projectileBlockData.setBlock(curProjectileAppendLocalPos, toPutState);
                     curProjectileAppendLocalPos.add(projectileAppendDir);
                     if (!simulate) {
                         ship.getBlockCluster().setBlock(curLocalPos, Blocks.AIR.defaultBlockState());
@@ -446,10 +627,34 @@ public interface IBreech {
         if (first) return false;  //didn't iter any ship
         return true;
     }
+    public static void ejectAllMunition(ServerLevel level, BlockPos breechBp, Supplier<Vector3dc> randSpawnPosGetter, Supplier<Vector3dc> randDeltaMoveGetter, boolean clear) {
+        BreechRecord record = BlockRecordRWMgr.getRecord(level, breechBp);
+        if (record == null) {
+            EzDebug.warn("can't get record");
+            return;
+        }
+
+        SandBoxServerWorld saWorld = SandBoxServerWorld.getOrCreate(level);
+        record.loadedShipData.stream().map(x -> saWorld.getShip(x.getFirst().getFirst())).filter(Objects::nonNull).forEach(s -> {
+            if (s.getBlockCluster().getDataReader().getBlockCnt() <= 0) return;
+
+            ItemStack shellStack = ShipDataDocker.stackOfSa(level, s);
+
+            Vector3dc spawnPos = randSpawnPosGetter.get();
+            Vector3dc deltaMove = randDeltaMoveGetter.get();
+
+            ItemEntity itemE = new ItemEntity(level, spawnPos.x(), spawnPos.y(), spawnPos.z(), shellStack);
+            itemE.setDeltaMovement(deltaMove.x(), deltaMove.y(), deltaMove.z());
+            level.addFreshEntity(itemE);
+        });
+
+        if (clear)
+            clearLoadedMunition(level, breechBp);
+    }
     public static void clearLoadedMunition(ServerLevel level, BlockPos breechBp) {
         BreechRecord record = BlockRecordRWMgr.getRecord(level, breechBp);
         if (record == null) {
-            EzDebug.warn("can't get record at " + breechBp.toShortString());
+            EzDebug.warn("[clearLoadedMunition] can't get record at " + breechBp.toShortString());
             return;
         }
 

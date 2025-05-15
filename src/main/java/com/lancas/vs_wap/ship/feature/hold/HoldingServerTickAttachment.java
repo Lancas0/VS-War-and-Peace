@@ -50,6 +50,7 @@ public class HoldingServerTickAttachment implements ServerTickListener {
         if (att != null) {
             att.level = null;
             att.ship = null;
+            att.playerHoldingThis = null;
         }
 
         ship.saveAttachment(HoldingServerTickAttachment.class, null);

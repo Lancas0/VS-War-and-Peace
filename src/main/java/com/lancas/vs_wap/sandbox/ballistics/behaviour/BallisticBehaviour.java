@@ -6,7 +6,6 @@ import com.lancas.vs_wap.sandbox.ballistics.data.BallisticData;
 import com.lancas.vs_wap.sandbox.ballistics.trigger.SandBoxTriggerInfo;
 import com.lancas.vs_wap.subproject.sandbox.SandBoxServerWorld;
 import com.lancas.vs_wap.subproject.sandbox.component.behviour.abs.ServerOnlyBehaviour;
-import com.lancas.vs_wap.subproject.sandbox.ship.ISandBoxShip;
 import net.minecraft.server.level.ServerLevel;
 import org.joml.*;
 
@@ -44,7 +43,7 @@ public class BallisticBehaviour extends ServerOnlyBehaviour<BallisticData> {
             //EzDebug.log("try phys ticks for all block");
         }*/
         data.initialStateData.foreachBallisticBlock(ship, (locPos, state, bb) ->
-            bb.physTick(ship)
+            bb.physTick(ship, data)
         );
     }
 

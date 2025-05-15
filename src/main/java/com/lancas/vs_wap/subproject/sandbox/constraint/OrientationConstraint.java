@@ -16,6 +16,7 @@ public class OrientationConstraint extends AbstractBiConstraint {
     private final Quaterniond localARot = new Quaterniond();
     private final Quaterniond invLocalBRot = new Quaterniond();
 
+    private OrientationConstraint() { super(null, null, null); }
     public OrientationConstraint(UUID inSelfUuid, UUID inAUuid, UUID inBUuid, Quaterniondc inLocalARot, Quaterniondc inLocalBRot) {
         super(inSelfUuid, inAUuid, inBUuid);
         localARot.set(inLocalARot);

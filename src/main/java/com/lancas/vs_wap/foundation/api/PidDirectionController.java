@@ -57,6 +57,23 @@ public class PidDirectionController {
         MathUtil.clamp(omegaAdd, maxOmega);
         return omegaAdd.mul(inertia);
     }
+    public Vector3d getNewOmega(Vector3dc worldTowards, Vector3dc expectTowards, Vector3dc curOmega, double dt) {
+        Vector3d targetOmega = getTargetOmega(worldTowards, expectTowards);
+
+        Vector3d error = targetOmega.sub(curOmega, new Vector3d());
+
+        integral.add(new Vector3d(error).mul(dt));
+        MathUtil.clamp(integral, maxOmega / Math.max(pid.i(), 1E-6));
+
+        Vector3d derivative = new Vector3d(error).sub(lastErr).div(dt);
+        lastErr.set(error);
+
+        Vector3d omegaAdd = new Vector3d()
+            .add(new Vector3d(error).mul(pid.p()))
+            .add(new Vector3d(integral).mul(pid.i()))
+            .add(new Vector3d(derivative).mul(pid.d()));
+        return curOmega.add(MathUtil.clamp(omegaAdd, maxOmega), new Vector3d());
+    }
 }
 
 

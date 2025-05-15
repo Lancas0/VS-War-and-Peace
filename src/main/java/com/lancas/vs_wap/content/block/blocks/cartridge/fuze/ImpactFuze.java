@@ -21,6 +21,7 @@ import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
 import org.joml.Vector3i;
@@ -48,7 +49,7 @@ public class ImpactFuze extends BlockPlus implements ICollisionTrigger, ISandBox
     }
 
     @Override
-    public void onPlace(BlockState state, Level p_60567_, BlockPos p_60568_, BlockState p_60569_, boolean p_60570_) {
+    public void onPlace(@NotNull BlockState state, @NotNull Level p_60567_, @NotNull BlockPos p_60568_, @NotNull BlockState p_60569_, boolean p_60570_) {
         super.onPlace(state, p_60567_, p_60568_, p_60569_, p_60570_);
     }
 

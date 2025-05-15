@@ -78,6 +78,8 @@ public interface IShipSchemeData {
     public ServerShip createShip(ServerLevel level);
     public ServerShip overwriteEmptyShip(ServerLevel level, ServerShip ship);
 
+    public boolean isEmpty();
+
     public CompoundTag saved();
     public IShipSchemeData load(CompoundTag tag);
 

@@ -56,8 +56,8 @@ public class ClientShardShipScheduler extends MultiTimesScheduler<SandBoxClientT
         public CompoundTag saved() {
             return new NbtBuilder()
                 .putEnum("state", state)
-                .putNumber("scheduled_times", scheduledTimes.get())
-                .putNumber("delay_ticks", delayTicks)
+                .putInt("scheduled_times", scheduledTimes.get())
+                .putInt("delay_ticks", delayTicks)
                 .putVector3d("spawn_pos", spawnPos)
                 .putBlockState("shard_block", shardBlock)
                 .putVector3d("exp_center_to_block_dir", expCenterToBlockDir)

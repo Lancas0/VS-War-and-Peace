@@ -4,32 +4,25 @@ import com.lancas.vs_wap.debug.EzDebug;
 import com.lancas.vs_wap.foundation.BiTuple;
 import com.lancas.vs_wap.subproject.sandbox.api.component.IComponentData;
 import com.lancas.vs_wap.subproject.sandbox.component.data.reader.IBlockClusterDataReader;
-import com.lancas.vs_wap.subproject.sandbox.ship.ScheduleShipData;
 import com.lancas.vs_wap.util.NbtBuilder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3i;
 import org.joml.Vector3ic;
 import org.joml.primitives.AABBd;
 import org.joml.primitives.AABBdc;
 
-import java.util.AbstractMap;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.BiConsumer;
 
 //todo note no sync
 public class BlockClusterData implements IComponentData<BlockClusterData>, IBlockClusterDataReader {
-    public static final AABBdc ZERO_AABB = new AABBd();
+    public static final AABBdc EMPTY_AABB = new AABBd();
 
     public static BlockClusterData EMPTY() {
         return new BlockClusterData();
@@ -56,6 +49,7 @@ public class BlockClusterData implements IComponentData<BlockClusterData>, IBloc
         BlockState oldState;
         synchronized (mutex) {
             oldState = blocks.put(localPosImmutable, state);
+            //set isLocalAABBDirty true because the method may be freq called
             isLocalAABBDirty = true;
         }
         return oldState;
@@ -71,6 +65,19 @@ public class BlockClusterData implements IComponentData<BlockClusterData>, IBloc
         return prevState;
     }
 
+    public void moveAll(Vector3ic movement) {
+        if (blocks.isEmpty()) return;
+
+        var prevBlocks = new HashMap<>(blocks);
+        synchronized (mutex) {
+            blocks.clear();
+            prevBlocks.forEach((localPos, state) -> {
+                blocks.put(localPos.add(movement, new Vector3i()), state);
+            });
+            //don't set isLocalAABBDirty but handle this in mutex.
+            localAABB.translate(movement.x(), movement.y(), movement.z());
+        }
+    }
 
 
     @Override
@@ -81,10 +88,10 @@ public class BlockClusterData implements IComponentData<BlockClusterData>, IBloc
                 //双重检查，确保不重复计算
                 if (isLocalAABBDirty) {
                     if (blocks.isEmpty()) {
-                        localAABB.set(ZERO_AABB);
+                        localAABB.set(EMPTY_AABB);
                     } else {
                         blocks.forEach((localPos, state) -> {
-                            if (localAABB.equals(ZERO_AABB)) {
+                            if (localAABB.equals(EMPTY_AABB)) {
                                 localAABB.setMin(localPos.x() - 0.5, localPos.y() - 0.5, localPos.z() - 0.5);
                                 localAABB.setMin(localPos.x() + 0.5, localPos.y() + 0.5, localPos.z() + 0.5);
                             } else {

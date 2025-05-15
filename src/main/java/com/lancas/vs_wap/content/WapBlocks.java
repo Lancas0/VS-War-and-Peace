@@ -5,9 +5,7 @@ import com.lancas.vs_wap.content.block.blocks.artillery.ArtilleryBarrelBlock;
 import com.lancas.vs_wap.content.block.blocks.artillery.ArtilleryPart1Block;
 import com.lancas.vs_wap.content.block.blocks.artillery.ArtilleryPlateBlock;
 import com.lancas.vs_wap.content.block.blocks.artillery.CartridgeRailBlock;
-import com.lancas.vs_wap.content.block.blocks.artillery.breech.DroppingBreech;
 import com.lancas.vs_wap.content.block.blocks.artillery.breech.EjectingBreech;
-import com.lancas.vs_wap.content.block.blocks.artillery.breech.RapidBreech;
 import com.lancas.vs_wap.content.block.blocks.artillery.breech.valkyiren.HellBreech;
 import com.lancas.vs_wap.content.block.blocks.artillery.breech.valkyiren.ValkyrienBreech;
 import com.lancas.vs_wap.content.block.blocks.cartridge.ShellFrame;
@@ -25,6 +23,7 @@ import com.lancas.vs_wap.content.block.blocks.cartridge.propellant.empty.EmptyGa
 import com.lancas.vs_wap.content.block.blocks.cartridge.propellant.empty.EmptyShelledPropellant;
 import com.lancas.vs_wap.content.block.blocks.debug.Block01;
 import com.lancas.vs_wap.content.block.blocks.industry.ProjectCenter;
+import com.lancas.vs_wap.content.block.blocks.industry.ProjectorLen;
 import com.lancas.vs_wap.content.block.blocks.industry.VSProjector;
 import com.lancas.vs_wap.content.block.blocks.redstone.ActivatorBlock;
 import com.lancas.vs_wap.content.block.blocks.scope.MechScopeBlock;
@@ -90,21 +89,21 @@ public class WapBlocks {
             .build()
             .register();
 
-        public static BlockEntry<DroppingBreech> DROPPING_BREECH = REGISTRATE
+        /*public static BlockEntry<DroppingBreech> DROPPING_BREECH = REGISTRATE
             .block("dropping_breech", DroppingBreech::new)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.STONE))  //todo friction
             .item()
             .build()
-            .register();
+            .register();*/
 
-        public static BlockEntry<RapidBreech> RAPID_BREECH = REGISTRATE
+        /*public static BlockEntry<RapidBreech> RAPID_BREECH = REGISTRATE
             .block("rapid_breech", RapidBreech::new)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.STONE))  //todo friction
             .item()
             .build()
-            .register();
+            .register();*/
 
         /*public static BlockEntry<ArtilleryDoorBlock> ARTILLERY_DOOR = REGISTRATE
             .block("artillery_door", ArtilleryDoorBlock::new)
@@ -340,6 +339,16 @@ public class WapBlocks {
             .item()
             .build()
             .register();
+
+        public static BlockEntry<ProjectorLen> PROJECT_LEN =  REGISTRATE
+            .block("projector_len", ProjectorLen::new)
+            .initialProperties(SharedProperties::stone)
+            .properties(p -> p.noOcclusion().mapColor(MapColor.PODZOL))
+            .item()
+            .build()
+            .register();
+
+
 
         public static void register() {}
     }

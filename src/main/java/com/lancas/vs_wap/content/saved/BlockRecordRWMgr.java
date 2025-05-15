@@ -4,15 +4,12 @@ import com.lancas.vs_wap.ModMain;
 import com.lancas.vs_wap.debug.EzDebug;
 import com.lancas.vs_wap.event.impl.BiEventImpl;
 import com.lancas.vs_wap.event.impl.SingleEventImpl;
-import com.lancas.vs_wap.event.impl.TriEventImpl;
 import com.lancas.vs_wap.foundation.BiTuple;
-import com.lancas.vs_wap.foundation.api.Dest;
 import com.lancas.vs_wap.util.NbtBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -70,7 +67,7 @@ public class BlockRecordRWMgr extends SavedData {
                     serverTickEvt.getValue().invokeAll(level, isChunkLoaded);
                 }
             } catch (Exception e) {
-                EzDebug.log("fail to invoke evetn, exception:" + e.toString());
+                EzDebug.log("fail to invoke evetn, exception:" + e);
                 e.printStackTrace();
             }
         }
@@ -103,7 +100,7 @@ public class BlockRecordRWMgr extends SavedData {
 
 
     @Override
-    public CompoundTag save(CompoundTag compoundTag) {
+    public @NotNull CompoundTag save(@NotNull CompoundTag compoundTag) {
         try {
             return new NbtBuilder()
                 .putMap("records", allRecords,
@@ -113,7 +110,7 @@ public class BlockRecordRWMgr extends SavedData {
                         .get()
                 ).get();
         } catch (Exception e) {
-            EzDebug.error("fail to load block data, will lose all data. exception:" + e.toString());
+            EzDebug.error("fail to load block data, will lose all data. exception:" + e);
             e.printStackTrace();
             return new CompoundTag();
         }
@@ -134,7 +131,7 @@ public class BlockRecordRWMgr extends SavedData {
                 this::putRecordImpl
             );
         } catch (Exception e) {
-            EzDebug.error("fail to load block data, will lose all data. exception:" + e.toString());
+            EzDebug.error("fail to load block data, will lose all data. exception:" + e);
         }
     }
 
@@ -259,8 +256,8 @@ public class BlockRecordRWMgr extends SavedData {
         }*/
 
         if (data == null) {
-            EzDebug.warn("can't get record at " + bp.toShortString());
-            EzDebug.logs(allRecords.keySet(), null);
+            EzDebug.warn("[BlockRecordRWMgr]can't get record at " + bp.toShortString());
+            //EzDebug.logs(allRecords.keySet(), null);
             return null;
         }
 

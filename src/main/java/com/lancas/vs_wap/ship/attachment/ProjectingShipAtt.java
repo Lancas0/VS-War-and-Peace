@@ -2,22 +2,11 @@ package com.lancas.vs_wap.ship.attachment;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.lancas.vs_wap.content.WapBlocks;
-import com.lancas.vs_wap.content.block.blocks.industry.ProjectCenter;
-import com.lancas.vs_wap.debug.EzDebug;
 import com.lancas.vs_wap.foundation.data.SavedBlockPos;
-import com.lancas.vs_wap.ship.helper.LazyShip;
-import com.lancas.vs_wap.ship.helper.builder.ShipBuilder;
-import com.lancas.vs_wap.util.ShipUtil;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.level.block.Blocks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.valkyrienskies.core.api.ships.ServerShip;
-
-import java.util.Objects;
 
 @JsonAutoDetect(
     fieldVisibility = JsonAutoDetect.Visibility.ANY,
@@ -44,7 +33,7 @@ public class ProjectingShipAtt {
     }
 
     private long shipId;
-    private LazyShip lazyShip;
+    //private LazyShip lazyShip;
     private SavedBlockPos projectorBp;  //to do what if projector is destroyed?
 
     public BlockPos getProjectorBp() { return projectorBp.toBp(); }
@@ -52,12 +41,12 @@ public class ProjectingShipAtt {
     private ProjectingShipAtt() {}
     public ProjectingShipAtt(ServerShip ship, BlockPos inProjectorBp) {
         shipId = ship.getId();
-        lazyShip = new LazyShip((l, owner) -> ShipUtil.getShipByID(l, ((ProjectingShipAtt)owner).shipId));
+        //lazyShip = new LazyShip((l, owner) -> ShipUtil.getShipByID(l, ((ProjectingShipAtt)owner).shipId));
         projectorBp = new SavedBlockPos(inProjectorBp);
     }
 
     //由于iitalize与ProjectorBE代码重复，现在不再使用
-    public ProjectingShipAtt initialize(ServerLevel level) {
+    /*public ProjectingShipAtt initialize(ServerLevel level) {
         ServerShip ship = lazyShip.get(level, this);
         ShipBuilder builder = ShipBuilder.modify(level, ship);
 
@@ -72,9 +61,9 @@ public class ProjectingShipAtt {
         }
 
         return this;
-    }
+    }*/
     //todo shedule on greenprint
-    public ProjectingShipAtt onUpdateBlock(ServerLevel level, BlockPos at) {
+    /*public ProjectingShipAtt onUpdateBlock(ServerLevel level, BlockPos at) {
         ServerShip ship = lazyShip.get(level, this);
         ShipBuilder builder = Objects.requireNonNull(ShipBuilder.modify(level, ship));
 
@@ -89,10 +78,11 @@ public class ProjectingShipAtt {
         }
 
         if (builder.isEmpty()) {
-            builder.addBlock(BlockPos.ZERO, WapBlocks.Industrial.PROJECT_CENTER.getDefaultState());
-            EzDebug.highlight("initialize: place project center because empty ship");
+            //builder.addBlock(BlockPos.ZERO, WapBlocks.Industrial.PROJECT_CENTER.getDefaultState());
+            level.setBlock(builder.getInitialBP(), WapBlocks.Industrial.PROJECT_CENTER.getDefaultState(), Block.UPDATE_ALL_IMMEDIATE);
+            EzDebug.highlight("update: place project center because empty ship");
         }
 
         return this;
-    }
+    }*/
 }

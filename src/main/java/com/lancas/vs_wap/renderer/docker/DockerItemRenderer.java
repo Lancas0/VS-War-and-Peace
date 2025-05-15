@@ -1,4 +1,4 @@
-package com.lancas.vs_wap.renderer;
+package com.lancas.vs_wap.renderer.docker;
 
 import com.lancas.vs_wap.content.item.items.docker.IDocker;
 import com.lancas.vs_wap.debug.EzDebug;
@@ -11,6 +11,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import org.joml.*;
 
 
@@ -27,9 +28,9 @@ public class DockerItemRenderer extends BlockEntityWithoutLevelRenderer {
 
     @Override
     public void renderByItem(ItemStack stack,
-                             ItemDisplayContext transformType,
-                             PoseStack poseStack,
-                             MultiBufferSource buffer,
+                             @NotNull ItemDisplayContext transformType,
+                             @NotNull PoseStack poseStack,
+                             @NotNull MultiBufferSource buffer,
                              int packedLight,
                              int packedOverlay) {
 

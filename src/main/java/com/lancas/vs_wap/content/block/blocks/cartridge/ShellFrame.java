@@ -60,7 +60,7 @@ public class ShellFrame extends BlockPlus/* implements IBE<ShellFrameBE>*/ {
 
     private static final List<IBlockAdder> adders = List.of(
         new DirectionAdder(true, true, ShapeBuilder.cubicRing(0, 0, 0, 2, 16)),
-        new RefreshBlockRecordAdder((bp, state) -> new ShellFrameRecord()),
+        new RefreshBlockRecordAdder((level, bp, state) -> new ShellFrameRecord()),
         new InteractableBlockAdder() {
             @Override
             public InteractionResult onInteracted(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {

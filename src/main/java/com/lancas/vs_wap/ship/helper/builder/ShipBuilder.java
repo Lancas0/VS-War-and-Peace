@@ -4,7 +4,6 @@ import com.lancas.vs_wap.debug.EzDebug;
 import com.lancas.vs_wap.register.ServerShipEvent;
 import com.lancas.vs_wap.ship.data.IShipSchemeData;
 import com.lancas.vs_wap.util.JomlUtil;
-import com.lancas.vs_wap.util.StrUtil;
 import com.lancas.vs_wap.util.WorldUtil;
 import com.lancas.vs_wap.util.ShipUtil;
 import net.minecraft.core.BlockPos;
@@ -134,10 +133,9 @@ public class ShipBuilder {
     }
     public static ShipBuilder modify(ServerLevel level, ServerShip ship) {
         if (ship == null) return null;
-        ShipBuilder builder = new ShipBuilder(
+        return new ShipBuilder(
             ship, level, JomlUtil.bpContaining(ship.getTransform().getPositionInShip())
         );
-        return builder;
     }
 
     //all add is offset to initalBp
@@ -159,7 +157,7 @@ public class ShipBuilder {
     public ShipBuilder resetBlocks() {
         AtomicInteger resetCnt = new AtomicInteger();
         ShipUtil.foreachBlock(ship, level, (pos, state, blockEntity) -> {
-            level.setBlock(pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_NONE);
+            level.setBlock(pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
             resetCnt.getAndIncrement();
         });
 
@@ -202,6 +200,30 @@ public class ShipBuilder {
             }
         });
         return empty.get();
+    }
+    public boolean isOnlyBlock() {
+        AtomicInteger blockCnt = new AtomicInteger(0);
+
+        ShipUtil.foreachBlock(ship, level, (pos, state, blockEntity) -> {
+            if (blockCnt.get() >= 2) return;
+
+            if (!level.getBlockState(pos).isAir()) {
+                blockCnt.incrementAndGet();
+            }
+        });
+
+        return blockCnt.get() == 1;
+    }
+    public int getBlockCnt() {
+        AtomicInteger blockCnt = new AtomicInteger(0);
+
+        ShipUtil.foreachBlock(ship, level, (pos, state, blockEntity) -> {
+            if (!level.getBlockState(pos).isAir()) {
+                blockCnt.incrementAndGet();
+            }
+        });
+
+        return blockCnt.get();
     }
     /*@ApiStatus.Experimental
     public ShipBuilder resetAttachment() {

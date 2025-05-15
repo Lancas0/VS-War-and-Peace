@@ -7,23 +7,26 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Dictionary;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Map;
+import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 @Mod.EventBusSubscriber
 public class EzDebug {
-    private static boolean NOT_DEBUG = true;
+    public static final Logger logger = Logger.getLogger("EzDebug");
+
+    private static final boolean NOT_DEBUG = false;
     private static boolean alwaysDebug;
+    private static final boolean PRINT_STACK_TRACE = true;
 
     private EzDebug(boolean inAlwaysDebug) { alwaysDebug = inAlwaysDebug; }
     public static final EzDebug DEFAULT = new EzDebug(false);
     public static final EzDebug ALWAYS_DEBUG = new EzDebug(true);
 
-    private static Hashtable<Object, String> scheduleLog = new Hashtable<>();
+    private static final Hashtable<Object, String> scheduleLog = new Hashtable<>();
     public static EzDebug schedule(Object key, String log) {
         scheduleLog.put(key, log);
         return DEFAULT;
@@ -34,18 +37,27 @@ public class EzDebug {
         scheduleLog.clear();
     }
 
+    private static void advancedLog(Level level, String msg) {
+        if (PRINT_STACK_TRACE) {
+            StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+            logger.log(level, msg + "\n" + Arrays.stream(stackTrace).map(Objects::toString).collect(Collectors.joining("\n")));
+        } else {
+            logger.log(level, msg);
+        }
+    }
+
     public static EzDebug log(String str) {
         if (NOT_DEBUG) return DEFAULT;
 
-        Minecraft mcInst = Minecraft.getInstance();
-        boolean isClient = (mcInst.player != null);
+        Minecraft mc = Minecraft.getInstance();
+        boolean isClient = (mc.player != null);
         if (isClient) {
-            mcInst.player.sendSystemMessage(Component.literal(str));
+            mc.player.sendSystemMessage(Component.literal(str));
         } else {
             //todo temp
         }
 
-        System.out.println((isClient ? "[Client]" : "[Server]") + str);
+        advancedLog(Level.INFO, (isClient ? "[Client]" : "[Server]") + str);
         return DEFAULT;
     }
 
@@ -95,52 +107,53 @@ public class EzDebug {
             mcInst.player.sendSystemMessage(Component.literal("§a" + str));
         }
 
-        System.out.println(str.startsWith("[Highlight]") ? str : "[Highlight]" + str);
+        //System.out.println(str.startsWith("[Highlight]") ? str : "[Highlight]" + str);
+        advancedLog(Level.FINEST, str.startsWith("[Highlight]") ? str : "[Highlight]" + str);
         return DEFAULT;
     }
     public static EzDebug light(String str) {
         if (NOT_DEBUG) return DEFAULT;
 
-        Minecraft mcInst = Minecraft.getInstance();
-        if (mcInst != null && mcInst.player != null) {
-            mcInst.player.sendSystemMessage(Component.literal("§7" + str));
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.player != null) {
+            mc.player.sendSystemMessage(Component.literal("§7" + str));
         }
 
-        System.out.println(str.startsWith("[Light]") ? str : "[Light]" + str);
+        advancedLog(Level.FINER, str.startsWith("[Light]") ? str : "[Light]" + str);
         return DEFAULT;
     }
 
     public static EzDebug warn(String str) {
         if (NOT_DEBUG) return DEFAULT;
 
-        Minecraft mcInst = Minecraft.getInstance();
-        if (mcInst != null && mcInst.player != null) {
-            mcInst.player.sendSystemMessage(Component.literal("§6" + str));
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.player != null) {
+            mc.player.sendSystemMessage(Component.literal("§6" + str));
         }
 
-        System.out.println(str.startsWith("[Warn]") ? str : "[Warn]" + str);
+        advancedLog(Level.WARNING, str.startsWith("[Warn]") ? str : "[Warn]" + str);
         return DEFAULT;
     }
     public static EzDebug error(String str) {
         if (NOT_DEBUG) return DEFAULT;
 
-        Minecraft mcInst = Minecraft.getInstance();
-        if (mcInst != null && mcInst.player != null) {
-            mcInst.player.sendSystemMessage(Component.literal("§4" + str));
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.player != null) {
+            mc.player.sendSystemMessage(Component.literal("§4" + str));
         }
 
-        System.out.println(str.startsWith("[Error]") ? str : "[Error]" + str);
+        advancedLog(Level.WARNING, str.startsWith("[Error]") ? str : "[Error]" + str);
         return DEFAULT;
     }
     public static EzDebug fatal(String str) {
         if (NOT_DEBUG) return DEFAULT;
 
-        Minecraft mcInst = Minecraft.getInstance();
-        if (mcInst != null && mcInst.player != null) {
-            mcInst.player.sendSystemMessage(Component.literal("§4" + str));
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.player != null) {
+            mc.player.sendSystemMessage(Component.literal("§4" + str));
         }
 
-        System.out.println(str.startsWith("[Fatal]") ? str : "[Fatal]" + str);
+        advancedLog(Level.WARNING, str.startsWith("[Fatal]") ? str : "[Fatal]" + str);
         return DEFAULT;
     }
 

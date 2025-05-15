@@ -1,6 +1,7 @@
-package com.lancas.vs_wap.content.block.blocks.artillery.breech;
+package com.lancas.vs_wap.obsolete.blocks;
 
 import com.lancas.vs_wap.content.block.blocks.artillery.IBarrel;
+import com.lancas.vs_wap.content.block.blocks.artillery.breech.IBreech;
 import com.lancas.vs_wap.content.block.blocks.blockplus.RefreshBlockRecordAdder;
 import com.lancas.vs_wap.content.block.blocks.cartridge.IPrimer;
 import com.lancas.vs_wap.content.block.blocks.cartridge.PrimerBlock;
@@ -105,7 +106,7 @@ public class DroppingBreech extends BlockPlus implements IBreech, IBarrel/*, IBE
             }
         },
         IBreech.breechInteraction(),
-        new RefreshBlockRecordAdder((bp, state) -> new BreechRecord(40))
+        new RefreshBlockRecordAdder((level, bp, state) -> new BreechRecord(level, bp, 40))
     );
     @Override
     public Iterable<IBlockAdder> getAdders() { return adders; }
@@ -115,7 +116,7 @@ public class DroppingBreech extends BlockPlus implements IBreech, IBarrel/*, IBE
     }
 
 
-    @Override
+    /*@Override
     public boolean getLoadedMunitionData(Level level, BlockPos breechBp, Dest<Ship> prevMunitionShip, Dest<Boolean> isPrevTriggered, Dest<Direction> prevMunitionShipDir) {
         Dest<IPrimer> primerDest = new Dest<>();
         Dest<BlockPos> primerBpDest = new Dest<>();
@@ -130,10 +131,10 @@ public class DroppingBreech extends BlockPlus implements IBreech, IBarrel/*, IBE
         isPrevTriggered.set(primerDest.get().isTriggered(primerState));
         prevMunitionShipDir.set(DirectionAdder.getDirection(primerState));
         return true;
-    }
+    }*/
 
     @Override
-    public boolean isDockerLoadable(Level level, BlockPos breechBp, ItemStack stack) {
+    public boolean canLoadDockerNow(Level level, BlockPos breechBp, ItemStack stack) {
         if (!(stack.getItem() instanceof IDocker)) return false;
         return true;  //todo: further check if it's really a munition
     }
@@ -178,6 +179,14 @@ public class DroppingBreech extends BlockPlus implements IBreech, IBarrel/*, IBE
     }
 
     @Override
+    public void loadMunitionShip(ServerLevel level, BlockPos breechBp, BlockState breechState, ServerShip vsShip, boolean simulate) {
+        EzDebug.fatal("should never be called");
+    }
+
+    @Override
+    public void unloadShell(ServerLevel level, BlockPos breechBp, BlockState breechState) { }
+
+    /*@Override
     public void unloadShell(ServerLevel level, ServerShip shellShip, Direction shellDirInShip, BlockPos breechBp) {
         Ship artilleryShip = ShipUtil.getShipAt(level, breechBp);
 
@@ -209,7 +218,7 @@ public class DroppingBreech extends BlockPlus implements IBreech, IBarrel/*, IBE
         ItemEntity itemE = new ItemEntity(level, worldBelowPos.x(), worldBelowPos.y(), worldBelowPos.z(), shellStack);
         itemE.setDeltaMovement(0, -0.1, 0);
         level.addFreshEntity(itemE);
-    }
+    }*/
 
 
     private static boolean findPrimerAround(Level level, BlockPos breechBp, Dest<IPrimer> primerDest, Dest<BlockPos> primerBpDest, Dest<Ship> primerShipDest) {
@@ -276,7 +285,10 @@ public class DroppingBreech extends BlockPlus implements IBreech, IBarrel/*, IBE
         BlockClusterData blockData = new BlockClusterData();
         Dest<Double> propellantEnergyDest = new Dest<>();
         boolean success = IBreech.foreachMunition(level, breechPos, new Vector3i(0, 0, 1), false, propellantEnergyDest, blockData);
-        if (!success) return;
+        if (!success) {
+            IBreech.clearLoadedMunition(level, breechPos);
+            return;
+        }
         //IBreech.clearLoadedMunition(level, breechPos);
 
         RigidbodyData rigidbodyData = new RigidbodyData(new TransformPrimitive(worldBreechPos, new Quaterniond().rotateTo(new Vector3d(0, 0, 1), worldLaunchDir), new Vector3d(1, 1, 1)));

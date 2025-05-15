@@ -10,8 +10,8 @@ public interface IShipSchemeRandomReader {
     public IShipSchemeRandomReader getRandomReader();
 
     public AABBic getLocalAABB();
-    public BlockState getBlockStateByLocalBp(BlockPos pos);
+    public BlockState getBlockStateByLocalPos(BlockPos pos);
     public void foreachBlockInLocal(BiConsumer<BlockPos, BlockState> consumer);
 
-    public boolean isEmpty();
+    //public boolean isEmpty();
 }

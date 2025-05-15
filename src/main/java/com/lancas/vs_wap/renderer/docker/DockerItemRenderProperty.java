@@ -1,4 +1,4 @@
-package com.lancas.vs_wap.renderer;
+package com.lancas.vs_wap.renderer.docker;
 
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;

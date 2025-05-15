@@ -1,18 +1,13 @@
 package com.lancas.vs_wap.content.item.items.docker;
 
 import com.lancas.vs_wap.content.WapItems;
-import com.lancas.vs_wap.debug.EzDebug;
-import com.lancas.vs_wap.ship.attachment.HoldableAttachment;
+import com.lancas.vs_wap.foundation.BiTuple;
 import com.lancas.vs_wap.ship.data.IShipSchemeData;
 import com.lancas.vs_wap.ship.data.IShipSchemeRandomReader;
 import com.lancas.vs_wap.ship.data.RRWChunkyShipSchemeData;
 import com.lancas.vs_wap.ship.helper.builder.ShipBuilder;
 import com.lancas.vs_wap.ship.feature.pool.ShipPool;
-import com.lancas.vs_wap.renderer.DockerItemRenderProperty;
-import com.lancas.vs_wap.util.JomlUtil;
-import com.lancas.vs_wap.util.NbtUtil;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
+import com.lancas.vs_wap.renderer.docker.DockerItemRenderProperty;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.Item;
@@ -21,11 +16,15 @@ import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import org.jetbrains.annotations.Nullable;
 import org.valkyrienskies.core.api.ships.ServerShip;
 
+import java.util.Hashtable;
 import java.util.UUID;
 import java.util.function.Consumer;
 
 public class RefWithFallbackDocker extends Item implements IDocker {
-    @Nullable
+    private static final int COUNTING_DOWN = 3 * 60 * 20 - 1;//3 minus
+    public static Hashtable<Long, BiTuple<ServerLevel, Integer>> countingDown = new Hashtable<>();
+
+    /*@Nullable
     public static HoldableAttachment applyHoldable(ItemStack stack, ShipBuilder shipBuilder) {
         if (!stack.getOrCreateTag().contains("hold_pivot")) {
             EzDebug.log("ship has no holdable");
@@ -47,7 +46,7 @@ public class RefWithFallbackDocker extends Item implements IDocker {
             centerInShip.offset(offset),
             dir
         );
-    }
+    }*/
 
     public static ItemStack stackOf(ServerLevel level, ServerShip ship) {
         ItemStack stack = WapItems.Docker.REF_WITH_FALLBACK_DOCKER.asStack();
@@ -74,6 +73,7 @@ public class RefWithFallbackDocker extends Item implements IDocker {
         ServerShip showShip = ShipPool.getOrCreatePool(level).showShip(shipId);
 
         if (showShip != null) {
+            countingDown.remove(showShip.getId());  //stop remove counting down
             return ShipBuilder.modify(level, showShip);
         }
 
@@ -92,24 +92,31 @@ public class RefWithFallbackDocker extends Item implements IDocker {
             .overwriteByScheme(fallbackData);
 
         //Matrix4dc shipToWorld = shipBuilder.get().getShipToWorld();
-        applyHoldable(stack, shipBuilder);
+        //applyHoldable(stack, shipBuilder);
         return shipBuilder;
     }
 
     @Override
     public ItemStack saveShip(ServerLevel level, ServerShip ship, ItemStack stack) {
-        stack.getOrCreateTag().putLong("ship_id", ship.getId());
+        CompoundTag stackNbt = stack.getOrCreateTag();
+
+        stackNbt.putLong("ship_id", ship.getId());
         ShipPool.getOrCreatePool(level).hideShip(ship, ShipPool.HideType.StaticAndInvisible);
 
         RRWChunkyShipSchemeData fallbackData = new RRWChunkyShipSchemeData().readShip(level, ship);
-        stack.getOrCreateTag().put("fallback_data", fallbackData.saved());
+        stackNbt.put("fallback_data", fallbackData.saved());
 
-        var holdable = ship.getAttachment(HoldableAttachment.class);
+        /*var holdable = ship.getAttachment(HoldableAttachment.class);
         if (holdable != null) {
             BlockPos centerInShip = JomlUtil.bpContaining(ship.getTransform().getPositionInShip());
-            NbtUtil.putBlockPos(stack, "hold_pivot", holdable.holdPivotBpInShip.toBp().subtract(centerInShip));
-            NbtUtil.putEnum(stack, "hold_forward", holdable.forwardInShip);
-        }
+            NbtBuilder.modify(stackNbt)
+                .putBlockPos("hold_pivot", holdable.holdPivotBpInShip.toBp().subtract(centerInShip))
+                .putEnum("hold_forward", holdable.forwardInShip);
+            //NbtUtil.putBlockPos(stack, "hold_pivot", holdable.holdPivotBpInShip.toBp().subtract(centerInShip));
+            //NbtUtil.putEnum(stack, "hold_forward", holdable.forwardInShip);
+        }*/
+
+        countingDown.put(ship.getId(), new BiTuple<>(level, COUNTING_DOWN));
 
         return stack;
     }
@@ -152,6 +159,25 @@ public class RefWithFallbackDocker extends Item implements IDocker {
     public @Nullable IShipSchemeRandomReader getShipDataReader(ItemStack stack) {
         RRWChunkyShipSchemeData shipData = (RRWChunkyShipSchemeData)getShipData(stack);
         return shipData == null ? null : shipData.getRandomReader();
+    }
+    /*@Override
+    public @Nullable Vector3ic getLocalPivot(ItemStack stack) {
+        NbtBuilder nbtBuilder = NbtBuilder.modify(stack.getOrCreateTag());
+        if (nbtBuilder.contains("hold_pivot"))
+            return JomlUtil.i(nbtBuilder.getBlockPos("hold_pivot"));
+        return null;
+    }
+    @Override
+    public @Nullable Vector3ic getLocalHoldForward(ItemStack stack) {
+        NbtBuilder nbtBuilder = NbtBuilder.modify(stack.getOrCreateTag());
+        if (nbtBuilder.contains("hold_forward"))
+            return JomlUtil.iNormal(nbtBuilder.getEnum("hold_forward", Direction.class));
+        return null;
+    }*/
+
+    public long getVsShipId(ItemStack stack) {
+        CompoundTag stackNbt = stack.getOrCreateTag();
+        return stackNbt.getLong("ship_id");
     }
 
     //so can be rendered by dockerItemRender

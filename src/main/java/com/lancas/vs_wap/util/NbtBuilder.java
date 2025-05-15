@@ -125,31 +125,25 @@ public class NbtBuilder {
 
 
     private NbtBuilder(Supplier<CompoundTag> nbtSupplier) { nbt = nbtSupplier.get(); }
-    public static NbtBuilder copy(CompoundTag tag) {
-        NbtBuilder builder = new NbtBuilder(tag::copy);
-        return builder;
-    }
-    public static NbtBuilder modify(CompoundTag tag) {
-        NbtBuilder builder = new NbtBuilder(() -> tag);
-        return builder;
-    }
+    public static NbtBuilder copy(CompoundTag tag)   { return new NbtBuilder(tag::copy); }
+    public static NbtBuilder modify(CompoundTag tag) { return new NbtBuilder(() -> tag); }
 
     public boolean contains(String key) { return nbt.contains(key); }
 
 
-    public NbtBuilder putNumber(String key, int v) {
+    public NbtBuilder putInt(String key, int v) {
         nbt.putInt(key, v);
         return this;
     }
-    public NbtBuilder putNumber(String key, long v) {
+    public NbtBuilder putLong(String key, long v) {
         nbt.putLong(key, v);
         return this;
     }
-    public NbtBuilder putNumber(String key, double v) {
+    public NbtBuilder putDouble(String key, double v) {
         nbt.putDouble(key, v);
         return this;
     }
-    public NbtBuilder putNumber(String key, float v) {
+    public NbtBuilder putFloat(String key, float v) {
         nbt.putFloat(key, v);
         return this;
     }
@@ -322,24 +316,24 @@ public class NbtBuilder {
 
     public NbtBuilder putAABBi(String key, AABBic aabb) {
         nbt.put(key, new NbtBuilder()
-            .putNumber("minx", aabb.minX())
-            .putNumber("miny", aabb.minY())
-            .putNumber("minz", aabb.minZ())
-            .putNumber("maxx", aabb.maxX())
-            .putNumber("maxy", aabb.maxY())
-            .putNumber("maxz", aabb.maxZ())
+            .putInt("minx", aabb.minX())
+            .putInt("miny", aabb.minY())
+            .putInt("minz", aabb.minZ())
+            .putInt("maxx", aabb.maxX())
+            .putInt("maxy", aabb.maxY())
+            .putInt("maxz", aabb.maxZ())
             .get()
         );
         return this;
     }
     public NbtBuilder putAABBd(String key, AABBdc aabb) {
         nbt.put(key, new NbtBuilder()
-            .putNumber("minx", aabb.minX())
-            .putNumber("miny", aabb.minY())
-            .putNumber("minz", aabb.minZ())
-            .putNumber("maxx", aabb.maxX())
-            .putNumber("maxy", aabb.maxY())
-            .putNumber("maxz", aabb.maxZ())
+            .putDouble("minx", aabb.minX())
+            .putDouble("miny", aabb.minY())
+            .putDouble("minz", aabb.minZ())
+            .putDouble("maxx", aabb.maxX())
+            .putDouble("maxy", aabb.maxY())
+            .putDouble("maxz", aabb.maxZ())
             .get()
         );
         return this;
@@ -378,20 +372,20 @@ public class NbtBuilder {
     public NbtBuilder putQuaternion(String key, Quaterniondc q) {
         return this.putCompound(key,
             new NbtBuilder()
-                .putNumber("x", q.x())
-                .putNumber("y", q.y())
-                .putNumber("z", q.z())
-                .putNumber("w", q.w())
+                .putDouble("x", q.x())
+                .putDouble("y", q.y())
+                .putDouble("z", q.z())
+                .putDouble("w", q.w())
                 .get()
         );
     }
     public NbtBuilder putQuaternion(String key, Quaternionfc q) {
         return this.putCompound(key,
             new NbtBuilder()
-                .putNumber("x", q.x())
-                .putNumber("y", q.y())
-                .putNumber("z", q.z())
-                .putNumber("w", q.w())
+                .putFloat("x", q.x())
+                .putFloat("y", q.y())
+                .putFloat("z", q.z())
+                .putFloat("w", q.w())
                 .get()
         );
     }
@@ -788,21 +782,21 @@ public class NbtBuilder {
 
 
 
-    private String jacksonWriteAsStringRethrown(Object obj, ObjectMapper mapper) {
+    public static String jacksonWriteAsStringRethrown(Object obj, ObjectMapper mapper) {
         try {
             return mapper.writeValueAsString(obj);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
     }
-    private <T> T jacksonReadRethrown(String json, Class<T> type, ObjectMapper mapper) {
+    public static <T> T jacksonReadRethrown(String json, Class<T> type, ObjectMapper mapper) {
         try {
             return mapper.readValue(json, type);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
     }
-    private <T> T jacksonReadRethrown(String json, TypeReference<T> type, ObjectMapper mapper) {
+    public static <T> T jacksonReadRethrown(String json, TypeReference<T> type, ObjectMapper mapper) {
         try {
             return mapper.readValue(json, type);
         } catch (JsonProcessingException e) {
@@ -810,7 +804,7 @@ public class NbtBuilder {
         }
     }
 
-    public JsonNode jacksonReadTreeRethrown(String json, ObjectMapper mapper) {
+    public static JsonNode jacksonReadTreeRethrown(String json, ObjectMapper mapper) {
         try {
             JsonNode root = mapper.readTree(json);
             return root;
@@ -818,14 +812,14 @@ public class NbtBuilder {
             throw new RuntimeException(e);
         }
     }
-    public <T> T jacksonTreeToValueRethrown(JsonNode root, Class<T> type, ObjectMapper mapper) {
+    public static <T> T jacksonTreeToValueRethrown(JsonNode root, Class<T> type, ObjectMapper mapper) {
         try {
             return mapper.treeToValue(root, type);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
     }
-    public <T> T jacksonTreeToValueRethrown(JsonNode root, JavaType type, ObjectMapper mapper) {
+    public static <T> T jacksonTreeToValueRethrown(JsonNode root, JavaType type, ObjectMapper mapper) {
         try {
             return mapper.treeToValue(root, type);
         } catch (JsonProcessingException e) {

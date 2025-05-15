@@ -1,19 +1,49 @@
 package com.lancas.vs_wap.content.block.blocks.industry;
 
-import com.lancas.vs_wap.debug.EzDebug;
+import com.lancas.vs_wap.subproject.blockplusapi.blockplus.BlockPlus;
+import com.lancas.vs_wap.subproject.blockplusapi.blockplus.adder.IBlockAdder;
+import com.lancas.vs_wap.subproject.blockplusapi.blockplus.adder.InteractableBlockAdder;
+import com.lancas.vs_wap.subproject.blockplusapi.blockplus.adder.ShapeByStateAdder;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.Shapes;
+
+import java.util.List;
 
 //todo ignored by all Scheme
-public class ProjectCenter extends Block implements IProjectBlock {
+public class ProjectCenter extends BlockPlus implements IProjectBlock {
+    @Override
+    public Iterable<IBlockAdder> getAdders() {
+        return BlockPlus.addersIfAbsent(ProjectCenter.class, () -> List.of(
+            new ShapeByStateAdder(state -> Shapes.block()),
+            new InteractableBlockAdder() {
+                @Override
+                public InteractionResult onInteracted(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+                    ItemStack holdingStack = player.getItemInHand(hand);
+
+                    if (!(holdingStack.getItem() instanceof BlockItem blockItem))
+                        return InteractionResult.PASS;
+
+                    BlockState toPlaceState = blockItem.getBlock().getStateForPlacement(new BlockPlaceContext(player, hand, holdingStack, hit));
+                    if (toPlaceState == null)
+                        return InteractionResult.PASS;
+
+                    level.setBlockAndUpdate(pos, toPlaceState);
+                    return InteractionResult.CONSUME;   //todo shrink hand item 1
+                }
+            }
+        ));
+    }
+
     //public Properties AIR = BlockStateProperties.
     public ProjectCenter(Properties p) {
         super(p);
@@ -35,7 +65,7 @@ public class ProjectCenter extends Block implements IProjectBlock {
         return Shapes.block();
     }*/
 
-    @Override
+    /*@Override
     public void onRemove(BlockState p_60515_, Level p_60516_, BlockPos p_60517_, BlockState p_60518_, boolean p_60519_) {
         super.onRemove(p_60515_, p_60516_, p_60517_, p_60518_, p_60519_);
         EzDebug.log("on remove");
@@ -57,7 +87,7 @@ public class ProjectCenter extends Block implements IProjectBlock {
     public void setPlacedBy(Level p_49847_, BlockPos p_49848_, BlockState p_49849_, @Nullable LivingEntity p_49850_, ItemStack p_49851_) {
         super.setPlacedBy(p_49847_, p_49848_, p_49849_, p_49850_, p_49851_);
         EzDebug.log("set placed by:" + p_49850_);
-    }
+    }*/
 
     @Override
     public BlockState representBlock() { return Blocks.AIR.defaultBlockState(); }

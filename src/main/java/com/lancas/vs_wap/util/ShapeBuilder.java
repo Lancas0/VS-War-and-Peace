@@ -88,7 +88,7 @@ public class ShapeBuilder {
                     case WEST -> new AABB(1 - maxY, minX, minZ, 1 - minY, maxX, maxZ);
                     case EAST -> new AABB(minY, minX, minZ, maxY, maxX, maxZ);
 
-                    default -> new AABB(minX, minY, minZ, maxX, maxY, maxZ);
+                    //default -> new AABB(minX, minY, minZ, maxX, maxY, maxZ);
                 };
 
                 rotated[0] = Shapes.or(rotated[0], Shapes.create(rotatedAABB));
@@ -124,6 +124,7 @@ public class ShapeBuilder {
         return rotated[0];
     }
 
+    //public static VoxelShape box(double minX, double minY, double minZ, double maxX, double maxY, double maxZ) { return box(minX, minY, minZ, maxX, maxY, maxZ); }
     public static VoxelShape cubicRing(int startX, int startY, int startZ, int thick, int height) {
         int maxX = 16 - startX;
         int maxY = startY + height;
@@ -176,12 +177,7 @@ public class ShapeBuilder {
     }
     public ShapeBuilder remove(VoxelShape other) {
         if (other == null) return this;
-        shape = Shapes.join(shape, other, new BooleanOp() {
-            @Override
-            public boolean apply(boolean first, boolean second) {
-                return first && !second;
-            }
-        });
+        shape = Shapes.join(shape, other, (first, second) -> first && !second);
         return this;
     }
     public ShapeBuilder remove(ShapeBuilder other) {

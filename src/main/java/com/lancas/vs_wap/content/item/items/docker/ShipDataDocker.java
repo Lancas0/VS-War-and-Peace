@@ -3,16 +3,14 @@ package com.lancas.vs_wap.content.item.items.docker;
 import com.lancas.vs_wap.content.WapItems;
 import com.lancas.vs_wap.content.item.items.base.ShipInteractableItem;
 import com.lancas.vs_wap.debug.EzDebug;
-import com.lancas.vs_wap.ship.attachment.HoldableAttachment;
 import com.lancas.vs_wap.ship.data.IShipSchemeData;
 import com.lancas.vs_wap.ship.data.IShipSchemeRandomReader;
 import com.lancas.vs_wap.ship.data.RRWChunkyShipSchemeData;
 import com.lancas.vs_wap.ship.helper.builder.ShipBuilder;
 import com.lancas.vs_wap.ship.feature.pool.ShipPool;
-import com.lancas.vs_wap.renderer.DockerItemRenderer;
+import com.lancas.vs_wap.renderer.docker.DockerItemRenderer;
 import com.lancas.vs_wap.subproject.sandbox.ship.ISandBoxShip;
 import com.lancas.vs_wap.util.JomlUtil;
-import com.lancas.vs_wap.util.NbtUtil;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -48,15 +46,17 @@ public class ShipDataDocker extends ShipInteractableItem implements IDocker {
         ItemStack stack = WapItems.Docker.SHIP_DATA_DOCKER.asStack();
         //ShipDataDocker docker = (ShipDataDocker)stack.getItem();
         RRWChunkyShipSchemeData data = new RRWChunkyShipSchemeData();
+        int addY = (level.getHeight() + level.getMinBuildHeight()) / 2 + (int)(JomlUtil.lengthY(ship.getBlockCluster().getDataReader().getLocalAABB()) / 2);
+
         ship.getBlockCluster().getDataReader().allBlocks().forEach(e -> {
-            data.setBlockAtLocalBp(JomlUtil.bp(e.getKey()), e.getValue(), null);  //todo now can't save be if use sa ship
+            data.setBlockAtLocalBp(JomlUtil.bp(e.getKey()).offset(0, addY, 0), e.getValue(), null);  //todo now can't save be if use sa ship
         });
         stack.getOrCreateTag().put("ship_data", data.saved());
         //todo now can't save att if use sa ship
         return stack;
     }
 
-    @Nullable
+    /*@Nullable
     public HoldableAttachment applyHoldable(ItemStack stack, ShipBuilder shipBuilder) {
         if (!stack.getOrCreateTag().contains("hold_pivot")) {
             EzDebug.log("ship has no holdable");
@@ -78,7 +78,7 @@ public class ShipDataDocker extends ShipInteractableItem implements IDocker {
             centerInShip.offset(offset),
             dir
         );
-    }
+    }*/
 
     @Override
     public ShipBuilder makeShipBuilder(ServerLevel level, ItemStack stack) {
@@ -89,13 +89,8 @@ public class ShipDataDocker extends ShipInteractableItem implements IDocker {
         IShipSchemeData shipData = getShipData(stack);
         if (shipData == null) return null;
 
-        ShipBuilder shipBuilder = ShipPool
-            .getOrCreatePool(level)
-            .getOrCreateEmptyShipBuilder()
-            .overwriteByScheme(shipData);
-
         //Matrix4dc shipToWorld = shipBuilder.get().getShipToWorld();
-        applyHoldable(stack, shipBuilder);
+        //applyHoldable(stack, shipBuilder);
 
         /*return shipBuilder.doIfElse(
             self -> holdable != null,
@@ -106,22 +101,28 @@ public class ShipDataDocker extends ShipInteractableItem implements IDocker {
             },
             self -> self.setWorldPos(pos)  //todo do direciton
         ).get();*/
-        return shipBuilder;
+        return ShipPool
+            .getOrCreatePool(level)
+            .getOrCreateEmptyShipBuilder()
+            .overwriteByScheme(shipData);
     }
-
     @Override
     public ItemStack saveShip(ServerLevel level, ServerShip ship, ItemStack stack) {
         if (stack == null || ship == null) return ItemStack.EMPTY;
+        CompoundTag stackNbt = stack.getOrCreateTag();
 
         RRWChunkyShipSchemeData data = new RRWChunkyShipSchemeData().readShip(level, ship);
-        stack.getOrCreateTag().put("ship_data", data.saved());
+        stackNbt.put("ship_data", data.saved());
 
-        var holdable = ship.getAttachment(HoldableAttachment.class);
+        /*var holdable = ship.getAttachment(HoldableAttachment.class);
         if (holdable != null) {
             BlockPos centerInShip = JomlUtil.bpContaining(ship.getTransform().getPositionInShip());
-            NbtUtil.putBlockPos(stack, "hold_pivot", holdable.holdPivotBpInShip.toBp().subtract(centerInShip));
-            NbtUtil.putEnum(stack, "hold_forward", holdable.forwardInShip);
-        }
+            NbtBuilder.modify(stackNbt)
+                .putBlockPos("hold_pivot", holdable.holdPivotBpInShip.toBp().subtract(centerInShip))
+                .putEnum("hold_forward", holdable.forwardInShip);
+            //NbtUtil.putBlockPos(stack, "hold_pivot", holdable.holdPivotBpInShip.toBp().subtract(centerInShip));
+            //NbtUtil.putEnum(stack, "hold_forward", holdable.forwardInShip);
+        }*/
         return stack;
     }
 
@@ -162,6 +163,22 @@ public class ShipDataDocker extends ShipInteractableItem implements IDocker {
     }
 
 
+    /*@Override
+    public @Nullable Vector3ic getLocalPivot(ItemStack stack) {
+        NbtBuilder nbtBuilder = NbtBuilder.modify(stack.getOrCreateTag());
+        if (nbtBuilder.contains("hold_pivot"))
+            return JomlUtil.i(nbtBuilder.getBlockPos("hold_pivot"));
+        return null;
+    }
+    @Override
+    public @Nullable Vector3ic getLocalHoldForward(ItemStack stack) {
+        NbtBuilder nbtBuilder = NbtBuilder.modify(stack.getOrCreateTag());
+        if (nbtBuilder.contains("hold_forward"))
+            return JomlUtil.iNormal(nbtBuilder.getEnum("hold_forward", Direction.class));
+        return null;
+    }*/
+
+
     @Override
     public InteractionResult onItemUseOnShip(ItemStack stack, @NotNull Ship ship, @NotNull Level level, @NotNull Player player, UseOnContext ctx) {
         if (!(level instanceof ServerLevel sLevel)) return InteractionResult.PASS;
@@ -187,7 +204,7 @@ public class ShipDataDocker extends ShipInteractableItem implements IDocker {
                 .rotateForwardTo(worldForward)
                 .moveFaceTo(normal.getOpposite(), worldCenter);
 
-            applyHoldable(stack, shipBuilder);
+            //applyHoldable(stack, shipBuilder);
 
             EzDebug.warn("new docker world pos:" + newShip.getTransform().getPositionInWorld());
         }
@@ -220,7 +237,7 @@ public class ShipDataDocker extends ShipInteractableItem implements IDocker {
         ShipBuilder shipBuilder = ShipBuilder.modify(sLevel, ship)
             .moveFaceTo(normal.getOpposite(), useOn.relative(normal).getCenter());
 
-        applyHoldable(stack, shipBuilder);
+        //applyHoldable(stack, shipBuilder);
 
         //;
 

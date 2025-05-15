@@ -46,7 +46,7 @@ public class ScheduleShipData implements ISavedLevelObject<ScheduleShipData> {
         }
 
         while (remainTick.get() >= 0) {
-            callback.onScheduling((Level)level, ship, remainTick.get(), canceled);
+            callback.onScheduling(level, ship, remainTick.get(), canceled);
             if (canceled.get()) {
                 return this;
             }
@@ -96,7 +96,7 @@ public class ScheduleShipData implements ISavedLevelObject<ScheduleShipData> {
 
         return nbt
             .putCompound("saved_ship", serverShip.saved(level))
-            .putNumber("remain_tick", remainTick.get())
+            .putInt("remain_tick", remainTick.get())
             .putBoolean("canceled", canceled.get())
             .get();
     }

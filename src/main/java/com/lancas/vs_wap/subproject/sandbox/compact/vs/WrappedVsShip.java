@@ -13,7 +13,6 @@ import com.lancas.vs_wap.util.NbtBuilder;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
-import org.valkyrienskies.core.api.ships.ServerShip;
 import org.valkyrienskies.core.api.ships.Ship;
 import org.valkyrienskies.mod.common.VSGameUtilsKt;
 
@@ -93,7 +92,7 @@ public class WrappedVsShip implements IServerSandBoxShip, IClientSandBoxShip, IS
     @Override
     public CompoundTag saved() {
         return new NbtBuilder()
-            .putNumber("vs_id", vsId)
+            .putLong("vs_id", vsId)
             .putUUID("uuid", uuid)
             .putCompound("rigidbody_data", rigidbody.getSavedData())
             .get();

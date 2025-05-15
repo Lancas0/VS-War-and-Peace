@@ -8,10 +8,7 @@ import com.lancas.vs_wap.util.JomlUtil;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Matrix4dc;
-import org.joml.Quaterniond;
-import org.joml.Vector3d;
-import org.joml.Vector3dc;
+import org.joml.*;
 import org.valkyrienskies.core.api.ships.ServerShip;
 
 import java.util.UUID;
@@ -35,6 +32,12 @@ public interface IDocker {
     @Nullable
     public IShipSchemeRandomReader getShipDataReader(ItemStack stack);
 
+    /*
+    @Nullable
+    public Vector3ic getLocalPivot(ItemStack stack);
+    @Nullable
+    public Vector3ic getLocalHoldForward(ItemStack stack);
+    */
 
     public static ShipBuilder setShipTransformByHoldable(ShipBuilder builder, HoldableAttachment holdable, Vector3dc moveThePivotTo, Vector3dc rotateTheForwardTo) {
         Matrix4dc shipToWorld = builder.get().getShipToWorld();

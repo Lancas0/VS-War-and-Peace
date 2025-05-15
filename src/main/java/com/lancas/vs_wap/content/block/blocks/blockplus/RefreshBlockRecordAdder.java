@@ -8,14 +8,11 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-
-import java.util.function.BiFunction;
-import java.util.function.Function;
-import java.util.function.Supplier;
+import org.apache.commons.lang3.function.TriFunction;
 
 public class RefreshBlockRecordAdder implements IBlockAdder {
-    private final BiFunction<BlockPos, BlockState, IBlockRecord> defaultRecordSupplier;
-    public RefreshBlockRecordAdder(BiFunction<BlockPos, BlockState, IBlockRecord> inDefaultRecord) {
+    private final TriFunction<ServerLevel, BlockPos, BlockState, IBlockRecord> defaultRecordSupplier;
+    public RefreshBlockRecordAdder(TriFunction<ServerLevel, BlockPos, BlockState, IBlockRecord> inDefaultRecord) {
         defaultRecordSupplier = inDefaultRecord;
     }
 
@@ -24,7 +21,7 @@ public class RefreshBlockRecordAdder implements IBlockAdder {
         //todo 这个对复杂的BlockRecord不支持，如果需要和方块有关的数据(比如ShellFrame)则不行
         if (state.getBlock() == oldState.getBlock()) return;  //大概是方块更新
 
-        IBlockRecord record = defaultRecordSupplier.apply(pos, state);
+        IBlockRecord record = defaultRecordSupplier.apply(sLevel, pos, state);
 
         BlockRecordRWMgr.putRecord(sLevel, pos, record);
         EzDebug.light("put " + record.getClass().getSimpleName() + " at " + pos.toShortString());

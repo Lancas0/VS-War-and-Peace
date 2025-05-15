@@ -6,8 +6,8 @@ import com.lancas.vs_wap.content.behaviour.item.DockerDispenseBehaviour;
 import com.lancas.vs_wap.content.WapMass;
 import com.lancas.vs_wap.event.EventMgr;
 import com.lancas.vs_wap.foundation.network.NetworkHandler;
+import com.lancas.vs_wap.renderer.WapPartialModels;
 import com.lancas.vs_wap.sandbox.schedule.ClientShardShipScheduler;
-import com.lancas.vs_wap.subproject.sandbox.SandBoxServerWorld;
 import com.lancas.vs_wap.subproject.sandbox.event.SandBoxEventMgr;
 import com.mojang.logging.LogUtils;
 import com.simibubi.create.foundation.data.CreateRegistrate;
@@ -23,6 +23,7 @@ import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
@@ -75,7 +76,7 @@ public class ModMain  {
 
         ClientShardShipScheduler.register();
 
-
+        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> WapPartialModels::init);
 
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
@@ -89,6 +90,7 @@ public class ModMain  {
 
 
         Mod.EventBusSubscriber.Bus.FORGE.bus().get().addListener(EventPriority.HIGH, this::registerResourceManagers);
+
         //MinecraftForge.EVENT_BUS.addListener();
     }
 

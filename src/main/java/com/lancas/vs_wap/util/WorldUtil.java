@@ -2,22 +2,15 @@ package com.lancas.vs_wap.util;
 
 import com.lancas.vs_wap.debug.EzDebug;
 import com.lancas.vs_wap.foundation.api.Dest;
-import com.lancas.vs_wap.mixins.accessor.ChunkAccessor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.chunk.LevelChunk;
-import net.minecraft.world.level.chunk.LevelChunkSection;
-import net.minecraft.world.level.levelgen.Heightmap;
-import net.minecraft.world.level.lighting.LightEngine;
 import net.minecraft.world.ticks.ScheduledTick;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3d;
@@ -167,23 +160,34 @@ public class WorldUtil {
     /*public static ShipObjectServerWorldAccessor shipWorldAccessorOf(ServerLevel level) {
         return (ShipObjectServerWorldAccessor) VSGameUtilsKt.getShipObjectWorld(level);
     }*/
+    public static int midY(Level level) { return level.getHeight() / 2 + level.getMinBuildHeight(); }
+
     public static ShipWorldCore shipWorldOf(Level level) {
-        return (ShipWorldCore)VSGameUtilsKt.getShipObjectWorld(level);
+        return VSGameUtilsKt.getShipObjectWorld(level);
     }
     public static ServerShipWorldCore shipWorldOf(ServerLevel level) {
-        return (ServerShipWorldCore)VSGameUtilsKt.getShipObjectWorld(level);
+        return VSGameUtilsKt.getShipObjectWorld(level);
     }
 
     public static <T> T getBlockInterface(Level level, BlockPos at, @Nullable Dest<BlockState> stateDest) {
         BlockState state = level.getBlockState(at);
         Dest.setIfExistDest(stateDest, state);
 
-       return (T)state.getBlock();
+        try {
+            return (T)state.getBlock();
+        } catch (Exception e) {
+            EzDebug.warn("fail to get blockInterface. block:" + StrUtil.getBlockName(state));
+            return null;
+        }
     }
     public static Vector3d getWorldCenter(Level level, BlockPos bp) {
         Ship ship = ShipUtil.getShipAt(level, bp);
         if (ship == null) return JomlUtil.dCenter(bp);
 
+        return JomlUtil.dWorldCenter(ship.getShipToWorld(), bp);
+    }
+    public static Vector3d getWorldCenter(@Nullable Ship ship, BlockPos bp) {
+        if (ship == null) return JomlUtil.dCenter(bp);
         return JomlUtil.dWorldCenter(ship.getShipToWorld(), bp);
     }
     public static Vector3d getWorldDirection(Level level, BlockPos bp, Direction dir) {
