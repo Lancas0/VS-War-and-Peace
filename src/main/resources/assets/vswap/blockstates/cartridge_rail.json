@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "vswap:block/artillery/cartridge_rail" },
+    "facing=south": { "model": "vswap:block/artillery/cartridge_rail", "y": 180 },
+    "facing=west":  { "model": "vswap:block/artillery/cartridge_rail", "y": 270 },
+    "facing=east":  { "model": "vswap:block/artillery/cartridge_rail", "y": 90 }
+  }
+}

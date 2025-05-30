@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "facing=down":  { "model": "vswap:block/cartridge/shell_frame", "x": 180 },
+    "facing=up":    { "model": "vswap:block/cartridge/shell_frame" },
+    "facing=north": { "model": "vswap:block/cartridge/shell_frame", "x": 90 },
+    "facing=south": { "model": "vswap:block/cartridge/shell_frame", "x": 90, "y": 180 },
+    "facing=west":  { "model": "vswap:block/cartridge/shell_frame", "x": 90, "y": 270 },
+    "facing=east":  { "model": "vswap:block/cartridge/shell_frame", "x": 90, "y": 90 }
+  }
+}

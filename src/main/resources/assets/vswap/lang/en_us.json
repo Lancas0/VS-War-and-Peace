@@ -1,0 +1,45 @@
+{
+  "block.vswap.shelled_propellant": "shelled propellant",
+  "block.vswap.rotator": "rotate test",
+  "block.vswap.wind_cap": "wind_cap",
+  "block.vswap.gauge12": "gauge 12",
+  "block.vswap.ap_core_warhead": "hard core ap warhead",
+  "block.vswap.blunt_ap_warhead": "blunt_ap_warhead",
+  "block.vswap.he_warhead": "he warhead",
+  "block.vswap.impact_fuze": "impact fuze",
+  "block.vswap.primer": "primer",
+  "block.vswap.tail_fin": "tail fin",
+  "block.vswap.shell_frame": "shell frame",
+
+  "block.vswap.mech_scope_block": "mech scope block",
+  "block.vswap.tele_scope_block": "tele scope block",
+  "block.vswap.activator": "activator",
+
+  "block.vswap.artillery_plate": "artillery plate",
+  "block.vswap.artillery_barrel": "artillery barrel",
+  "block.vswap.cartridge_rail": "cartridge rail",
+  "block.vswap.artillery_part1": "artillery part1",
+
+  "block.vswap.ejecting_breech": "breech",
+  "block.vswap.dropping_breech": "dropping breech",
+  "block.vswap.rapid_breech": "rapid breech",
+  "block.vswap.hell_breech": "hell breech",
+  "block.vswap.valkyrien_breech": "vs breech",
+  "block.vswap.artillery_door": "artillery door",
+
+  "block.vswap.projection_center": "project center (technological item)",
+  "block.vswap.vs_projector": "vs projector(deving)",
+
+  "block.vswap.shredder": "shredder",
+
+  "block.vswap.dock": "dock",
+  "block.vswap.green_print_holder": "dock green print holder",
+
+
+  "item.vswap.vswap_wand": "vswap wand",
+  "item.vswap.docker": "docker",
+  "item.vswap.green_print": "green print",
+  "item.vswap.ms_item": "material",
+  "item.vswap.breech_unloader": "breech unloader"
+
+}

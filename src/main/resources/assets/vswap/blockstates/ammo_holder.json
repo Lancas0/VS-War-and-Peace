@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "vswap:block/artillery/ammo_holder" },
+    "facing=south": { "model": "vswap:block/artillery/ammo_holder", "y": 180 },
+    "facing=west":  { "model": "vswap:block/artillery/ammo_holder", "y": 270 },
+    "facing=east":  { "model": "vswap:block/artillery/ammo_holder", "y": 90 }
+  }
+}

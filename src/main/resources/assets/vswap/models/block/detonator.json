@@ -1,0 +1,13 @@
+{
+	"parent": "minecraft:block/cube_all",
+	"textures": {
+		"particle": "vswap:block/kraftpaper",
+
+		"up": "vswap:block/explosive/detonator_top",
+		"down": "vswap:block/kraftpaper",
+		"north": "vswap:block/kraftpaper",
+		"south": "vswap:block/kraftpaper",
+		"east": "vswap:block/kraftpaper",
+		"west": "vswap:block/kraftpaper"
+	}
+}

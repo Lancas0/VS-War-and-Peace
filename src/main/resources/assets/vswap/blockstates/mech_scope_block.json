@@ -1,0 +1,20 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "vswap:block/mech_scope_block",
+      "y": 0
+    },
+    "facing=east": {
+      "model": "vswap:block/mech_scope_block",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "vswap:block/mech_scope_block",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "vswap:block/mech_scope_block",
+      "y": 270
+    }
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "block.vswap.shelled_propellant": "具壳发射药",
+  "block.vswap.rotator": "自旋稳定测试方块",
+  "block.vswap.wind_cap": "风帽(可以用但未完成)",
+  "block.vswap.gauge12": "12号霰弹(未完成)",
+  "block.vswap.ap_core_warhead": "硬芯穿甲弹头",
+  "block.vswap.blunt_ap_warhead": "被帽穿甲弹头",
+  "block.vswap.he_warhead": "普通高爆战斗部",
+  "block.vswap.impact_fuze": "触发引信",
+  "block.vswap.primer": "底火",
+  "block.vswap.tail_fin": "尾翼",
+  "block.vswap.shell_frame": "弹药架",
+  "block.vswap.mech_scope_block": "机械式瞄具",
+  "block.vswap.tele_scope_block": "光学瞄准镜",
+  "block.vswap.activator": "自更新激活器",
+
+  "block.vswap.artillery_plate": "火炮部件1",
+  "block.vswap.artillery_barrel": "炮管",
+  "block.vswap.cartridge_rail": "弹轨",
+  "block.vswap.artillery_part1": "火炮部件2",
+  "block.vswap.ejecting_breech": "炮闩",
+  "block.vswap.dropping_breech": "无抛壳炮闩",
+  "block.vswap.rapid_breech": "速射炮闩",
+  "block.vswap.hell_breech": "地狱火炮",
+  "block.vswap.valkyrien_breech": "瓦尔基里大炮(未完成)",
+  "block.vswap.artillery_door": "投弹仓(未完成)",
+
+  "block.vswap.projection_center": "投影中心(技术物品)",
+  "block.vswap.vs_projector": "vs投影仪(未完成)",
+
+  "block.vswap.shredder": "粉碎机",
+
+  "block.vswap.dock": "置船台",
+  "block.vswap.green_print_holder": "设计图船台",
+
+  "item.vswap.vswap_wand": "很有武德的杖",
+  "item.vswap.docker": "舵㭘",
+  "item.vswap.green_print": "绿图(未完成)",
+
+  "item.vswap.ms_item": "物料",
+  "item.vswap.breech_unloader": "卸弹器"
+}

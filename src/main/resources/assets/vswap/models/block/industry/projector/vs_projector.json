@@ -1,0 +1,13 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "particle": "vswap:block/industry/projector/bottom",
+
+    "up": "vswap:block/industry/projector/top",
+    "down": "vswap:block/industry/projector/bottom",
+    "north": "vswap:block/industry/projector/side",
+    "south": "vswap:block/industry/projector/side",
+    "east": "vswap:block/industry/projector/side",
+    "west": "vswap:block/industry/projector/side"
+  }
+}

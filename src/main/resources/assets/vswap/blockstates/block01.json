@@ -1,0 +1,6 @@
+{
+  "variants": {
+    "state=false" : { "model": "vswap:block/debug/block01_0" },
+    "state=true" : { "model": "vswap:block/debug/block01_1" }
+  }
+}

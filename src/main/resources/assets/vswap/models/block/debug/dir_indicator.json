@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "particle": "vswap:block/debug/up",
+    "up": "vswap:block/debug/up",
+    "down": "vswap:block/debug/down",
+    "north": "vswap:block/debug/north",
+    "south": "vswap:block/debug/south",
+    "east": "vswap:block/debug/east",
+    "west": "vswap:block/debug/west"
+  }
+}

@@ -1,0 +1,66 @@
+[
+  {
+    "name": "dirt_category",
+    "icon": "minecraft:dirt",
+    "include": [
+      "#minecraft:dirt",
+      "minecraft:dirt_path"
+    ],
+    "exclude": []
+  },
+  {
+    "name": "wool_category",
+    "icon": "minecraft:white_wool",
+    "include": [
+      "#minecraft:wool"
+    ],
+    "exclude": []
+  },
+  {
+    "name": "log_category",
+    "icon": "minecraft:oak_log",
+    "include": "#minecraft:logs",
+    "exclude": []
+  },
+  {
+    "name": "planks_category",
+    "icon": "minecraft:oak_planks",
+    "include": "#minecraft:planks",
+    "exclude": []
+  },
+  {
+    "name": "cobblestone_category",
+    "icon": "minecraft:cobblestone",
+    "include": "#forge:cobblestone",
+    "exclude": []
+  },
+  {
+    "name": "stone_category",
+    "icon": "minecraft:stone",
+    "include": [
+      "#forge:stone",
+      "#minecraft:stone_bricks"
+    ],
+    "exclude": []
+  },
+  {
+    "name": "sandstone_category",
+    "icon": "minecraft:sandstone",
+    "include": [
+      "#forge:sandstone"
+    ],
+    "exclude": []
+  },
+  {
+    "name": "quartz_category",
+    "icon": "minecraft:quartz_block",
+    "include": [
+      "minecraft:quartz_block",
+      "minecraft:quartz_bricks",
+      "minecraft:quartz_pillar",
+      "minecraft:chiseled_quartz_block",
+      "minecraft:quartz_stair"
+    ],
+    "exclude": []
+  }
+]
