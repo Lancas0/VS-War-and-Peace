@@ -1,6 +1,0 @@
-package com.lancas.vs_wap.subproject.blockplusapi.util;
-
-@FunctionalInterface
-public interface PentaConsumer<T, U, V, W, X> {
-    public void apply(T t, U u, V v, W w, X x);
-}

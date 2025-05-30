@@ -13,6 +13,7 @@ base {
     archivesName = mod_id
 }
 
+
 // Mojang ships Java 17 to end users in 1.18+, so your mod should target Java 17.
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
@@ -256,11 +257,14 @@ dependencies {
     implementation fg.deobf("com.rbasamoyai:ritchiesprojectilelib:2.0.0-dev+mc.1.20.1-forge-build.182")
     implementation fg.deobf("com.rbasamoyai:createbigcannons:5.8.2-dev+mc.1.20.1-forge-build.150")
 
+
+    implementation fg.deobf("maven.modrinth:MyfCcqiE:ogrWXsFW")  //create interactive
+
+
     runtimeOnly fg.deobf("curse.maven:cc-tweaked-282001:5379173")
     runtimeOnly fg.deobf("maven.modrinth:QCUnCyr8:YVLIBslE")  //control craft
 
     runtimeOnly fg.deobf("maven.modrinth:FXDpZRJG:qyQLIJgu")  //trackwork
-    runtimeOnly fg.deobf("maven.modrinth:MyfCcqiE:ogrWXsFW")  //create interactive
 
     runtimeOnly fg.deobf("maven.modrinth:sk9knFPE:uNALdylI")  //Rhino
     runtimeOnly fg.deobf("maven.modrinth:umyGl7zF:g5igndAv")  //kubejs
@@ -308,8 +312,8 @@ dependencies {
 }
 
 mixin {
-    add sourceSets.main, "vs_wap.mixins.refmap.json"
-    config "vs_wap.mixins.json"
+    add sourceSets.main, "vswap.mixins.refmap.json"
+    config "vswap.mixins.json"
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.
@@ -370,4 +374,6 @@ publishing {
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
+    options.incremental = true
+    options.fork = true
 }

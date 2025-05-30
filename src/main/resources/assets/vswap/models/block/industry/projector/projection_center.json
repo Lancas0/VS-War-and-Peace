@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "vswap:block/industry/projector/projection_center"
+  },
+  "render_type": "cutout"
+}

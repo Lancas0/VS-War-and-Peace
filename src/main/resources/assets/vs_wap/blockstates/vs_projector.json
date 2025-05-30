@@ -1,6 +1,0 @@
-{
-  "variants": {
-    "has_green_print=false" : { "model": "vs_wap:block/industry/projector/vs_projector" },
-    "has_green_print=true" : { "model": "vs_wap:block/industry/projector/vs_projector_has" }
-  }
-}

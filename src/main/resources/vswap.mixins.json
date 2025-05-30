@@ -1,0 +1,33 @@
+{
+  "required": true,
+  "package": "com.lancas.vswap.mixins",
+  "refmap": "vswap.mixins.refmap.json",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "McServerMixin",
+    "PlayerMixin",
+    "ShipCollisionMixin",
+    "accessor.ChunkAccessor",
+    "accessor.ClipCtxAccessor",
+    "accessor.UseOnCtxAccessor",
+    "create.SmartBlockEntityMixin",
+    "debug.FluidTankBlockEntityMixin",
+    "debug.SmartBlockEntityMixin",
+    "lostandfound.LevelMixin",
+    "valkyrien.ShipUnloadMixin"
+  ],
+  "client": [
+    "CameraMixin",
+    "LocalPlayerMixin",
+    "client.option.MixinGammaOption",
+    "client.render.ItemEntityMixin",
+    "client.render.LevelRendererMixin",
+    "sandbox.SandBoxAABBRenderer",
+    "sandbox.SandBoxLevelRenderMixin"
+  ],
+  "server": [],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "minVersion": "0.8.5"
+}

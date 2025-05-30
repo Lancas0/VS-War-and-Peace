@@ -1,0 +1,66 @@
+{
+  "variants": {
+    "axis_along_first=false,facing=up": {
+      "model": "vswap:block/industry/shredder/shredder_base"
+    },
+    "axis_along_first=true,facing=up": {
+      "model": "vswap:block/industry/shredder/shredder_base",
+      "y": 90
+    },
+
+
+    "axis_along_first=false,facing=down": {
+      "model": "vswap:block/industry/shredder/shredder_base",
+      "x": 180
+    },
+    "axis_along_first=true,facing=down": {
+      "model": "vswap:block/industry/shredder/shredder_base",
+      "x": 180,
+      "y": 90
+    },
+
+
+    "axis_along_first=false,facing=north": {
+      "model": "vswap:block/industry/shredder/shredder_base",
+      "x": 90
+    },
+    "axis_along_first=true,facing=north": {
+      "model": "vswap:block/industry/shredder/shredder_base",
+      "x": 90
+    },
+
+
+    "axis_along_first=false,facing=south": {
+      "model": "vswap:block/industry/shredder/shredder_base",
+      "x": -90
+    },
+    "axis_along_first=true,facing=south": {
+      "model": "vswap:block/industry/shredder/shredder_base",
+      "x": -90
+    },
+
+
+    "axis_along_first=false,facing=west": {
+      "model": "vswap:block/industry/shredder/shredder_base",
+      "x": -90,
+      "y": 90
+    },
+    "axis_along_first=true,facing=west": {
+      "model": "vswap:block/industry/shredder/shredder_base",
+      "x": -90,
+      "y": 90
+    },
+
+
+    "axis_along_first=false,facing=east": {
+      "model": "vswap:block/industry/shredder/shredder_base",
+      "x": 90,
+      "y": 90
+    },
+    "axis_along_first=true,facing=east": {
+      "model": "vswap:block/industry/shredder/shredder_base",
+      "x": 90,
+      "y": 90
+    }
+  }
+}
