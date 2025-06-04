@@ -1,6 +1,6 @@
 package com.lancas.vswap.ship.ballistics;
 
-import com.lancas.vswap.ModMain;
+import com.lancas.vswap.VsWap;
 import com.lancas.vswap.foundation.network.NetworkHandler;
 import com.lancas.vswap.ship.ballistics.network.BallisticIdSyncPacketS2C;
 import com.lancas.vswap.util.ShipUtil;
@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-@Mod.EventBusSubscriber(modid = ModMain.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@Mod.EventBusSubscriber(modid = VsWap.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class BallisticsClientManager {
 
     private static final List<Long> shipIds = Collections.synchronizedList(new ArrayList<>());

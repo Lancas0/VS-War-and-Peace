@@ -1,8 +1,10 @@
 package com.lancas.vswap.foundation.network;
 
-import com.lancas.vswap.ModMain;
+import com.lancas.vswap.VsWap;
 import com.lancas.vswap.foundation.network.client2server.*;
 import com.lancas.vswap.foundation.network.client2server.sync.SyncPlayerHoldingItemNbtPacketC2S;
+import com.lancas.vswap.foundation.network.debug.CreateLinePacketS2C;
+import com.lancas.vswap.foundation.network.debug.CreateOutlinePacketS2C;
 import com.lancas.vswap.foundation.network.debug.NetworkRunnable;
 import com.lancas.vswap.foundation.network.debug.ForceOnPosDebugS2C;
 import com.lancas.vswap.foundation.network.server2client.*;
@@ -48,7 +50,7 @@ public class NetworkHandler {
     }
 
     public static void register() {
-        channel = NetworkRegistry.ChannelBuilder.named(new ResourceLocation(ModMain.MODID, "main"))
+        channel = NetworkRegistry.ChannelBuilder.named(new ResourceLocation(VsWap.MODID, "main"))
                 .networkProtocolVersion(() -> protocolVer)
                 .clientAcceptedVersions(protocolVer::equals)
                 .serverAcceptedVersions(protocolVer::equals)
@@ -289,6 +291,14 @@ public class NetworkHandler {
             CreateOutlinePacketS2C::decode,
             CreateOutlinePacketS2C::handle
         );
+        channel.registerMessage(
+            packetId++,
+            CreateLinePacketS2C.class,
+            CreateLinePacketS2C::encode,
+            CreateLinePacketS2C::decode,
+            CreateLinePacketS2C::handle
+        );
+
 
 
 

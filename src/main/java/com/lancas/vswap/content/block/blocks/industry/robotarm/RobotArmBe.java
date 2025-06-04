@@ -1,4 +1,4 @@
-package com.lancas.vswap.content.block.blockentity;
+package com.lancas.vswap.content.block.blocks.industry.robotarm;
 
 /*
 import com.lancas.vswap.debug.EzDebug;

@@ -1,6 +1,6 @@
 package com.lancas.vswap.foundation.network;
 
-import com.lancas.vswap.ModMain;
+import com.lancas.vswap.VsWap;
 import com.lancas.vswap.debug.EzDebug;
 import com.lancas.vswap.register.KeyBinding;
 import net.minecraftforge.api.distmarker.Dist;
@@ -13,7 +13,7 @@ import net.minecraftforge.fml.common.Mod;
 import java.util.Hashtable;
 
 @OnlyIn(Dist.CLIENT)
-@Mod.EventBusSubscriber(modid = ModMain.MODID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@Mod.EventBusSubscriber(modid = VsWap.MODID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class ClientKeyEvents {
     private static class KeyState {
         public boolean keyDown = false;

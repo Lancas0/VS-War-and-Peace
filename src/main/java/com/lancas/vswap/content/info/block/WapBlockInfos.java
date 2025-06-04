@@ -1,29 +1,41 @@
 package com.lancas.vswap.content.info.block;
 
-import com.lancas.vswap.ModMain;
+import com.lancas.vswap.VsWap;
 import com.lancas.vswap.debug.EzDebug;
-import com.lancas.vswap.foundation.BiTuple;
 import com.lancas.vswap.util.StrUtil;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.valkyrienskies.mod.common.BlockStateInfo;
 
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
-@Mod.EventBusSubscriber(modid = ModMain.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
-public final class WapBlockInfos {
+@Mod.EventBusSubscriber(modid = VsWap.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+public class WapBlockInfos {
+    private static final Map<String, BlockInfo<?>> id2BlockInfo = new HashMap<>();
+    public static void clearCache() {
+        //id2BlockInfo.clear();
+        id2BlockInfo.values().forEach(i -> i.idOrTagCache.clear());
+    }
+    //private static final Map<BiTuple<String, String>, Function<BlockState, Object>> blockInfoCache = new Hashtable<>();
+    //private static final Map<BiTuple<String, String>, Function<BlockState, Object>> tagInfoCache = new Hashtable<>();
+
+
     public static double getValkrienMass(BlockState state) {
         if (state == null || state.isAir()) return 0;
 
@@ -45,6 +57,8 @@ public final class WapBlockInfos {
 
     private static final Function<String, String> grey = s -> "§7" + s;
     private static <T> Function<T, String> defFormatter() { return v -> v.toString(); };
+    private static Function<Double, String> degreeFormatter() { return v -> StrUtil.F0(v) + "°"; }
+    private static Function<Double, String> percentFormatter() { return v -> StrUtil.F0(v * 100) + "%"; }
     private static Function<Double, String> unitedFormatter(String unit, boolean canConvertToKJG) {
         return v -> {
             if (v == null)
@@ -67,25 +81,35 @@ public final class WapBlockInfos {
     };
     //use unit J now
     public static final BlockInfo<Double>
-        mass = BlockInfo.createImplicit("mass", WapBlockInfos::getValkrienMass, unitedFormatter("Kg", false).andThen(grey)),
+        Mass = new BlockInfoRegistry<Double>("mass").registryImplicit(Component.translatable("info.vswap.mass"), WapBlockInfos::getValkrienMass, unitedFormatter("Kg", false).andThen(grey)),
 
     //default 10KJ/xxx
-        hardness = BlockInfo.createAdvancedExplicit("hardness", state -> 10E3,  unitedFormatter("J/m", true).andThen(grey)),
-        toughness = BlockInfo.createAdvancedExplicit("toughness", state -> 10E3, unitedFormatter("J/m^3", true).andThen(grey)),
+        //hardness = BlockInfo.createAdvancedExplicit("hardness", state -> 10E3,  unitedFormatter("J/m", true).andThen(grey)),
+        //toughness = BlockInfo.createAdvancedExplicit("toughness", state -> 10E3, unitedFormatter("J/m^3", true).andThen(grey)),
+        ArmourRhae = new BlockInfoRegistry<Double>("armour_rhae").registryAdvancedExplicit(Component.translatable("info.vswap.armour_rhae"), s -> 0.1, v -> StrUtil.F2(v) + "MCM"),
+        ArmourAbsorbRatio = new BlockInfoRegistry<Double>("armour_ab_ratio").registryAdvancedExplicit(Component.translatable("info.vswap.armour_ab_ratio"), s -> 1.0, StrUtil::F2),
+        drag_factor = new BlockInfoRegistry<Double>("drag_factor").registryDefinedExplicit(Component.translatable("info.vswap.drag_factor"), state -> 1.0,  unitedFormatter("", false).andThen(grey)),
+        //ap_area = new BlockInfoRegistry<Double>("ap_area").registryDefinedAdvancedExplicit(Component.literal("info.vswap.ap_area"), state -> 1.0, unitedFormatter("m^2", false).andThen(grey)),
 
-        drag_factor = BlockInfo.createAdvancedExplicit("drag factor", state -> 1.0,  unitedFormatter("", false).andThen(grey)),
-        ap_area = BlockInfo.createDefinedAdvancedExplicit("penetrate area", state -> 1.0, unitedFormatter("m^2", false).andThen(grey)),
+        Normalization = new BlockInfoRegistry<Double>("normalization").registryDefinedExplicit(Component.translatable("info.vswap.normalization"), state -> 0.0, percentFormatter()),
+        CriticalDegree = new BlockInfoRegistry<Double>("critical_degree").registryDefinedExplicit(Component.translatable("info.vswap.critical_degree"), state -> 0.0, degreeFormatter()),
+        PenetrationMultiplier = new BlockInfoRegistry<Double>("penetration_mul").registryDefinedExplicit(Component.translatable("info.vswap.penetration_mul"), state -> 1.0, StrUtil::F2),
+        Spe_DestructionScalar = new BlockInfoRegistry<Double>("spe_destruction_scalar").registryDefinedExplicit(Component.translatable("info.vswap.ke_destruction_scalar"), state -> 1.0, StrUtil::F2),
 
-        oblique_degree = BlockInfo.createDefinedAdvancedExplicit("oblique angle", state -> 0.0, unitedFormatter("°", false).andThen(grey)),
-        propellant_power = BlockInfo.createDefinedAdvancedExplicit("propellant power", state -> 0.0, unitedFormatter("J", true).andThen(grey));
+        StdPropellantEnergy = new BlockInfoRegistry<Double>("std_propellant_energy").registryDefinedExplicit(Component.translatable("info.vswap.std_propellant"), state -> 0.0, StrUtil::F2)
+
+        ;
 
 
-    public static final List<BlockInfo<?>> values = List.of(
+
+
+
+    /*public static final List<BlockInfo<?>> values = List.of(
         mass,
         hardness, toughness, drag_factor, ap_area, oblique_degree, propellant_power
-    );
-    public static BlockInfo<?> valueOf(String name) {
-        return switch (name) {
+    );*/
+    public @Nullable static BlockInfo<?> infoById(String id) {
+        /*return switch (name) {
             case "mass" -> mass;
             case "hardness" -> hardness;
             case "toughness" -> toughness;
@@ -96,7 +120,8 @@ public final class WapBlockInfos {
 
             //todo add more cases as soon as adding more info
             default -> null;
-        };
+        };*/
+        return id2BlockInfo.get(id);
     }
 
 
@@ -129,119 +154,123 @@ public final class WapBlockInfos {
             );
         }
     }*/
-    public static class BlockInfo<T> {
-        private static final Map<BiTuple<String, String>, Function<BlockState, Object>> blockInfoCache = new Hashtable<>();
-        private static final Map<BiTuple<String, String>, Function<BlockState, Object>> tagInfoCache = new Hashtable<>();
+    public static class BlockInfoRegistry<T> {
+        private final String blockInfoId;
+        public BlockInfoRegistry(String id) {
+            blockInfoId = id;
+        }
 
-        protected final String name;
+        public BlockInfo<T> registry(Supplier<BlockInfo<T>> infoSupplier) {
+            BlockInfo<T> info = infoSupplier.get();
+            id2BlockInfo.put(blockInfoId, info);
+            return info;
+        }
+
+        public BlockInfo<T> registryAdvancedExplicit(Component inDisplayName, Function<BlockState, T> inDefaultGetter, Function<T, String> inFormatter) {
+            return registry(() -> new BlockInfo<T>(inDisplayName, inDefaultGetter, inFormatter, (hasVal, flag) -> flag.isAdvanced()));
+        }
+        public BlockInfo<T> registryAlwaysExplicit(Component inDisplayName, Function<BlockState, T> inDefaultGetter, Function<T, String> inFormatter) {
+            return registry(() -> new BlockInfo<T>(inDisplayName, inDefaultGetter, inFormatter, (hasVal, flag) -> true));
+        }
+        public BlockInfo<T> registryImplicit(Component inDisplayName, Function<BlockState, T> inDefaultGetter, Function<T, String> inFormatter) {
+            return registry(() -> new BlockInfo<T>(inDisplayName, inDefaultGetter, inFormatter, (hasVal, flag) -> false));
+        }
+        public BlockInfo<T> registryDefinedExplicit(Component inDisplayName, Function<BlockState, T> inDefaultGetter, Function<T, String> inFormatter) {
+            return registry(() -> new BlockInfo<T>(inDisplayName, inDefaultGetter, inFormatter, (hasVal, flag) -> hasVal));
+        }
+        public BlockInfo<T> registryDefinedAdvancedExplicit(Component inDisplayName, Function<BlockState, T> inDefaultGetter, Function<T, String> inFormatter) {
+            return registry(() -> new BlockInfo<T>(inDisplayName, inDefaultGetter, inFormatter, (hasVal, flag) -> hasVal && flag.isAdvanced()));
+        }
+    }
+    public static class BlockInfo<T> {
+        protected Map<String, Function<BlockState, T>> idOrTagCache = new HashMap<>();
+
+        protected final Component displayName;
         protected final Function<BlockState, T> defaultGetter;
-        protected final Function<T, String> formatter;
+        public final Function<T, String> formatter;
         protected final BiPredicate<Boolean, TooltipFlag> explicit;
 
-        private BlockInfo(String inName, Function<BlockState, T> inDefaultGetter, Function<T, String> inFormatter, BiPredicate<Boolean, TooltipFlag> inExplicit) {
-            name = inName;
+        public MutableComponent getDisplayName() {
+            return displayName.copy();
+        }
+        public MutableComponent getDisplayValue(BlockState state) {
+            return displayName.copy().append(": ").append(formatter.apply(valueOrDefaultOf(state)));
+        }
+        public MutableComponent getDisplayValue(T val) {
+            return displayName.copy().append(": ").append(formatter.apply(val));
+        }
+
+        private BlockInfo(Component inDisplayName, Function<BlockState, T> inDefaultGetter, Function<T, String> inFormatter, BiPredicate<Boolean, TooltipFlag> inExplicit) {
+            displayName = inDisplayName;
             defaultGetter = inDefaultGetter;
             formatter = inFormatter;
             explicit = inExplicit;
-        }
-        protected static <TT> BlockInfo<TT> createAdvancedExplicit(String inName, Function<BlockState, TT> inDefaultGetter, Function<TT, String> inFormatter) {
-            return new BlockInfo<TT>(inName, inDefaultGetter, inFormatter, (hasVal, flag) -> flag.isAdvanced());
-        }
-        protected static <TT> BlockInfo<TT> createAlwaysExplicit(String inName, Function<BlockState, TT> inDefaultGetter, Function<TT, String> inFormatter) {
-            return new BlockInfo<TT>(inName, inDefaultGetter, inFormatter, (hasVal, flag) -> true);
-        }
-        protected static <TT> BlockInfo<TT> createImplicit(String inName, Function<BlockState, TT> inDefaultGetter, Function<TT, String> inFormatter) {
-            return new BlockInfo<TT>(inName, inDefaultGetter, inFormatter, (hasVal, flag) -> false);
-        }
-        protected static <TT> BlockInfo<TT> createDefinedExplicit(String inName, Function<BlockState, TT> inDefaultGetter, Function<TT, String> inFormatter) {
-            return new BlockInfo<TT>(inName, inDefaultGetter, inFormatter, (hasVal, flag) -> hasVal);
-        }
-        protected static <TT> BlockInfo<TT> createDefinedAdvancedExplicit(String inName, Function<BlockState, TT> inDefaultGetter, Function<TT, String> inFormatter) {
-            return new BlockInfo<TT>(inName, inDefaultGetter, inFormatter, (hasVal, flag) -> hasVal && flag.isAdvanced());
         }
 
         public boolean isExplicit(boolean hasVal, TooltipFlag flag) { return explicit.test(hasVal, flag); }
 
 
-        public T valueOrDefaultOf(BlockState state) {
+        public @NotNull T valueOrDefaultOf(BlockState state) {
             T valueOrNull = valueOrNullOf(state);
             return valueOrNull == null ? defaultGetter.apply(state) : valueOrNull;
         }
-        public T valueOrNullOf(BlockState state) {
+        public @Nullable T valueOrNullOf(BlockState state) {
             T blockVal = blockValueOrNullOf(state);
             return blockVal == null ? tagValueOrNullOf(state) : blockVal;
         }
 
-        private T blockValueOrNullOf(BlockState state) {
+        private @Nullable T blockValueOrNullOf(BlockState state) {
             ResourceLocation location = ForgeRegistries.BLOCKS.getKey(state.getBlock());
             if (location == null)
                 return null;
 
             String blockID = location.toString();
-            var getter = blockInfoCache.get(new BiTuple<>(blockID, name));
+            var getter = idOrTagCache.get(blockID);
 
             if (getter == null)
                 return null;
 
-            Object val = getter.apply(state);
-            if (val == null)
-                return null;
-            return (T)val;
+            return getter.apply(state);
         }
         //todo prioperty tag
-        private T tagValueOrNullOf(BlockState state) {
-            final Object[] value = new Object[] { null };
-
-            state.getTags().forEach(
-                tag -> {
-                    if (tag == null || value[0] != null) return;
-
-                    var getter = tagInfoCache.get(new BiTuple<>(tag.location().toString(), name));
-                    if (getter != null)
-                        value[0] = getter.apply(state);
-                }
-            );
-
-            return (T)value[0];
+        private @Nullable T tagValueOrNullOf(BlockState state) {
+            return state.getTags()
+                .map(t -> {
+                    if (t == null)
+                        return null;
+                    return idOrTagCache.get("#" + t.location().toString());
+                })
+                .filter(Objects::nonNull)
+                .findFirst()
+                .orElse(s -> null)
+                .apply(state);
         }
 
         public void removeBlock(String blockID) {
-            blockInfoCache.remove(new BiTuple<>(blockID, name));
+            idOrTagCache.remove(blockID);
         }
-        /*public static void removeBlock(String blockID, BlockInfo<?> info) {
-            info.removeBlock(blockID);
-        }*/
-
         public void addBlock(String blockID, Function<BlockState, T> getter) {
-            blockInfoCache.put(new BiTuple<>(blockID, name), getter::apply);
+            idOrTagCache.put(blockID, getter);
         }
-        /*public static <TT> void addBlock(String blockID, BlockInfo<TT> info, Function<BlockState, TT> getter) {
-            info.addBlock(blockID, getter);
-        }*/
 
-        public void removeTag(String tag) {
-            tagInfoCache.remove(new BiTuple<>(tag, name));
-        }
-        /*public static void removeTag(String tag, BlockInfo<?> info) {
-            info.removeTag(tag);
-        }*/
-
-        public void addTag(String tag, Function<BlockState, T> getter) {
-            tagInfoCache.put(new BiTuple<>(tag, name), getter::apply);
-        }
+        public void removeTag(TagKey<Block> tag) { idOrTagCache.remove("#" + tag.location().toString()); }
+        public void addTag(TagKey<Block> tag, Function<BlockState, T> getter) { idOrTagCache.put("#" + tag.location().toString(), getter); }
     }
 
     //suppose stack is block item stack
-    private static <T> Component getInfoTooltip(ItemStack stack, BlockInfo<T> info) {
+    /*private static <T> Component getInfoTooltip(ItemStack stack, BlockInfo<T> info) {
         BlockState state = ((BlockItem)stack.getItem()).getBlock().defaultBlockState();
         T infoVal = info.valueOrDefaultOf(state);
-        StringBuilder textBuilder = new StringBuilder()
-            .append(info.name)
+        /.*StringBuilder textBuilder = new StringBuilder()
+            .append(info.displayName)
+            .append(": ")
+            .append(info.formatter == null ? infoVal.toString() : info.formatter.apply(infoVal));*./
+        MutableComponent component = info.displayName.copy()
             .append(": ")
             .append(info.formatter == null ? infoVal.toString() : info.formatter.apply(infoVal));
 
-        return Component.literal(textBuilder.toString());
-    }
+        return component;
+    }*/
 
     @SubscribeEvent
     public static void registerTooltip(ItemTooltipEvent event) {
@@ -251,12 +280,15 @@ public final class WapBlockInfos {
 
         BlockState defState = blockItem.getBlock().defaultBlockState();
 
-        for (var value : values) {
+        for (var value : id2BlockInfo.values()) {
             boolean hasVal = value.valueOrNullOf(defState) != null;
             if (!value.isExplicit(hasVal, event.getFlags())) continue;
 
-            event.getToolTip().add(getInfoTooltip(stack, value));
+            //event.getToolTip().add(getInfoTooltip(stack, value));
+            event.getToolTip().add(value.getDisplayValue(defState));
         }
         //event.getToolTip().add(Component.literal("MASS:" + BlockStateInfo.INSTANCE.get(defState).getFirst()));
     }
+
+    public static void register() {}
 }

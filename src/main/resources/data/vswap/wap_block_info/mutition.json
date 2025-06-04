@@ -1,62 +1,77 @@
 [
   {
-    "block": "vs_wap:ap_core_warhead",
-    "mass": 35,
+    "block": "vswap:ap_core_warhead",
+    "mass": "25",
     "hardness": 2000E3,
-    "ap_area": 0.25,
-    "oblique_degree": 0.5
+    "oblique_degree": 0.5,
+    "normalization": 0.1,
+    "critical_degree": 45,
+    "penetration_mul": 4,
+    "spe_destruction_scalar": 0.6
   },
   {
-    "block": "vs_wap:blunt_ap_warhead",
-    "mass": 75,
-    "hardness": 1050E3,
-    "ap_area": 0.85,
-    "oblique_degree": 7
-  },
-  {
-    "block": "vs_wap:he_warhead",
-    "mass": 40,
-    "drag_factor": 1.35
-  },
-  {
-    "block": "vs_wap:impact_fuze",
-    "mass": 10,
-    "drag_factor": 0.15
-  },
-  {
-    "block": "vs_wap:wind_cap",
+    "block": "vswap:apfsds_warhead",
     "mass": 15,
-    "drag_factor": 0.09
-  },
-
-
-  {
-    "block": "vs_wap:primer",
-    "mass": 15
+    "hardness": 2500E3,
+    "normalization": 0.25,
+    "critical_degree": 60,
+    "penetration_mul": 6,
+    "spe_destruction_scalar": 0.4
   },
   {
-    "block": "vs_wap:shelled_propellant",
-    "mass": 30,
-    "propellant_power": 1E5
+    "block": "vswap:blunt_ap_warhead",
+    "mass": 40,
+    "hardness": 1050E3,
+    "normalization": 0.35,
+    "critical_degree": 55,
+    "penetration_mul": 3,
+    "spe_destruction_scalar": 0.8
   },
   {
-    "block": "vs_wap:ccc",
-    "mass": 25,
-    "propellant_power": 1E4
+    "block": "vswap:he_warhead",
+    "mass": 40
   },
   {
-    "block": "vs_wap:gauge12",
-    "mass": 30,
-    "propellant_power": 1E3
-  },
-
-
-  {
-    "block": "vs_wap:rotator",
+    "block": "vswap:impact_fuze",
     "mass": 10
   },
   {
-    "block": "vs_wap:tail_fin",
+    "block": "vswap:wind_cap",
     "mass": 15
+  },
+
+
+  {
+    "block": "vswap:primer",
+    "mass": 5
+  },
+  {
+    "block": "vswap:shelled_propellant",
+    "mass": 30
+    "std_propellant_energy": 1
+  },
+  {
+    "block": "vswap:ccc",
+    "mass": 25
+    "std_propellant_energy": 0.8
+  },
+  {
+    "block": "vswap:gauge12",
+    "mass": 30
+    "std_propellant_energy": 0.65
+  },
+
+
+  {
+    "block": "vswap:rotator",
+    "mass": 10
+  },
+  {
+    "block": "vswap:tail_fin",
+    "mass": 15
+  },
+  {
+    "block": "vswap:glider",
+    "mass": 20
   }
 ]

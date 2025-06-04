@@ -1,10 +1,12 @@
 package com.lancas.vswap.content.block.blocks.artillery.breech;
 
+import com.lancas.vswap.content.WapSounds;
 import com.lancas.vswap.content.block.blocks.artillery.IBarrel;
 import com.lancas.vswap.content.block.blocks.blockplus.RefreshBlockRecordAdder;
 import com.lancas.vswap.content.item.items.docker.Docker;
 import com.lancas.vswap.content.saved.blockrecord.BlockRecordRWMgr;
 import com.lancas.vswap.foundation.api.Dest;
+import com.lancas.vswap.register.PlayerScreenShakeEvt;
 import com.lancas.vswap.sandbox.ballistics.behaviour.BallisticBehaviour;
 import com.lancas.vswap.sandbox.ballistics.data.AirDragSubData;
 import com.lancas.vswap.sandbox.ballistics.data.BallisticBarrelContextSubData;
@@ -29,6 +31,7 @@ import com.lancas.vswap.util.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -420,9 +423,17 @@ public class EjectingBreech extends BlockPlus implements IBreech, IBarrel/*, IBE
         BlockClusterData blockData = new BlockClusterData();
         Dest<Double> propellantEnergyDest = new Dest<>();
         boolean success = IBreech.foreachMunition(level, breechPos, new Vector3i(0, 0, 1), false, propellantEnergyDest, blockData);
-        if (!success) return;
+        if (!success || propellantEnergyDest.get() <= 0) return;
 
-        RigidbodyData rigidbodyData = new RigidbodyData(new TransformPrimitive(worldBreechPos, new Quaterniond().rotateTo(new Vector3d(0, 0, 1), worldLaunchDir), new Vector3d(1, 1, 1)));
+        //play sound
+        level.playSound(null, breechPos, WapSounds.ARTILLERY_FIRE0.get(), SoundSource.BLOCKS);
+        //shakes
+        PlayerScreenShakeEvt.setShakeTicksNoLessThanDefaultTicks();
+
+        RigidbodyData rigidbodyData =
+            new RigidbodyData(new TransformPrimitive(worldBreechPos, new Quaterniond().rotateTo(new Vector3d(0, 0, 1), worldLaunchDir), new Vector3d(1, 1, 1)));
+        //rigidbodyData.setNoGravity();  //don't use gravity, it will be in BallisticFlyingContext
+
         SandBoxServerShip ship = new SandBoxServerShip(
             UUID.randomUUID(),
             rigidbodyData,
@@ -433,7 +444,7 @@ public class EjectingBreech extends BlockPlus implements IBreech, IBarrel/*, IBE
             new BallisticBarrelContextSubData(),
             new AirDragSubData()
         ));
-        SandBoxServerWorld.addShipAndSyncClient(level, ship);
+        SandBoxServerWorld.addShip(level, ship, true);
         //todo unload
 
         Vector3d throwDir = worldLaunchDir.negate(new Vector3d());

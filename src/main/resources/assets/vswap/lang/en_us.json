@@ -4,6 +4,8 @@
   "block.vswap.wind_cap": "wind_cap",
   "block.vswap.gauge12": "gauge 12",
   "block.vswap.ap_core_warhead": "hard core ap warhead",
+  "block.vswap.apfsds_warhead": "APFSDS warhead",
+  "block.vswap.apfsds_quarter_shell": "APFSDS quarter supporting sabot",
   "block.vswap.blunt_ap_warhead": "blunt_ap_warhead",
   "block.vswap.he_warhead": "he warhead",
   "block.vswap.impact_fuze": "impact fuze",
@@ -40,6 +42,23 @@
   "item.vswap.docker": "docker",
   "item.vswap.green_print": "green print",
   "item.vswap.ms_item": "material",
-  "item.vswap.breech_unloader": "breech unloader"
+  "item.vswap.breech_unloader": "breech unloader",
+
+  "info.vswap.mass": "mass",
+  "info.vswap.armour_rhae": "RHAe",
+  "info.vswap.armour_ab_ratio": "armour absorb ratio",
+  "info.vswap.drag_factor": "drag factor",
+  "info.vswap.ap_area": "ap area",
+  "info.vswap.oblique_degree": "oblique degree",
+  "info.vswap.propellant_power": "propellant power",
+  "info.vswap.std_propellant": "standard propellant power",
+  "info.vswap.normalization": "normalization",
+  "info.vswap.critical_degree": "critical degree",
+  "info.vswap.penetration_mul": "penetration multiplier",
+  "info.vswap.ke_destruction_scalar": "KE-Destruction Scalar",
+
+  "term.vswap.ricochet_probability": "ricochet probability",
+  "term.vswap.fatal_propellant": "fatal propellant power",
+  "term.vswap.after_normalization_rhae": "after normalization rhae"
 
 }

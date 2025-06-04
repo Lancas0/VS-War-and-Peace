@@ -89,7 +89,7 @@ public class ChuteLikeOutputBehaviour extends BlockEntityBehaviour {
         if (targetState.isAir()) {
             //EzDebug.log("drop side is air:" + toDropStack);
             Vector3d dropPos = JomlUtil.relativeFromCenter(getPos(), extractDir, 0.75);
-            ItemUtil.dropNoRandom(level, toDropStack, dropPos);
+            ItemUtil.dropNoRandom(level, toDropStack, dropPos, null);
             itemHandler.setStackInSlot(finalAtSlot, ItemStack.EMPTY);
             return;
         }

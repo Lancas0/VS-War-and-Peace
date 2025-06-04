@@ -26,7 +26,7 @@ public class AirDragHandler {
 
         Vector3d worldMassCenter = rigidbodyDataReader.getWorldMassCenter(new Vector3d());
         Vector3d worldAirDragCenter = rigidbodyDataReader.localToWorldPos(airDragData.localAirDragCenter, new Vector3d());
-        Vector3d worldForward = rigidbodyDataReader.localToWorldNoScaleDir(data.initialStateData.localForward);
+        Vector3d worldForward = rigidbodyDataReader.localIToWorldNoScaleDir(data.initialStateData.localForward);
 
         double projectArea = calAirDragAreaInWorld(ship, airDragData, velocity);
         double dragForceLen = DRAG_FACTOR * projectArea * velocitySqLen * 1;  //the last arg is air drag multiplier

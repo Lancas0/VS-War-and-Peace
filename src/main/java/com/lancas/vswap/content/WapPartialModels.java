@@ -2,7 +2,7 @@ package com.lancas.vswap.content;
 
 
 import com.jozufozu.flywheel.core.PartialModel;
-import com.lancas.vswap.ModMain;
+import com.lancas.vswap.VsWap;
 
 public class WapPartialModels {
     public static final PartialModel
@@ -14,7 +14,7 @@ public class WapPartialModels {
         DOCK_PLATE_TEST = block("industry/dock/dock_plate_test");
 
     private static PartialModel block(String path) {
-        return new PartialModel(ModMain.asRes("block/" + path));
+        return new PartialModel(VsWap.asRes("block/" + path));
     }
 
     public static void init() {}

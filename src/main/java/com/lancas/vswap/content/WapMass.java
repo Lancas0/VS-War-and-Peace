@@ -1,6 +1,6 @@
 package com.lancas.vswap.content;
 
-import com.lancas.vswap.ModMain;
+import com.lancas.vswap.VsWap;
 import com.lancas.vswap.content.info.block.WapBlockInfos;
 import kotlin.Triple;
 import net.minecraft.core.Registry;
@@ -41,7 +41,7 @@ public class WapMass implements BlockStateInfoProvider {
 
     @Nullable
     public Double getBlockStateMass(@NotNull BlockState state) {
-        return WapBlockInfos.mass.valueOrNullOf(state);
+        return WapBlockInfos.Mass.valueOrNullOf(state);
     }
 
     @Nullable
@@ -51,7 +51,7 @@ public class WapMass implements BlockStateInfoProvider {
 
     public final void register() {
         var registry = BlockStateInfo.INSTANCE.getREGISTRY();
-        Registry.register(registry, new ResourceLocation(ModMain.MODID, "registry_mass"), this);
+        Registry.register(registry, new ResourceLocation(VsWap.MODID, "registry_mass"), this);
     }
 }
 

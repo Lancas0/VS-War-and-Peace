@@ -70,9 +70,16 @@ public class BarrelCtxUpdateHandler {
 
         //EzDebug.log("loc:" + localAABB + ", wor:" + worldAABB + ", not in barrel");
 
-        //the projectile is not in barrel now
         barrelCtx.alwaysInBarrelSinceLaunch = false;
         barrelCtx.exitedBarrelTicks++;
+
+        if (barrelCtx.isAbsoluteExitBarrel()) {
+            //first time the projectile is not in barrel
+            data.initialStateData.foreachBallisticBlock(ship, (localPos, state, iBallistic) -> {
+                iBallistic.onExitBarrel(level, ship, localPos);
+            });
+        }
+
         return;
     }
 }

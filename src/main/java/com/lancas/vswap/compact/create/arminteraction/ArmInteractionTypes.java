@@ -1,6 +1,6 @@
 package com.lancas.vswap.compact.create.arminteraction;
 
-import com.lancas.vswap.ModMain;
+import com.lancas.vswap.VsWap;
 import com.lancas.vswap.content.block.blocks.artillery.breech.IBreech;
 import com.simibubi.create.content.kinetics.mechanicalArm.ArmInteractionPoint;
 import com.simibubi.create.content.kinetics.mechanicalArm.ArmInteractionPointType;
@@ -19,7 +19,7 @@ public class ArmInteractionTypes {
     public static final DockArmPoint.Type DOCK = register("dock_arm_type", DockArmPoint.Type::new);
 
     private static <T extends ArmInteractionPointType> T register(String id, Function<ResourceLocation, T> factory) {
-        T type = factory.apply(ModMain.asRes(id));
+        T type = factory.apply(VsWap.asRes(id));
         ArmInteractionPointType.register(type);
         return type;
     }

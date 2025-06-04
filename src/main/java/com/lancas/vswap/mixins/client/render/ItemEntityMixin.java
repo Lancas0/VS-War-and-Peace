@@ -32,11 +32,11 @@ public abstract class ItemEntityMixin extends EntityRenderer<ItemEntity> {
     @Shadow @Final
     private RandomSource random;
 
-    @Shadow
-    public abstract boolean shouldBob();
-    @Shadow
+    //@Shadow(remap = false)
+    //public abstract boolean shouldBob();
+    @Shadow(remap = false)
     public abstract boolean shouldSpreadItems();
-    @Shadow
+    @Shadow(remap = false)
     protected abstract int getRenderAmount(ItemStack p_115043_);
 
 
@@ -47,7 +47,8 @@ public abstract class ItemEntityMixin extends EntityRenderer<ItemEntity> {
     @Inject(
         method = "Lnet/minecraft/client/renderer/entity/ItemEntityRenderer;render(Lnet/minecraft/world/entity/item/ItemEntity;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V",
         at = @At("HEAD"),
-        cancellable = true)
+        cancellable = true
+    )
     private void onRender(ItemEntity itemEntity, float entityYaw, float partialTick, PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLight, CallbackInfo ci) {
         boolean isDocker = itemEntity.getItem().is(WapItems.DOCKER.get());
         //EzDebug.log("onItemEntityRender, is docker?:" + isDocker);

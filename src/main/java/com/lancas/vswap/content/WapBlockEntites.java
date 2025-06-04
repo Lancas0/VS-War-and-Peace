@@ -5,11 +5,11 @@ import com.lancas.vswap.content.block.blocks.industry.dock.DockBe;
 import com.lancas.vswap.content.block.blocks.industry.dock.GreenPrintHolderBe;
 import com.lancas.vswap.content.block.blocks.industry.shredder.ShredderBe;
 import com.lancas.vswap.content.block.blocks.industry.shredder.ShredderRenderer;
-import com.lancas.vswap.renderer.industry.ProjectorLenRenderer;
+import com.lancas.vswap.content.block.blocks.industry.projector.ProjectorLenRenderer;
 import com.simibubi.create.content.kinetics.base.ShaftInstance;
 import com.tterrag.registrate.util.entry.BlockEntityEntry;
 
-import static com.lancas.vswap.ModMain.REGISTRATE;
+import static com.lancas.vswap.VsWap.REGISTRATE;
 import static com.lancas.vswap.content.WapBlocks.*;
 import static com.lancas.vswap.content.WapBlocks.Cartridge.Warhead.AP_CORE_WARHEAD;
 import static com.lancas.vswap.content.WapBlocks.Cartridge.Warhead.BLUNT_AP_WARHEAD;

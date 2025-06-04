@@ -2,7 +2,7 @@ package com.lancas.vswap.ship.feature.hide;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.lancas.vswap.ModMain;
+import com.lancas.vswap.VsWap;
 import com.lancas.vswap.debug.EzDebug;
 import com.lancas.vswap.event.EventMgr;
 import com.lancas.vswap.foundation.LazyTicks;
@@ -17,8 +17,6 @@ import net.minecraftforge.fml.common.Mod;
 import org.jetbrains.annotations.NotNull;
 import org.valkyrienskies.core.api.ships.ServerShip;
 
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.StreamSupport;
@@ -46,7 +44,7 @@ public class VsHideAndSeek extends SavedData {
         return inLevel.getDataStorage().computeIfAbsent(
             t -> new VsHideAndSeek(inLevel).load(t),
             () -> new VsHideAndSeek(inLevel),
-            ModMain.MODID + "_vs_hide_and_seek"
+            VsWap.MODID + "_vs_hide_and_seek"
         );
     }
 

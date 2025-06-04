@@ -110,8 +110,11 @@ public class SandBoxClientWorld implements ISandBoxWorld<IClientSandBoxShip> {
 
         //由于是并发环境，还是需要putIfAbsent
         //clientShips.putIfAbsent(ship.getUuid(), ship);
-        clientShips.putIfAbsent(ship.getUuid(), ship);
+        if (clientShips.putIfAbsent(ship.getUuid(), ship) == null) {  //if successfully add
+            ship.inWorld = true;
+        }
     }
+    @Override
     public void markShipDeleted(UUID uuid) {
         var ship = clientShips.get(uuid);
         if (ship == null) {
@@ -120,7 +123,9 @@ public class SandBoxClientWorld implements ISandBoxWorld<IClientSandBoxShip> {
         }
 
         clientShips.markKeyRemoved(uuid);
+        ship.onMarkDeleted();
         SandBoxEventMgr.onRemoveShip.invokeAll(this, ship);
+        ship.inWorld = false;
     }
 
     /*public WrappedVsShip wrapVsShip(@NotNull ServerShip vsShip) {

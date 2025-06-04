@@ -10,7 +10,7 @@ import com.lancas.vswap.subproject.mstandardized.MaterialStandardizedItem;
 import com.tterrag.registrate.util.entry.ItemEntry;
 import net.minecraft.world.item.Item;
 
-import static com.lancas.vswap.ModMain.REGISTRATE;
+import static com.lancas.vswap.VsWap.REGISTRATE;
 
 public class WapItems {
 

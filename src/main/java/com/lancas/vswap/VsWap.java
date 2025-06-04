@@ -36,10 +36,11 @@ import org.slf4j.Logger;
 
 
 // The value here should match an entry in the META-INF/mods.toml file
-@Mod(ModMain.MODID)
-public class ModMain  {
+@Mod(VsWap.MODID)
+public class VsWap {
     // Define mod id in a common place for everything to reference
     public static final String MODID = "vswap";
+    public static final String COMMON_FILENAME = "vswap-common.toml";
     // Directly reference a slf4j logger
     private static final Logger LOGGER = LogUtils.getLogger();
 
@@ -48,10 +49,11 @@ public class ModMain  {
     public static final CreateRegistrate REGISTRATE = CreateRegistrate.create(MODID);
 
 
-    public ModMain() {
+    public VsWap() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         IEventBus forgeBus = Mod.EventBusSubscriber.Bus.FORGE.bus().get();
 
+        ModLoadingContext modLoadingContext = ModLoadingContext.get();
 
         // Register the commonSetup method for modloading
         modEventBus.addListener(this::commonSetup);
@@ -70,15 +72,20 @@ public class ModMain  {
         WapUI.register();
         ArmInteractionTypes.register();
 
+        WapSounds.register(modEventBus);
+
         WapMass.INSTANCE.register();
 
         EventMgr.registerDefault();
         SandBoxEventMgr.register();
 
-
         ClientShardShipScheduler.register();
 
+        //WapConfig.register(modLoadingContext);
+
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> WapPartialModels::init);
+
+        //ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, WapConfig.SPEC, "vswap-common-config.toml");
 
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
@@ -87,27 +94,28 @@ public class ModMain  {
         //modEventBus.addListener(this::addCreative);
 
         // Register our mod's ForgeConfigSpec so that Forge can create and load the config file for us
-        //todo remove for test
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SPEC);
+        modLoadingContext.registerConfig(ModConfig.Type.COMMON, WapCommonConfig.SPEC, COMMON_FILENAME);
 
 
         Mod.EventBusSubscriber.Bus.FORGE.bus().get().addListener(EventPriority.HIGH, this::registerHPResourceManagers);
-        Mod.EventBusSubscriber.Bus.FORGE.bus().get().addListener(EventPriority.HIGH, this::registerNPResourceManagers);
+        Mod.EventBusSubscriber.Bus.FORGE.bus().get().addListener(EventPriority.NORMAL, this::registerNPResourceManagers);
 
         //MinecraftForge.EVENT_BUS.addListener();
+
+        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> VsWapClient.init(modLoadingContext));
     }
 
     private void commonSetup(final FMLCommonSetupEvent event)
     {
         // Some common setup code
-        LOGGER.info("HELLO FROM COMMON SETUP");
+        /*OGGER.info("HELLO FROM COMMON SETUP");
 
-        if (Config.logDirtBlock)
+        if (WapCommonConfig.logDirtBlock)
             LOGGER.info("DIRT BLOCK >> {}", ForgeRegistries.BLOCKS.getKey(Blocks.DIRT));
 
-        LOGGER.info(Config.magicNumberIntroduction + Config.magicNumber);
+        LOGGER.info(WapCommonConfig.magicNumberIntroduction + WapCommonConfig.magicNumber);
 
-        Config.items.forEach((item) -> LOGGER.info("ITEM >> {}", item.toString()));
+        WapCommonConfig.items.forEach((item) -> LOGGER.info("ITEM >> {}", item.toString()));*/
 
 
         //RefWithFallback don't have the behaviour

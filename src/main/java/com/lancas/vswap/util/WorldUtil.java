@@ -204,6 +204,12 @@ public class WorldUtil {
 
         return JomlUtil.dWorldNormal(ship.getShipToWorld(), dir);
     }
+    public static Vector3d getWorldFaceCenter(Level level, BlockPos bp, Direction face) {
+        Ship ship = ShipUtil.getShipAt(level, bp);
+        if (ship == null) return JomlUtil.relativeFromCenter(bp, face, 0.5);
+
+        return ship.getShipToWorld().transformPosition(JomlUtil.relativeFromCenter(bp, face, 0.5));
+    }
 
     public static BlockPos getWorldBp(Level level, BlockPos bp) {
         Ship ship = ShipUtil.getShipAt(level, bp);

@@ -1,6 +1,8 @@
 package com.lancas.vswap.subproject.sandbox.ship;
 
 import com.lancas.vswap.debug.EzDebug;
+import com.lancas.vswap.subproject.sandbox.ISandBoxWorld;
+import com.lancas.vswap.subproject.sandbox.SandBoxServerWorld;
 import com.lancas.vswap.subproject.sandbox.api.ISavedLevelObject;
 import com.lancas.vswap.subproject.sandbox.api.component.IComponentBehaviour;
 import com.lancas.vswap.subproject.sandbox.api.component.IServerBehaviour;
@@ -23,6 +25,14 @@ import java.util.stream.Stream;
 
 public class SandBoxServerShip implements IServerSandBoxShip, ISavedLevelObject<SandBoxServerShip> {
     private UUID uuid;
+    protected String worldDimId;
+    public @Nullable String getWorldDimId() {   //todo temp?
+        return worldDimId;
+    }
+    public void setWorldDimId(String inWorldDimId) {   //todo temp?
+        worldDimId = inWorldDimId;
+    }
+
     //private final SandBoxTransform transform = new SandBoxTransform();
     private final SandBoxRigidbody rigidbody = new SandBoxRigidbody();
     private final SandBoxShipBlockCluster blockCluster = new SandBoxShipBlockCluster();
@@ -119,9 +129,21 @@ public class SandBoxServerShip implements IServerSandBoxShip, ISavedLevelObject<
         return behaviours.stream().map(b -> b);
     }
 
+    @Override
+    public void onMarkDeleted() {
+        behaviours.forEach(IComponentBehaviour::onMarkDeleted);
+    }
+
 
     @Override
     public UUID getUuid() { return uuid; }
+    @Override
+    public @Nullable SandBoxServerWorld getWorld() {
+        if (worldDimId == null)
+            return null;
+
+        return SandBoxServerWorld.fromDimId(worldDimId);
+    }
 
     //@Override
     /*public AABBdc getWorldAABB() {
@@ -225,6 +247,7 @@ public class SandBoxServerShip implements IServerSandBoxShip, ISavedLevelObject<
     public CompoundTag saved(ServerLevel level) {
         return new NbtBuilder()
             .putUUID("uuid", uuid)
+            .putIfNonNull("world_dim_id", worldDimId, NbtBuilder::putString)
             //.putNumber("remain_life_tick", remainLifeTick.get())
             .putCompound("rigidbody_data", rigidbody.getSavedData())
             //.putCompound("transform_data", transform.getSavedData())
@@ -243,6 +266,7 @@ public class SandBoxServerShip implements IServerSandBoxShip, ISavedLevelObject<
 
         NbtBuilder.modify(tag)
             .readUUIDDo("uuid", v -> uuid = v)
+            .readDoIfExist("world_dim_id", v -> worldDimId = v, NbtBuilder::getString)
             //.readIntDo("remain_life_tick", remainLifeTick::set)
             /*.readCompoundDo("transform_data",
                 t -> transform.loadData(this, new TransformData().load(t))

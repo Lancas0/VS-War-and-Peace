@@ -1,6 +1,6 @@
 package com.lancas.vswap.event;
 
-import com.lancas.vswap.ModMain;
+import com.lancas.vswap.VsWap;
 import com.lancas.vswap.content.block.blocks.cartridge.PrimerBlock;
 import com.lancas.vswap.content.block.blocks.cartridge.ShellFrame;
 import com.lancas.vswap.content.saved.vs_constraint.ConstraintsMgr;
@@ -14,7 +14,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.valkyrienskies.core.api.ships.Ship;
 
-@Mod.EventBusSubscriber(modid = ModMain.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@Mod.EventBusSubscriber(modid = VsWap.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class EventMgr {
     public static class Server {
         public static final ConstraintAddEvent constraintAddEvent = new ConstraintAddEvent();

@@ -1,6 +1,6 @@
 package com.lancas.vswap.register;
 
-import com.lancas.vswap.ModMain;
+import com.lancas.vswap.VsWap;
 import com.lancas.vswap.debug.EzDebug;
 import com.lancas.vswap.ship.feature.hold.ICanHoldShip;
 import com.lancas.vswap.ship.feature.hold.ShipHoldSlot;
@@ -16,7 +16,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.valkyrienskies.core.api.ships.ServerShip;
 
-@Mod.EventBusSubscriber(modid = ModMain.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@Mod.EventBusSubscriber(modid = VsWap.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class PlayerHoldShipForgeEvent {
 
     @SubscribeEvent

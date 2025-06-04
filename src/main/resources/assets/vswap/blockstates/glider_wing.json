@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "facing=down":  { "model": "vswap:block/cartridge/glider/glider_wing", "x": 180 },
+    "facing=up":    { "model": "vswap:block/cartridge/glider/glider_wing" },
+    "facing=north": { "model": "vswap:block/cartridge/glider/glider_wing", "x": 90 },
+    "facing=south": { "model": "vswap:block/cartridge/glider/glider_wing", "x": 90, "y": 180 },
+    "facing=west":  { "model": "vswap:block/cartridge/glider/glider_wing", "x": 90, "y": 270 },
+    "facing=east":  { "model": "vswap:block/cartridge/glider/glider_wing", "x": 90, "y": 90 }
+  }
+}

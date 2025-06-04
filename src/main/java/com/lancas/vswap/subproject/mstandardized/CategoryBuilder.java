@@ -132,7 +132,7 @@ public class CategoryBuilder {  //Category as generic param, act like friend cla
             });
 
 
-        EzDebug.log("cate builder, blockID:" + blockID + ", return:" + (anyTagIncluded.get() && (!anyTagExcluded.get())));
+        //EzDebug.log("cate builder, blockID:" + blockID + ", return:" + (anyTagIncluded.get() && (!anyTagExcluded.get())));
         return anyTagIncluded.get() && (!anyTagExcluded.get());
     }
     public Category build() {

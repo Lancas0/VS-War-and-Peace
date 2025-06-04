@@ -299,7 +299,7 @@ public class DroppingBreech extends BlockPlus implements IBreech, IBarrel/*, IBE
             new BallisticBarrelContextSubData(),
             new AirDragSubData()
         ));
-        SandBoxServerWorld.addShipAndSyncClient(level, ship);
+        SandBoxServerWorld.addShip(level, ship, true);
         //todo unload
 
         Vector3d throwDir = worldLaunchDir.negate(new Vector3d());

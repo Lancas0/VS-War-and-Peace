@@ -1,6 +1,6 @@
 {
+	"parent": "minecraft:block/block",
 	"credit": "Made with Blockbench",
-	"texture_size": [64, 64],
 	"textures": {
 		"0": "cbcmoreshells:block/projectile/apfsds_shot",
 		"particle": "cbcmoreshells:block/projectile/apfsds_shot"
@@ -123,16 +123,16 @@
 		},
 		"gui": {
 			"rotation": [30, 225, 0],
-			"translation": [0, -3.25, 0],
-			"scale": [0.4, 0.4, 0.4]
+			"translation": [0, -1, 0],
+			"scale": [0.65, 0.65, 0.65]
 		},
 		"head": {
 			"translation": [0, 26, 0],
 			"scale": [4, 4, 4]
 		},
 		"fixed": {
-			"translation": [0, -3.5, 0],
-			"scale": [0.5, 0.5, 0.5]
+			"translation": [0, -2.5, 0],
+			"scale": [0.7, 0.7, 0.7]
 		}
 	}
 }

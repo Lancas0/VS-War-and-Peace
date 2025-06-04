@@ -1,6 +1,6 @@
 package com.lancas.vswap.register;
 
-import com.lancas.vswap.ModMain;
+import com.lancas.vswap.VsWap;
 import com.lancas.vswap.content.item.items.docker.Docker;
 import com.lancas.vswap.content.ui.DockerStateScreen;
 import com.lancas.vswap.debug.EzDebug;
@@ -38,7 +38,7 @@ import java.util.Hashtable;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 
-@Mod.EventBusSubscriber(modid = ModMain.MODID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
+@Mod.EventBusSubscriber(modid = VsWap.MODID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
 public enum KeyBinding {
     FireKey(
         "Fire Key",
@@ -202,7 +202,7 @@ public enum KeyBinding {
     @SubscribeEvent
     public static void register(RegisterKeyMappingsEvent event) {
         for (KeyBinding key : values()) {
-            key.keybind = new KeyMapping(key.desc, key.key, ModMain.MODID); //todo mod name
+            key.keybind = new KeyMapping(key.desc, key.key, VsWap.MODID); //todo mod name
             if (!key.modifiable)
                 continue;
 

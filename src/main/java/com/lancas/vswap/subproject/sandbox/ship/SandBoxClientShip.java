@@ -1,5 +1,7 @@
 package com.lancas.vswap.subproject.sandbox.ship;
 
+import com.lancas.vswap.subproject.sandbox.ISandBoxWorld;
+import com.lancas.vswap.subproject.sandbox.SandBoxClientWorld;
 import com.lancas.vswap.subproject.sandbox.api.component.IClientBehaviour;
 import com.lancas.vswap.subproject.sandbox.api.component.IComponentBehaviour;
 import com.lancas.vswap.subproject.sandbox.api.component.IComponentData;
@@ -10,6 +12,7 @@ import com.lancas.vswap.subproject.sandbox.component.behviour.SandBoxShipBlockCl
 import com.lancas.vswap.subproject.sandbox.component.data.BlockClusterData;
 import com.lancas.vswap.subproject.sandbox.component.data.RigidbodyData;
 import net.minecraft.client.multiplayer.ClientLevel;
+import org.jetbrains.annotations.Nullable;
 import org.joml.primitives.AABBd;
 import org.joml.primitives.AABBdc;
 
@@ -23,6 +26,7 @@ import java.util.stream.Stream;
 //todo extract a abstract ship from serverShip and clientShip
 public class SandBoxClientShip implements IClientSandBoxShip {
     private UUID uuid;
+    public boolean inWorld = false;
     private final SandBoxRigidbody rigidbody = new SandBoxRigidbody();
     private final SandBoxShipBlockCluster blockCluster = new SandBoxShipBlockCluster();
 
@@ -129,9 +133,19 @@ public class SandBoxClientShip implements IClientSandBoxShip {
         return behaviours.stream().map(b -> b);
     }
 
+    @Override
+    public void onMarkDeleted() {
+        behaviours.forEach(IComponentBehaviour::onMarkDeleted);
+    }
+
 
     @Override
     public UUID getUuid() { return uuid; }
+
+    @Override
+    public @Nullable ISandBoxWorld<?> getWorld() {
+        return inWorld ? SandBoxClientWorld.INSTANCE : null;  //todo later set inWorld false after removed
+    }
 
     //@Override
     /*public AABBdc getWorldAABB() {

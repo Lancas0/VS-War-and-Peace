@@ -5,6 +5,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
 
@@ -59,14 +60,27 @@ public class ItemUtil {
         return itemStack.getHoverName().getString().replaceAll("")
     }*/
 
-    public static void dropNoRandom(Level level, ItemStack stack, Vector3dc dropPos) { dropNoRandom(level, stack, dropPos.x(), dropPos.y(), dropPos.z()); }
-    public static void dropNoRandom(Level level, ItemStack stack, double x, double y, double z) {
+    public static void dropNoRandom(Level level, ItemStack stack, Vector3dc dropPos, @Nullable Consumer<ItemEntity> withEntityDo) { dropNoRandom(level, stack, dropPos.x(), dropPos.y(), dropPos.z(), withEntityDo); }
+    /*public static @Nullable ItemEntity dropNoRandom(Level level, ItemStack stack, double x, double y, double z) {
         if (stack.isEmpty())
-            return;
+            return null;
 
         ItemEntity dropEntity = new ItemEntity(level, x, y, z, stack);
         //float $$12 = 0.05F;
         //dropEntity.setDeltaMovement(p_18993_.random.triangle((double)0.0F, 0.11485000171139836), p_18993_.random.triangle(0.2, 0.11485000171139836), p_18993_.random.triangle((double)0.0F, 0.11485000171139836));
         level.addFreshEntity(dropEntity);
+        return dropEntity;
+    }*/
+    public static void dropNoRandom(Level level, ItemStack stack, double x, double y, double z, @Nullable Consumer<ItemEntity> withEntityDo) {
+        if (stack.isEmpty())
+            return;
+
+        ItemEntity dropEntity = new ItemEntity(level, x, y, z, stack);
+        if (withEntityDo != null)
+            withEntityDo.accept(dropEntity);
+        //float $$12 = 0.05F;
+        //dropEntity.setDeltaMovement(p_18993_.random.triangle((double)0.0F, 0.11485000171139836), p_18993_.random.triangle(0.2, 0.11485000171139836), p_18993_.random.triangle((double)0.0F, 0.11485000171139836));
+        level.addFreshEntity(dropEntity);
+        //return dropEntity;
     }
 }

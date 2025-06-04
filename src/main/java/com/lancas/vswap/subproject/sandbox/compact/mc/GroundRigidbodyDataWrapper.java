@@ -4,9 +4,12 @@ import com.lancas.vswap.debug.EzDebug;
 import com.lancas.vswap.subproject.sandbox.api.data.ITransformPrimitive;
 import com.lancas.vswap.subproject.sandbox.api.data.TransformPrimitive;
 import com.lancas.vswap.subproject.sandbox.component.data.IRigidbodyData;
+import com.lancas.vswap.subproject.sandbox.component.data.RigidbodyData;
 import com.lancas.vswap.subproject.sandbox.component.data.writer.IRigidbodyDataWriter;
+import org.apache.commons.lang3.NotImplementedException;
 import org.joml.*;
 
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 public class GroundRigidbodyDataWrapper implements IRigidbodyData {
@@ -66,10 +69,22 @@ public class GroundRigidbodyDataWrapper implements IRigidbodyData {
     public boolean isStatic() { return true; }
 
     @Override
+    public RigidbodyData getCopiedData() {
+        throw new NotImplementedException();
+    }
+
+    @Override
     public IRigidbodyDataWriter setPosition(Vector3dc p) {
         EzDebug.warn("no use to set position of ground");
         return this;
     }
+
+    @Override
+    public IRigidbodyDataWriter updatePosition(Function<Vector3dc, Vector3d> pTransformer) {
+        EzDebug.warn("no use to update position of ground");
+        return this;
+    }
+
     @Override
     public IRigidbodyDataWriter setRotation(Quaterniondc r) {
         EzDebug.warn("no use to set rotation of ground");
@@ -85,11 +100,24 @@ public class GroundRigidbodyDataWrapper implements IRigidbodyData {
         EzDebug.warn("no use to set transform of ground");
         return this;
     }
-    @Override
+    /*@Override
     public IRigidbodyDataWriter setVelocity(Vector3dc v) {
         EzDebug.warn("no use to set vel of ground");
         return this;
+    }*/
+
+    @Override
+    public IRigidbodyDataWriter setVelocity(double x, double y, double z) {
+        EzDebug.warn("no use to set vel of ground");
+        return this;
     }
+
+    @Override
+    public IRigidbodyDataWriter updateVelocity(Function<Vector3dc, Vector3d> vTransformer) {
+        EzDebug.warn("no use to update vel of ground");
+        return this;
+    }
+
     @Override
     public IRigidbodyDataWriter setOmega(Vector3dc v) {
         EzDebug.warn("no use to set omega of ground");

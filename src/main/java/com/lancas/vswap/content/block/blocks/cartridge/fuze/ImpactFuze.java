@@ -1,6 +1,7 @@
 package com.lancas.vswap.content.block.blocks.cartridge.fuze;
 
 import com.lancas.vswap.sandbox.ballistics.ISandBoxBallisticBlock;
+import com.lancas.vswap.sandbox.ballistics.data.BallisticPos;
 import com.lancas.vswap.sandbox.ballistics.trigger.SandBoxTriggerInfo;
 import com.lancas.vswap.ship.ballistics.collision.traverse.BlockTraverser;
 import com.lancas.vswap.ship.ballistics.data.BallisticsHitInfo;
@@ -92,9 +93,9 @@ public class ImpactFuze extends BlockPlus implements ICollisionTrigger, ISandBox
 
 
     @Override
-    public void appendTriggerInfos(ServerLevel level, Vector3ic localPos, BlockState state, SandBoxServerShip ship, List<SandBoxTriggerInfo> dest) {
+    public void appendTriggerInfos(ServerLevel level, BallisticPos ballisticPos, BlockState state, SandBoxServerShip ship, List<SandBoxTriggerInfo> dest) {
         if (isTriggered(state)) return;
-
+        if (ballisticPos.fromHead() != 0) return;  //don't trigger if not head
         /*Vector3dc velocity = ship.getRigidbody().getExposedData().getVelocity();
         Vector3d movement = velocity.mul(0.06, new Vector3d());  //raycast predict time is 0.06
 
@@ -116,15 +117,15 @@ public class ImpactFuze extends BlockPlus implements ICollisionTrigger, ISandBox
         setTriggered(state, true);
         ship.setBlock(localPos, state.setValue(TRIGGERED, true));*/
 
-        Vector3dc worldPos = ship.getRigidbody().getDataReader().localIToWorldPos(localPos);
+        Vector3dc worldPos = ship.getRigidbody().getDataReader().localIToWorldPos(ballisticPos.localPos());
         BlockPos blockPos = JomlUtil.bpContaining(worldPos);
         BlockState findState = level.getBlockState(blockPos);
 
         if (!findState.isAir()) {
-            var activateInfo = new SandBoxTriggerInfo.ActivateTriggerInfo(ship.getUuid(), localPos, state, worldPos);
+            var activateInfo = new SandBoxTriggerInfo.ActivateTriggerInfo(ship.getUuid(), ballisticPos.localPos(), state, worldPos);
             dest.add(activateInfo);
 
-            ship.getBlockCluster().getDataWriter().setBlock(localPos, state.setValue(TRIGGERED, true));
+            ship.getBlockCluster().getDataWriter().setBlock(ballisticPos.localPos(), state.setValue(TRIGGERED, true));
         }
 
         /*EzDebug.log(

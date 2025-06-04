@@ -1,13 +1,10 @@
-package com.lancas.vswap.foundation.network.server2client;
+package com.lancas.vswap.foundation.network.debug;
 
 import com.lancas.vswap.debug.EzDebug;
-import com.lancas.vswap.renderer.WandRenderer;
 import com.lancas.vswap.util.BytesUtil;
 import com.simibubi.create.CreateClient;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.network.NetworkEvent;

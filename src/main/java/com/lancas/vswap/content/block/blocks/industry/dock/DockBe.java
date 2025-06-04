@@ -11,8 +11,6 @@ import com.lancas.vswap.foundation.handler.construct.ShipConstructHandler;
 import com.lancas.vswap.foundation.handler.multiblock.IMultiContainerBE;
 import com.lancas.vswap.foundation.handler.multiblock.IMultiContainerType;
 import com.lancas.vswap.foundation.handler.multiblock.util.MultiContainerBeData;
-import com.lancas.vswap.foundation.network.NetworkHandler;
-import com.lancas.vswap.foundation.network.server2client.CreateOutlinePacketS2C;
 import com.lancas.vswap.ship.data.RRWChunkyShipSchemeData;
 import com.lancas.vswap.ship.helper.LazyShip;
 import com.lancas.vswap.ship.helper.builder.ShipBuilder;
@@ -20,6 +18,7 @@ import com.lancas.vswap.ship.helper.builder.TeleportDataBuilder;
 import com.lancas.vswap.subproject.mstandardized.MaterialStandardizedItem;
 import com.lancas.vswap.util.*;
 import com.simibubi.create.CreateClient;
+import com.simibubi.create.content.equipment.goggles.IHaveGoggleInformation;
 import com.simibubi.create.foundation.blockEntity.SyncedBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -45,7 +44,7 @@ import java.util.List;
 
 //todo when holding ship or building ship and destroyed...
 //todo rotate 90 when axis is Z
-public class DockBe extends SyncedBlockEntity implements IMultiContainerBE {
+public class DockBe extends SyncedBlockEntity implements IMultiContainerBE, IHaveGoggleInformation {
     protected long holdingVsShipId = -1;
     protected ConstraintSmartHolder constraintHolder;
     protected List<BlockPos> greenPrintHolders = new ArrayList<>();
@@ -521,14 +520,40 @@ public class DockBe extends SyncedBlockEntity implements IMultiContainerBE {
         //int color = RandUtil.nextColor();
         //RandUtil.popSeed();
 
-        if (level instanceof ServerLevel && isController()) {
+        /*if (level instanceof ServerLevel && isController()) {
             NetworkHandler.sendToAllPlayers(new CreateOutlinePacketS2C(key, outline, color));
         } else {
             CreateClient.OUTLINER.showAABB(key, outline)
                 .lineWidth(0.0625f)
                 .colored(color);
-        }
+        }*/
+        CreateClient.OUTLINER.showAABB(key, outline)
+            .lineWidth(0.0625f)
+            .colored(color);
     }
+
+
+    /*@OnlyIn(Dist.CLIENT)
+    @Override
+    public boolean addToGoggleTooltip(List<Component> tooltip, boolean isPlayerSneaking) {
+        //showOutline(WapColors.SHOWCASE_BLUE);
+        //boolean result = super.addToGoggleTooltip(tooltip, isPlayerSneaking);
+
+        //if (level == null)
+        //    return result;
+
+
+
+        //EzDebug.log("add goggle tooltip side:" + EffectiveSide.get());
+        RobotArm.showRange(level, worldPosition);
+        //EzDebug.log("arm is null?:" + (armPoint == null));
+        if (armPoint != null) {
+            boolean armPointInRange = RobotArm.isInRange(level, RobotArm.getRange(level, worldPosition), armPoint.getPos());
+            RobotArm.showArmPoint(armPoint, armPointInRange);
+        }
+        return result;
+    }*/
+
 
 
     @Override

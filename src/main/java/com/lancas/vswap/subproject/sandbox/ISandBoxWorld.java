@@ -38,6 +38,7 @@ public interface ISandBoxWorld<TShip extends ISandBoxShip> {
     public Stream<TShip> allShips();
     //public Stream<TShip> allShipsIncludeVs();
 
+    public void markShipDeleted(UUID uuid);
     public void markAllDeleted();
 
     //public boolean shouldRun();

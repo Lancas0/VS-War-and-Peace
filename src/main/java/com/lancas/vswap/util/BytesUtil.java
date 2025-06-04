@@ -23,6 +23,10 @@ public class BytesUtil {
         dest.set(buf.readVector3f());
         return buf;
     }
+    public static Vector3d getVector3d(FriendlyByteBuf buf, Vector3d dest) {
+        readVector3d(buf, dest);
+        return dest;
+    }
     public static ForceOnPos readForceOnPos(FriendlyByteBuf buf) {
         Vector3d force = new Vector3d(), pos = new Vector3d();
 

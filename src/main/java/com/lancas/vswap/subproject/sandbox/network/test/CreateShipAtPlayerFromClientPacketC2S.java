@@ -96,7 +96,7 @@ public class CreateShipAtPlayerFromClientPacketC2S {
 
             EzDebug.log("create ship with uuid:" + uuid);
 
-            SandBoxServerWorld.addShipAndSyncClient(level, ship);
+            SandBoxServerWorld.addShip(level, ship, true);
         });
         ctx.get().setPacketHandled(true);
     }

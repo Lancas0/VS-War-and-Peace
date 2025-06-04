@@ -1,6 +1,7 @@
 package com.lancas.vswap.subproject.sandbox.compact.vs;
 
 import com.lancas.vswap.debug.EzDebug;
+import com.lancas.vswap.subproject.sandbox.ISandBoxWorld;
 import com.lancas.vswap.subproject.sandbox.SandBoxClientWorld;
 import com.lancas.vswap.subproject.sandbox.SandBoxServerWorld;
 import com.lancas.vswap.subproject.sandbox.api.ISavedObject;
@@ -13,6 +14,8 @@ import com.lancas.vswap.util.NbtBuilder;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
+import org.apache.commons.lang3.NotImplementedException;
+import org.jetbrains.annotations.Nullable;
 import org.valkyrienskies.core.api.ships.Ship;
 import org.valkyrienskies.mod.common.VSGameUtilsKt;
 
@@ -42,6 +45,11 @@ public class WrappedVsShip implements IServerSandBoxShip, IClientSandBoxShip, IS
     @Override
     public UUID getUuid() { return uuid; }
 
+    @Override
+    public @Nullable ISandBoxWorld<?> getWorld() {
+        throw new NotImplementedException();
+    }
+
     /*@Override
     public int getRemainLifeTick() {
         return -1;  //vs don't support life time down
@@ -66,6 +74,10 @@ public class WrappedVsShip implements IServerSandBoxShip, IClientSandBoxShip, IS
         return Stream.empty();
     }
 
+    @Override
+    public void onMarkDeleted() {
+        throw new NotImplementedException();
+    }
 
 
     @Override

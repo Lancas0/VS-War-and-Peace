@@ -11,9 +11,9 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 @Mixin(ArmInteractionPoint.class)
 public interface ArmPointAccessor {
     //to do may cause over flow?
-    @Invoker("getInteractionPositionVector")
+    @Invoker(value = "getInteractionPositionVector", remap = false)
     public Vec3 getInteractionPositionVector();
 
-    @Invoker("getInteractionDirection")
+    @Invoker(value = "getInteractionDirection", remap = false)
     public Direction getInteractionDirection();
 }

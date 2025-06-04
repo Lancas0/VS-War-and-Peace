@@ -1,6 +1,6 @@
 package com.lancas.vswap.obsolete.register;
 
-import com.lancas.vswap.ModMain;
+import com.lancas.vswap.VsWap;
 import com.lancas.vswap.content.block.blocks.explosive.AbstractExplosiveBlock;
 import com.lancas.vswap.content.block.blocks.cartridge.warhead.IWarheadBlock;
 import net.minecraft.core.BlockPos;
@@ -12,7 +12,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 
-@Mod.EventBusSubscriber(modid = ModMain.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@Mod.EventBusSubscriber(modid = VsWap.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class ServerEvents {
     //不知道为什么，但是和瓦尔基里物理结构兼容，真奇怪
     @SubscribeEvent

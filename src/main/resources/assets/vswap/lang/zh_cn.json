@@ -4,6 +4,8 @@
   "block.vswap.wind_cap": "风帽(可以用但未完成)",
   "block.vswap.gauge12": "12号霰弹(未完成)",
   "block.vswap.ap_core_warhead": "硬芯穿甲弹头",
+  "block.vswap.apfsds_warhead": "APFSDS尾翼稳定脱壳穿甲弹战斗部",
+  "block.vswap.apfsds_quarter_shell": "APFSDS四分之一弹托",
   "block.vswap.blunt_ap_warhead": "被帽穿甲弹头",
   "block.vswap.he_warhead": "普通高爆战斗部",
   "block.vswap.impact_fuze": "触发引信",
@@ -26,7 +28,7 @@
   "block.vswap.artillery_door": "投弹仓(未完成)",
 
   "block.vswap.projection_center": "投影中心(技术物品)",
-  "block.vswap.vs_projector": "vs投影仪(未完成)",
+  "block.vswap.vs_projector": "vs投影仪",
 
   "block.vswap.shredder": "粉碎机",
 
@@ -35,8 +37,29 @@
 
   "item.vswap.vswap_wand": "很有武德的杖",
   "item.vswap.docker": "舵㭘",
-  "item.vswap.green_print": "绿图(未完成)",
+  "item.vswap.green_print": "绿图",
 
   "item.vswap.ms_item": "物料",
-  "item.vswap.breech_unloader": "卸弹器"
+  "item.vswap.breech_unloader": "卸弹器",
+
+
+  "info.vswap.mass": "质量",
+  "info.vswap.armour_rhae": "等效装甲",
+  "info.vswap.armour_ab_ratio": "装甲吸收率",
+  "info.vswap.drag_factor": "空气阻力系数",
+  "info.vswap.ap_area": "贯穿面积",
+  "info.vswap.oblique_degree": "转正角",
+  "info.vswap.propellant_power": "发射能量",
+  "info.vswap.std_propellant": "推进药量",
+  "info.vswap.normalization": "转正效应",
+  "info.vswap.critical_degree": "临界角",
+  "info.vswap.penetration_mul": "侵彻倍率",
+  "info.vswap.ke_destruction_scalar": "动能-毁伤面积倍率",
+
+  "term.vswap.ricochet_probability": "跳弹概率",
+  "term.vswap.fatal_propellant": "致命阈值",
+  "term.vswap.after_normalization_rhae": "转正后等效"
+
+
+
 }

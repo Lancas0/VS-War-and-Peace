@@ -1,19 +1,10 @@
 package com.lancas.vswap.content.block.blocks.industry.dock;
-/*
-import com.jozufozu.flywheel.api.InstanceData;
+
 import com.jozufozu.flywheel.api.MaterialManager;
 import com.jozufozu.flywheel.backend.instancing.blockentity.BlockEntityInstance;
-import com.jozufozu.flywheel.core.Materials;
-import com.jozufozu.flywheel.core.hardcoded.ModelPart;
-import com.jozufozu.flywheel.core.materials.FlatLit;
 import com.jozufozu.flywheel.core.materials.model.ModelData;
 import com.lancas.vswap.content.WapPartialModels;
-import com.lancas.vswap.debug.EzDebug;
-import com.simibubi.create.content.kinetics.base.SingleRotatingInstance;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.common.util.NonNullConsumer;
 
@@ -91,11 +82,11 @@ public class DockInstance extends BlockEntityInstance<DockBe> {
         cornerSEInstance.ifPresent(consumer);
     }
 
-    /.*@Override  //don't know when update() is called, but I known when blockState change, init() will called
+    /*@Override  //don't know when update() is called, but I known when blockState change, init() will called
     public void update() {
         super.update();
         EzDebug.log("DockInstance update");
-    }*./
+    }*/
 
 
     @Override
@@ -111,4 +102,3 @@ public class DockInstance extends BlockEntityInstance<DockBe> {
         this.relight(this.getWorldPosition(), toLight.stream());
     }
 }
-*/

@@ -1,9 +1,9 @@
 package com.lancas.vswap.obsolete.register;
 
-import com.lancas.vswap.ModMain;
+import com.lancas.vswap.VsWap;
 import net.minecraftforge.fml.common.Mod;
 
-@Mod.EventBusSubscriber(modid = ModMain.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@Mod.EventBusSubscriber(modid = VsWap.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class CommonSetup {
     /*@SubscribeEvent
     public static void registerDispenserBehaviors(FMLCommonSetupEvent event) {

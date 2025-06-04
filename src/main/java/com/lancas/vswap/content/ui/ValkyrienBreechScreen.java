@@ -1,6 +1,6 @@
 package com.lancas.vswap.content.ui;
 
-import com.lancas.vswap.ModMain;
+import com.lancas.vswap.VsWap;
 import com.lancas.vswap.content.block.blockentity.ValkyrienBreechBE;
 import com.lancas.vswap.foundation.network.NetworkHandler;
 import com.lancas.vswap.foundation.network.client2server.ValkyrienBreechLaunchUsePackC2S;
@@ -26,7 +26,7 @@ public class ValkyrienBreechScreen extends AbstractSimiContainerScreen<Valkyrien
         @Override
         public ResourceLocation getSliderBgTexture() { return null; } //{ return new ResourceLocation(ModMain.MODID, "textures/gui/progress_bar_1.png"); }
         @Override
-        public ResourceLocation getSliderTexture() { return new ResourceLocation(ModMain.MODID, "textures/gui/progress_bar_1.png"); }
+        public ResourceLocation getSliderTexture() { return new ResourceLocation(VsWap.MODID, "textures/gui/progress_bar_1.png"); }
 
         @Override
         public float getValue01() { /*EzDebug.log("render get:" + getBe().getNextLaunchUse()); */return (float)getBe().getNextLaunchUse() / ValkyrienBreechBE.MAX_FUEL_F; }
@@ -48,9 +48,9 @@ public class ValkyrienBreechScreen extends AbstractSimiContainerScreen<Valkyrien
     private static final AllGuiTextures BG_TOP = AllGuiTextures.SCHEMATICANNON_TOP;
 
     private static final ResourceLocation BG_TEXTURE =
-        new ResourceLocation(ModMain.MODID, "textures/gui/gui1_from_create.png");
+        new ResourceLocation(VsWap.MODID, "textures/gui/gui1_from_create.png");
     private static final ResourceLocation PROGRESS_BAR_TEXTURE =
-        new ResourceLocation(ModMain.MODID, "textures/gui/progress_bar_1.png");
+        new ResourceLocation(VsWap.MODID, "textures/gui/progress_bar_1.png");
 
     private Slider slider;// = new Slider((this.width - imageWidth) / 2, 0, 100, 16);
 

@@ -1,48 +1,48 @@
 [
   {
     "block": "minecraft:dirt",
-    "hardness": 20E3,
-    "toughness": 20E3
+    "armour_rhae": 0.05,
+    "armour_ab_ratio": 2
   },
   {
     "block": "minecraft:stone",
-    "hardness": 140E3,
-    "toughness": 90E3
+    "armour_rhae": 0.25,
+    "armour_ab_ratio": 0.5
   },
   {
     "tag": "minecraft:logs",
-    "hardness": 80E3,
-    "toughness": 85E3
+    "armour_rhae": 0.12,
+    "armour_ab_ratio": 1.4
   },
   {
     "tag": "minecraft:planks",
-    "hardness": 60E3,
-    "toughness": 40E3
+    "armour_rhae": 0.1,
+    "armour_ab_ratio": 1.2
   },
   {
     "block": "minecraft:wooden_stairs",
-    "hardness": 60E3,
-    "toughness": 30E3
+    "armour_rhae": 0.1,
+    "armour_ab_ratio": 1.2
   },
   {
     "block": "minecraft:wooden_slabs",
-    "hardness": 60E3,
-    "toughness": 20E3
+    "armour_rhae": 0.1,
+    "armour_ab_ratio": 1.2
   },
   {
     "block": "minecraft:netherite_block",
-    "hardness": 1E9,
-    "toughness": 1.25E9
+    "armour_rhae": 8,
+    "armour_ab_ratio": 0.6
   },
   {
     "block": "minecraft:iron_block",
-    "hardness": 600E3,
-    "toughness": 350E3
+    "armour_rhae": 1,
+    "armour_ab_ratio": 0.5
   },
   {
     "block": "minecraft:bedrock",
-    "hardness": "Infinity",
-    "toughness": "Infinity"
+    "armour_rhae": "Infinity",
+    "armour_ab_ratio": "Infinity"
   }
 
 ]

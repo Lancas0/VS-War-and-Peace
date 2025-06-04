@@ -1,0 +1,17 @@
+{
+  "variants": {
+    "facing=down,gliding=false":  { "model": "vswap:block/cartridge/glider/glider", "x": 180 },
+    "facing=up,gliding=false":    { "model": "vswap:block/cartridge/glider/glider" },
+    "facing=north,gliding=false": { "model": "vswap:block/cartridge/glider/glider", "x": 90 },
+    "facing=south,gliding=false": { "model": "vswap:block/cartridge/glider/glider", "x": 90, "y": 180 },
+    "facing=west,gliding=false":  { "model": "vswap:block/cartridge/glider/glider", "x": 90, "y": 270 },
+    "facing=east,gliding=false":  { "model": "vswap:block/cartridge/glider/glider", "x": 90, "y": 90 },
+
+    "facing=down,gliding=true":  { "model": "vswap:block/cartridge/glider/glider", "x": 180 },
+    "facing=up,gliding=true":    { "model": "vswap:block/cartridge/glider/glider" },
+    "facing=north,gliding=true": { "model": "vswap:block/cartridge/glider/glider", "x": 90 },
+    "facing=south,gliding=true": { "model": "vswap:block/cartridge/glider/glider", "x": 90, "y": 180 },
+    "facing=west,gliding=true":  { "model": "vswap:block/cartridge/glider/glider", "x": 90, "y": 270 },
+    "facing=east,gliding=true":  { "model": "vswap:block/cartridge/glider/glider", "x": 90, "y": 90 }
+  }
+}

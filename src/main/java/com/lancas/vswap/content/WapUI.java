@@ -4,7 +4,7 @@ import com.lancas.vswap.content.ui.ValkyrienBreechMenu;
 import com.lancas.vswap.content.ui.ValkyrienBreechScreen;
 import com.tterrag.registrate.util.entry.MenuEntry;
 
-import static com.lancas.vswap.ModMain.REGISTRATE;
+import static com.lancas.vswap.VsWap.REGISTRATE;
 
 public class WapUI {
 

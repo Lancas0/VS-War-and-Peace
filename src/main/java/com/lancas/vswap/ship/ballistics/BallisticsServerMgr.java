@@ -1,6 +1,6 @@
 package com.lancas.vswap.ship.ballistics;
 
-import com.lancas.vswap.ModMain;
+import com.lancas.vswap.VsWap;
 import com.lancas.vswap.debug.EzDebug;
 import com.lancas.vswap.foundation.api.Dest;
 import com.lancas.vswap.ship.ballistics.data.BallisticData;
@@ -22,7 +22,7 @@ import java.util.Iterator;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-@Mod.EventBusSubscriber(modid = ModMain.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@Mod.EventBusSubscriber(modid = VsWap.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class BallisticsServerMgr extends SavedData {
     public static BallisticsServerMgr getOrCreate(ServerLevel level) {
         return level.getDataStorage().computeIfAbsent(
@@ -31,7 +31,7 @@ public class BallisticsServerMgr extends SavedData {
                 return mgr.load(nbt);
             },
             () -> new BallisticsServerMgr(level),
-            ModMain.MODID + "_ballistics"
+            VsWap.MODID + "_ballistics"
         );
     }
 

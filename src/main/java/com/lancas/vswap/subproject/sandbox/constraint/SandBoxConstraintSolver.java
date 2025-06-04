@@ -16,6 +16,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Function;
 
 public class SandBoxConstraintSolver implements ISavedObject<SandBoxConstraintSolver> {
     public static ObjectMapper constraintMapper = new ObjectMapper();
@@ -67,10 +68,15 @@ public class SandBoxConstraintSolver implements ISavedObject<SandBoxConstraintSo
         }*/
         constraints.put(constraint.getUuid(), constraint);
     }
+    public boolean contains(UUID constraintUuid) {  return constraints.containsKey(constraintUuid); }
+    public void putIfAbsent(UUID constraintUuid, IConstraint constraint) { constraints.putIfAbsent(constraintUuid, constraint); }
     public void markConstraintRemoved(UUID constraintUuid) {
         constraints.markKeyRemoved(constraintUuid);
     }
     public <T extends IConstraint> T getConstraint(UUID uuid) {
+        if (uuid == null)
+            return null;
+
         try {
             return (T)constraints.get(uuid);
         } catch (Exception e) {

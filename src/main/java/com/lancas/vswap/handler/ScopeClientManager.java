@@ -1,6 +1,6 @@
 package com.lancas.vswap.handler;
 
-import com.lancas.vswap.ModMain;
+import com.lancas.vswap.VsWap;
 import com.lancas.vswap.util.JomlUtil;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
@@ -12,7 +12,7 @@ import org.joml.*;
 import java.lang.Math;
 
 
-@Mod.EventBusSubscriber(modid = ModMain.MODID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@Mod.EventBusSubscriber(modid = VsWap.MODID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class ScopeClientManager {
     private static boolean isScoping = false;
     private static float scopeFovMultiplier = 1;

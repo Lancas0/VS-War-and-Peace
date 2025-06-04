@@ -1,5 +1,6 @@
 package com.lancas.vswap.subproject.sandbox.api.component;
 
+import com.lancas.vswap.subproject.sandbox.ISandBoxWorld;
 import com.lancas.vswap.subproject.sandbox.ship.ISandBoxShip;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.state.BlockState;
@@ -20,4 +21,6 @@ public interface IComponentBehaviour<D extends IComponentData<D>> {
     public default void physTick() {}
 
     public default void onBlockReplaced(Vector3ic localPos, BlockState oldState, BlockState newState) {}
+
+    public default void onMarkDeleted() {}
 }

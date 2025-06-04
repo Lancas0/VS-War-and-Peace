@@ -1,6 +1,6 @@
 package com.lancas.vswap.register;
 
-import com.lancas.vswap.ModMain;
+import com.lancas.vswap.VsWap;
 import com.lancas.vswap.debug.EzDebug;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -8,7 +8,7 @@ import net.minecraftforge.fml.common.Mod;
 
 import java.util.*;
 
-@Mod.EventBusSubscriber(modid = ModMain.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@Mod.EventBusSubscriber(modid = VsWap.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class ServerShipEvent {
     public static List<Runnable> delayedShipEvents = Collections.synchronizedList(new ArrayList<>());
     public static List<Runnable> shipEvents = Collections.synchronizedList(new ArrayList<>());

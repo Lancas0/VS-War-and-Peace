@@ -1,12 +1,12 @@
 package com.lancas.vswap.obsolete.register;
 
-import com.lancas.vswap.ModMain;
+import com.lancas.vswap.VsWap;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fml.common.Mod;
 
 import java.util.HashMap;
 
-@Mod.EventBusSubscriber(modid = ModMain.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@Mod.EventBusSubscriber(modid = VsWap.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class EinArmorRegister {
 
     private static final HashMap<ItemStack, Boolean> stackInitedDic = new HashMap<>();

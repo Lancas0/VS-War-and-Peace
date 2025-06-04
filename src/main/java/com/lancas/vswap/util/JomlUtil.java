@@ -32,6 +32,9 @@ public class JomlUtil {
         return v.lengthSquared() < 1E-15;
     }
 
+    public static int cross(Vector3ic a, Vector3ic b) {
+        return a.x() * b.x() + a.y() * b.y() + a.z() * b.z();
+    }
 
 
     public static Vector3d d(Vec3 v) { return new Vector3d(v.x, v.y, v.z); }
@@ -512,6 +515,12 @@ public class JomlUtil {
         dest.translate(movement);
         return dest;
     }*/
+    /*public static Quaterniond pow(Quaterniondc q, double p, Quaterniond dest) {
+
+    }*/
+    public static Vector3d scaleVector3d(Vector3dc scalar, Vector3d v) {
+        return v.set(v.x * scalar.x(), v.y * scalar.y(), v.z * scalar.z());
+    }
 
     public static AABBd extentFromLower(AABBdc aabb, double x, double y, double z, AABBd dest) {
         return dest
@@ -629,7 +638,26 @@ public class JomlUtil {
 
     public static Quaterniond rotateXZYDeg(double xDeg, double zDeg, double yDeg) { return new Quaterniond().rotateX(Math.toRadians(xDeg)).rotateZ(Math.toRadians(zDeg)).rotateY(Math.toRadians(yDeg)); }
 
+    public static Quaterniond swingRotateTo(Vector3dc from, Vector3dc to, Quaterniond dest) {
+        Vector3d rotateAxis = from.cross(to, new Vector3d()).normalize();
 
+        //FIXME if A is parallel to B...
+        /*if (rotateAxis.length() < 1e-12) {
+            // A和B平行但方向相同
+            if (from.dot(to) > 0) {
+                return new Quaterniond(); // 单位旋转
+            }
+            return
+            // A和B方向相反，使用垂直的任意轴
+            rotationAxis.cross(A, up);
+            if (rotationAxis.length() < 1e-12) {
+                // 如果A与up平行，选择另一个轴
+                rotationAxis.cross(A, new Vector3d(1, 0, 0));
+            }
+        }*/
+        double rad = Math.acos(Math.min(1.0, Math.max(-1.0, from.dot(to))));
+        return dest.rotateAxis(rad, rotateAxis);
+    }
 
 
 

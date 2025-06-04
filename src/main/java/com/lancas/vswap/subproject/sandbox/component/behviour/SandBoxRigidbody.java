@@ -83,9 +83,6 @@ public class SandBoxRigidbody
 
     @Override
     public synchronized void physTick() {
-        //先更新updates
-        applyUpdates();
-
         //EzDebug.log("mass:" + data.mass + ", static:" + data.isStatic.get());
         if (isZero(data.mass) || data.isStatic()) {
             //EzDebug.log("applying force is cleared due to zeroMass or static, mass:" + data.mass + ", static?:" + data.isStatic);
@@ -96,6 +93,9 @@ public class SandBoxRigidbody
             applyForcesAndVelocity();
             applyTorqueAndOmega();
         }
+
+        //update at last so that constraint can be accurate
+        applyUpdates();
 
         //todo how about move snapshot to server tick?
         data.localToWorldSnapshot = new Matrix4d().translationRotateScale(
@@ -211,8 +211,8 @@ public class SandBoxRigidbody
     public void onBlockReplaced(Vector3ic localPos, BlockState oldState, BlockState newState) {
         if (oldState == null && newState == null) return;  //for safe, in fact it's included by following codes.
 
-        double oldStateMass = WapBlockInfos.mass.valueOrDefaultOf(oldState);  //it's safe for handle null or air
-        double newStateMass = WapBlockInfos.mass.valueOrDefaultOf(newState);
+        double oldStateMass = WapBlockInfos.Mass.valueOrDefaultOf(oldState);  //it's safe for handle null or air
+        double newStateMass = WapBlockInfos.Mass.valueOrDefaultOf(newState);
 
         data.localPosMassMul.add(JomlUtil.d(localPos).mul(newStateMass - oldStateMass));
         data.mass += newStateMass - oldStateMass;

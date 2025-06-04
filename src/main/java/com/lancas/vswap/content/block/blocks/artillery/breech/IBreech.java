@@ -71,7 +71,7 @@ public interface IBreech {
         isGetterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE
     )
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public static class BreechRecord implements IBlockRecord {
+    public static class BreechRecord implements IBlockRecord {  //todo eject shell when remove
         private SavedBlockPos breechBp;
         private int maxFireColdDown = 0;
         private int fireColdDown = 0;
@@ -168,7 +168,7 @@ public interface IBreech {
             SandBoxServerShip saMunitionShip = new SandBoxServerShip(UUID.randomUUID(), rigidbodyData, saShipBlockData);
 
             SandBoxServerWorld saWorld = SandBoxServerWorld.getOrCreate(level);
-            SandBoxServerWorld.addShipAndSyncClient(level, saMunitionShip);
+            SandBoxServerWorld.addShip(level, saMunitionShip, true);
 
             //UUID munitionUuid = saMunitionShip.getUuid();
             //IServerSandBoxShip saArtilleryShip = artilleryShip == null ? saWorld.wrapOrGetGround() : saWorld.wrapOrGetVs(artilleryShip);
@@ -286,7 +286,7 @@ public interface IBreech {
             SandBoxServerShip saMunitionShip = new SandBoxServerShip(UUID.randomUUID(), rigidbodyData, blockData);
 
             SandBoxServerWorld saWorld = SandBoxServerWorld.getOrCreate(level);
-            SandBoxServerWorld.addShipAndSyncClient(level, saMunitionShip);
+            SandBoxServerWorld.addShip(level, saMunitionShip, true);
 
             ISliderConstraint attConstraint;
             if (artilleryShip == null) {

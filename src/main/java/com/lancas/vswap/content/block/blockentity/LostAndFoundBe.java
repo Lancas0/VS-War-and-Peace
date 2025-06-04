@@ -1,10 +1,5 @@
 package com.lancas.vswap.content.block.blockentity;
 
-import com.lancas.vswap.debug.EzDebug;
-import com.lancas.vswap.foundation.network.NetworkHandler;
-import com.lancas.vswap.foundation.network.server2client.CreateOutlinePacketS2C;
-import com.lancas.vswap.subproject.lostandfound.content.LostAndFoundBehaviour;
-import com.lancas.vswap.util.JomlUtil;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import net.minecraft.core.BlockPos;

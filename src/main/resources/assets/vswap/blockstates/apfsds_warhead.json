@@ -1,0 +1,17 @@
+{
+  "variants": {
+    "facing=down,shelled=true":  { "model": "vswap:block/cartridge/apfsds/apfsds_warhead_shelled", "x": 180 },
+    "facing=up,shelled=true":    { "model": "vswap:block/cartridge/apfsds/apfsds_warhead_shelled" },
+    "facing=north,shelled=true": { "model": "vswap:block/cartridge/apfsds/apfsds_warhead_shelled", "x": 90 },
+    "facing=south,shelled=true": { "model": "vswap:block/cartridge/apfsds/apfsds_warhead_shelled", "x": 90, "y": 180 },
+    "facing=west,shelled=true":  { "model": "vswap:block/cartridge/apfsds/apfsds_warhead_shelled", "x": 90, "y": 270 },
+    "facing=east,shelled=true":  { "model": "vswap:block/cartridge/apfsds/apfsds_warhead_shelled", "x": 90, "y": 90 },
+
+    "facing=down,shelled=false":  { "model": "vswap:block/cartridge/apfsds/apfsds_warhead_unshelled", "x": 180 },
+    "facing=up,shelled=false":    { "model": "vswap:block/cartridge/apfsds/apfsds_warhead_unshelled" },
+    "facing=north,shelled=false": { "model": "vswap:block/cartridge/apfsds/apfsds_warhead_unshelled", "x": 90 },
+    "facing=south,shelled=false": { "model": "vswap:block/cartridge/apfsds/apfsds_warhead_unshelled", "x": 90, "y": 180 },
+    "facing=west,shelled=false":  { "model": "vswap:block/cartridge/apfsds/apfsds_warhead_unshelled", "x": 90, "y": 270 },
+    "facing=east,shelled=false":  { "model": "vswap:block/cartridge/apfsds/apfsds_warhead_unshelled", "x": 90, "y": 90 }
+  }
+}

@@ -6,7 +6,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 
-import static com.lancas.vswap.ModMain.MODID;
+import static com.lancas.vswap.VsWap.MODID;
 
 public class WapParticles {
     private static final DeferredRegister<ParticleType<?>> PARTICLE_REGISTER =

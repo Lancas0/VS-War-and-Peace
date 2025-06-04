@@ -9,9 +9,11 @@ import com.lancas.vswap.subproject.sandbox.api.data.TransformPrimitive;
 import com.lancas.vswap.subproject.sandbox.component.data.IRigidbodyData;
 import com.lancas.vswap.subproject.sandbox.component.data.RigidbodyData;
 import com.lancas.vswap.subproject.sandbox.component.data.writer.IRigidbodyDataWriter;
+import com.lancas.vswap.util.StrUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
+import org.apache.commons.lang3.NotImplementedException;
 import org.joml.*;
 import org.valkyrienskies.core.api.ships.LoadedServerShip;
 import org.valkyrienskies.core.api.ships.ServerShip;
@@ -20,6 +22,7 @@ import org.valkyrienskies.mod.common.VSGameUtilsKt;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 public class VsRigidbodyDataWrapper implements IRigidbodyData, ISavedObject<VsRigidbodyDataWrapper> {
@@ -168,6 +171,11 @@ public class VsRigidbodyDataWrapper implements IRigidbodyData, ISavedObject<VsRi
     public boolean isStatic() { return vsShipCache instanceof ServerShip sShip ? sShip.isStatic() : false; }
 
     @Override
+    public RigidbodyData getCopiedData() {
+        throw new NotImplementedException();
+    }
+
+    @Override
     public IRigidbodyDataWriter setPosition(Vector3dc p) {
         Vector3d posImmutable = new Vector3d(p);
         updates.add((level, ship) -> {
@@ -179,6 +187,24 @@ public class VsRigidbodyDataWrapper implements IRigidbodyData, ISavedObject<VsRi
         });
         return this;
     }
+
+    @Override
+    public IRigidbodyDataWriter updatePosition(Function<Vector3dc, Vector3d> pTransformer) {
+        updates.add((level, ship) -> {
+            if (!(level instanceof ServerLevel sLevel) || !(ship instanceof ServerShip sShip)) {
+                EzDebug.warn("client vs ship don't support change pos");
+                return;
+            }
+            Vector3d newP = pTransformer.apply(sShip.getTransform().getPositionInWorld());
+            if (!newP.isFinite()) {
+                EzDebug.warn("fail to update pos because new pos is invalid:" + newP);
+                return;
+            }
+            VSGameUtilsKt.getShipObjectWorld(sLevel).teleportShip(sShip, TeleportDataBuilder.copy(sLevel, sShip).withPos(newP));
+        });
+        return this;
+    }
+
     @Override
     public IRigidbodyDataWriter setRotation(Quaterniondc r) {
         Quaterniond rotImmutable = new Quaterniond(r);
@@ -220,7 +246,7 @@ public class VsRigidbodyDataWrapper implements IRigidbodyData, ISavedObject<VsRi
         return this;
     }
 
-    @Override
+    /*@Override
     public IRigidbodyDataWriter setVelocity(Vector3dc v) {
         Vector3d velImmutable = new Vector3d(v);
         updates.add((level, ship) -> {
@@ -232,7 +258,43 @@ public class VsRigidbodyDataWrapper implements IRigidbodyData, ISavedObject<VsRi
             VSGameUtilsKt.getShipObjectWorld(sLevel).teleportShip(sShip, TeleportDataBuilder.copy(sLevel, sShip).withVel(velImmutable));
         });
         return this;
+    }*/
+
+    @Override
+    public IRigidbodyDataWriter setVelocity(double x, double y, double z) {
+        if (!Double.isFinite(x) || !Double.isFinite(y) || !Double.isFinite(z)) {
+            EzDebug.warn("try to set invalid vel:" + StrUtil.poslike(x, y, z));
+            return this;
+        }
+        updates.add((level, ship) -> {
+            if (!(level instanceof ServerLevel sLevel) || !(ship instanceof ServerShip sShip)) {
+                EzDebug.warn("client vs ship don't support set vel");
+                return;
+            }
+            //todo 3d scale
+            VSGameUtilsKt.getShipObjectWorld(sLevel).teleportShip(sShip, TeleportDataBuilder.copy(sLevel, sShip).withVel(x, y, z));
+        });
+        return this;
     }
+
+    @Override
+    public IRigidbodyDataWriter updateVelocity(Function<Vector3dc, Vector3d> vTransformer) {
+        updates.add((level, ship) -> {
+            if (!(level instanceof ServerLevel sLevel) || !(ship instanceof ServerShip sShip)) {
+                EzDebug.warn("client vs ship don't support set vel");
+                return;
+            }
+            Vector3d newV = vTransformer.apply(sShip.getVelocity());
+            if (!newV.isFinite()) {
+                EzDebug.warn("fail to update velocity: try to set invalid vel:" + newV);
+                return;
+            }
+            //todo 3d scale
+            VSGameUtilsKt.getShipObjectWorld(sLevel).teleportShip(sShip, TeleportDataBuilder.copy(sLevel, sShip).withVel(newV));
+        });
+        return this;
+    }
+
     @Override
     public IRigidbodyDataWriter setOmega(Vector3dc v) {
         Vector3d omegaImmutable = new Vector3d(v);

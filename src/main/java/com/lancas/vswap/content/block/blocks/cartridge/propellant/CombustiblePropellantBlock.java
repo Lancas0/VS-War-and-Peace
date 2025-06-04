@@ -58,5 +58,5 @@ public class CombustiblePropellantBlock extends BlockPlus implements IPropellant
     @Override
     public BlockState getEmptyState(BlockState state) { return Blocks.AIR.defaultBlockState(); }
     @Override
-    public double getEnergy(BlockState state) { return WapBlockInfos.propellant_power.valueOrDefaultOf(state); }
+    public double getEnergy(BlockState state) { return WapBlockInfos.StdPropellantEnergy.valueOrDefaultOf(state); }
 }

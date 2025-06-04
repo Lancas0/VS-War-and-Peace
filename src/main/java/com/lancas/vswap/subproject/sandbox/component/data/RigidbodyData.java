@@ -10,6 +10,7 @@ import com.lancas.vswap.subproject.sandbox.ship.ISandBoxShip;
 import com.lancas.vswap.util.JomlUtil;
 import com.lancas.vswap.util.NbtBuilder;
 import com.lancas.vswap.util.SerializeUtil;
+import com.lancas.vswap.util.StrUtil;
 import net.minecraft.nbt.CompoundTag;
 import org.joml.*;
 
@@ -19,6 +20,7 @@ import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 public class RigidbodyData implements IComponentData<RigidbodyData>, IRigidbodyData {
@@ -100,7 +102,7 @@ public class RigidbodyData implements IComponentData<RigidbodyData>, IRigidbodyD
         localPosMassMul.zero();
         localInertiaTensor.zero();
         ship.getBlockCluster().getDataReader().seekAllBlocks((localPos, state) -> {
-            double curMass = WapBlockInfos.mass.valueOrDefaultOf(state);
+            double curMass = WapBlockInfos.Mass.valueOrDefaultOf(state);
 
             mass += curMass;
             localPosMassMul.add(JomlUtil.d(localPos).mul(curMass));
@@ -121,7 +123,7 @@ public class RigidbodyData implements IComponentData<RigidbodyData>, IRigidbodyD
         ship.getBlockCluster().getDataReader().seekAllBlocks((localPos, state) -> {
             Vector3d delta = JomlUtil.d(localPos).sub(massCenter);
             double sqDx = delta.x * delta.x, sqDy = delta.y * delta.y, sqDz = delta.z * delta.z;
-            double m = WapBlockInfos.mass.valueOrDefaultOf(state);
+            double m = WapBlockInfos.Mass.valueOrDefaultOf(state);
 
             //沟槽的平行轴定理还在追我
             double self_xxyyzz = 0.01667 * m;//(1.0f/12.0f) * m * 2;// * (Ly*Ly + Lz*Lz);
@@ -323,8 +325,13 @@ public class RigidbodyData implements IComponentData<RigidbodyData>, IRigidbodyD
     @Override
     public boolean isStatic() { return isStatic.get(); }
 
-
     @Override
+    public RigidbodyData getCopiedData() {
+        return new RigidbodyData().copyData(this);
+    }
+
+
+    /*@Override
     public IRigidbodyDataWriter setVelocity(Vector3dc v) {
         if (!v.isFinite()) {
             EzDebug.warn("to set invalid velocity:" + v);
@@ -335,7 +342,35 @@ public class RigidbodyData implements IComponentData<RigidbodyData>, IRigidbodyD
         updates.add(d -> d.velocity.set(newVelImmutable));
 
         return this;
+    }*/
+    @Override
+    public IRigidbodyDataWriter setVelocity(double x, double y, double z) {
+        if (!Double.isFinite(x) || !Double.isFinite(y) || !Double.isFinite(z)) {
+            EzDebug.warn("to set invalid velocity:" + StrUtil.poslike(x, y, z));
+            return this;
+        }
+
+        //Vector3d newVelImmutable = new Vector3d(x, y, z);
+        //updates.add(d -> d.velocity.set(newVelImmutable));
+        updates.add(d -> d.velocity.set(x, y, z));
+
+        return this;
     }
+
+    @Override
+    public IRigidbodyDataWriter updateVelocity(Function<Vector3dc, Vector3d> vTransformer) {
+        updates.add(d -> {
+            Vector3d newV = vTransformer.apply(d.velocity);
+            if (!newV.isFinite()) {
+                EzDebug.warn("to set invalid vel:" + newV);
+                return;
+            }
+
+            d.velocity.set(newV);
+        });
+        return this;
+    }
+
     @Override
     public IRigidbodyDataWriter setOmega(Vector3dc newOmega) {
         if (!newOmega.isFinite()) {
@@ -373,6 +408,21 @@ public class RigidbodyData implements IComponentData<RigidbodyData>, IRigidbodyD
         updates.add(d -> d.transform.position.set(newPosImmutable));
         return this;
     }
+
+    @Override
+    public IRigidbodyDataWriter updatePosition(Function<Vector3dc, Vector3d> pTransformer) {
+        updates.add(d -> {
+            Vector3d newP = pTransformer.apply(d.transform.position);
+            if (!newP.isFinite()) {
+                EzDebug.warn("to set invalid pos:" + newP);
+                return;
+            }
+
+            d.transform.position.set(newP);
+        });
+        return this;
+    }
+
     @Override
     public IRigidbodyDataWriter setRotation(Quaterniondc r) {
         Quaterniondc newRotImmutable = r.normalize(new Quaterniond());
@@ -403,6 +453,8 @@ public class RigidbodyData implements IComponentData<RigidbodyData>, IRigidbodyD
         updates.add(d -> d.transform.set(transformImmutable));
         return this;
     }
+
+
 
     @Override
     public IRigidbodyDataWriter applyWorldForce(Vector3dc f) {

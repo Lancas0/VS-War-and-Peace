@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 public class EzDebug {
     public static final Logger logger = Logger.getLogger("EzDebug");
 
-    private static final boolean NOT_DEBUG = true;
+    private static final boolean NOT_DEBUG = false;
     private static boolean alwaysDebug;
     private static final boolean PRINT_STACK_TRACE = true;
 

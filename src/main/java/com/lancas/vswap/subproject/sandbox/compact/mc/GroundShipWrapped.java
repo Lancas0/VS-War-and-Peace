@@ -1,6 +1,7 @@
 package com.lancas.vswap.subproject.sandbox.compact.mc;
 
 import com.lancas.vswap.debug.EzDebug;
+import com.lancas.vswap.subproject.sandbox.ISandBoxWorld;
 import com.lancas.vswap.subproject.sandbox.api.ISavedObject;
 import com.lancas.vswap.subproject.sandbox.api.component.IComponentBehaviour;
 import com.lancas.vswap.subproject.sandbox.component.behviour.IRigidbodyBehaviour;
@@ -10,6 +11,8 @@ import com.lancas.vswap.subproject.sandbox.ship.IServerSandBoxShip;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
+import org.apache.commons.lang3.NotImplementedException;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -33,6 +36,11 @@ public class GroundShipWrapped implements IServerSandBoxShip, IClientSandBoxShip
     public UUID getUuid() { return uuid; }
 
     @Override
+    public @Nullable ISandBoxWorld<?> getWorld() {
+        throw new NotImplementedException();
+    }
+
+    @Override
     public IRigidbodyBehaviour getRigidbody() { return rigidbody; }
 
     @Override
@@ -44,6 +52,11 @@ public class GroundShipWrapped implements IServerSandBoxShip, IClientSandBoxShip
     @Override
     public Stream<IComponentBehaviour<?>> allAddedBehaviours() {
         return Stream.empty();
+    }
+
+    @Override
+    public void onMarkDeleted() {
+        EzDebug.warn("ground ship should never be deleted!");
     }
 
 

@@ -3,12 +3,14 @@ package com.lancas.vswap.content.block.blocks.cartridge.warhead;
 import com.lancas.vswap.content.explosion.CustomExplosion;
 import com.lancas.vswap.foundation.api.Dest;
 import com.lancas.vswap.sandbox.ballistics.ISandBoxBallisticBlock;
+import com.lancas.vswap.sandbox.ballistics.data.BallisticPos;
 import com.lancas.vswap.sandbox.ballistics.trigger.SandBoxTriggerInfo;
 import com.lancas.vswap.subproject.blockplusapi.blockplus.BlockPlus;
 import com.lancas.vswap.subproject.blockplusapi.blockplus.adder.IBlockAdder;
 import com.lancas.vswap.content.block.blocks.blockplus.DefaultCartridgeAdder;
 import com.lancas.vswap.ship.ballistics.api.ITerminalEffector;
 import com.lancas.vswap.ship.ballistics.api.TriggerInfo;
+import com.lancas.vswap.subproject.sandbox.SandBoxServerWorld;
 import com.lancas.vswap.subproject.sandbox.ship.SandBoxServerShip;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -64,7 +66,7 @@ public class HeWarhead extends BlockPlus implements ITerminalEffector, ISandBoxB
     }
 
     @Override
-    public void doTerminalEffect(ServerLevel level, SandBoxServerShip ship, Vector3ic localPos, BlockState state, List<SandBoxTriggerInfo> infos, Dest<Boolean> terminateByEffect) {
+    public void doTerminalEffect(ServerLevel level, SandBoxServerShip ship, BallisticPos ballisticPos, BlockState state, List<SandBoxTriggerInfo> infos, Dest<Boolean> terminateByEffect) {
         infos.forEach(info -> {
             if (!(info instanceof SandBoxTriggerInfo.ActivateTriggerInfo activateInfo)) return;
             Vector3dc targetPos = activateInfo.targetPos;
@@ -83,6 +85,7 @@ public class HeWarhead extends BlockPlus implements ITerminalEffector, ISandBoxB
             exp.finalizeExplosion(true);
 
             terminateByEffect.set(true);
+            SandBoxServerWorld.markShipDeleted(level, ship.getUuid());
         });
     }
 }

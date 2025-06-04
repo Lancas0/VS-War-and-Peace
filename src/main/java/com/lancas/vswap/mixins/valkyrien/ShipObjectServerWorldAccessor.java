@@ -12,11 +12,11 @@ import java.util.Map;
 
 @Mixin(ShipObjectServerWorld.class)
 public interface ShipObjectServerWorldAccessor {
-    @Accessor
+    @Accessor(remap = false)
     public List<Af> getDisabledCollisionPairsThisTick();
-    @Accessor
+    @Accessor(remap = false)
     public List<Af> getEnabledCollisionPairsThisTick();
 
-    @Accessor
+    @Accessor(remap = false)
     Map<Integer, VSConstraint> getConstraints();
 }

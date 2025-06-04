@@ -1,6 +1,6 @@
 package com.lancas.vswap.subproject.sandbox;
 
-import com.lancas.vswap.ModMain;
+import com.lancas.vswap.VsWap;
 import com.lancas.vswap.debug.EzDebug;
 import com.lancas.vswap.event.impl.SingleEventSetImpl;
 import com.lancas.vswap.foundation.AlwaysSafeRemoveMap;
@@ -106,6 +106,13 @@ public class SandBoxServerWorld extends SavedData implements ISandBoxWorld<IServ
     //todo only update ACTIVE worlds
     //key is dimId by VSGame.dimIdOf()
     private static final Map<String, SandBoxServerWorld> allWorlds = new Hashtable<>();
+    public static @Nullable SandBoxServerWorld fromDimId(String dimId) {
+        SandBoxServerWorld world = allWorlds.get(dimId);
+        if (world == null) {
+            EzDebug.warn("fail to get sandboxServerWorld of " + dimId);
+        }
+        return world;
+    }
 
     public static SandBoxServerWorld getOrCreate(ServerLevel level) {
         return level.getDataStorage().computeIfAbsent(
@@ -119,7 +126,7 @@ public class SandBoxServerWorld extends SavedData implements ISandBoxWorld<IServ
                 world.initialized.set(true);
                 return world;
             },
-            ModMain.MODID + "_sandbox"
+            VsWap.MODID + "_sandbox"
         );
     }
 
@@ -267,10 +274,17 @@ public class SandBoxServerWorld extends SavedData implements ISandBoxWorld<IServ
 
     //todo server ship only createable in SandBoxServerWorld, want to create need a ServerShipCreateData or something
     //todo schedule add ship, and add ship only initialized
-    public static void addShipAndSyncClient(ServerLevel level, SandBoxServerShip ship) {
+    /*public static void addShipAndSyncClient(ServerLevel level, SandBoxServerShip ship) {
         SandBoxServerWorld world = SandBoxServerWorld.getOrCreate(level);
         world.addShipImpl(ship);
         SandBoxEventMgr.onSyncServerShipToClient.invokeAll(level, ship);
+    }*/
+    public static void addShip(ServerLevel level, SandBoxServerShip ship, boolean syncToClient) {
+        SandBoxServerWorld world = SandBoxServerWorld.getOrCreate(level);
+        world.addShipImpl(ship, syncToClient);
+    }
+    public boolean containsShip(UUID uuid) {
+        return serverShips.containsKey(uuid) || (wrappedGroundShip != null && wrappedGroundShip.getUuid().equals(uuid));
     }
     //todo add server only ship
     /*public static void addShipOnlySync(ServerLevel level, SandBoxServerShip ship) {
@@ -278,14 +292,22 @@ public class SandBoxServerWorld extends SavedData implements ISandBoxWorld<IServ
         world.addShipImpl(ship);
         SandBoxEventMgr.onSyncServerShipToClient.invokeAll(level, ship);
     }*/
-    public void addShipImpl(@NotNull SandBoxServerShip ship) {
+    public void addShipImpl(@NotNull SandBoxServerShip ship, boolean syncToClient) {
+        if (ship.getWorldDimId() != null) {
+            EzDebug.warn("ship has been added to " + ship.getWorldDimId() + ", fail to add.");
+            return;
+        }
         if (serverShips.containsKey(ship.getUuid())) {
             EzDebug.warn("the serverShip with uuid:" + ship.getUuid() + " is existed, may fail to add");
         }
 
         //由于是并发环境，还是需要putIfAbsent
-        serverShips.putIfAbsent(ship.getUuid(), ship);
-        setDirty();
+        if (serverShips.putIfAbsent(ship.getUuid(), ship) == null) {  //successfully add (putIfAbsent return null if add, or ship if fail to add)
+            ship.setWorldDimId(VSGameUtilsKt.getDimensionId(level));
+            if (syncToClient)
+                SandBoxEventMgr.onSyncServerShipToClient.invokeAll(level, ship);
+            setDirty();
+        }
     }
 
     /*public static WrappedVsShip wrapVsShip(ServerLevel level, ServerShip vsShip) {
@@ -314,6 +336,7 @@ public class SandBoxServerWorld extends SavedData implements ISandBoxWorld<IServ
         SandBoxServerWorld world = SandBoxServerWorld.getOrCreate(level);
         world.markShipDeleted(shipUuid);
     }
+    @Override
     public void markShipDeleted(UUID uuid) {
         /*SandBoxServerShip removedShip = serverShips.remove(shipUuid);
         if (removedShip != null) {
@@ -344,8 +367,11 @@ public class SandBoxServerWorld extends SavedData implements ISandBoxWorld<IServ
             return;
         }
 
+        ship.onMarkDeleted();
         serverShips.markKeyRemoved(uuid);
         SandBoxEventMgr.onRemoveShip.invokeAll(this, ship);
+        //FIXME don't remove inWorld because some behaviour have to use inWorld when deleting?
+        ship.setWorldDimId(null);
     }
     /*public static void removeAllShip(ServerLevel level) {
         SandBoxServerWorld world = SandBoxServerWorld.getOrCreate(level);

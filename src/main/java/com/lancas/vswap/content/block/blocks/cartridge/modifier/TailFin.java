@@ -5,6 +5,8 @@ import com.lancas.vswap.foundation.Constants;
 import com.lancas.vswap.foundation.api.PidDirectionController;
 import com.lancas.vswap.sandbox.ballistics.ISandBoxBallisticBlock;
 import com.lancas.vswap.sandbox.ballistics.data.BallisticData;
+import com.lancas.vswap.sandbox.ballistics.data.BallisticFlyingContext;
+import com.lancas.vswap.sandbox.ballistics.data.BallisticPos;
 import com.lancas.vswap.subproject.blockplusapi.blockplus.BlockPlus;
 import com.lancas.vswap.subproject.blockplusapi.blockplus.adder.IBlockAdder;
 import com.lancas.vswap.content.block.blocks.blockplus.DefaultCartridgeAdder;
@@ -17,6 +19,7 @@ import com.lancas.vswap.subproject.sandbox.event.SandBoxEventMgr;
 import com.lancas.vswap.subproject.sandbox.ship.IServerSandBoxShip;
 import com.lancas.vswap.subproject.sandbox.ship.SandBoxServerShip;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.state.BlockState;
 import org.joml.*;
 
@@ -82,7 +85,7 @@ public class TailFin extends BlockPlus implements IPhysicalBehaviourBlock, ISand
         );*/
     }
 
-    @Override
+    /*@Override
     public void physTick(SandBoxServerShip ship, BallisticData ballisticData) {
         IRigidbodyDataReader rigidReader = ship.getRigidbody().getDataReader();
         IRigidbodyDataWriter rigidWriter = ship.getRigidbody().getDataWriter();
@@ -94,10 +97,16 @@ public class TailFin extends BlockPlus implements IPhysicalBehaviourBlock, ISand
             k -> new PidDirectionController(3, 0.5, 2, 1)
         );
 
-        Vector3d worldTowards = rigidReader.localToWorldNoScaleDir(ballisticData.initialStateData.localForward).normalize();
+        Vector3d worldTowards = rigidReader.localIToWorldNoScaleDir(ballisticData.initialStateData.localForward).normalize();
         Vector3dc velTowards = rigidReader.getVelocity().normalize(new Vector3d());
 
         Vector3d newOmega = controller.getNewOmega(worldTowards, velTowards, rigidReader.getOmega(), Constants.PHYS_FRAME_TIME);
         rigidWriter.setOmega(newOmega);
+    }*/
+
+    @Override
+    public void modifyFlyingContext(ServerLevel level, SandBoxServerShip ship, BallisticPos ballisticPos, BlockState state, BallisticFlyingContext ctx) {
+        if (ballisticPos.fromTail() == 0)
+            ctx.displacementIntensity /= 4;
     }
 }

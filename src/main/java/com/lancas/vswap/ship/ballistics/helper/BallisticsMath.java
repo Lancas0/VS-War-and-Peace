@@ -1,5 +1,7 @@
 package com.lancas.vswap.ship.ballistics.helper;
 
+import com.lancas.vswap.WapCommonConfig;
+import com.lancas.vswap.content.info.block.WapBlockInfos;
 import com.lancas.vswap.debug.EzDebug;
 import com.lancas.vswap.foundation.api.math.ForceOnPos;
 import com.lancas.vswap.foundation.BiTuple;
@@ -7,6 +9,7 @@ import com.lancas.vswap.foundation.TriTuple;
 import com.lancas.vswap.util.JomlUtil;
 import com.lancas.vswap.util.RandUtil;
 import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 import org.joml.*;
 import org.joml.primitives.AABBic;
@@ -24,8 +27,55 @@ public class BallisticsMath {
 
     public static final Vector3dc ANTI_GRAVITY = new Vector3d(0, -10, 0);
 
+    public static double calculateCriticalDegree(double warheadHard, double armourHard) {
+        return 45 + 35 * (warheadHard / (warheadHard + armourHard));
+    }
+    public static double getFatalKEByDeg(double armourHard, double incidenceDeg) {
+        return getFatalKEByRad(armourHard, Math.toRadians(incidenceDeg));
+    }
+    public static double getFatalKEByRad(double armourHard, double incidenceRad) {
+        if (!WapCommonConfig.isFatalKEOn()) {
+            //EzDebug.warn("it's better to not call getFatalKE method when fatalKE is disabled.");
+            return Double.MAX_VALUE;
+        }
+        return WapCommonConfig.rawFatalPPRatio * armourHard * (1.0 / Math.cos(incidenceRad));
+    }
+    public static double calIncidenceRad(Vector3dc incVector, Vector3dc normal) {
+        Vector3d negNormal = normal.normalize(new Vector3d()).negate();
+        return Math.acos(incVector.normalize(new Vector3d()).dot(negNormal));
+    }
+    public static double calIncidenceDeg(Vector3dc incVector, Vector3dc normal) { return Math.toDegrees(calIncidenceRad(incVector, normal)); }
+
+
+    public static double calAbsorbedEnergyByRad(BlockState warheadState, BlockState armourState, double incidenceRad) {
+        if (warheadState.isAir() || armourState.isAir())
+            return 0;
+
+        //double contactArea = WapBlockInfos.ap_area.valueOrDefaultOf(warheadState);
+        double armourHardness = WapBlockInfos.ArmourRhae.valueOrDefaultOf(armourState);
+        double armourToughness = WapBlockInfos.ArmourAbsorbRatio.valueOrDefaultOf(armourState);
+
+        double equivalentArmourDepth = 1.0 / Math.cos(incidenceRad);
+        return armourHardness * equivalentArmourDepth + armourToughness * equivalentArmourDepth ;//* contactArea;  //* scale?
+    }
+    public static double calAbsorbedEnergyByDeg(BlockState warheadState, BlockState armourState, double incidenceDeg) {
+        return calAbsorbedEnergyByRad(warheadState, armourState, Math.toRadians(incidenceDeg));
+    }
+
+    public static double calResistEnergyByRad(BlockState armourState, double incidenceRad) {
+        double armourHardness = WapBlockInfos.ArmourRhae.valueOrDefaultOf(armourState);
+        double equivalentArmourDepth = 1.0 / Math.cos(incidenceRad);
+        return armourHardness * equivalentArmourDepth;
+    }
+    public static double calResistEnergyByDeg(BlockState armourState, double incidenceDeg) {
+        return calResistEnergyByRad(armourState, Math.toRadians(incidenceDeg));
+    }
+
+
     //todo add armour fatigue
     public static class TerminalContext {
+
+
         public Vector3d velocity;
         public final Vector3dc normal;
         public final double incidenceRad;
@@ -171,9 +221,18 @@ public class BallisticsMath {
             return prevRotation.rotateAxis(rotateRad, rotateAxis, new Quaterniond());
         }
         public double getAbsorbedEnergy() {
-            return armourHardness * equivalentArmourDepth + armourToughness * equivalentArmourDepth * contactArea;
+            EzDebug.log("absorbed eng:" +
+                new StringBuilder().append(armourHardness).append("*").append(equivalentArmourDepth)
+                    .append("+")
+                    .append(armourToughness).append("*").append(equivalentArmourDepth).append("*").append(contactArea) +
+                " = " + (armourHardness * equivalentArmourDepth + armourToughness * equivalentArmourDepth * contactArea));
+            return armourHardness * equivalentArmourDepth + armourToughness * equivalentArmourDepth * contactArea;  //* scale?
         }
         public double getResistEnergy() {
+            EzDebug.log("resist eng:" +
+                new StringBuilder().append(armourHardness).append("*").append(equivalentArmourDepth) +
+                " = " + (armourHardness * equivalentArmourDepth)
+            );
             return armourHardness * equivalentArmourDepth;
         }
         public boolean canPenetrate() {

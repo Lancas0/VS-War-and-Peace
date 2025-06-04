@@ -8,6 +8,8 @@ import com.lancas.vswap.content.block.blocks.artillery.CartridgeRailBlock;
 import com.lancas.vswap.content.block.blocks.artillery.breech.EjectingBreech;
 import com.lancas.vswap.content.block.blocks.artillery.breech.valkyiren.HellBreech;
 import com.lancas.vswap.content.block.blocks.cartridge.ShellFrame;
+import com.lancas.vswap.content.block.blocks.cartridge.glider.Glider;
+import com.lancas.vswap.content.block.blocks.cartridge.glider.GliderWing;
 import com.lancas.vswap.content.block.blocks.cartridge.modifier.WindCap;
 import com.lancas.vswap.content.block.blocks.cartridge.propellant.CombustiblePropellantBlock;
 import com.lancas.vswap.content.block.blocks.cartridge.propellant.Gauge12Block;
@@ -20,6 +22,8 @@ import com.lancas.vswap.content.block.blocks.cartridge.fuze.ImpactFuze;
 import com.lancas.vswap.content.block.blocks.cartridge.modifier.TailFin;
 import com.lancas.vswap.content.block.blocks.cartridge.propellant.empty.EmptyGauge12;
 import com.lancas.vswap.content.block.blocks.cartridge.propellant.empty.EmptyShelledPropellant;
+import com.lancas.vswap.content.block.blocks.cartridge.warhead.apfsds.ApfsdsQuarterShell;
+import com.lancas.vswap.content.block.blocks.cartridge.warhead.apfsds.ApfsdsWarhead;
 import com.lancas.vswap.content.block.blocks.debug.Block01;
 import com.lancas.vswap.content.block.blocks.industry.dock.Dock;
 import com.lancas.vswap.content.block.blocks.industry.dock.DockCTBehaviour;
@@ -39,7 +43,7 @@ import com.tterrag.registrate.util.entry.BlockEntry;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.MapColor;
 
-import static com.lancas.vswap.ModMain.REGISTRATE;
+import static com.lancas.vswap.VsWap.REGISTRATE;
 
 
 public class WapBlocks {
@@ -196,6 +200,19 @@ public class WapBlocks {
                 .build()
                 .register();
 
+            public static BlockEntry<ApfsdsWarhead> APFSDS_WARHEAD = REGISTRATE
+                .block("apfsds_warhead", ApfsdsWarhead::new)
+                .properties(p -> p.noOcclusion().mapColor(MapColor.PODZOL))
+                .item(ItemPlus::getOrCreateFromBlockAndGet)
+                .build()
+                .register();
+            public static BlockEntry<ApfsdsQuarterShell> APFSDS_QUARTER_SHELL = REGISTRATE
+                .block("apfsds_quarter_shell", ApfsdsQuarterShell::new)
+                .properties(p -> p.noOcclusion().mapColor(MapColor.PODZOL))
+                .item(ItemPlus::getOrCreateFromBlockAndGet)
+                .build()
+                .register();
+
             public static BlockEntry<BluntApWarhead> BLUNT_AP_WARHEAD = REGISTRATE
                 .block("blunt_ap_warhead", BluntApWarhead::new)
                 .initialProperties(SharedProperties::stone)
@@ -240,6 +257,22 @@ public class WapBlocks {
 
         public static BlockEntry<PrimerBlock> PRIMER = REGISTRATE
             .block("primer", PrimerBlock::new)
+            .initialProperties(SharedProperties::stone)
+            .properties(p -> p.noOcclusion().mapColor(MapColor.PODZOL))
+            .item(ItemPlus::getOrCreateFromBlockAndGet)
+            .build()
+            .register();
+
+        public static BlockEntry<Glider> GLIDER = REGISTRATE
+            .block("glider", Glider::new)
+            .initialProperties(SharedProperties::stone)
+            .properties(p -> p.noOcclusion().mapColor(MapColor.PODZOL))
+            .item(ItemPlus::getOrCreateFromBlockAndGet)
+            .build()
+            .register();
+
+        public static BlockEntry<GliderWing> GLIDER_WING = REGISTRATE
+            .block("glider_wing", GliderWing::new)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.noOcclusion().mapColor(MapColor.PODZOL))
             .item(ItemPlus::getOrCreateFromBlockAndGet)

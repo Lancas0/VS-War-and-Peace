@@ -40,6 +40,14 @@ public class StrUtil {
     public static String F2(WorldBorder b) {
         return String.format("(%.2f -> %.2f, %.2f -> %.2f)", b.getMinX(), b.getMaxX(), b.getMinZ(), b.getMaxZ());
     }
+
+    public static String F0(float v) {
+        return String.format("%.0f", v);
+    }
+    public static String F0(double v) {
+        return String.format("%.0f", v);
+    }
+
     public static String toIntString(Vector3dc b) {
         return String.format("(%.0f, %.0f, %.0f)", b.x(), b.y(), b.z());
     }

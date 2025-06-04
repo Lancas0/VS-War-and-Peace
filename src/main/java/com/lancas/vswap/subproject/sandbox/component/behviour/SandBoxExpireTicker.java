@@ -1,5 +1,6 @@
 package com.lancas.vswap.subproject.sandbox.component.behviour;
 
+import com.lancas.vswap.debug.EzDebug;
 import com.lancas.vswap.subproject.sandbox.SandBoxClientWorld;
 import com.lancas.vswap.subproject.sandbox.SandBoxServerWorld;
 import com.lancas.vswap.subproject.sandbox.component.behviour.abs.BothSideBehaviour;
@@ -13,13 +14,17 @@ public class SandBoxExpireTicker extends BothSideBehaviour<ExpireTickerData> {
 
     @Override
     public void clientTick(ClientLevel level) {
-        if (--data.tick < 0)
+        if (--data.tick < 0) {
             SandBoxClientWorld.INSTANCE.markShipDeleted(ship.getUuid());
+            EzDebug.highlight("client expire");
+        }
     }
     @Override
     public void serverTick(ServerLevel level) {
-        if (--data.tick < 0)
+        if (--data.tick < 0) {
             SandBoxServerWorld.markShipDeleted(level, ship.getUuid());
+            EzDebug.highlight("server expire");
+        }
     }
 
     @Override

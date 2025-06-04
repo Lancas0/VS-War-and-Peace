@@ -72,7 +72,7 @@ public class UnderConstructionBe extends BlockEntity {
         ConstructingShipData constructingData = new ConstructingShipData(schemeData, true);
         ship.addBehaviour(constructingBeh, constructingData);
 
-        SandBoxServerWorld.addShipAndSyncClient(level, ship);
+        SandBoxServerWorld.addShip(level, ship, true);
         EzDebug.highlight("add constructing ship:" + saShipUuid);
 
         EzDebug.highlight("set saShipUUID:" + saShipUuid);

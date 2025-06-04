@@ -1,6 +1,6 @@
 package com.lancas.vswap.content.saved.blockrecord;
 
-import com.lancas.vswap.ModMain;
+import com.lancas.vswap.VsWap;
 import com.lancas.vswap.debug.EzDebug;
 import com.lancas.vswap.event.impl.BiEventImpl;
 import com.lancas.vswap.event.impl.SingleEventImpl;
@@ -82,7 +82,7 @@ public class BlockRecordRWMgr extends SavedData {
                 return mgr;
             },
             BlockRecordRWMgr::new,
-            ModMain.MODID + "_block_record"
+            VsWap.MODID + "_block_record"
         );
     }
 

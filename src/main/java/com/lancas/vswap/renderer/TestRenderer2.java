@@ -1,7 +1,7 @@
 package com.lancas.vswap.renderer;
 
 
-import com.lancas.vswap.ModMain;
+import com.lancas.vswap.VsWap;
 import com.lancas.vswap.util.JomlUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -28,7 +28,7 @@ import java.util.Dictionary;
 import java.util.Hashtable;
 
 
-@Mod.EventBusSubscriber(modid = ModMain.MODID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@Mod.EventBusSubscriber(modid = VsWap.MODID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class TestRenderer2 {
 
     public static Dictionary<String, Vector3d> poses = new Hashtable<>();

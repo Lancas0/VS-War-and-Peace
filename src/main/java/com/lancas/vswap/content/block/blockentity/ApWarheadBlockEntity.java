@@ -112,12 +112,13 @@ public class ApWarheadBlockEntity extends BlockEntity {
         BallisticsMath.TerminalContext terminalCtx = BallisticsMath.TerminalContext.safeContextOrNull(
             currentVelocity,
             hitInfo.worldNormal,
-            WapBlockInfos.oblique_degree.valueOrDefaultOf(projHeadState),
-            WapBlockInfos.hardness.valueOrDefaultOf(projHeadState),
-            WapBlockInfos.hardness.valueOrDefaultOf(armourState),
-            WapBlockInfos.toughness.valueOrDefaultOf(armourState),
+            WapBlockInfos.Normalization.valueOrDefaultOf(projHeadState),
+            WapBlockInfos.ArmourRhae.valueOrDefaultOf(projHeadState),
+            WapBlockInfos.ArmourRhae.valueOrDefaultOf(armourState),
+            WapBlockInfos.ArmourAbsorbRatio.valueOrDefaultOf(armourState),
             WapBlockInfos.getValkrienMass(projHeadState),  //todo
-            WapBlockInfos.ap_area.valueOrDefaultOf(projHeadState),
+            1,  //it is ap_area, which has been removed
+            //WapBlockInfos.ap_area.valueOrDefaultOf(projHeadState),
             projectileScale,
             armourScale
         );

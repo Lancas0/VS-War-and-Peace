@@ -1,6 +1,6 @@
 package com.lancas.vswap.subproject.lostandfound;
 
-import com.lancas.vswap.ModMain;
+import com.lancas.vswap.VsWap;
 import com.lancas.vswap.debug.EzDebug;
 import com.lancas.vswap.foundation.BiTuple;
 import com.lancas.vswap.foundation.LazyTicks;
@@ -27,7 +27,7 @@ public class LostAndFound extends SavedData {
         return level.getDataStorage().computeIfAbsent(
             t -> new LostAndFound().load(t),
             LostAndFound::new,
-            ModMain.MODID + "_lost_and_found"
+            VsWap.MODID + "_lost_and_found"
         );
     }
 

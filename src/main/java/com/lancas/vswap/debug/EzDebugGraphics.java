@@ -1,6 +1,6 @@
 package com.lancas.vswap.debug;
 
-import com.lancas.vswap.ModMain;
+import com.lancas.vswap.VsWap;
 import com.lancas.vswap.debug.shapes.DebugShape;
 import com.lancas.vswap.util.JomlUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -17,7 +17,7 @@ import org.joml.*;
 import java.util.Dictionary;
 import java.util.Hashtable;
 
-@Mod.EventBusSubscriber(modid = ModMain.MODID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@Mod.EventBusSubscriber(modid = VsWap.MODID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class EzDebugGraphics {
     private static final Dictionary<String, DebugShape> SHAPES = new Hashtable<>();
 

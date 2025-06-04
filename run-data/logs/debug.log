@@ -841,7 +841,7 @@ org.spongepowered.asm.mixin.transformer.throwables.InvalidInterfaceMixinExceptio
 [223��2025 22:45:46.470] [main/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLJavaModLanguageProvider/LOADING]: Loading FMLModContainer from classloader cpw.mods.modlauncher.TransformingClassLoader@d16be4f - got cpw.mods.cl.ModuleClassLoader@66c83fc8
 [223��2025 22:45:46.470] [main/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Creating FMLModContainer instance for com.llamalad7.mixinextras.platform.forge.MixinExtrasMod
 [223��2025 22:45:46.470] [main/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLJavaModLanguageProvider/LOADING]: Loading FMLModContainer from classloader cpw.mods.modlauncher.TransformingClassLoader@d16be4f - got cpw.mods.cl.ModuleClassLoader@66c83fc8
-[223��2025 22:45:46.470] [main/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Creating FMLModContainer instance for com.lancas.vswap.ModMain
+[223��2025 22:45:46.470] [main/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Creating FMLModContainer instance for com.lancas.vswap.VsWap
 [223��2025 22:45:46.471] [main/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLJavaModLanguageProvider/LOADING]: Loading FMLModContainer from classloader cpw.mods.modlauncher.TransformingClassLoader@d16be4f - got cpw.mods.cl.ModuleClassLoader@66c83fc8
 [223��2025 22:45:46.471] [main/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Creating FMLModContainer instance for org.valkyrienskies.mod.forge.common.ValkyrienSkiesModForge
 [223��2025 22:45:46.472] [main/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLJavaModLanguageProvider/LOADING]: Loading FMLModContainer from classloader cpw.mods.modlauncher.TransformingClassLoader@d16be4f - got cpw.mods.cl.ModuleClassLoader@66c83fc8
@@ -1026,7 +1026,7 @@ java.lang.IllegalAccessException: class io.netty.util.internal.PlatformDependent
 [223��2025 22:45:47.152] [modloading-worker-0/DEBUG] [mixin/]: Mixing client.CameraMixin from create.mixins.json into net.minecraft.client.Camera
 [223��2025 22:45:47.205] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.config.ConfigTracker/CONFIG]: Config file einheriar-common.toml for einheriar tracking
 [223��2025 22:45:47.205] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.javafmlmod.AutomaticEventSubscriber/LOADING]: Attempting to inject @EventBusSubscriber classes into the eventbus for einheriar
-[223��2025 22:45:47.205] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.javafmlmod.AutomaticEventSubscriber/LOADING]: Auto-subscribing com.lancas.vswap.Config to MOD
+[223��2025 22:45:47.205] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.javafmlmod.AutomaticEventSubscriber/LOADING]: Auto-subscribing com.lancas.vswap.WapCommonConfig to MOD
 [223��2025 22:45:47.206] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.javafmlmod.AutomaticEventSubscriber/LOADING]: Auto-subscribing com.lancas.vswap.debug.EzDebugGraphics to FORGE
 [223��2025 22:45:47.207] [modloading-worker-0/DEBUG] [mixin/]: Mixing fix.FixNormalScalingMixin from flywheel.mixins.json into com.mojang.blaze3d.vertex.PoseStack
 [223��2025 22:45:47.207] [modloading-worker-0/DEBUG] [mixin/]: Mixing matrix.PoseStackMixin from flywheel.mixins.json into com.mojang.blaze3d.vertex.PoseStack
@@ -1079,7 +1079,7 @@ java.lang.IllegalAccessException: class io.netty.util.internal.PlatformDependent
 [223��2025 22:45:47.626] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.javafmlmod.AutomaticEventSubscriber/LOADING]: Auto-subscribing com.lancas.vswap.handler.ScopeClientManager to FORGE
 [223��2025 22:45:47.627] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.javafmlmod.AutomaticEventSubscriber/LOADING]: Auto-subscribing net.minecraftforge.client.ForgeHooksClient$ClientEvents to MOD
 [223��2025 22:45:47.634] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.javafmlmod.AutomaticEventSubscriber/LOADING]: Attempting to inject @EventBusSubscriber classes into the eventbus for jei
-[223��2025 22:45:47.639] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.javafmlmod.AutomaticEventSubscriber/LOADING]: Auto-subscribing com.lancas.vswap.ModMain$ClientModEvents to MOD
+[223��2025 22:45:47.639] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.javafmlmod.AutomaticEventSubscriber/LOADING]: Auto-subscribing com.lancas.vswap.VsWap$ClientModEvents to MOD
 [223��2025 22:45:47.639] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.javafmlmod.AutomaticEventSubscriber/LOADING]: Auto-subscribing net.minecraftforge.client.ClientForgeMod to MOD
 [223��2025 22:45:47.640] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.javafmlmod.AutomaticEventSubscriber/LOADING]: Auto-subscribing com.lancas.vswap.network.ClientKeyEvents to FORGE
 [223��2025 22:45:47.641] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.javafmlmod.AutomaticEventSubscriber/LOADING]: Auto-subscribing com.lancas.vswap.obsolete.register.ClientSetup to FORGE

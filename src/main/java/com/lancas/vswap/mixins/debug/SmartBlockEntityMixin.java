@@ -1,17 +1,7 @@
 package com.lancas.vswap.mixins.debug;
 
-import com.lancas.vswap.foundation.network.NetworkHandler;
-import com.lancas.vswap.foundation.network.server2client.CreateOutlinePacketS2C;
-import com.lancas.vswap.util.RandUtil;
-import com.simibubi.create.foundation.blockEntity.IMultiBlockEntityContainer;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
-import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.phys.AABB;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(SmartBlockEntity.class)
 public class SmartBlockEntityMixin {

@@ -24,6 +24,7 @@ public interface IRigidbodyDataReader extends IComponentDataReader<RigidbodyData
 
     //public Vector3d getLocalMassCenter(Vector3d dest);
     public Vector3dc getVelocity();
+    public default Vector3d getVelocity(Vector3d dest) { return dest.set(getVelocity()); }
     //public Vector3dc getUpdatedVelocity();
     public Vector3dc getOmega();
     public Vector3dc getGravity();
@@ -39,8 +40,16 @@ public interface IRigidbodyDataReader extends IComponentDataReader<RigidbodyData
     public default Vector3d localIToWorldPos(Vector3ic localPos) { return getLocalToWorld().transformPosition(new Vector3d(localPos)); }
     public default Vector3d localToWorldNoScaleDir(Vector3dc localDir, Vector3d dest) { return getRotation().transform(localDir, dest); }
     public default Vector3d localToWorldNoScaleDir(Vector3d localDir) { return getRotation().transform(localDir); }
-    public default Vector3d localToWorldNoScaleDir(Vector3ic localDir) { return getRotation().transform(new Vector3d(localDir)); }
+    public default Vector3d localIToWorldNoScaleDir(Vector3ic localDir) { return getRotation().transform(new Vector3d(localDir)); }
 
     public default Vector3d worldToLocalPos(Vector3dc worldPos, Vector3d dest) { return getWorldToLocal().transformPosition(worldPos, dest); }
     public default Vector3d worldToLocalPos(Vector3d worldPos) { return getWorldToLocal().transformPosition(worldPos); }
+
+    public RigidbodyData getCopiedData();
+
+    public default Vector3d predictFurtherPos(double time, Vector3d dest) {
+        return dest.add(getVelocity())
+            .mul(time)
+            .add(getPosition());
+    }
 }

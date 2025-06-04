@@ -1,6 +1,6 @@
 package com.lancas.vswap.content;
 
-import com.lancas.vswap.ModMain;
+import com.lancas.vswap.VsWap;
 import com.simibubi.create.AllCreativeModeTabs;
 import com.simibubi.create.foundation.utility.Components;
 import net.minecraft.core.registries.Registries;
@@ -12,7 +12,7 @@ import net.minecraftforge.registries.RegistryObject;
 
 import java.util.List;
 
-import static com.lancas.vswap.ModMain.MODID;
+import static com.lancas.vswap.VsWap.MODID;
 
 
 public class WapTabs {
@@ -27,7 +27,7 @@ public class WapTabs {
             //.icon(ControlCraftBlocks.ANCHOR_BLOCK::asStack)
             .displayItems((params, output) -> {
 
-                List<ItemStack> items = ModMain.REGISTRATE.getAll(Registries.ITEM)
+                List<ItemStack> items = VsWap.REGISTRATE.getAll(Registries.ITEM)
                     .stream()
                     .map((regItem) -> new ItemStack(regItem.get()))
                     .toList();

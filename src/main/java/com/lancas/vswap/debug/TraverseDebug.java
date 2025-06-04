@@ -1,6 +1,6 @@
 package com.lancas.vswap.debug;
 
-import com.lancas.vswap.ModMain;
+import com.lancas.vswap.VsWap;
 import com.lancas.vswap.ship.ballistics.collision.traverse.BlockTraverser;
 import com.lancas.vswap.util.JomlUtil;
 import com.simibubi.create.CreateClient;
@@ -16,7 +16,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.valkyrienskies.mod.common.VSGameUtilsKt;
 
-@Mod.EventBusSubscriber(modid = ModMain.MODID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@Mod.EventBusSubscriber(modid = VsWap.MODID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class TraverseDebug {
     @SubscribeEvent
     public static void renderTraverseBlocks(TickEvent.ClientTickEvent event) {

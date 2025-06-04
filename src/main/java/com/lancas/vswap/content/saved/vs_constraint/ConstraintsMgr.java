@@ -2,7 +2,7 @@ package com.lancas.vswap.content.saved.vs_constraint;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.lancas.vswap.ModMain;
+import com.lancas.vswap.VsWap;
 import com.lancas.vswap.debug.EzDebug;
 import com.lancas.vswap.event.EventMgr;
 import com.lancas.vswap.foundation.api.Dest;
@@ -39,7 +39,7 @@ public class ConstraintsMgr extends SavedData {
                 return mgr.loadAndChangeGroundID(level, tag);
             },
             () -> new ConstraintsMgr(level),
-            ModMain.MODID + "_constraints_mgr"
+            VsWap.MODID + "_constraints_mgr"
         );
     }
     private static final HashMap<ServerLevel, ConstraintsMgr> allMgr = new HashMap<>();

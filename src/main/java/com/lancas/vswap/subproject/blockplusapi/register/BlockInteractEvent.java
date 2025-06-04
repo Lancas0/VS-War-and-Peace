@@ -1,6 +1,6 @@
 package com.lancas.vswap.subproject.blockplusapi.register;
 
-import com.lancas.vswap.ModMain;
+import com.lancas.vswap.VsWap;
 import com.lancas.vswap.subproject.blockplusapi.blockplus.BlockPlus;
 import com.lancas.vswap.subproject.blockplusapi.util.QuadConsumer;
 import net.minecraft.core.BlockPos;
@@ -13,7 +13,7 @@ import net.minecraftforge.fml.common.Mod;
 
 import java.util.Hashtable;
 
-@Mod.EventBusSubscriber(modid = ModMain.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@Mod.EventBusSubscriber(modid = VsWap.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class BlockInteractEvent {
     private static Hashtable<Class<? extends BlockPlus>, QuadConsumer<Level, Player, BlockPos, BlockState>>
         interactableBlocks = new Hashtable<>();
