@@ -1,9 +1,11 @@
 package com.lancas.vswap.subproject.sandbox.compact.vs.constraint;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.lancas.vswap.debug.EzDebug;
 import com.lancas.vswap.subproject.sandbox.ISandBoxWorld;
 import com.lancas.vswap.subproject.sandbox.component.data.reader.IRigidbodyDataReader;
 import com.lancas.vswap.subproject.sandbox.component.data.writer.IRigidbodyDataWriter;
+import com.lancas.vswap.subproject.sandbox.constraint.base.IOrientationConstraint;
 import com.lancas.vswap.subproject.sandbox.ship.ISandBoxShip;
 import org.joml.Quaterniond;
 import org.joml.Quaterniondc;
@@ -11,15 +13,25 @@ import org.valkyrienskies.core.api.ships.Ship;
 
 import java.util.UUID;
 
-public class OrientationOnVsConstraint extends AbstractSaOnVsConstraint {
+public class OrientationOnVsConstraint extends AbstractSaOnVsConstraint implements IOrientationConstraint {
+    @JsonIgnore
+    private final Object mutex = new Object();
+
     private final Quaterniond localVsRot = new Quaterniond();
-    private final Quaterniond localSaRot = new Quaterniond();
+    private final Quaterniond invLocalSaRot = new Quaterniond();
 
     private OrientationOnVsConstraint() { super(null, -1, null); }
     public OrientationOnVsConstraint(UUID inSelfUuid, long inVsShipId, UUID inSaShipUuid, Quaterniondc inLocalVsRot, Quaterniondc inLocalSaRot) {
         super(inSelfUuid, inVsShipId, inSaShipUuid);
         localVsRot.set(inLocalVsRot);
-        localSaRot.set(inLocalSaRot);
+        invLocalSaRot.set(inLocalSaRot).invert();
+    }
+
+    @Override
+    public void setTargetLocalRot(Quaterniondc inLocalRot) {
+        synchronized (mutex) {
+            invLocalSaRot.set(inLocalRot).invert();
+        }
     }
 
     @Override
@@ -34,11 +46,19 @@ public class OrientationOnVsConstraint extends AbstractSaOnVsConstraint {
             return;
         }
 
-        IRigidbodyDataReader rigidReader = saShip.getRigidbody().getDataReader();
-        IRigidbodyDataWriter rigidWriter = saShip.getRigidbody().getDataWriter();
+        synchronized (mutex) {
+            if (!localVsRot.isFinite() || !invLocalSaRot.isFinite()) {
+                EzDebug.warn("localRot is not finite!");
+                return;
+            }
 
-        Quaterniond targetSaRot = new Quaterniond(vsShip.getTransform().getShipToWorldRotation()).mul(localVsRot).mul(localSaRot.invert(new Quaterniond()));
-        rigidWriter.setRotation(targetSaRot);
+            IRigidbodyDataReader rigidReader = saShip.getRigidbody().getDataReader();
+            IRigidbodyDataWriter rigidWriter = saShip.getRigidbody().getDataWriter();
+
+            Quaterniond targetSaRot = new Quaterniond(vsShip.getTransform().getShipToWorldRotation()).mul(localVsRot).mul(invLocalSaRot);
+            rigidWriter.setRotation(targetSaRot);
+        }
+
         /*// 计算期望的全局方向
         Quaterniond desiredWorldRot = vsShip.getTransform().getShipToWorldRotation().mul(localVsRot, new Quaterniond()); // R_A * qA_local
         // 计算bodyB当前的实际全局方向

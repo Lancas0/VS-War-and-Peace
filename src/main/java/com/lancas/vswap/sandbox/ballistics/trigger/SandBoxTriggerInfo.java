@@ -11,11 +11,11 @@ import java.util.UUID;
 
 public class SandBoxTriggerInfo {
     public static class ActivateTriggerInfo extends SandBoxTriggerInfo {
-        public Vector3d targetPos;
+        public Vector3d activatePos;
 
         public ActivateTriggerInfo(UUID inProjectileUuid, Vector3ic inSenderLocalPos, BlockState inSenderState, Vector3dc inTargetPos) {
             super(inProjectileUuid, inSenderLocalPos, inSenderState);
-            targetPos = inTargetPos.get(new Vector3d());
+            activatePos = inTargetPos.get(new Vector3d());
         }
 
         @Override
@@ -23,7 +23,7 @@ public class SandBoxTriggerInfo {
             return "ActivateTriggerInfo{" +
                 "triggerBlockPos=" + senderLocalPos +
                 ", triggerBlockState=" + senderState +
-                ", targetPos=" + targetPos +
+                ", targetPos=" + activatePos +
                 '}';
         }
     }

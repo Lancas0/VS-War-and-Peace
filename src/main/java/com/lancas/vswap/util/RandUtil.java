@@ -4,6 +4,7 @@ import com.lancas.vswap.debug.EzDebug;
 import net.minecraft.core.BlockPos;
 import org.joml.Quaterniond;
 import org.joml.Vector3d;
+import org.joml.primitives.AABBdc;
 
 import java.util.Random;
 import java.util.Stack;
@@ -48,6 +49,14 @@ public class RandUtil {
         Vector3d axis = new Vector3d(nextG(), nextG(), nextG()).normalize();
         double rad = nextD(minRad, maxRad);
         return new Quaterniond().rotateAxis(rad, axis);
+    }
+
+    public static Vector3d nextPos(AABBdc range, Vector3d dest) {
+        return dest.set(
+            nextD(range.minX(), range.maxX()),
+            nextD(range.minY(), range.maxY()),
+            nextD(range.minZ(), range.maxZ())
+        );
     }
 
     public static void pushSeed()            { RandomStack.push(new Random()); }

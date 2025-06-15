@@ -42,7 +42,7 @@ public abstract class AbstractSaOnVsConstraint implements IConstraint {
         vsShipCache = VSGameUtilsKt.getShipObjectWorld(level).getLoadedShips().getById(vsShipId);
         if (vsShipCache == null) {
             EzDebug.warn("remove the constraint by null vsShipCache");
-            solver.markConstraintRemoved(selfUuid);
+            solver.markConstraintRemoved(selfUuid);  //FIXME sometimes fail to remove constraint: the solver's map key don't match selfUuid
         }
     }
 

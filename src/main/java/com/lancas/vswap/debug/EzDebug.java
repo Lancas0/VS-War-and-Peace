@@ -1,5 +1,6 @@
 package com.lancas.vswap.debug;
 
+import com.lancas.vswap.WapConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraftforge.event.TickEvent;
@@ -18,13 +19,13 @@ import java.util.stream.Collectors;
 public class EzDebug {
     public static final Logger logger = Logger.getLogger("EzDebug");
 
-    private static final boolean NOT_DEBUG = false;
-    private static boolean alwaysDebug;
-    private static final boolean PRINT_STACK_TRACE = true;
+    //private static final boolean NOT_DEBUG = false;
+    //private static boolean alwaysDebug;
+    //private static final boolean PRINT_STACK_TRACE = false;
 
-    private EzDebug(boolean inAlwaysDebug) { alwaysDebug = inAlwaysDebug; }
-    public static final EzDebug DEFAULT = new EzDebug(false);
-    public static final EzDebug ALWAYS_DEBUG = new EzDebug(true);
+    //private EzDebug(boolean inAlwaysDebug) { alwaysDebug = inAlwaysDebug; }
+    public static final EzDebug DEFAULT = new EzDebug();
+    //public static final EzDebug ALWAYS_DEBUG = new EzDebug();
 
     private static final Hashtable<Object, String> scheduleLog = new Hashtable<>();
     public static EzDebug schedule(Object key, String log) {
@@ -38,7 +39,7 @@ public class EzDebug {
     }
 
     private static void advancedLog(Level level, String msg) {
-        if (PRINT_STACK_TRACE) {
+        if (WapConfig.debug_stack_trace) {
             StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
             logger.log(level, msg + "\n" + Arrays.stream(stackTrace).map(Objects::toString).collect(Collectors.joining("\n")));
         } else {
@@ -47,7 +48,7 @@ public class EzDebug {
     }
 
     public static EzDebug log(String str) {
-        if (NOT_DEBUG) return DEFAULT;
+        if (!WapConfig.debug_on) return DEFAULT;
 
         Minecraft mc = Minecraft.getInstance();
         boolean isClient = (mc.player != null);
@@ -62,7 +63,7 @@ public class EzDebug {
     }
 
     public static <T> EzDebug logs(Iterable<T> c, @Nullable Function<T, String> strGetter) {
-        if (NOT_DEBUG) return DEFAULT;
+        if (!WapConfig.debug_on) return DEFAULT;
 
         if (c == null) {
             EzDebug.log("the collection is null.");
@@ -81,7 +82,7 @@ public class EzDebug {
         return DEFAULT;
     }
     public static <K, V> EzDebug logs(Map<K, V> m, @Nullable BiFunction<K, V, String> strGetter) {
-        if (NOT_DEBUG) return DEFAULT;
+        if (!WapConfig.debug_on) return DEFAULT;
 
         if (m == null) {
             EzDebug.log("the map is null.");
@@ -100,7 +101,7 @@ public class EzDebug {
     }
 
     public static EzDebug highlight(String str) {
-        if (NOT_DEBUG) return DEFAULT;
+        if (!WapConfig.debug_on) return DEFAULT;
 
         Minecraft mcInst = Minecraft.getInstance();
         if (mcInst != null && mcInst.player != null) {
@@ -112,7 +113,7 @@ public class EzDebug {
         return DEFAULT;
     }
     public static EzDebug light(String str) {
-        if (NOT_DEBUG) return DEFAULT;
+        if (!WapConfig.debug_on) return DEFAULT;
 
         Minecraft mc = Minecraft.getInstance();
         if (mc.player != null) {
@@ -124,7 +125,7 @@ public class EzDebug {
     }
 
     public static EzDebug warn(String str) {
-        if (NOT_DEBUG) return DEFAULT;
+        if (!WapConfig.debug_on) return DEFAULT;
 
         Minecraft mc = Minecraft.getInstance();
         if (mc.player != null) {
@@ -135,7 +136,7 @@ public class EzDebug {
         return DEFAULT;
     }
     public static EzDebug error(String str) {
-        if (NOT_DEBUG) return DEFAULT;
+        if (!WapConfig.debug_on) return DEFAULT;
 
         Minecraft mc = Minecraft.getInstance();
         if (mc.player != null) {
@@ -146,7 +147,7 @@ public class EzDebug {
         return DEFAULT;
     }
     public static EzDebug fatal(String str) {
-        if (NOT_DEBUG) return DEFAULT;
+        if (!WapConfig.debug_on) return DEFAULT;
 
         Minecraft mc = Minecraft.getInstance();
         if (mc.player != null) {

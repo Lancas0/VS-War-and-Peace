@@ -2,6 +2,7 @@ package com.lancas.vswap.compact.create.arminteraction;
 
 import com.lancas.vswap.VsWap;
 import com.lancas.vswap.content.block.blocks.artillery.breech.IBreech;
+import com.lancas.vswap.content.block.blocks.artillery.breech.IBreechBe;
 import com.simibubi.create.content.kinetics.mechanicalArm.ArmInteractionPoint;
 import com.simibubi.create.content.kinetics.mechanicalArm.ArmInteractionPointType;
 import net.minecraft.core.BlockPos;
@@ -31,7 +32,7 @@ public class ArmInteractionTypes {
 
         @Override
         public boolean canCreatePoint(Level level, BlockPos pos, BlockState state) {
-            return level.getBlockState(pos).getBlock() instanceof IBreech;
+            return level.getBlockEntity(pos) instanceof IBreechBe;
         }
 
         @Nullable

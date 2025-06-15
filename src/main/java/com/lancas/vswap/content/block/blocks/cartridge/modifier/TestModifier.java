@@ -8,7 +8,7 @@ import java.util.List;
 
 public class TestModifier extends BlockPlus implements IModifier {
     private static List<IBlockAdder> providers = List.of(
-        new DefaultCartridgeAdder()
+        new DefaultCartridgeAdder(true)
     );
     @Override
     public List<IBlockAdder> getAdders() {

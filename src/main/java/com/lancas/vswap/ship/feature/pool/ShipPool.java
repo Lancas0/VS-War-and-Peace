@@ -176,13 +176,13 @@ public class ShipPool extends SavedData {
 
         //pool.fillUntilFillLine();
 
-        ArrayList<Long> hideIds;
+        /*ArrayList<Long> hideIds;
         try {
             hideIds = nbtBuilder.readSimpleJackson("hide_ids", new TypeReference<ArrayList<Long>>() {});
         } catch (Exception e) {
             EzDebug.error("fail to get hide ids");
             throw new RuntimeException(e);
-        }
+        }*/
 
         /*ArrayList<HidingShip> hidingShips = new ArrayList<>();
         nbtBuilder.readEachSimpleJackson("hide_values", HidingShip.class, hidingShips);

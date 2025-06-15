@@ -35,8 +35,10 @@ import org.joml.primitives.AABBdc;
 import org.joml.primitives.AABBi;
 import org.joml.primitives.AABBic;
 import org.valkyrienskies.core.api.ships.ServerShip;
+import org.valkyrienskies.core.api.ships.Ship;
 import org.valkyrienskies.core.apigame.constraints.VSAttachmentConstraint;
 import org.valkyrienskies.core.apigame.constraints.VSFixedOrientationConstraint;
+import org.valkyrienskies.mod.common.VSGameUtilsKt;
 
 import java.lang.Math;
 import java.util.ArrayList;
@@ -73,7 +75,10 @@ public class DockBe extends SyncedBlockEntity implements IMultiContainerBE, IHav
     @Override
     public void setRemoved() {
         super.setRemoved();
-        if (constraintHolder != null) {
+        if (VsUtil.isDummy(level))
+            return;
+
+        if (constraintHolder != null) {  //don't try to remove constraint if now is dummy (when game is starting, constraint won't be removed, anyway it's better than game crash)
             constraintHolder.setRemoved();
             constraintHolder = null;
         }
@@ -244,7 +249,7 @@ public class DockBe extends SyncedBlockEntity implements IMultiContainerBE, IHav
         }*/
         Quaterniond addRot = new Quaterniond();
         if (!canPutIn(shapeAABB, scale, addRot)) {
-            EzDebug.light("fail to put in because dock size is not enough");
+            //EzDebug.light("fail to put in because dock size is not enough");
             return false;
         }
 
@@ -303,7 +308,55 @@ public class DockBe extends SyncedBlockEntity implements IMultiContainerBE, IHav
             moveAndApplyConstraint(sLevel, builder.get(), bottomCenterInShip, addRot);
             holdingVsShipId = builder.getId();
 
-            EzDebug.log("holdingVsShipId set :" + builder.getId());
+            //EzDebug.log("holdingVsShipId set :" + builder.getId());
+            notifyUpdate();
+        }
+        return true;
+    }
+
+    public boolean tryPutShip(@NotNull Ship ship, boolean simulate) {
+        if (!isController()) {
+            DockBe controllerBe = getControllerBE();
+            if (!controllerBe.isController()) {
+                EzDebug.warn("get controller be but find out it is not controller");
+                return false;
+            }
+            return controllerBe.tryPutShip(ship, simulate);
+        }
+
+        if (isHoldingShip()) {
+            EzDebug.light("can't load ship because isHolding one");
+            return false;
+        }
+        AABBic shipAABB = ship.getShipAABB();
+        Vector3dc scale = ship.getTransform().getShipToWorldScaling();
+        if (shipAABB == null || !shipAABB.isValid()) {
+            EzDebug.warn("fail to get shipAABB of ship");
+            return false;
+        }
+
+        Quaterniond addRot = new Quaterniond();
+        if (!canPutIn(shipAABB, scale, addRot)) {
+            //EzDebug.light("fail to put in because dock size is not enough");
+            return false;
+        }
+
+        if (!simulate) {
+            if (!(level instanceof ServerLevel sLevel) || !(ship instanceof ServerShip sShip)) {
+                EzDebug.warn("only can simulate when level is client");
+                return false;
+            }
+
+            ShipBuilder builder = ShipBuilder.modify(sLevel, sShip);
+            Vector3d bottomCenterInShip = builder.getFaceCenterInShip(Direction.DOWN);
+            if (bottomCenterInShip == null) {
+                EzDebug.warn("get null shipBottomCenterInShip");
+                return false;
+            }
+
+            moveAndApplyConstraint(sLevel, builder.get(), bottomCenterInShip, addRot);
+            holdingVsShipId = builder.getId();
+
             notifyUpdate();
         }
         return true;
@@ -472,6 +525,9 @@ public class DockBe extends SyncedBlockEntity implements IMultiContainerBE, IHav
 
 
     public boolean unboundHoldingShip(boolean forceUnboundEvenIncomplete, boolean simulate, Dest<ServerShip> dest) {
+        if (VsUtil.isDummy(level))
+            return false;
+
         if (!isController()) {
             return getControllerBE().unboundHoldingShip(forceUnboundEvenIncomplete, simulate, dest);
         }
@@ -602,8 +658,10 @@ public class DockBe extends SyncedBlockEntity implements IMultiContainerBE, IHav
         greenPrintHolders.clear();
 
         if (constraintHolder != null) {
-            constraintHolder.setRemoved();
-            constraintHolder = null;
+            if (!VsUtil.isDummy(level)) {
+                constraintHolder.setRemoved();
+                constraintHolder = null;
+            }
         }
 
         constructHandler = null;

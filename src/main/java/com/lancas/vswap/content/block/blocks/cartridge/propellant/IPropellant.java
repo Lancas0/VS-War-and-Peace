@@ -7,5 +7,5 @@ public interface IPropellant {
 
     public BlockState getEmptyState(BlockState state);
     //public void setEmpty(BlockState state, boolean val);
-    public double getEnergy(BlockState state);
+    public double getSPE(BlockState state);
 }

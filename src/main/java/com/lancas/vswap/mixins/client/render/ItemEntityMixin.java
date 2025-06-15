@@ -19,6 +19,7 @@ import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -36,8 +37,25 @@ public abstract class ItemEntityMixin extends EntityRenderer<ItemEntity> {
     //public abstract boolean shouldBob();
     @Shadow(remap = false)
     public abstract boolean shouldSpreadItems();
-    @Shadow(remap = false)
-    protected abstract int getRenderAmount(ItemStack p_115043_);
+    //@Shadow(remap = false)
+    //protected abstract int getRenderAmount(ItemStack p_115043_);
+
+    //fix with Tweakerge
+    @Unique
+    protected int getRenderAmountCopied(ItemStack p_115043_) {
+        int i = 1;
+        if (p_115043_.getCount() > 48) {
+            i = 5;
+        } else if (p_115043_.getCount() > 32) {
+            i = 4;
+        } else if (p_115043_.getCount() > 16) {
+            i = 3;
+        } else if (p_115043_.getCount() > 1) {
+            i = 2;
+        }
+
+        return i;
+    }
 
 
     protected ItemEntityMixin(EntityRendererProvider.Context p_174008_) {
@@ -64,7 +82,7 @@ public abstract class ItemEntityMixin extends EntityRenderer<ItemEntity> {
 
             BakedModel bakedmodel = this.itemRenderer.getModel(itemstack, itemEntity.level(), (LivingEntity)null, itemEntity.getId());
             boolean flag = bakedmodel.isGui3d();
-            int j = this.getRenderAmount(itemstack);
+            int j = this.getRenderAmountCopied(itemstack);
             float f = 0.25F;
             float f1 = 0f;//this.shouldBob() ? Mth.sin(((float)itemEntity.getAge() + partialTick) / 10.0F + itemEntity.bobOffs) * 0.1F + 0.1F : 0.0F;
             float f2 = bakedmodel.getTransforms().getTransform(ItemDisplayContext.GROUND).scale.y();

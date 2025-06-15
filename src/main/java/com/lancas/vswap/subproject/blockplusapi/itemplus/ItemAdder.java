@@ -38,4 +38,6 @@ public interface ItemAdder {
     public @Nullable default Action.InteractionAction<BlockPlaceContext> onPlace() { return null; }
 
     public default boolean canAttackBlock(BlockState state, Level level, BlockPos pos, Player player) { return true; }
+
+    public default boolean foilAdder(ItemStack stack) { return false; }
 }

@@ -69,8 +69,14 @@ public class GroundRigidbodyDataWrapper implements IRigidbodyData {
     public boolean isStatic() { return true; }
 
     @Override
-    public RigidbodyData getCopiedData() {
+    public RigidbodyData getCopiedData(RigidbodyData dest) {
         throw new NotImplementedException();
+    }
+
+    @Override
+    public IRigidbodyDataWriter set(RigidbodyData other) {
+        EzDebug.warn("no use to set rigidbodyData of ground");
+        return this;
     }
 
     @Override
@@ -95,6 +101,13 @@ public class GroundRigidbodyDataWrapper implements IRigidbodyData {
         EzDebug.warn("no use to set scale of ground");
         return this;
     }
+
+    @Override
+    public IRigidbodyDataWriter mulScale(Vector3dc s) {
+        EzDebug.warn("no use to mul scale of ground");
+        return this;
+    }
+
     @Override
     public IRigidbodyDataWriter setTransform(ITransformPrimitive newTransform) {
         EzDebug.warn("no use to set transform of ground");

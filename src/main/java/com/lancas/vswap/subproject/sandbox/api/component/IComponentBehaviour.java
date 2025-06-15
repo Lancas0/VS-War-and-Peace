@@ -18,7 +18,7 @@ public interface IComponentBehaviour<D extends IComponentData<D>> {
 
     //todo spread the method around different list like vs?
     //public default void serverTick(ServerLevel level) {}
-    public default void physTick() {}
+    public default void physTick(double dt) {}
 
     public default void onBlockReplaced(Vector3ic localPos, BlockState oldState, BlockState newState) {}
 

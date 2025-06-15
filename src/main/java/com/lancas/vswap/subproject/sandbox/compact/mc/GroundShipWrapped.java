@@ -30,7 +30,7 @@ public class GroundShipWrapped implements IServerSandBoxShip, IClientSandBoxShip
     @Override
     public void serverTick(ServerLevel level) { }
     @Override
-    public void physTick() { }
+    public void physTick(double dt) { }
 
     @Override
     public UUID getUuid() { return uuid; }

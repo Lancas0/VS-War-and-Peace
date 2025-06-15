@@ -18,5 +18,5 @@ public interface ShipObjectServerWorldAccessor {
     public List<Af> getEnabledCollisionPairsThisTick();
 
     @Accessor(remap = false)
-    Map<Integer, VSConstraint> getConstraints();
+    public Map<Integer, VSConstraint> getConstraints();
 }

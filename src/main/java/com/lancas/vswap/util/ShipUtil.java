@@ -46,7 +46,7 @@ public class ShipUtil {
         return ship == null ? VSGameUtilsKt.getShipManagingPos(level, pos) : ship;
     }
     @Nullable
-    public static Ship getShipByID(Level level, Long id) {
+    public static Ship getShipByID(Level level, @Nullable Long id) {
         if (id == null || id < 0) return null;
         return VSGameUtilsKt.getShipObjectWorld(level).getAllShips().getById(id);
     }
@@ -70,7 +70,7 @@ public class ShipUtil {
         return true;
     }
     @Nullable
-    public static ClientShip getClientShipByID(ClientLevel level, Long id) {
+    public static ClientShip getClientShipByID(ClientLevel level, @Nullable Long id) {
         if (id == null || id < 0) return null;
         return VSGameUtilsKt.getShipObjectWorld(level).getAllShips().getById(id);
     }

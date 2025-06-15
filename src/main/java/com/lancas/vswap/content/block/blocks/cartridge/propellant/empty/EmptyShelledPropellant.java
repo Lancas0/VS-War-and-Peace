@@ -16,7 +16,7 @@ public class EmptyShelledPropellant extends BlockPlus implements IEmptyPropellan
         return BlockPlus.addersIfAbsent(
             EmptyShelledPropellant.class,
 
-            () -> List.of(new DefaultCartridgeAdder())
+            () -> List.of(new DefaultCartridgeAdder(true))
         );
     }
 }

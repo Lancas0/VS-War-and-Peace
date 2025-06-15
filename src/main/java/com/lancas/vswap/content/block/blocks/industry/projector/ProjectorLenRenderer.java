@@ -1,6 +1,5 @@
 package com.lancas.vswap.content.block.blocks.industry.projector;
 
-import com.lancas.vswap.content.block.blockentity.ProjectorLenBe;
 import com.lancas.vswap.content.WapPartialModels;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;

@@ -10,10 +10,20 @@
     "accessor.ChunkAccessor",
     "accessor.ClipCtxAccessor",
     "accessor.UseOnCtxAccessor",
+    "create.BearingContraptionMixin",
     "create.SmartBlockEntityMixin",
+    "create.ponder.PonderSceneAccessor",
+    "create.ponder.PonderSceneHooks",
+    "create.ponder.PonderSceneMixin",
+    "create.ponder.SceneBuilderAccessor",
+    "create.ui.InputWindowElementAccessor",
+    "create.ui.OutlineEntryAccessor",
+    "create.ui.OutlineMixin",
+    "create.ui.OutlineParamsAccessor",
     "debug.FluidTankBlockEntityMixin",
     "debug.SmartBlockEntityMixin",
     "lostandfound.LevelMixin",
+    "valkyrien.ShipObjectServerWorldAccessor",
     "valkyrien.ShipUnloadMixin"
   ],
   "client": [
@@ -22,6 +32,7 @@
     "client.option.MixinGammaOption",
     "client.render.ItemEntityMixin",
     "client.render.LevelRendererMixin",
+    "create.bugfix.PonderUIFix",
     "sandbox.SandBoxAABBRenderer",
     "sandbox.SandBoxLevelRenderMixin"
   ],

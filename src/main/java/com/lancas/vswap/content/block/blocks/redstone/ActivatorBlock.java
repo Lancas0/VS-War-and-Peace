@@ -1,5 +1,6 @@
 package com.lancas.vswap.content.block.blocks.redstone;
 
+/*
 import com.lancas.vswap.content.WapBlockEntites;
 import com.lancas.vswap.content.block.blockentity.ActivatorBlockEntity;
 import com.simibubi.create.foundation.block.IBE;
@@ -45,3 +46,4 @@ public class ActivatorBlock extends Block implements IBE<ActivatorBlockEntity> {
     }
 
 }
+*/

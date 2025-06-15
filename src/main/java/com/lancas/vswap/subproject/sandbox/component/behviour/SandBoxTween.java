@@ -1,5 +1,6 @@
 package com.lancas.vswap.subproject.sandbox.component.behviour;
 
+import com.lancas.vswap.debug.EzDebug;
 import com.lancas.vswap.subproject.sandbox.api.component.IClientBehaviour;
 import com.lancas.vswap.subproject.sandbox.api.component.IServerBehaviour;
 import com.lancas.vswap.subproject.sandbox.api.data.TransformPrimitive;
@@ -24,12 +25,12 @@ public class SandBoxTween extends BothSideBehaviour<TweenData>
     //todo remove the behaviour if exceeds
     @Override
     public synchronized void serverTick(ServerLevel level) {
-        double dt = 0.05;  //todo dt managed by server world, as a param in serverTick
+        double dt = 0.05;  //todo dt managed by server world, as a param in serverTick?
         tick(dt);
     }
     @Override
     public synchronized void clientTick(ClientLevel level) {
-        double dt = 0.01667;  //todo dt managed by client world, as a param in clientTick
+        double dt = 0.01667;  //FIXME get by Minecraft instance
         tick(dt);
     }
 
@@ -41,13 +42,22 @@ public class SandBoxTween extends BothSideBehaviour<TweenData>
         t01InThisLoop -= (int)t01InThisLoop;
 
         double curveT01 = data.curve.evaluate(t01InThisLoop);
-        TransformPrimitive newTransformData = data.function.getNextTransform(
-            ship.getRigidbody().getDataReader().getTransform(),
-            curveT01
-        );
+        //double lastT01 = data.curve.evaluate(Math.max(0, data.duration - dt));
+        TransformPrimitive post = null;
+        try {
+            post = data.function.getNextTransform(
+                ship.getRigidbody().getDataReader().getTransform(),
+                data.fromTrans,
+                data.toTrans,
+                curveT01
+            );
+        } catch (Exception e) {
+            EzDebug.warn("exception during tween:" + e.toString());
+            e.printStackTrace();
+        }
 
-        if (newTransformData != null) {
-            ship.getRigidbody().getDataWriter().setTransform(newTransformData);
+        if (post != null) {
+            ship.getRigidbody().getDataWriter().setTransform(post);
         }
 
         data.elapsedTime += dt;

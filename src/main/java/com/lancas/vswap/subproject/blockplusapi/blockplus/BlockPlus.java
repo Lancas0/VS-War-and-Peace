@@ -82,6 +82,7 @@ public abstract class BlockPlus extends Block {
     public static BlockPlus getInstance(Class<? extends BlockPlus> type) {
         return instances.get(type);
     }
+    public static BlockState defaultState(Class<? extends BlockPlus> type) { return instances.get(type).defaultBlockState(); }
 
     public static List<IBlockAdder> addersIfAbsent(Class<? extends BlockPlus> type, Supplier<List<IBlockAdder>> addersSupplier) {
         if (!addersCache.containsKey(type))

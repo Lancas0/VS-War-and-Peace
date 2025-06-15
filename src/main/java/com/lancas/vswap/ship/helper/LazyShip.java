@@ -104,11 +104,7 @@ public class LazyShip {
     public ClientShip get(ClientLevel level, Object owner) {
         return (ClientShip)get((Level)level, owner);
     }
-    /*public <T extends Ship> T getAs(Level level) {
-        if (shutdown) return null;
 
-        return (T)get(level);
-    }*/
     @Nullable
     public Ship shutDownIfGetNull(Level level, Object owner) {
         if (shutdown) return null;

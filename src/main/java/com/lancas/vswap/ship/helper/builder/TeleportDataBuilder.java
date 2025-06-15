@@ -59,9 +59,10 @@ public class TeleportDataBuilder {
     public TeleportDataBuilder setVel(double x, double y, double z) { velocity.set(x, y, z); return this; }
     public TeleportDataBuilder setOmega(Vector3dc inOmega) { omega.set(inOmega); return this; }
     public TeleportDataBuilder setDimension(Level newLevel) { dimension = VSGameUtilsKt.getDimensionId(newLevel); return this; }
-    public TeleportDataBuilder setScale(double inScale) { velocity.set(inScale); return this; }
+    public TeleportDataBuilder setScale(double inScale) { scale.set(inScale); return this; }
 
     public TeleportDataBuilder addPos(Vector3dc add) { worldPos.add(add); return this; }
+    public TeleportDataBuilder mulScale(double mul) { scale.mul(mul); return this; }
 
     public ShipTeleportDataImpl withPos(Vector3dc inPos) { return setPos(inPos).get(); }
     public ShipTeleportDataImpl withRot(Quaterniondc inRot) { return setRotation(inRot).get(); }

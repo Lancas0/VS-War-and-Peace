@@ -1,11 +1,7 @@
 package com.lancas.vswap.content.block.blocks.blockplus.util;
 
-import com.lancas.vswap.content.block.blockentity.VSProjectorBE;
-import com.lancas.vswap.debug.EzDebug;
-import com.lancas.vswap.subproject.blockplusapi.blockplus.adder.IBlockAdder;
 import com.lancas.vswap.subproject.blockplusapi.blockplus.adder.InteractableBlockAdder;
 import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -14,8 +10,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.items.IItemHandler;
-import org.jetbrains.annotations.Nullable;
 
 public abstract class InteractToInsertOrExtractAdder extends InteractableBlockAdder {
     public boolean extractWhenShiftDown() { return true; }

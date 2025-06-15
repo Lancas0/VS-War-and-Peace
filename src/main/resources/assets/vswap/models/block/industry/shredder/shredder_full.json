@@ -7,9 +7,25 @@
 		"4": "vswap:block/create/andesite_casing_short",
 		"5": "vswap:block/create/gearbox",
 		"7": "vswap:block/create/machine/shredder_bottom",
+		"8": "create:block/axis",
+		"9": "create:block/axis_top",
 		"particle": "vswap:block/create/gearbox"
 	},
 	"elements": [
+		{
+			"name": "Axis",
+			"from": [0, 6, 6],
+			"to": [16, 10, 10],
+			"rotation": {"angle": 0, "axis": "z", "origin": [8, 8, 8]},
+			"faces": {
+				"north": {"uv": [6, 0, 10, 16], "rotation": 90, "texture": "#8"},
+				"east": {"uv": [6, 6, 10, 10], "rotation": 270, "texture": "#9"},
+				"south": {"uv": [6, 0, 10, 16], "rotation": 270, "texture": "#8"},
+				"west": {"uv": [6, 6, 10, 10], "rotation": 270, "texture": "#9"},
+				"up": {"uv": [6, 0, 10, 16], "rotation": 270, "texture": "#8"},
+				"down": {"uv": [6, 0, 10, 16], "rotation": 270, "texture": "#8"}
+			}
+		},
 		{
 			"from": [0, 2, 0],
 			"to": [16, 4, 16],

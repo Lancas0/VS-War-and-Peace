@@ -28,6 +28,7 @@ import org.valkyrienskies.mod.common.VSGameUtilsKt;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 public class RRWChunkyShipSchemeData implements IShipSchemeData, IShipSchemeRandomReader, IShipSchemeRandomWriter {
@@ -366,12 +367,12 @@ public class RRWChunkyShipSchemeData implements IShipSchemeData, IShipSchemeRand
         }
 
         if (attachmentCallback != null) {
-            ObjectMapper mapper = new ObjectMapper();
+            //ObjectMapper mapper = new ObjectMapper();
             for (var savedAtt : savedAttachments.entrySet()) {
                 var type = savedAtt.getKey();
                 var savedData = savedAtt.getValue();
 
-                ISavableAttachment att = NbtBuilder.jacksonReadRethrown(savedData.getSecond(), type, mapper);
+                ISavableAttachment att = NbtBuilder.jacksonReadRethrown(savedData.getSecond(), type, NbtBuilder.SIMPLE_MAPPER);
 
                 attachmentCallback.accept(blockData,
                     att, savedAtt.getValue().getFirst().stream().map(
@@ -384,6 +385,24 @@ public class RRWChunkyShipSchemeData implements IShipSchemeData, IShipSchemeRand
         return blockData;
     }
 
+    public <T extends ISavableAttachment> boolean withSavedAttachmentDo(Class<T> attachmentType, BiConsumer<T, Stream<Vector3ic>> callback) {
+        var savedAttachment = savedAttachments.get(attachmentType);
+        if (savedAttachment == null)
+            return false;
+
+        T att = NbtBuilder.jacksonReadRethrown(savedAttachment.getSecond(), attachmentType, NbtBuilder.SIMPLE_MAPPER);
+        if (att == null)
+            return false;
+
+        callback.accept(att, savedAttachment.getFirst().stream().map(x -> JomlUtil.i(x.toRealBp())));
+        return true;
+    }
+
+
+    public static boolean isSavedEmpty(CompoundTag saved) {
+        AABBi aabb = NbtBuilder.modify(saved).getAABBi("local_aabb");
+        return !aabb.isValid();
+    }
 
 
     @Override

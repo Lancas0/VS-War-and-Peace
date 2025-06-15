@@ -1,10 +1,11 @@
 package com.lancas.vswap.obsolete.blocks;
 
+/*
 import com.lancas.vswap.content.block.blocks.artillery.IBarrel;
 import com.lancas.vswap.content.block.blocks.artillery.breech.IBreech;
 import com.lancas.vswap.content.block.blocks.blockplus.RefreshBlockRecordAdder;
-import com.lancas.vswap.content.block.blocks.cartridge.IPrimer;
-import com.lancas.vswap.content.block.blocks.cartridge.PrimerBlock;
+import com.lancas.vswap.content.block.blocks.cartridge.primer.IPrimer;
+import com.lancas.vswap.content.block.blocks.cartridge.primer.PrimerBlock;
 import com.lancas.vswap.content.item.items.docker.Docker;
 import com.lancas.vswap.content.saved.blockrecord.BlockRecordRWMgr;
 import com.lancas.vswap.debug.EzDebug;
@@ -30,10 +31,10 @@ import com.lancas.vswap.util.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import org.apache.commons.lang3.NotImplementedException;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Quaterniond;
 import org.joml.Vector3d;
@@ -45,10 +46,9 @@ import org.valkyrienskies.core.api.ships.Ship;
 import org.valkyrienskies.mod.common.VSGameUtilsKt;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
-public class DroppingBreech extends BlockPlus implements IBreech, IBarrel/*, IBE<BreechBE>*/ {
+public class DroppingBreech extends BlockPlus implements IBreech, IBarrel/.*, IBE<BreechBE>*./ {
     private static final List<IBlockAdder> adders = List.of(
         new DirectionAdder(false, true, ShapeBuilder.ofCubicRing(0, 0, 0, 2, 16).get()),
         new RedstoneOnOffAdder(true) {
@@ -60,7 +60,7 @@ public class DroppingBreech extends BlockPlus implements IBreech, IBarrel/*, IBE
 
                 //ServerShip onShip = ShipUtil.getServerShipAt((ServerLevel)level, breechBp);
                 ///get the breech bounds in world and breech center in world for get intersected ships
-            /*AABBd worldAABBInBreech;
+            /.*AABBd worldAABBInBreech;
             Vector3d worldBreechCenter;
             if (onShip == null) {
                 worldAABBInBreech = JomlUtil.dBoundBlock(breechBp);
@@ -72,16 +72,16 @@ public class DroppingBreech extends BlockPlus implements IBreech, IBarrel/*, IBE
                     JomlUtil.dBoundBlock(breechBp)
                 );
                 worldBreechCenter = shipToWorld.transformPosition(JomlUtil.dCenter(breechBp));
-            }*/
+            }*./
                 ///find primer around and try to trigger it
-                /*Dest<IPrimer> primerDest = new Dest<>();
+                /.*Dest<IPrimer> primerDest = new Dest<>();
                 Dest<BlockPos> primerBpDest = new Dest<>();
-                Dest<Ship> primerShipDest = new Dest<>();*/
-                /*if (findPrimerAround(level, breechBp, primerDest, primerBpDest, primerShipDest)) {
+                Dest<Ship> primerShipDest = new Dest<>();*./
+                /.*if (findPrimerAround(level, breechBp, primerDest, primerBpDest, primerShipDest)) {
                     fire((ServerLevel)level, breechBp, (ServerShip)primerShipDest.get(), primerDest.get(), primerBpDest.get());
                     return;
-                }*/
-            /*for (LoadedShip findShip : VSGameUtilsKt.getShipObjectWorld(level).getLoadedShips().getIntersecting(worldAABBInBreech)) {
+                }*./
+            /.*for (LoadedShip findShip : VSGameUtilsKt.getShipObjectWorld(level).getLoadedShips().getIntersecting(worldAABBInBreech)) {
                 if (onShip != null && findShip.getId() == onShip.getId()) continue;  //skip onShip
 
                 Matrix4dc worldToFindShip = findShip.getWorldToShip();
@@ -98,11 +98,11 @@ public class DroppingBreech extends BlockPlus implements IBreech, IBarrel/*, IBE
                     handlePrimer((ServerLevel)level, breechBp, (ServerShip)findShip, primerDest.get(), primerBpDest.get());
                     return;
                 }
-            }*/
+            }*./
             }
         },
-        IBreech.breechInteraction(),
-        new RefreshBlockRecordAdder((level, bp, state) -> new BreechRecord(level, bp, 40))
+        //IBreech.breechInteraction(),
+        //new RefreshBlockRecordAdder((level, bp, state) -> new BreechRecord(level, bp, 40))
     );
     @Override
     public List<IBlockAdder> getAdders() { return adders; }
@@ -112,7 +112,7 @@ public class DroppingBreech extends BlockPlus implements IBreech, IBarrel/*, IBE
     }
 
 
-    /*@Override
+    /.*@Override
     public boolean getLoadedMunitionData(Level level, BlockPos breechBp, Dest<Ship> prevMunitionShip, Dest<Boolean> isPrevTriggered, Dest<Direction> prevMunitionShipDir) {
         Dest<IPrimer> primerDest = new Dest<>();
         Dest<BlockPos> primerBpDest = new Dest<>();
@@ -127,16 +127,25 @@ public class DroppingBreech extends BlockPlus implements IBreech, IBarrel/*, IBE
         isPrevTriggered.set(primerDest.get().isTriggered(primerState));
         prevMunitionShipDir.set(DirectionAdder.getDirection(primerState));
         return true;
-    }*/
+    }*./
 
     @Override
-    public boolean canLoadDockerNow(Level level, BlockPos breechBp, ItemStack stack) {
+    public boolean canArmLoadDockerNow(ServerLevel level, BlockPos breechBp, ItemStack stack) {
+        BreechRecord record = BlockRecordRWMgr.getRecord(level, breechBp);
+        if (record == null) {
+            EzDebug.warn("can't get breech at " + breechBp.toShortString());
+            return false;
+        }
+
+        if (!record.loadedData.isEmpty())  //arm can only load one
+            return false;
+
         if (!(stack.getItem() instanceof Docker)) return false;
         return true;  //todo: further check if it's really a munition
     }
 
     @Override
-    public void loadMunition(ServerLevel level, BlockPos breechBp, BlockState breechState, ItemStack munitionDocker) {
+    public boolean loadMunition(ServerLevel level, BlockPos breechBp, BlockState breechState, ItemStack munitionDocker) {
         @Nullable ServerShip artilleryShip = ShipUtil.getServerShipAt(level, breechBp);
 
         Vector3dc worldBreechPos = WorldUtil.getWorldCenter(level, breechBp);
@@ -146,7 +155,7 @@ public class DroppingBreech extends BlockPlus implements IBreech, IBarrel/*, IBE
         ShipBuilder munitionBuilder = Docker.makeVsShipBuilder(level, munitionDocker, true, true);
         if (munitionBuilder == null) {
             EzDebug.warn("fail get munition ship from stack");
-            return;
+            return false;
         }
         ServerShip newMunition = munitionBuilder.get();
         //todo pre check if have holdable
@@ -158,7 +167,7 @@ public class DroppingBreech extends BlockPlus implements IBreech, IBarrel/*, IBE
 
         if (newMunition == null) {
             EzDebug.warn("fail to load munition ship");
-            return;
+            return false;
         } else {
             EzDebug.highlight("successfully make ship and place at:" + newMunition.getTransform().getPositionInWorld());
         }
@@ -173,6 +182,7 @@ public class DroppingBreech extends BlockPlus implements IBreech, IBarrel/*, IBE
                 PrimerBlock.createConstraints(level, curBp, artilleryShip, finalNewMunition, breechBp, breechDirInWorldOrShip, holdable);
             }
         });
+        return true;
     }
 
     @Override
@@ -183,7 +193,7 @@ public class DroppingBreech extends BlockPlus implements IBreech, IBarrel/*, IBE
     @Override
     public void unloadShell(ServerLevel level, BlockPos breechBp, BlockState breechState) { }
 
-    /*@Override
+    /.*@Override
     public void unloadShell(ServerLevel level, ServerShip shellShip, Direction shellDirInShip, BlockPos breechBp) {
         Ship artilleryShip = ShipUtil.getShipAt(level, breechBp);
 
@@ -215,7 +225,7 @@ public class DroppingBreech extends BlockPlus implements IBreech, IBarrel/*, IBE
         ItemEntity itemE = new ItemEntity(level, worldBelowPos.x(), worldBelowPos.y(), worldBelowPos.z(), shellStack);
         itemE.setDeltaMovement(0, -0.1, 0);
         level.addFreshEntity(itemE);
-    }*/
+    }*./
 
 
     private static boolean findPrimerAround(Level level, BlockPos breechBp, Dest<IPrimer> primerDest, Dest<BlockPos> primerBpDest, Dest<Ship> primerShipDest) {
@@ -260,7 +270,10 @@ public class DroppingBreech extends BlockPlus implements IBreech, IBarrel/*, IBE
         return null;
     }
 
-    public static void tryFire(ServerLevel level, BlockPos breechPos/*, ServerShip primerShip, IPrimer primer, BlockPos primerPos*/) {
+    public static void tryFire(ServerLevel level, BlockPos breechPos/.*, ServerShip primerShip, IPrimer primer, BlockPos primerPos*./) {
+        if (true)
+            throw new NotImplementedException("dropping breech is no longer used");
+
         //BlockState primerState = level.getBlockState(primerPos);
         //Direction primerDir = primerState.getValue(DirectionAdder.FACING);//directional.getDirection(primerState);
         Vector3d worldBreechPos = WorldUtil.getWorldCenter(level, breechPos);
@@ -270,11 +283,11 @@ public class DroppingBreech extends BlockPlus implements IBreech, IBarrel/*, IBE
 
         //EzDebug.highlight("is triggered:" + primer.isTriggered(primerState));
 
-        /*if (primer.isTriggered(primerState)) {
+        /.*if (primer.isTriggered(primerState)) {
             //should unload right after fire, but for safe:
             //iBreech.unloadShell(level, primerShip, primerDir, breechPos);  //todo unload
             return;
-        }*/
+        }*./
 
         Vector3d worldLaunchDir = WorldUtil.getWorldDirection(level, breechPos, breechState.getValue(DirectionAdder.FACING));
 
@@ -314,13 +327,13 @@ public class DroppingBreech extends BlockPlus implements IBreech, IBarrel/*, IBE
 
         //ServerShip artilleryShip = ShipUtil.getServerShipAt(level, breechPos);
         SandBoxServerWorld saWorld = SandBoxServerWorld.getOrCreate(level);
-        record.loadedShipData.stream().map(x -> saWorld.getShip(x.getFirst().getFirst())).filter(Objects::nonNull).forEach(s -> {
+        /.*record.loadedShipToConstraint.stream().map(x -> saWorld.getShip(x.getFirst().getFirst())).filter(Objects::nonNull).forEach(s -> {
             if (s.getBlockCluster().getDataReader().getBlockCnt() <= 0) return;
 
             ItemStack shellStack = Docker.stackOfSa(level, s);//DockerItem.stackOfShip(level, shellShip);
             //ShipPool.getOrCreatePool(level).returnShipAndSetEmpty(shellShip, ShipPool.ResetAndSet.farawayAndNoConstraint);
 
-            /*BlockEntity belowEntity = level.getBlockEntity(breechPos.below());
+            /.*BlockEntity belowEntity = level.getBlockEntity(breechPos.below());
             if (belowEntity == null && artilleryShip != null)
                 belowEntity = level.getBlockEntity(JomlUtil.worldBp(artilleryShip.getShipToWorld(), breechPos.below()));
 
@@ -340,17 +353,17 @@ public class DroppingBreech extends BlockPlus implements IBreech, IBarrel/*, IBE
                     level.addFreshEntity(itemE);
                 });
                 return;
-            }*/
+            }*./
 
             ItemEntity itemE = new ItemEntity(level, spawnPos.x(), spawnPos.y(), spawnPos.z(), shellStack);
             itemE.setDeltaMovement(throwDeltaMove.x, throwDeltaMove.y, throwDeltaMove.z);
             level.addFreshEntity(itemE);
-        });
+        });*./
 
         IBreech.clearLoadedMunition(level, breechPos);
 
 
-        /*Dest<Vector3i> projectileStartDest = new Dest<>();
+        /.*Dest<Vector3i> projectileStartDest = new Dest<>();
         MunitionShipHandler.foreachPropellant(
             JomlUtil.i(primerPos),
             JomlUtil.iNormal(primerDir),
@@ -401,9 +414,9 @@ public class DroppingBreech extends BlockPlus implements IBreech, IBarrel/*, IBE
         //set primer triggered
         primer.setAsTriggered(level, primerPos, primerState);
 
-        iBreech.unloadShell(level, primerShip, primerDir, breechPos);*/
+        iBreech.unloadShell(level, primerShip, primerDir, breechPos);*./
 
-        /*@Nullable ServerShip artilleryShip = ShipUtil.getServerShipAt(level, breechPos);
+        /.*@Nullable ServerShip artilleryShip = ShipUtil.getServerShipAt(level, breechPos);
         ShellTriggerHandler triggerHandler = ShellTriggerHandler.ofArtilleryOnShipOrGround(level, primerPos, artilleryShip);
 
         Dest<Double> totalEnergyDest = new Dest<>();
@@ -415,17 +428,18 @@ public class DroppingBreech extends BlockPlus implements IBreech, IBarrel/*, IBE
 
         //breechBE.addBallistics(projectileDest.get(), primerShip, artilleryShip, totalEnergyDest.get());
         BallisticsServerMgr.addBallistics(level, projectileDest.get(), primerShip, artilleryShip, totalEnergyDest.get());
-        iBreech.unloadShell(level, primerShip, primerDir, breechPos);*/
+        iBreech.unloadShell(level, primerShip, primerDir, breechPos);*./
 
     }
 
-    /*@Override
+    /.*@Override
     public Class<BreechBE> getBlockEntityClass() { return BreechBE.class; }
     @Override
     public BlockEntityType<? extends BreechBE> getBlockEntityType() { return WapBlockEntites.BREECH_BE.get(); }
-     */
-    /*@Override
+     *./
+    /.*@Override
     public <S extends BlockEntity> BlockEntityTicker<S> getTicker(Level p_153212_, BlockState p_153213_, BlockEntityType<S> p_153214_) {
         return ((level, blockPos, state, be) -> ((BreechBE)be).tick());
-    }*/
+    }*./
 }
+*/

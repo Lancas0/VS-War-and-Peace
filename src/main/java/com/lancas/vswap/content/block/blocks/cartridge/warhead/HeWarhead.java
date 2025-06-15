@@ -1,11 +1,13 @@
 package com.lancas.vswap.content.block.blocks.cartridge.warhead;
 
+import com.lancas.vswap.content.WapBlocks;
 import com.lancas.vswap.content.explosion.CustomExplosion;
 import com.lancas.vswap.foundation.api.Dest;
 import com.lancas.vswap.sandbox.ballistics.ISandBoxBallisticBlock;
 import com.lancas.vswap.sandbox.ballistics.data.BallisticPos;
 import com.lancas.vswap.sandbox.ballistics.trigger.SandBoxTriggerInfo;
 import com.lancas.vswap.subproject.blockplusapi.blockplus.BlockPlus;
+import com.lancas.vswap.subproject.blockplusapi.blockplus.adder.DirectionAdder;
 import com.lancas.vswap.subproject.blockplusapi.blockplus.adder.IBlockAdder;
 import com.lancas.vswap.content.block.blocks.blockplus.DefaultCartridgeAdder;
 import com.lancas.vswap.ship.ballistics.api.ITerminalEffector;
@@ -13,25 +15,29 @@ import com.lancas.vswap.ship.ballistics.api.TriggerInfo;
 import com.lancas.vswap.subproject.sandbox.SandBoxServerWorld;
 import com.lancas.vswap.subproject.sandbox.ship.SandBoxServerShip;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import org.joml.Vector3dc;
-import org.joml.Vector3ic;
 
 import java.util.List;
 import java.util.Set;
 
 //todo add TRIGGERED avoid trigger multitimes
 public class HeWarhead extends BlockPlus implements ITerminalEffector, ISandBoxBallisticBlock {
+    public static BlockState faceTo(Direction dir) {
+        return WapBlocks.Cartridge.Warhead.HE_WARHEAD.getDefaultState().setValue(DirectionAdder.FACING, dir);
+    }
+
     public static final float EXPLOSIVE_POWER = 5;
     @Override
     public List<IBlockAdder> getAdders() {
         return BlockPlus.addersIfAbsent(
             HeWarhead.class,
             () -> List.of(
-                new DefaultCartridgeAdder()
+                new DefaultCartridgeAdder(true)
                 //, EinherjarBlockInfos.mass.getOrCreateExplicit(HeWarhead.class, state -> 45.0)
             )
         );
@@ -69,8 +75,8 @@ public class HeWarhead extends BlockPlus implements ITerminalEffector, ISandBoxB
     public void doTerminalEffect(ServerLevel level, SandBoxServerShip ship, BallisticPos ballisticPos, BlockState state, List<SandBoxTriggerInfo> infos, Dest<Boolean> terminateByEffect) {
         infos.forEach(info -> {
             if (!(info instanceof SandBoxTriggerInfo.ActivateTriggerInfo activateInfo)) return;
-            Vector3dc targetPos = activateInfo.targetPos;
-            level.explode(null, activateInfo.targetPos.x, activateInfo.targetPos.y, activateInfo.targetPos.z, EXPLOSIVE_POWER, Level.ExplosionInteraction.BLOCK);
+            Vector3dc targetPos = activateInfo.activatePos;
+            level.explode(null, activateInfo.activatePos.x, activateInfo.activatePos.y, activateInfo.activatePos.z, EXPLOSIVE_POWER, Level.ExplosionInteraction.BLOCK);
             //EzDebug.highlight("explode at pos:" + StrUtil.F2(activateInfo.targetPos));
             CustomExplosion exp = new CustomExplosion(
                 level,

@@ -22,6 +22,6 @@ public abstract class AbstractBiConstraint implements IConstraint {
     @Override
     public boolean involveVsShip(long inVsShipId) { return false; }
 
-    protected <TS extends ISandBoxShip> TS getA(ISandBoxWorld<TS> world) { return world.getShipOrGround(aUuid); }
-    protected <TS extends ISandBoxShip> TS getB(ISandBoxWorld<TS> world) { return world.getShipOrGround(bUuid); }
+    protected ISandBoxShip getA(ISandBoxWorld<?> world) { return world.getShipOrGround(aUuid); }
+    protected ISandBoxShip getB(ISandBoxWorld<?> world) { return world.getShipOrGround(bUuid); }
 }

@@ -1,5 +1,6 @@
 package com.lancas.vswap.content.block.blocks.cartridge.fuze;
 
+/*
 import com.lancas.vswap.subproject.blockplusapi.blockplus.BlockPlus;
 import com.lancas.vswap.subproject.blockplusapi.blockplus.adder.IBlockAdder;
 import com.lancas.vswap.subproject.blockplusapi.blockplus.adder.RedstonePowerAdder;
@@ -7,9 +8,9 @@ import com.lancas.vswap.content.block.blocks.blockplus.DefaultCartridgeAdder;
 
 import java.util.List;
 
-public class ProximityFuze extends BlockPlus /*implements ICollisionDetector*/ {
+public class ProximityFuze extends BlockPlus /.*implements ICollisionDetector*./ {
     private static final List<IBlockAdder> providers = List.of(
-        new DefaultCartridgeAdder(),
+        new DefaultCartridgeAdder(true),
         new RedstonePowerAdder()
     );
 
@@ -24,7 +25,7 @@ public class ProximityFuze extends BlockPlus /*implements ICollisionDetector*/ {
 
 
 
-    /*@Override
+    /.*@Override
     public boolean shouldDetect(BlockState state) {
         int redstone = state.getValue(RedstonePowerProvider.POWER);
         return redstone <= 0;
@@ -53,5 +54,6 @@ public class ProximityFuze extends BlockPlus /*implements ICollisionDetector*/ {
 
         level.setBlockAndUpdate(detectorBp, detectorState.setValue(RedstonePowerProvider.POWER, 15));
         level.updateNeighborsAt(detectorBp, detectorState.getBlock());
-    }*/
+    }*./
 }
+*/

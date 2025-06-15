@@ -1,6 +1,6 @@
 package com.lancas.vswap.ship.ballistics.handler;
 
-import com.lancas.vswap.content.block.blocks.cartridge.IPrimer;
+import com.lancas.vswap.content.block.blocks.cartridge.primer.IPrimer;
 import com.lancas.vswap.content.block.blocks.cartridge.propellant.IPropellant;
 import com.lancas.vswap.debug.EzDebug;
 import com.lancas.vswap.foundation.api.Dest;
@@ -171,7 +171,7 @@ public class ShellTriggerHandler {
             //EzDebug.log("bp:" + propellantBp + ", block:" + propellantState.getBlock().getName().getString() + ", power:" + propellant.getEnergy());
 
             if (!propellant.isEmpty(propellantState)) {
-                totalEnergy += propellant.getEnergy(propellantState);
+                totalEnergy += propellant.getSPE(propellantState);
 
                 if (setEmpty)
                     level.setBlockAndUpdate(propellantBp, propellant.getEmptyState(propellantState));

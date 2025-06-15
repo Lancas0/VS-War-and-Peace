@@ -23,7 +23,7 @@ public class LeftClickItemEventRegister {
     public static void onLeftClickBlock(PlayerInteractEvent.LeftClickBlock event) {
         Player player = event.getEntity();
 
-        if (player.getMainHandItem().getItem() == WapItems.EINHERJAR_WAND.get()) {
+        if (player.getMainHandItem().getItem() == WapItems.VSWAP_WAND.get()) {
             event.setCanceled(true);
             //EzDebug.Log("click block with: " + player.getMainHandItem().getItem().getName(player.getMainHandItem()));
         }
@@ -33,7 +33,7 @@ public class LeftClickItemEventRegister {
     public static void onLeftClickBlock(AttackEntityEvent event) {
         Player player = event.getEntity();
 
-        if (player.getMainHandItem().getItem() == WapItems.EINHERJAR_WAND.get()) {
+        if (player.getMainHandItem().getItem() == WapItems.VSWAP_WAND.get()) {
             event.setCanceled(true);
             //EzDebug.Log("attack with: " + player.getMainHandItem().getItem().getName(player.getMainHandItem()));
         }

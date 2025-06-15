@@ -1,7 +1,7 @@
 package com.lancas.vswap.content.item.items.docker;
 
 import com.lancas.vswap.content.WapItems;
-import com.lancas.vswap.content.block.blocks.industry.dock.DockBe;
+import com.lancas.vswap.content.block.api.IDockerInteractableBlock;
 import com.lancas.vswap.content.block.blocks.industry.shredder.IShredderableItem;
 import com.lancas.vswap.content.saved.refship.RefShipMgr;
 import com.lancas.vswap.debug.EzDebug;
@@ -17,6 +17,7 @@ import com.lancas.vswap.ship.helper.builder.ShipBuilder;
 import com.lancas.vswap.ship.feature.pool.ShipPool;
 import com.lancas.vswap.subproject.blockplusapi.itemplus.adder.ItemPredictPlacementAdder;
 import com.lancas.vswap.subproject.mstandardized.MaterialStandardizedItem;
+import com.lancas.vswap.subproject.sandbox.component.data.reader.IBlockClusterDataReader;
 import com.lancas.vswap.subproject.sandbox.ship.ISandBoxShip;
 import com.lancas.vswap.util.*;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -42,6 +43,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
@@ -232,7 +234,7 @@ public class Docker extends Item implements IShredderableItem {
         return saveShipData(stack, level, ship, ref, autoHiding);
     }
     public static ItemStack stackOfSa(ServerLevel level, ISandBoxShip ship) {
-        ItemStack stack = WapItems.DOCKER.asStack();
+        /*ItemStack stack = WapItems.DOCKER.asStack();
         CompoundTag stackNbt = stack.getOrCreateTag();
 
         AABBi aabb = new AABBi();
@@ -240,6 +242,46 @@ public class Docker extends Item implements IShredderableItem {
         int addY = (level.getHeight() + level.getMinBuildHeight()) / 2 + (int)(JomlUtil.lengthY(ship.getBlockCluster().getDataReader().getLocalAABB()) / 2);
 
         ship.getBlockCluster().getDataReader().allBlocks().forEach(e -> {
+            data.setBlockAtLocalBp(JomlUtil.bp(e.getKey()).offset(0, addY, 0), e.getValue(), null);  //todo temporily can't save be if use sa ship
+            aabb.union(e.getKey());
+        });
+
+        NbtBuilder.modify(stackNbt)
+            .putCompound(SHIP_DATA_KEY, data.saved())
+            .putAABBi(SHIP_AABB_KEY, aabb);
+
+        //todo now can't save att if use sa ship
+        return stack;*/
+        return stackOfSaBlockData(level, ship.getBlockCluster().getDataReader());
+    }
+    public static ItemStack stackOfSaBlockData(ServerLevel level, IBlockClusterDataReader bcDataReader) {
+        ItemStack stack = WapItems.DOCKER.asStack();
+        CompoundTag stackNbt = stack.getOrCreateTag();
+
+        AABBi aabb = new AABBi();
+        RRWChunkyShipSchemeData data = new RRWChunkyShipSchemeData();
+        int addY = (level.getHeight() + level.getMinBuildHeight()) / 2 + (int)(JomlUtil.lengthY(bcDataReader.getLocalAABB()) / 2);
+
+        bcDataReader.allBlocks().forEach(e -> {
+            data.setBlockAtLocalBp(JomlUtil.bp(e.getKey()).offset(0, addY, 0), e.getValue(), null);  //todo temporily can't save be if use sa ship
+            aabb.union(e.getKey());
+        });
+
+        NbtBuilder.modify(stackNbt)
+            .putCompound(SHIP_DATA_KEY, data.saved())
+            .putAABBi(SHIP_AABB_KEY, aabb);
+
+        //todo now can't save att if use sa ship
+        return stack;
+    }
+    public static ItemStack stackOfSaBlockData(int addY, IBlockClusterDataReader bcDataReader) {
+        ItemStack stack = WapItems.DOCKER.asStack();
+        CompoundTag stackNbt = stack.getOrCreateTag();
+
+        AABBi aabb = new AABBi();
+        RRWChunkyShipSchemeData data = new RRWChunkyShipSchemeData();
+
+        bcDataReader.allBlocks().forEach(e -> {
             data.setBlockAtLocalBp(JomlUtil.bp(e.getKey()).offset(0, addY, 0), e.getValue(), null);  //todo temporily can't save be if use sa ship
             aabb.union(e.getKey());
         });
@@ -514,11 +556,12 @@ public class Docker extends Item implements IShredderableItem {
         predictPlacementAdder = new ItemPredictPlacementAdder(List.of(ItemPredictPlacementAdder.PlacementStage.Predict, ItemPredictPlacementAdder.PlacementStage.PreUseOn)) {
         @Override
         public InteractionResult predictPlacement(ItemStack stack, Level level, Player player, BlockPlaceContext ctx, PlacementStage stage) {
-            BlockPos placeAgainst = ctx.getClickedPos().relative(ctx.getClickedFace().getOpposite());
+            BlockPos placeAgainstBp = ctx.getClickedPos().relative(ctx.getClickedFace().getOpposite());
+            BlockState placeAgainstState = level.getBlockState(placeAgainstBp);
 
             if (player.getClass() == LocalPlayer.class || player.getClass() == ServerPlayer.class) {
                 //only check real player
-                if (level.getBlockState(placeAgainst).isAir())
+                if (level.getBlockState(placeAgainstBp).isAir())
                     return InteractionResult.PASS;
             }
 
@@ -531,14 +574,12 @@ public class Docker extends Item implements IShredderableItem {
                 if (cachedShipSchemeData == null || cachedShipSchemeData.isEmpty())
                     return InteractionResult.PASS;
 
-                //BlockPos aimingBp = ctx.getClickedPos().relative(ctx.getClickedFace().getOpposite());
-                if (level.getBlockEntity(placeAgainst) instanceof DockBe dockBe) {
-                    //todo preview rendered ship outline
-                    //todo when mode is Blocks?
-                    boolean canPutIn = dockBe.tryPutDocker(stack, true);
-                    dockBe.showOutline(canPutIn ? WapColors.SHOWCASE_BLUE : WapColors.DARK_RED);
-
-                    return InteractionResult.PASS;
+                //todo preview rendered ship outline
+                //todo when mode is Blocks?
+                if (placeAgainstState.getBlock() instanceof IDockerInteractableBlock dib) {
+                    if (dib.mayInteract(stack, level, player, placeAgainstBp, placeAgainstState)) {
+                        return InteractionResult.PASS;
+                    }
                 }
 
                 return switch (mode) {
@@ -548,18 +589,13 @@ public class Docker extends Item implements IShredderableItem {
             } else {
                 if (!(level instanceof ServerLevel sLevel))
                     return InteractionResult.PASS;
-                //if (level.isClientSide)
-                //    return InteractionResult.PASS;
 
-                if (level.getBlockEntity(placeAgainst) instanceof DockBe dockBe) {
-                    boolean canPutIn = dockBe.tryPutDocker(stack, false);
-                    if (canPutIn) {
-                        player.setItemInHand(ctx.getHand(), ItemStack.EMPTY);  //todo shrink?
-                        return InteractionResult.PASS;
+                if (placeAgainstState.getBlock() instanceof IDockerInteractableBlock dib) {
+                    ItemStack afterStack = dib.interact(stack, level, player, placeAgainstBp, placeAgainstState);
+                    if (!afterStack.equals(stack, true)) { //if get dif stack
+                        player.setItemInHand(ctx.getHand(), afterStack);
+                        return InteractionResult.SUCCESS;
                     }
-                    //dockBe.showOutline(canPutIn ? WapColors.SHOWCASE_BLUE : WapColors.DARK_RED);
-
-                    return InteractionResult.PASS;
                 }
 
                 InteractionResult result = switch (mode) {

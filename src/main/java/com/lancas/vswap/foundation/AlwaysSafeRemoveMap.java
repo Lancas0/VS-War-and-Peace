@@ -10,12 +10,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiPredicate;
 import java.util.stream.Stream;
 
+//always safe to remove, even when iterating
 public class AlwaysSafeRemoveMap<K, V> {
     private final Map<K, V> map = new ConcurrentHashMap<>();
     private final Set<K> toRemoveKeys = ConcurrentHashMap.newKeySet();
     private final Set<V> toRemoveVals = ConcurrentHashMap.newKeySet();
     private final Set<BiPredicate<K, V>> toRemovePredicate = ConcurrentHashMap.newKeySet();
-    private AtomicBoolean toFlushRemove = new AtomicBoolean(false);
+    private final AtomicBoolean toFlushRemove = new AtomicBoolean(false);
 
     public void markKeyRemoved(@NotNull K key) { toRemoveKeys.add(key); toFlushRemove.set(true); }
     public void markValRemoved(@NotNull V val) { toRemoveVals.add(val); toFlushRemove.set(true); }

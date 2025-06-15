@@ -74,9 +74,8 @@ public class ShellFrame extends BlockPlus/* implements IBE<ShellFrameBE>*/ {
             }*/
                 ICanHoldShip icanHoldShip = (ICanHoldShip)player;
 
-                Dest<Long> prevHoldShipId = new Dest<>();
-                icanHoldShip.unholdShipInServer(ShipHoldSlot.MainHand, true, prevHoldShipId);
-                ServerShip holdenShip = ShipUtil.getServerShipByID(sLevel, prevHoldShipId.get());
+                Long prevHoldShipId = icanHoldShip.unholdShipInServer(ShipHoldSlot.MainHand, true);
+                ServerShip holdenShip = ShipUtil.getServerShipByID(sLevel, prevHoldShipId);
                 if (holdenShip == null) return InteractionResult.PASS;
 
                 lockShip(sLevel, holdenShip, pos);

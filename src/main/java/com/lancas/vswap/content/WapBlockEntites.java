@@ -1,8 +1,11 @@
 package com.lancas.vswap.content;
 
 import com.lancas.vswap.content.block.blockentity.*;
+import com.lancas.vswap.content.block.blocks.artillery.breech.EjectingBreechBe;
 import com.lancas.vswap.content.block.blocks.industry.dock.DockBe;
 import com.lancas.vswap.content.block.blocks.industry.dock.GreenPrintHolderBe;
+import com.lancas.vswap.content.block.blocks.industry.projector.ProjectorLenBe;
+import com.lancas.vswap.content.block.blocks.industry.projector.VSProjectorBE;
 import com.lancas.vswap.content.block.blocks.industry.shredder.ShredderBe;
 import com.lancas.vswap.content.block.blocks.industry.shredder.ShredderRenderer;
 import com.lancas.vswap.content.block.blocks.industry.projector.ProjectorLenRenderer;
@@ -11,14 +14,18 @@ import com.tterrag.registrate.util.entry.BlockEntityEntry;
 
 import static com.lancas.vswap.VsWap.REGISTRATE;
 import static com.lancas.vswap.content.WapBlocks.*;
-import static com.lancas.vswap.content.WapBlocks.Cartridge.Warhead.AP_CORE_WARHEAD;
-import static com.lancas.vswap.content.WapBlocks.Cartridge.Warhead.BLUNT_AP_WARHEAD;
+import static com.lancas.vswap.content.WapBlocks.Cartridge.Warhead.WARHEAD_APCR;
 
 public class WapBlockEntites {
 
     public static final BlockEntityEntry<ScopeBE> SCOPE_BE = REGISTRATE
         .blockEntity("scope_block_entity", ScopeBE::new)
         .validBlocks(MECH_SCOPE_BLOCK, TELE_SCOPE_BLOCK)
+        .register();
+
+    public static final BlockEntityEntry<EjectingBreechBe> EJECTING_BREECH_BE = REGISTRATE
+        .blockEntity("ejecting_breech_be", EjectingBreechBe::new)
+        .validBlocks(Artillery.EJECTING_BREECH)
         .register();
 
     /*public static final BlockEntityEntry<SignalDetectorBlockEntity> SIGNAL_DETECTOR_BE = REGISTRATE
@@ -36,7 +43,7 @@ public class WapBlockEntites {
         .validBlocks(ENGINE_IGNITER)
         .register();*/
 
-    public static final BlockEntityEntry<ActivatorBlockEntity> ACTIVATOR_BE = REGISTRATE
+    /*public static final BlockEntityEntry<ActivatorBlockEntity> ACTIVATOR_BE = REGISTRATE
         .blockEntity("activator_be", ActivatorBlockEntity::new)
         .validBlocks(ACTIVATOR)
         .register();
@@ -44,7 +51,7 @@ public class WapBlockEntites {
     public static final BlockEntityEntry<ValkyrienBreechBE> VALKYRIEN_BREECH_BE = REGISTRATE
         .blockEntity("valkyrien_be", ValkyrienBreechBE::new)
         .validBlocks(ACTIVATOR)
-        .register();
+        .register();*/
 
     /*public static final BlockEntityEntry<ShellFrameBE> SHELL_FRAME_BE = REGISTRATE
         .blockEntity("shell_frame_be", ShellFrameBE::new)
@@ -78,11 +85,12 @@ public class WapBlockEntites {
 
     public static final BlockEntityEntry<ApWarheadBlockEntity> AP_BE = REGISTRATE
         .blockEntity("ap_be", ApWarheadBlockEntity::new)
-        .validBlocks(AP_CORE_WARHEAD, BLUNT_AP_WARHEAD)
+        .validBlocks(WARHEAD_APCR/*, BLUNT_AP_WARHEAD*/)
         .register();
 
     public static final BlockEntityEntry<VSProjectorBE> VS_PROJECTOR_BE = REGISTRATE
         .blockEntity("vs_projector_be", VSProjectorBE::new)
+        //.instance(() -> HalfShaftInstance::new, false)
         .validBlocks(Industrial.Projector.VS_PROJECTOR)
         .register();
 

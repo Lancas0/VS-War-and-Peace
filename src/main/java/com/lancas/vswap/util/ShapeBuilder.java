@@ -22,7 +22,7 @@ public class ShapeBuilder {
     public static ShapeBuilder ofCubicRing(int sx, int sy, int sz, int thick, int height) { return new ShapeBuilder(cubicRing(sx, sy ,sz, thick, height)); }
     public static ShapeBuilder ofCenterBlock(int len) { return new ShapeBuilder(centerBlock(len)); }
     public static ShapeBuilder ofSide(Direction face, int thick) { return new ShapeBuilder(side(face, thick)); }
-    public static ShapeBuilder ofBox(double minX, double minY, double minZ, double maxX, double maxY, double maxZ) { return new ShapeBuilder(box(minX, minY, minZ, maxX, maxY, maxZ)); }
+    public static ShapeBuilder ofBoxPixel(double minX, double minY, double minZ, double maxX, double maxY, double maxZ) { return new ShapeBuilder(box(minX, minY, minZ, maxX, maxY, maxZ)); }
     public static ShapeBuilder ofPrism(Direction dir, double faceLen) { return new ShapeBuilder(prism(dir, faceLen)); }
 
     public static VoxelShape rotateVoxelShape(VoxelShape defaultShape, Direction defaultDir, Direction toDir) {
@@ -125,22 +125,22 @@ public class ShapeBuilder {
     }
 
     //public static VoxelShape box(double minX, double minY, double minZ, double maxX, double maxY, double maxZ) { return box(minX, minY, minZ, maxX, maxY, maxZ); }
-    public static VoxelShape cubicRing(int startX, int startY, int startZ, int thick, int height) {
-        int maxX = 16 - startX;
-        int maxY = startY + height;
-        int maxZ = 16 - startZ;
+    public static VoxelShape cubicRing(double startXPixel, double startYPixel, double startZPixel, double thickPixel, double heightPixel) {
+        double maxX = 16 - startXPixel;
+        double maxY = startYPixel + heightPixel;
+        double maxZ = 16 - startZPixel;
         return Shapes.join(
-            Shapes.join(box(startX, startY, startZ, maxX, maxY, startZ + thick), box(startX, startY, maxZ - thick, maxX, maxY, maxZ), BooleanOp.OR),
-            Shapes.join(box(startX, startY, startZ + thick, startX + thick, maxY, maxZ - thick), box(maxX - thick, startY, startZ + thick, maxX, maxY, maxZ - thick), BooleanOp.OR),
+            Shapes.join(box(startXPixel, startYPixel, startZPixel, maxX, maxY, startZPixel + thickPixel), box(startXPixel, startYPixel, maxZ - thickPixel, maxX, maxY, maxZ), BooleanOp.OR),
+            Shapes.join(box(startXPixel, startYPixel, startZPixel + thickPixel, startXPixel + thickPixel, maxY, maxZ - thickPixel), box(maxX - thickPixel, startYPixel, startZPixel + thickPixel, maxX, maxY, maxZ - thickPixel), BooleanOp.OR),
             BooleanOp.OR
         );
     }
     public static VoxelShape concaveUp(int thick) {
         return Shapes.or(side(Direction.DOWN, thick), side(Direction.WEST, thick), side(Direction.EAST, thick));
     }
-    public static VoxelShape centerBlock(int len) {
-        double gap = (16.0 - len) / 2.0;
-        return box(gap, gap, gap, gap + len, gap + len, gap + len);
+    public static VoxelShape centerBlock(double lenPixel) {
+        double gap = (16.0 - lenPixel) / 2.0;
+        return box(gap, gap, gap, gap + lenPixel, gap + lenPixel, gap + lenPixel);
     }
     public static VoxelShape side(Direction face, int thick) {
         return switch (face) {

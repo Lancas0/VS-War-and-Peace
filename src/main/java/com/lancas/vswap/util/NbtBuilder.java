@@ -33,10 +33,17 @@ import java.util.stream.Stream;
 
 //todo NbtReader, Writer NbtRW
 public class NbtBuilder {
-    private static final ObjectMapper SIMPLE_MAPPER = new ObjectMapper();
+    public static final ObjectMapper SIMPLE_MAPPER = new ObjectMapper();
 
     private final CompoundTag nbt;
     public NbtBuilder() { nbt = new CompoundTag(); }
+
+    public static CompoundTag tagOfInt(int v) {
+        CompoundTag nbt = new CompoundTag();
+        nbt.putLong("int_value", v);
+        return nbt;
+    }
+    public static int intOf(CompoundTag tag) { return tag.getInt("int_value"); }
 
     public static CompoundTag valueOfLong(String key, long l) {
         CompoundTag nbt = new CompoundTag();

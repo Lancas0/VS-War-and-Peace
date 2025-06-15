@@ -1,5 +1,6 @@
 package com.lancas.vswap.content.block.blocks.cartridge.modifier;
 
+/*
 import com.lancas.vswap.ship.type.ProjectileWrapper;
 import com.lancas.vswap.subproject.blockplusapi.blockplus.BlockPlus;
 import com.lancas.vswap.subproject.blockplusapi.blockplus.adder.IBlockAdder;
@@ -30,3 +31,4 @@ public class WindCap extends BlockPlus implements IModifier {
         return 1;
     }
 }
+*/

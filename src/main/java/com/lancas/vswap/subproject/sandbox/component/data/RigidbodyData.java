@@ -9,7 +9,6 @@ import com.lancas.vswap.subproject.sandbox.component.data.writer.IRigidbodyDataW
 import com.lancas.vswap.subproject.sandbox.ship.ISandBoxShip;
 import com.lancas.vswap.util.JomlUtil;
 import com.lancas.vswap.util.NbtBuilder;
-import com.lancas.vswap.util.SerializeUtil;
 import com.lancas.vswap.util.StrUtil;
 import net.minecraft.nbt.CompoundTag;
 import org.joml.*;
@@ -241,7 +240,7 @@ public class RigidbodyData implements IComponentData<RigidbodyData>, IRigidbodyD
 
             .putEach("applying_forces", applyingForces, NbtBuilder::tagOfVector3d)
             .putEach("applying_torque", applyingTorques, NbtBuilder::tagOfVector3d)
-            .putEach("updates", updates, update -> {
+            /*.putEach("updates", updates, update -> {  //todo save & load updates?
                 CompoundTag savedUpdate = new CompoundTag();
                 byte[] bytes = SerializeUtil.safeSerialize(update);
                 if (bytes == null || bytes.length == 0) {
@@ -250,8 +249,7 @@ public class RigidbodyData implements IComponentData<RigidbodyData>, IRigidbodyD
                 }
                 savedUpdate.putByteArray("bytes", bytes);
                 return savedUpdate;
-            })
-
+            })*/
             .get();
     }
     @Override
@@ -269,10 +267,10 @@ public class RigidbodyData implements IComponentData<RigidbodyData>, IRigidbodyD
 
             .readEachCompoundOverwrite("applying_forces", NbtBuilder::vector3dOf, applyingForces)
             .readEachCompoundOverwrite("applying_torque", NbtBuilder::vector3dOf, applyingTorques)
-            .readEachCompound("updates", t -> {
+            /*.readEachCompound("updates", t -> {
                 if (!t.contains("bytes")) return null;
                 return SerializeUtil.safeDeserialize(t.getByteArray("bytes"));
-            }, updates);
+            }, updates)*/;
 
 
         updates.removeIf(Objects::isNull);
@@ -290,7 +288,6 @@ public class RigidbodyData implements IComponentData<RigidbodyData>, IRigidbodyD
     public Vector3d getWorldMassCenter(Vector3d dest) { return localToWorldPos(getLocalMassCenter(dest)); }
     @Override
     public Matrix3dc getLocalInertia() { return localInertiaTensor; }
-
 
     @Override
     public Vector3dc getPosition() { return transform.getPosition(); }
@@ -326,8 +323,8 @@ public class RigidbodyData implements IComponentData<RigidbodyData>, IRigidbodyD
     public boolean isStatic() { return isStatic.get(); }
 
     @Override
-    public RigidbodyData getCopiedData() {
-        return new RigidbodyData().copyData(this);
+    public RigidbodyData getCopiedData(RigidbodyData dest) {
+        return dest.copyData(this);
     }
 
 
@@ -343,6 +340,13 @@ public class RigidbodyData implements IComponentData<RigidbodyData>, IRigidbodyD
 
         return this;
     }*/
+    @Override
+    public IRigidbodyDataWriter set(RigidbodyData other) {
+        RigidbodyData otherImm = other.getCopiedData();
+        updates.add(d -> d.copyData(otherImm));
+        return this;
+    }
+
     @Override
     public IRigidbodyDataWriter setVelocity(double x, double y, double z) {
         if (!Double.isFinite(x) || !Double.isFinite(y) || !Double.isFinite(z)) {
@@ -436,15 +440,28 @@ public class RigidbodyData implements IComponentData<RigidbodyData>, IRigidbodyD
     }
     @Override
     public IRigidbodyDataWriter setScale(Vector3dc s) {
-        if (!s.isFinite()) {
-            EzDebug.warn("to set invalid scale:" + s);
+        Vector3dc newScaleImmutable = new Vector3d(s);
+        if (!newScaleImmutable.isFinite()) {
+            EzDebug.warn("to set invalid scale:" + newScaleImmutable);
             return this;
         }
 
-        Vector3dc newScaleImmutable = new Vector3d(s);
         updates.add(d -> d.transform.scale.set(newScaleImmutable));
         return this;
     }
+
+    @Override
+    public IRigidbodyDataWriter mulScale(Vector3dc s) {
+        Vector3dc mulScaleImmutable = new Vector3d(s);
+        if (!mulScaleImmutable.isFinite()) {
+            EzDebug.warn("to set invalid scale:" + mulScaleImmutable);
+            return this;
+        }
+
+        updates.add(d -> d.transform.scale.mul(mulScaleImmutable));
+        return this;
+    }
+
     @Override
     public IRigidbodyDataWriter setTransform(ITransformPrimitive newTransform) {
         //todo check if transform is valid
@@ -481,10 +498,10 @@ public class RigidbodyData implements IComponentData<RigidbodyData>, IRigidbodyD
 
     @Override
     public IRigidbodyDataWriter applyWork(double work) {
-        if (work < 0) {
+        /*if (work < 0) {
             EzDebug.warn("to apply invalid work:" + work);
             return this;
-        }
+        }*/
 
         updates.add(d -> {
             double postVelSqLen = 2 * work / d.mass + d.velocity.lengthSquared();
@@ -513,7 +530,7 @@ public class RigidbodyData implements IComponentData<RigidbodyData>, IRigidbodyD
             Vector3d transformedPos = d.localToWorldPos(localPosImmutable, new Vector3d());
             Vector3d movement = toWorldImmutable.sub(transformedPos, new Vector3d());
             //the update pos is done sequently, don't worry the concurrent
-            d.transform.addPosition(movement);
+            d.transform.translate(movement);
         });
         return this;
     }
@@ -527,4 +544,35 @@ public class RigidbodyData implements IComponentData<RigidbodyData>, IRigidbodyD
     public Vector3dc getGravity() { return gravity; }
     @Override
     public void setGravity(Vector3dc newGravity) { gravity.set(newGravity); }  //todo sync*/
+
+
+    public RigidbodyData setPositionImmediately(Vector3dc pos) {
+        transform.setPosition(pos);
+        return this;
+    }
+    public RigidbodyData setPositionImmediately(double x, double y, double z) {
+        transform.setPosition(x, y, z);
+        return this;
+    }
+    public RigidbodyData setScaleImmediately(Vector3dc scale) {
+        transform.setScale(scale);
+        return this;
+    }
+    public RigidbodyData setRotImmediately(Quaterniondc rot) {
+        transform.setRotation(rot);
+        return this;
+    }
+    public RigidbodyData setTransformImmediately(ITransformPrimitive trans) {
+        transform.set(trans);
+        return this;
+    }
+
+    public RigidbodyData setVelocityImmediately(Vector3dc v) { velocity.set(v); return this; }
+    public RigidbodyData setOmegaImmediately(Vector3dc o) { omega.set(o); return this; }
+
+    public RigidbodyData setGravityImmediately(Vector3dc g) {
+        gravity.set(g);
+        return this;
+    }
+    public RigidbodyData setEarthGravityImmediately() { return setGravityImmediately(new Vector3d(0, -9.8, 0)); }
 }

@@ -20,9 +20,9 @@ import net.minecraftforge.network.NetworkHooks;
 
 import java.util.List;
 
-import static com.lancas.vswap.content.WapBlockEntites.VALKYRIEN_BREECH_BE;
+/*import static com.lancas.vswap.content.WapBlockEntites.VALKYRIEN_BREECH_BE;
 
-public class ValkyrienBreech extends BlockPlus implements IBE<ValkyrienBreechBE> /*extends BlockPlus implements IBreech, IBE<>*/ {
+public class ValkyrienBreech extends BlockPlus implements IBE<ValkyrienBreechBE> /.*extends BlockPlus implements IBreech, IBE<>*./ {
     public ValkyrienBreech(Properties p_49795_) { super(p_49795_); }
 
     @Override
@@ -50,3 +50,4 @@ public class ValkyrienBreech extends BlockPlus implements IBE<ValkyrienBreechBE>
 
 
 }
+*/

@@ -679,8 +679,9 @@ public class BallisticsUtil {
         ShipUtil.foreachBlock(projectile, level, (pos, state, be) -> {
             if (state.isAir()) return;
 
-            double curDragFactor = WapBlockInfos.drag_factor.valueOrDefaultOf(state);
-            totalWeight.updateAndGet(v -> v + curDragFactor);
+            //double curDragFactor = WapBlockInfos.drag_factor.valueOrDefaultOf(state);
+            //totalWeight.updateAndGet(v -> v + curDragFactor);
+            double curDragFactor = 1;  //FIXME drag factor is deprecated now
             sumCenter.add(JomlUtil.dCenter(pos).mul(curDragFactor));
         });
         return sumCenter.div(totalWeight.get());

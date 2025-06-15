@@ -2,9 +2,9 @@
 	"credit": "Made with Blockbench",
 	"parent": "minecraft:block/block",
 	"textures": {
-		"2": "vswap:block/cartridge/copper_bottom_ring",
-		"3": "vswap:block/cartridge/he_side",
-		"particle": "vswap:block/cartridge/he_side"
+		"2": "vswap:block/cartridge/he/he_top",
+		"3": "vswap:block/cartridge/he/he_side",
+		"particle": "vswap:block/cartridge/he/he_top"
 	},
 	"elements": [
 		{

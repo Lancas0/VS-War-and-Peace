@@ -142,7 +142,7 @@ public class ClientShardShipScheduler extends MultiTimesScheduler<SandBoxClientT
         );
         ship.addBehaviour(new SandBoxExpireTicker(), new ExpireTickerData(150));
         ship.addBehaviour(new SandBoxTween(), new TweenData(
-            (transform, t01) -> new TransformPrimitive(transform).setScale(1 - t01),
+            TweenData.TweenFunction.Scale,
             2.5
         ));
 

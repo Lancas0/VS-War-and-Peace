@@ -23,4 +23,6 @@ public interface ISandBoxShip {
     public Stream<IComponentBehaviour<?>> allAddedBehaviours();
 
     public void onMarkDeleted();
+
+    public void physTick(double dt);
 }

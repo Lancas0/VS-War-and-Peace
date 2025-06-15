@@ -40,7 +40,7 @@ public class Rotator extends BlockPlus implements IPhysicalBehaviourBlock {
         return BlockPlus.addersIfAbsent(
             Rotator.class,
             () -> List.of(
-                new DefaultCartridgeAdder()
+                new DefaultCartridgeAdder(true)
                 //, EinherjarBlockInfos.mass.getOrCreateExplicit(Rotator.class, state -> 400.0)
             )
         );

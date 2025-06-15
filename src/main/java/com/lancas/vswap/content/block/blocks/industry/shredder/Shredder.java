@@ -3,6 +3,7 @@ package com.lancas.vswap.content.block.blocks.industry.shredder;
 import com.lancas.vswap.content.WapBlockEntites;
 import com.lancas.vswap.content.WapBlocks;
 import com.lancas.vswap.debug.EzDebug;
+import com.lancas.vswap.subproject.blockplusapi.blockplus.adder.DirectionAdder;
 import com.lancas.vswap.util.JomlUtil;
 import com.simibubi.create.AllShapes;
 import com.simibubi.create.content.kinetics.base.DirectionalAxisKineticBlock;
@@ -42,6 +43,10 @@ import java.util.function.Predicate;
 
 
 public class Shredder extends DirectionalAxisKineticBlock implements IBE<ShredderBe> {
+    public static BlockState faceTo(Direction dir) {
+        return WapBlocks.Industrial.Machine.SHREDDER.getDefaultState().setValue(DirectionAdder.FACING, Direction.UP);
+    }
+
     private static final int placementHelperId = PlacementHelpers.register(new PlacementHelper());
 
     public Shredder(Properties properties) {

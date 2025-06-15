@@ -1,20 +1,32 @@
 package com.lancas.vswap.content.block.blocks.industry.dock;
 
 import com.lancas.vswap.content.WapBlockEntites;
-import com.lancas.vswap.content.WapBlocks;
+import com.lancas.vswap.content.block.api.IHoldingShipInteractableBlock;
+import com.lancas.vswap.content.item.items.docker.Docker;
+import com.lancas.vswap.content.block.api.IDockerInteractableBlock;
 import com.lancas.vswap.debug.EzDebug;
 import com.lancas.vswap.foundation.api.Dest;
 import com.lancas.vswap.foundation.handler.multiblock.MultiContainerHandler;
+import com.lancas.vswap.ship.feature.hold.ICanHoldShip;
+import com.lancas.vswap.ship.feature.hold.ShipHoldSlot;
 import com.lancas.vswap.subproject.blockplusapi.blockplus.BlockPlus;
 import com.lancas.vswap.subproject.blockplusapi.blockplus.adder.IBlockAdder;
+import com.lancas.vswap.subproject.blockplusapi.blockplus.adder.InteractableBlockAdder;
 import com.lancas.vswap.subproject.blockplusapi.blockplus.adder.PropertyAdder;
 import com.lancas.vswap.subproject.blockplusapi.blockplus.adder.ShapeByStateAdder;
 import com.lancas.vswap.subproject.blockplusapi.blockplus.ctx.BlockChangeContext;
 import com.lancas.vswap.subproject.blockplusapi.util.Action;
+import com.lancas.vswap.util.ShipUtil;
+import com.lancas.vswap.util.WapColors;
 import com.simibubi.create.foundation.block.IBE;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -22,13 +34,18 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.Shapes;
+import org.jetbrains.annotations.NotNull;
+import org.valkyrienskies.core.api.ships.ClientShip;
+import org.valkyrienskies.core.api.ships.ServerShip;
+import org.valkyrienskies.core.api.ships.Ship;
 
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
-public class Dock extends BlockPlus implements IBE<DockBe> {  //todo a interface DockerInterable, handling interact logic and preview
+public class Dock extends BlockPlus implements IBE<DockBe>, IDockerInteractableBlock, IHoldingShipInteractableBlock {  //todo a interface DockerInterable, handling interact logic and preview
     //public static BooleanProperty PINGPONG = BooleanProperty.create("ping_pong");
     //public static BlockState pingPongState(BlockState pre) { return pre.setValue(PINGPONG, !pre.getValue(PINGPONG)); }
     public static Action<BlockChangeContext, Void> DockOnPlaceAction = new Action<BlockChangeContext, Void>() {
@@ -171,7 +188,8 @@ public class Dock extends BlockPlus implements IBE<DockBe> {  //todo a interface
                         level.setBlockAndUpdate(pos, pingPongState(state));  //update block to make connect texture
                     }*/
                     switch (dir) {
-                        case UP, DOWN -> {}
+                        case UP, DOWN -> {
+                        }
                         case NORTH -> level.setBlockAndUpdate(pos, state.setValue(CONNECT_N, connective));
                         case SOUTH -> level.setBlockAndUpdate(pos, state.setValue(CONNECT_S, connective));
                         case WEST -> level.setBlockAndUpdate(pos, state.setValue(CONNECT_W, connective));
@@ -211,10 +229,14 @@ public class Dock extends BlockPlus implements IBE<DockBe> {  //todo a interface
                 }*/
 
                 @Override
-                public Action<BlockChangeContext, Void> onPlace() { return DockOnPlaceAction; }
+                public Action<BlockChangeContext, Void> onPlace() {
+                    return DockOnPlaceAction;
+                }
 
                 @Override
-                public Action<BlockChangeContext, Void> onRemove() { return DockOnRemoveAction; }
+                public Action<BlockChangeContext, Void> onRemove() {
+                    return DockOnRemoveAction;
+                }
                 /*@Override
                 public Action<BlockChangeContext, Void> onRemove() {
                     return new Action<>() {
@@ -238,6 +260,35 @@ public class Dock extends BlockPlus implements IBE<DockBe> {  //todo a interface
                         }
                     };
                 }*/
+            },
+            new InteractableBlockAdder() {
+                @Override
+                public InteractionResult onInteracted(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+                    if (!(level instanceof ServerLevel sLevel))
+                        return InteractionResult.PASS;
+                    if (!player.isShiftKeyDown())  //player must shiftDown when extract ship
+                        return InteractionResult.PASS;
+
+                    ItemStack handStack = player.getItemInHand(hand);
+                    if (!handStack.isEmpty())
+                        return InteractionResult.PASS;
+
+                    if (!(level.getBlockEntity(pos) instanceof DockBe be)) {
+                        EzDebug.warn("fail to get dockBe at " + pos.toShortString());
+                        return InteractionResult.PASS;
+                    }
+
+                    Dest<ServerShip> shipDest = new Dest<>();
+                    if (be.unboundHoldingShip(false, false, shipDest) && shipDest.hasValue()) {
+                        ItemStack dockerStack = Docker.stackOfVs(sLevel, shipDest.get(), false, false);  //todo use ref and don't delete ship?
+                        if (!dockerStack.isEmpty()) {
+                            player.setItemInHand(hand, dockerStack);
+                            ShipUtil.deleteShip(sLevel, shipDest.get());
+                            return InteractionResult.SUCCESS;
+                        }
+                    }
+                    return InteractionResult.PASS;
+                }
             }
         ));
     }
@@ -268,5 +319,67 @@ public class Dock extends BlockPlus implements IBE<DockBe> {  //todo a interface
     @Override
     public <S extends BlockEntity> BlockEntityTicker<S> getTicker(Level p_153212_, BlockState p_153213_, BlockEntityType<S> p_153214_) {
         return (level, blockPos, blockState, be) -> ((DockBe)be).tick();
+    }
+
+
+    @Override
+    public boolean mayInteract(ItemStack handDocker, Level level, Player player, BlockPos bp, BlockState state) {
+        if (!level.isClientSide)
+            return false;
+        if (player.isShiftKeyDown())
+            return false;  //when player shiftDown, don't interact
+
+        if (!(level.getBlockEntity(bp) instanceof DockBe be)) {
+            EzDebug.warn("fail to get dockBe at " + bp.toShortString());
+            return false;
+        }
+
+        boolean canPutIn = be.tryPutDocker(handDocker, true);
+        be.showOutline(canPutIn ? WapColors.SHOWCASE_BLUE : WapColors.DARK_RED);
+
+        return true;  //always return true so that origin place is blocked
+    }
+    @Override
+    public @NotNull ItemStack interact(ItemStack handDocker, Level level, Player player, BlockPos bp, BlockState state) {
+        if (level.isClientSide)
+            return handDocker;
+        if (player.isShiftKeyDown())
+            return handDocker;  //when player shiftDown, don't interact
+
+        if (!(level.getBlockEntity(bp) instanceof DockBe be)) {
+            EzDebug.warn("fail to get dockBe at " + bp.toShortString());
+            return handDocker;
+        }
+
+        boolean canPutIn = be.tryPutDocker(handDocker, false);
+        return canPutIn ? ItemStack.EMPTY : handDocker;
+    }
+
+    @Override
+    public boolean mayInteract(@NotNull ClientShip holdingShip, ClientLevel level, Player player, BlockPos bp, BlockState state) {
+        if (!(level.getBlockEntity(bp) instanceof DockBe be)) {
+            EzDebug.warn("fail to get dockBe at " + bp.toShortString());
+            return false;
+        }
+
+        int color = be.tryPutShip(holdingShip, true) ? WapColors.HINT_ORANGE : WapColors.DARK_RED;
+        be.showOutline(color);
+
+        return true;
+    }
+    @Override
+    public boolean interact(@NotNull Ship holdingShip, Level level, Player player, BlockPos bp, BlockState state) {
+        if (level.isClientSide)
+            return false;
+        if (!(level.getBlockEntity(bp) instanceof DockBe be)) {
+            EzDebug.warn("fail to get dockBe at " + bp.toShortString());
+            return false;
+        }
+
+        if (be.tryPutShip(holdingShip, false)) {
+            ((ICanHoldShip)player).unholdShipInServer(ShipHoldSlot.MainHand, true);
+            return true;
+        }
+        return false;
     }
 }

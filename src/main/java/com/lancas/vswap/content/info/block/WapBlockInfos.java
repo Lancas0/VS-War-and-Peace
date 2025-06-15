@@ -86,9 +86,9 @@ public class WapBlockInfos {
     //default 10KJ/xxx
         //hardness = BlockInfo.createAdvancedExplicit("hardness", state -> 10E3,  unitedFormatter("J/m", true).andThen(grey)),
         //toughness = BlockInfo.createAdvancedExplicit("toughness", state -> 10E3, unitedFormatter("J/m^3", true).andThen(grey)),
-        ArmourRhae = new BlockInfoRegistry<Double>("armour_rhae").registryAdvancedExplicit(Component.translatable("info.vswap.armour_rhae"), s -> 0.1, v -> StrUtil.F2(v) + "MCM"),
-        ArmourAbsorbRatio = new BlockInfoRegistry<Double>("armour_ab_ratio").registryAdvancedExplicit(Component.translatable("info.vswap.armour_ab_ratio"), s -> 1.0, StrUtil::F2),
-        drag_factor = new BlockInfoRegistry<Double>("drag_factor").registryDefinedExplicit(Component.translatable("info.vswap.drag_factor"), state -> 1.0,  unitedFormatter("", false).andThen(grey)),
+        ArmourRhae = new BlockInfoRegistry<Double>("armour_rhae").registryDefinedExplicit(Component.translatable("info.vswap.armour_rhae"), s -> 0.1, v -> StrUtil.F2(v) + "MCM"),
+        ArmourAbsorbRatio = new BlockInfoRegistry<Double>("armour_ab_ratio").registryDefinedExplicit(Component.translatable("info.vswap.armour_ab_ratio"), s -> 1.0, StrUtil::F2),
+        //drag_factor = new BlockInfoRegistry<Double>("drag_factor").registryDefinedExplicit(Component.translatable("info.vswap.drag_factor"), state -> 1.0,  unitedFormatter("", false).andThen(grey)),
         //ap_area = new BlockInfoRegistry<Double>("ap_area").registryDefinedAdvancedExplicit(Component.literal("info.vswap.ap_area"), state -> 1.0, unitedFormatter("m^2", false).andThen(grey)),
 
         Normalization = new BlockInfoRegistry<Double>("normalization").registryDefinedExplicit(Component.translatable("info.vswap.normalization"), state -> 0.0, percentFormatter()),

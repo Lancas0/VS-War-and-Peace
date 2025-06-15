@@ -98,7 +98,7 @@ public class WrappedVsShip implements IServerSandBoxShip, IClientSandBoxShip, IS
         rigidbody.serverTick(level);
     }
     @Override
-    public void physTick() { }
+    public void physTick(double dt) { }
 
 
     @Override

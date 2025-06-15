@@ -32,18 +32,22 @@ public class FixedConstraint extends AbstractBiConstraint {
         localARot.set(inLocalARot); invLocalBRot.set(inLocalBRot).invert();
     }
 
-    public void setLocalAttAPos(Vector3dc p) {
+    public FixedConstraint setLocalAttAPos(Vector3dc p) {
         synchronized (mutex) { localAttAPos.set(p); }
+        return this;
     }
-    public void setLocalAttBPos(Vector3dc p) {
+    public FixedConstraint setLocalAttBPos(Vector3dc p) {
         synchronized (mutex) { localAttBPos.set(p); }
+        return this;
     }
 
-    public void setLocalBRot(Quaterniond q) {
+    public FixedConstraint setLocalBRot(Quaterniond q) {
         synchronized (mutex) { invLocalBRot.set(q).invert(); }
+        return this;
     }
-    public void setLocalARot(Quaterniond q) {
+    public FixedConstraint setLocalARot(Quaterniond q) {
         synchronized (mutex) { localARot.set(q).invert(); }
+        return this;
     }
 
 
@@ -75,3 +79,6 @@ public class FixedConstraint extends AbstractBiConstraint {
         }
     }
 }
+
+
+

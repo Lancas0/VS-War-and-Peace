@@ -41,6 +41,8 @@ public class StrUtil {
         return String.format("(%.2f -> %.2f, %.2f -> %.2f)", b.getMinX(), b.getMaxX(), b.getMinZ(), b.getMaxZ());
     }
 
+    public static String F4(double d) { return String.format("%.4f", d); }
+
     public static String F0(float v) {
         return String.format("%.0f", v);
     }

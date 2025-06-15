@@ -42,6 +42,11 @@ public class BallisticInitialStateSubData implements IComponentData<BallisticIni
             return null;
         return fromHeadToBallisticPoses.get(fromHead);
     }
+    public @Nullable BallisticPos getPosFromTail(int fromTail) {
+        if (fromTail < 0 || fromTail >= fromHeadToBallisticPoses.size())
+            return null;
+        return fromHeadToBallisticPoses.get(fromHeadToBallisticPoses.size() - fromTail - 1);
+    }
 
     private BallisticInitialStateSubData() {}
     public static BallisticInitialStateSubData createDefault() { return new BallisticInitialStateSubData(); }
@@ -57,11 +62,14 @@ public class BallisticInitialStateSubData implements IComponentData<BallisticIni
     public void foreachBallisticBlock(SandBoxServerShip ship, TriConsumer<BallisticPos, BlockState, ISandBoxBallisticBlock> consumer) {
         fromHeadToBallisticPoses.forEach(ballisticPos -> {
             BlockState state = ship.getBlockCluster().getDataReader().getBlockState(ballisticPos.localPos());
-            if (state == null || state.isAir() || !(state.getBlock() instanceof ISandBoxBallisticBlock bb)) {
-                EzDebug.warn("fail to get ballistic state at " + ballisticPos);
+            if (state == null || state.isAir()) {
+                EzDebug.warn("state at " + ballisticPos + " is null or air!");
                 return;
             }
-            consumer.accept(ballisticPos, state, bb);
+
+            if (state.getBlock() instanceof ISandBoxBallisticBlock bb) {
+                consumer.accept(ballisticPos, state, bb);
+            }
         });
     }
 
@@ -104,12 +112,13 @@ public class BallisticInitialStateSubData implements IComponentData<BallisticIni
         BallisticPos[] ballisticPoses = new BallisticPos[blockReader.getBlockCnt()];
         ship.getBlockCluster().getDataReader().seekAllBlocks((localPos, state) -> {
             Block block = state.getBlock();
-            if (block instanceof ISandBoxBallisticBlock) {
-                int fromHead = (int)localPos.gridDistance(head);//head.sub(localPos, new Vector3i());
-                int fromTail = (int)localPos.gridDistance(tail);
+            /*if (block instanceof ISandBoxBallisticBlock) {
 
-                ballisticPoses[fromHead] = new BallisticPos(new Vector3i(localPos), fromHead, fromTail);
-            }
+            }*/
+            int fromHead = (int)localPos.gridDistance(head);//head.sub(localPos, new Vector3i());
+            int fromTail = (int)localPos.gridDistance(tail);
+
+            ballisticPoses[fromHead] = new BallisticPos(new Vector3i(localPos), fromHead, fromTail);
         });
 
         fromHeadToBallisticPoses.clear();

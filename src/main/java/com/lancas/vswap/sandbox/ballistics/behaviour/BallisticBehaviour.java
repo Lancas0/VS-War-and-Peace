@@ -1,10 +1,11 @@
 package com.lancas.vswap.sandbox.ballistics.behaviour;
 
-import com.lancas.vswap.WapCommonConfig;
+import com.lancas.vswap.WapConfig;
 import com.lancas.vswap.debug.EzDebug;
 import com.lancas.vswap.foundation.api.Dest;
 import com.lancas.vswap.sandbox.ballistics.data.BallisticData;
 import com.lancas.vswap.sandbox.ballistics.data.BallisticFlyingContext;
+import com.lancas.vswap.sandbox.ballistics.data.BallisticPos;
 import com.lancas.vswap.sandbox.ballistics.trigger.SandBoxTriggerInfo;
 import com.lancas.vswap.subproject.sandbox.component.behviour.SandBoxExpireTicker;
 import com.lancas.vswap.subproject.sandbox.component.behviour.abs.ServerOnlyBehaviour;
@@ -28,7 +29,7 @@ public class BallisticBehaviour extends ServerOnlyBehaviour<BallisticData> {
     public Class<BallisticData> getDataType() { return BallisticData.class; }
 
     @Override
-    public synchronized void physTick() {
+    public synchronized void physTick(double dt) {
         if (data.terminated) return;
 
         var rigidbody = ship.getRigidbody();
@@ -49,23 +50,23 @@ public class BallisticBehaviour extends ServerOnlyBehaviour<BallisticData> {
         //BallisticFlyingContext flyingCtx = BallisticFlyingContext.getDefault();
 
         data.initialStateData.foreachBallisticBlock(ship, (locPos, state, bb) -> {
-            bb.physTick(ship, data);
+            bb.physTick(dt, ship, data);
         });
 
+        //apply linear air drag
+        Vector3dc vel = rigidReader.getVelocity();
+        rigidWriter.applyWorldForce(vel.mul(-0.5 * WapConfig.airDragFactor * vel.length(), new Vector3d()));
 
 
-        /*Vector3dc vel = rigidReader.getVelocity();
-
-
-        if (vel.isFinite() && vel.lengthSquared() > 100 && WapCommonConfig.projectileRandomDisplacement > 1E-10) {
-            Quaterniond displacement = RandUtil.nextQuaterniond(0, WapCommonConfig.projectileRandomDisplacement);
+        if (vel.isFinite() && vel.lengthSquared() > 100 && WapConfig.projectileRandomDisplacement > 1E-10) {
+            Quaterniond displacement = RandUtil.nextQuaterniond(0, WapConfig.projectileRandomDisplacement);
             Vector3d displacedVel = displacement.transform(vel, new Vector3d());
 
             Vector3d euler = new Quaterniond().rotateTo(JomlUtil.d(data.initialStateData.localForward), displacedVel).getEulerAnglesXYZ(new Vector3d());
             Quaterniond q = new Quaterniond().rotateXYZ(euler.x, euler.y, 0);
             rigidWriter.updateVelocity(v -> displacement.transform(vel, new Vector3d()));
-            rigidWriter.setRotation(q);
-        }*/
+            //rigidWriter.setRotation(q);
+        }
 
         /*synchronized (data.initialStateData.ballisticBlockLocPoses) {
 
@@ -75,12 +76,23 @@ public class BallisticBehaviour extends ServerOnlyBehaviour<BallisticData> {
 
     @Override
     public synchronized void serverTick(ServerLevel level) {
+        if (data.firstTick) {
+            ship.addBehaviour(new SandBoxExpireTicker(), new ExpireTickerData(WapConfig.flyingProjectileLifeSpan));
+            data.firstTick = false;
+        }
+
+        IRigidbodyDataReader rigidReader = ship.getRigidbody().getDataReader();
+        IRigidbodyDataWriter rigidWriter = ship.getRigidbody().getDataWriter();
+
         //EzDebug.log("ballstic ticking");
         if (data.terminated) {
-            ship.getRigidbody()
-                .getDataWriter()  //avoid some component still try to set vel/gravity after terminated.
+            rigidWriter  //avoid some component still try to set vel/gravity after terminated.
                 .setNoGravity()
-                .setVelocity(new Vector3d(0, 0, 0));
+                .setVelocity(0, 0, 0);
+
+            BallisticPos headPos = data.initialStateData.getPosFromHead(0);
+            if (headPos != null && data.stuckHitPos != null)
+                rigidWriter.moveLocalPosToWorld(headPos.localPos(), data.stuckHitPos);
             return;
         }
 
@@ -89,8 +101,7 @@ public class BallisticBehaviour extends ServerOnlyBehaviour<BallisticData> {
             BarrelCtxUpdateHandler.updateBarrelCtx(level, ship, data);
 
         //EzDebug.log("barrel ctx updated");
-        IRigidbodyDataReader rigidReader = ship.getRigidbody().getDataReader();
-        IRigidbodyDataWriter rigidWriter = ship.getRigidbody().getDataWriter();
+
 
         if (!data.barrelCtx.isAbsoluteExitBarrel()) {
             ship.getRigidbody().getDataWriter().setNoGravity();
@@ -110,7 +121,7 @@ public class BallisticBehaviour extends ServerOnlyBehaviour<BallisticData> {
         data.initialStateData.foreachBallisticBlock(ship, (ballisticPos, state, bb) -> {
             bb.serverTick(level, ship, ballisticPos);
             bb.appendTriggerInfos(level, ballisticPos, state, ship, infos);
-            bb.modifyFlyingContext(level, ship, ballisticPos, state, flyingCtx);
+            bb.modifyFlyingContext(level, ship, data, ballisticPos, state, flyingCtx);
         });
 
         rigidWriter.setGravity(flyingCtx.gravity);
@@ -123,25 +134,22 @@ public class BallisticBehaviour extends ServerOnlyBehaviour<BallisticData> {
         Vector3d euler = new Quaterniond().rotateTo(JomlUtil.d(data.initialStateData.localForward), vel).getEulerAnglesXYZ(new Vector3d());
         Quaterniond q = new Quaterniond().rotateXYZ(euler.x, euler.y, 0);
         rigidWriter.setRotation(q);*/
-        Vector3d euler = new Quaterniond().rotateTo(JomlUtil.d(data.initialStateData.localForward), vel).getEulerAnglesYXZ(new Vector3d());
-        Quaterniond q = new Quaterniond().rotationYXZ(euler.y, euler.x, 0);
-        rigidWriter.setRotation(q);
+        //Vector3d euler = new Quaterniond().rotateTo(JomlUtil.d(data.initialStateData.localForward), vel).getEulerAnglesYXZ(new Vector3d());
+        //Quaterniond q = new Quaterniond().rotationYXZ(euler.y, euler.x, 0);
+        rigidWriter.setRotation(JomlUtil.swingYXRotateTo(JomlUtil.d(data.initialStateData.localForward), vel, new Quaterniond()));
         /*Vector3d up = rigidReader.localToWorldNoScaleDir(new Vector3d(0, 1, 0));
         rigidWriter.setRotation(new Quaterniond().lookAlong(vel, up));*/
 
         if (vel.isFinite() && vel.lengthSquared() > 100 && flyingCtx.displacementIntensity > 1E-10) {
             Quaterniond displacement = RandUtil.nextQuaterniond(0, flyingCtx.displacementIntensity);
             Vector3d displacedVel = displacement.transform(vel, new Vector3d());
-            rigidWriter.updateVelocity(v -> displacement.transform(vel, new Vector3d()));
+            rigidWriter.updateVelocity(v -> displacement.transform(v, new Vector3d()));
         }
 
         //Quaterniond q = new Quaterniond().look
         //rigidWriter.setRotation(JomlUtil.swingRotateTo(new Vector3d(0, 0, 1), vel, new Quaterniond()));
 
         AtomicBoolean needTerminate = new AtomicBoolean(false);
-
-        PenetrateHandler.handle(level, ship, data, needTerminate);
-
         data.initialStateData.foreachBallisticBlock(ship, (locPos, state, bb) -> {
             Dest<Boolean> curNeedTerminate = new Dest<>(false);
             bb.doTerminalEffect(level, ship, locPos, state, infos, curNeedTerminate);
@@ -149,6 +157,12 @@ public class BallisticBehaviour extends ServerOnlyBehaviour<BallisticData> {
             if (curNeedTerminate.get())
                 needTerminate.set(true);
         });
+
+        AtomicBoolean penetrateTerminate = new AtomicBoolean(false);
+        PenetrateHandler.handle(level, ship, data, penetrateTerminate);
+
+        if (penetrateTerminate.get())
+            needTerminate.set(true);
 
 
         /*for (SandBoxTriggerInfo info : infos) {
@@ -175,8 +189,8 @@ public class BallisticBehaviour extends ServerOnlyBehaviour<BallisticData> {
             data.terminated = true;
             ship.getRigidbody().getDataWriter()
                 .setNoGravity()
-                .setVelocity(new Vector3d(0, 0, 0));  //disable gravity
-            ship.addBehaviour(new SandBoxExpireTicker(), new ExpireTickerData(600));  //after 10s expire
+                .setVelocity(0, 0, 0);  //disable gravity
+            ship.addBehaviour(new SandBoxExpireTicker(), new ExpireTickerData(WapConfig.stoppedProjectileLifeSpan));
             //SandBoxServerWorld.getOrCreate(level).markShipDeleted(ship.getUuid());
             EzDebug.highlight("terminate this ship");
         }

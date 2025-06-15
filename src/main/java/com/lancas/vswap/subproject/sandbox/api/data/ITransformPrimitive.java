@@ -3,6 +3,8 @@ package com.lancas.vswap.subproject.sandbox.api.data;
 import org.joml.*;
 
 public interface ITransformPrimitive {
+    public TransformPrimitive copy();
+
     public Vector3dc getPosition();
     public Quaterniondc getRotation();
     public Vector3dc getScale();

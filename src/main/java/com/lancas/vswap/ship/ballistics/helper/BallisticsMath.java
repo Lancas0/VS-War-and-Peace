@@ -1,6 +1,6 @@
 package com.lancas.vswap.ship.ballistics.helper;
 
-import com.lancas.vswap.WapCommonConfig;
+import com.lancas.vswap.WapConfig;
 import com.lancas.vswap.content.info.block.WapBlockInfos;
 import com.lancas.vswap.debug.EzDebug;
 import com.lancas.vswap.foundation.api.math.ForceOnPos;
@@ -34,11 +34,11 @@ public class BallisticsMath {
         return getFatalKEByRad(armourHard, Math.toRadians(incidenceDeg));
     }
     public static double getFatalKEByRad(double armourHard, double incidenceRad) {
-        if (!WapCommonConfig.isFatalKEOn()) {
+        if (!WapConfig.isFatalKEOn()) {
             //EzDebug.warn("it's better to not call getFatalKE method when fatalKE is disabled.");
             return Double.MAX_VALUE;
         }
-        return WapCommonConfig.rawFatalPPRatio * armourHard * (1.0 / Math.cos(incidenceRad));
+        return WapConfig.rawFatalPPRatio * armourHard * (1.0 / Math.cos(incidenceRad));
     }
     public static double calIncidenceRad(Vector3dc incVector, Vector3dc normal) {
         Vector3d negNormal = normal.normalize(new Vector3d()).negate();

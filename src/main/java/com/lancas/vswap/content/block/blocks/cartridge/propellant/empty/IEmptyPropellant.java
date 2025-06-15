@@ -13,5 +13,5 @@ public interface IEmptyPropellant extends IPropellant {
         return state;
     }
     @Override
-    public default double getEnergy(BlockState state) { return 0; }
+    public default double getSPE(BlockState state) { return 0; }
 }

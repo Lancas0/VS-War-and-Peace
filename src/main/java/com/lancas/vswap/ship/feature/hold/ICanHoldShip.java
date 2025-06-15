@@ -8,12 +8,12 @@ import org.valkyrienskies.core.api.ships.ServerShip;
 
 //todo shift to lower the ship
 public interface ICanHoldShip {
-    public void getHoldingShipId(ShipHoldSlot slot, Dest<Long> holdingShipIdDest);
+    public @Nullable Long getHoldingShipId(ShipHoldSlot slot);
     public boolean isShipHolding(long shipId);
     public boolean isHoldingShip(ShipHoldSlot slot);
 
     public boolean tryHoldInServer(ShipHoldSlot slot, long shipId, boolean syncClient);
-    public void unholdShipInServer(ShipHoldSlot slot, boolean syncClient, @Nullable Dest<Long> prevHoldShipIdDest);
+    public @Nullable Long unholdShipInServer(ShipHoldSlot slot, boolean syncClient);
 
     public void syncHoldShipInClient(ShipHoldSlot slot, long newHoldShipId, BlockPos holdBpInShip, Direction forwardInShip);
     //todo carry ship on back

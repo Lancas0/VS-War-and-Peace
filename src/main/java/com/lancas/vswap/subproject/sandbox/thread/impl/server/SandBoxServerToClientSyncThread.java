@@ -10,6 +10,9 @@ import java.util.TimerTask;
 import static com.lancas.vswap.subproject.sandbox.event.SandBoxEventMgr.onServerShipTransformDirty;
 
 public class SandBoxServerToClientSyncThread extends TimerBasedThread<SandBoxServerWorld> {
+    protected SandBoxServerWorld world;
+    public SandBoxServerToClientSyncThread(SandBoxServerWorld inWorld) { world = inWorld; }
+
     @Override
     protected String getTimerName() { return "sandbox-server-sync-thread"; }
     @Override

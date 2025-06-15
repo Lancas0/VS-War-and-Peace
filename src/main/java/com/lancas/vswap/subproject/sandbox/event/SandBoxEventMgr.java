@@ -102,7 +102,7 @@ public class SandBoxEventMgr {
             if (!(world instanceof SandBoxServerWorld)) return;
 
             NetworkHandler.sendToAllPlayers(
-                new SyncRemoveClientRendererPacketS2C(VSGameUtilsKt.getDimensionId(world.getMcLevel()), ship.getUuid())
+                new SyncRemoveClientRendererPacketS2C(VSGameUtilsKt.getDimensionId(world.getWorld()), ship.getUuid())
             );
         });
 

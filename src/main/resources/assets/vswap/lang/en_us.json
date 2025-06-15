@@ -1,64 +1,158 @@
 {
-  "block.vswap.shelled_propellant": "shelled propellant",
-  "block.vswap.rotator": "rotate test",
-  "block.vswap.wind_cap": "wind_cap",
-  "block.vswap.gauge12": "gauge 12",
-  "block.vswap.ap_core_warhead": "hard core ap warhead",
-  "block.vswap.apfsds_warhead": "APFSDS warhead",
-  "block.vswap.apfsds_quarter_shell": "APFSDS quarter supporting sabot",
+  "key.vswap.scope_key": "Scope Key",
+  "key.vswap.throw_key": "Throw Key",
+  "key.vswap.carry_to_back_key": "Carry To Back Key",
+  "key.vswap.switch_key": "Switch Key",
+
+  "block.vswap.primer": "Primer",
+  "block.vswap.torpedo_primer": "Torpedo Primer",
+
+
+  "block.vswap.shelled_propellant": "Shelled propellant",
+  "block.vswap.empty_shelled_propellant": "Empty shelled propellant",
+  "block.vswap.gauge12": "Gauge 12",
+  "block.vswap.ccc": "Combustible Case Propellant",
+
+
+  "block.vswap.warhead_apcr": "APCR warhead",
+  "block.vswap.warhead_apds": "APDS warhead",
+  "block.vswap.apds_quarter_shell": "APDS quarter supporting sabot",
   "block.vswap.blunt_ap_warhead": "blunt_ap_warhead",
-  "block.vswap.he_warhead": "he warhead",
-  "block.vswap.impact_fuze": "impact fuze",
-  "block.vswap.primer": "primer",
-  "block.vswap.tail_fin": "tail fin",
-  "block.vswap.shell_frame": "shell frame",
+  "block.vswap.he_warhead": "HE warhead",
+  "block.vswap.warhead_heat": "HEAT warhead",
+  "block.vswap.impact_fuze": "Impact Fuze",
+  "block.vswap.shell_frame": "Shell Frame",
 
-  "block.vswap.mech_scope_block": "mech scope block",
-  "block.vswap.tele_scope_block": "tele scope block",
-  "block.vswap.activator": "activator",
+  "block.vswap.rotator": "Rotate Test",
+  "block.vswap.wind_cap": "Wind Cap",
+  "block.vswap.tail_fin": "Tail Fin",
+  "block.vswap.glider": "Glider",
+  "block.vswap.glider_wing": "Glider Wing",
+  "block.vswap.rocket_booster": "Rocket Booster",
+  "block.vswap.floating_chamber": "Floating Chamber",
 
-  "block.vswap.artillery_plate": "artillery plate",
-  "block.vswap.artillery_barrel": "artillery barrel",
-  "block.vswap.cartridge_rail": "cartridge rail",
-  "block.vswap.artillery_part1": "artillery part1",
+  "block.vswap.mech_scope_block": "Scope Block",
+  "block.vswap.tele_scope_block": "Tele Scope Block",
+  "block.vswap.activator": "Activator",
 
-  "block.vswap.ejecting_breech": "breech",
-  "block.vswap.dropping_breech": "dropping breech",
-  "block.vswap.rapid_breech": "rapid breech",
-  "block.vswap.hell_breech": "hell breech",
-  "block.vswap.valkyrien_breech": "vs breech",
-  "block.vswap.artillery_door": "artillery door",
+  "block.vswap.artillery_plate": "Artillery Plate",
+  "block.vswap.artillery_barrel": "Artillery Barrel",
+  "block.vswap.cartridge_rail": "Cartridge Rail",
+  "block.vswap.artillery_part1": "Artillery Part1",
 
-  "block.vswap.projection_center": "project center (technological item)",
-  "block.vswap.vs_projector": "vs projector(deving)",
+  "block.vswap.ejecting_breech": "Breech",
+  "block.vswap.dropping_breech": "Dropping Breech",
+  "block.vswap.rapid_breech": "Rapid Breech",
+  "block.vswap.hell_breech": "Hell Breech",
+  "block.vswap.valkyrien_breech": "VS Breech",
+  "block.vswap.artillery_door": "Artillery Door",
 
-  "block.vswap.shredder": "shredder",
+  "block.vswap.projection_center": "Project Center",
+  "block.vswap.vs_projector": "VS Projector",
+  "block.vswap.projector_len": "Projector Prisms",
+  "block.vswap.carbon_fiber_sail": "Carbon Fiber Sail",
 
-  "block.vswap.dock": "dock",
-  "block.vswap.green_print_holder": "dock green print holder",
+  "block.vswap.shredder": "Shredder",
+
+  "block.vswap.dock": "Dock",
+  "block.vswap.green_print_holder": "Dock Green Print Holder",
 
 
-  "item.vswap.vswap_wand": "vswap wand",
-  "item.vswap.docker": "docker",
-  "item.vswap.green_print": "green print",
-  "item.vswap.ms_item": "material",
-  "item.vswap.breech_unloader": "breech unloader",
+  "item.vswap.vswap_wand": "VsWap Wand",
+  "item.vswap.docker": "Docker",
+  "item.vswap.green_print": "Green Print",
+  "item.vswap.ms_item": "Material",
+  "item.vswap.breech_unloader": "Breech Unloader",
 
-  "info.vswap.mass": "mass",
+  "info.vswap.mass": "Mass",
   "info.vswap.armour_rhae": "RHAe",
-  "info.vswap.armour_ab_ratio": "armour absorb ratio",
-  "info.vswap.drag_factor": "drag factor",
-  "info.vswap.ap_area": "ap area",
-  "info.vswap.oblique_degree": "oblique degree",
-  "info.vswap.propellant_power": "propellant power",
-  "info.vswap.std_propellant": "standard propellant power",
-  "info.vswap.normalization": "normalization",
-  "info.vswap.critical_degree": "critical degree",
-  "info.vswap.penetration_mul": "penetration multiplier",
+  "info.vswap.armour_ab_ratio": "Armour Absorb Ratio",
+  "info.vswap.drag_factor": "Drag Factor",
+  "info.vswap.ap_area": "AP area",
+  "info.vswap.oblique_degree": "Oblique Degree",
+  "info.vswap.propellant_power": "Propellant Power",
+  "info.vswap.std_propellant": "Standard Propellant Power",
+  "info.vswap.normalization": "Normalization",
+  "info.vswap.critical_degree": "Critical Degree",
+  "info.vswap.current_degree": "Current Degree",
+  "info.vswap.penetration_mul": "Penetration Multiplier",
   "info.vswap.ke_destruction_scalar": "KE-Destruction Scalar",
 
-  "term.vswap.ricochet_probability": "ricochet probability",
-  "term.vswap.fatal_propellant": "fatal propellant power",
-  "term.vswap.after_normalization_rhae": "after normalization rhae"
+  "term.vswap.ricochet_probability": "Ricochet Probability",
+  "term.vswap.fatal_propellant": "Fatal Propellant Power",
+  "term.vswap.after_normalization_rhae": "After Normalization RHAe",
 
+  "msg.vswap.hold_ship.failed.by_tp_nonnull": "The ship is controlled by a block or other player.",
+  "msg.vswap.hold_ship.failed.by_no_holdable_attachment": "The ship have no hold pivot. Try to use VsWapWand on this ship.",
+  "msg.vswap.hold_ship.failed.by_has_constraint": "The ship has at least one constraint, thus you can't hold it.'",
+  "msg.vswap.hold_ship.drop.by_has_item_in_hand": "The holden ship is dropped because you are holding a item in hand.",
+  "msg.vswap.green_print.has_already_ship_data": "The greenPrint has already recorded a ship.",
+
+
+
+  "vswap.ponder.industry/carbon_fiber_sail.header" : "Carbon Fiber Sail",
+  "vswap.ponder.industry/carbon_fiber_sail.text1" : "It takes 8 traditional sail blocks to start a Windmill Bearing.",
+  "vswap.ponder.industry/carbon_fiber_sail.text2" : "One Carbon Fiber Sail is equals to 4 sail blocks.",
+
+  "vswap.ponder.industry/gp_projector_basic.header": "GreenPrint & VS Projector Basic",
+  "vswap.ponder.industry/gp_projector_basic.text_1": "Use empty GreenPrint on VS Projector, a ship with Projection Center will arise.",
+  "vswap.ponder.industry/gp_projector_basic.text_2": "You can start building your ship from Projection Center.",
+  "vswap.ponder.industry/gp_projector_basic.text_3": "You can scale the ship by interacting with ProjectorLen",
+  "vswap.ponder.industry/gp_projector_basic.text_4": "You can also raise or lower the Projection Ship by interacting with value box in sides of Vs Projector",
+
+  "vswap.ponder.industry/extract_and_insert_gp.header": "Extract And Insert GreenPrint",
+
+  "vswap.ponder.industry/gp_use_on_ship.header": "Use GreenPrint on Ship",
+  "vswap.ponder.industry/gp_use_on_ship.text_1": "Use GreenPrint on a ship, the ship can be saved.",
+  "vswap.ponder.industry/gp_use_on_ship.text_2": "Use GreenPrint on VS Projector, it will make a Projection Ship, same to the ship saved by GreenPrint.",
+
+  "vswap.ponder.industry/projector_rotation.header": "VS Projector Rotation",
+
+  "vswap.ponder.artillery/artillery_assembly.header": "Artillery Assembly",
+  "vswap.ponder.artillery/artillery_assembly.text_1": "You can use any Phys Bearing to control the artillery",
+
+  "vswap.ponder.artillery/artillery_docker_loading.header": "Artillery Loading",
+  "vswap.ponder.artillery/artillery_docker_loading.text_1": "There is multiply ways to load a artillery",
+  "vswap.ponder.artillery/artillery_docker_loading.text_2": "You can use Holdable VS Ship or Docker to load the artillery",
+  "vswap.ponder.artillery/artillery_docker_loading.text_3": "Just use it on Breech",
+  "vswap.ponder.artillery/artillery_docker_loading.text_4": "The projectile part will fly away",
+  "vswap.ponder.artillery/artillery_docker_loading.text_5": "The remain shell will be ejected",
+
+  "vswap.ponder.artillery/artillery_arm_loading.header": "Artillery Auto Loading",
+  "vswap.ponder.artillery/artillery_arm_loading.text_1": "You can also load with Mechanical Arm",
+
+  "vswap.ponder.artillery/artillery_phys_loading.header": "Artillery Phys Based Loading",
+  "vswap.ponder.artillery/artillery_phys_loading.text_1": "You can also load with Any Phys Piston",
+
+
+  "vswap.ponder.munition/primer_general.header": "Primers",
+  "vswap.ponder.munition/primer_general.text_1": "Different primers have different functionality",
+  "vswap.ponder.munition/primer_general.text_2": "Basic Primer propels the projectile by gunpowder gas.",
+  "vswap.ponder.munition/primer_general.text_3": "Torpedo Primer keep whole munition and fired at low velocity",
+  "vswap.ponder.munition/primer_general.text_4": "Rocket Booster keep whole munition and fired at mid velocity, starting boosting after reaching max height",
+
+
+  "vswap.ponder.munition/munition_structure.header": "Munition Structure",
+  "vswap.ponder.munition/munition_structure.text_1": "There must be a Primer at the bottom of a munition",
+  "vswap.ponder.munition/munition_structure.text_2": "You can customize your munition with Munition Attach",
+  "vswap.ponder.munition/munition_structure.text_3": "The Fuze or AP warhead must be at the top of a munition to function",
+
+  "vswap.ponder.munition/munition_ap.header": "AP Warhead",
+  "vswap.ponder.munition/munition_ap.text_1": "AP's terminal effect is decided by warhead and kinetic energy",
+  "vswap.ponder.munition/munition_ap.text_2": "APFSDS has high Penetration Ratio and low Destruction Factor",
+  "vswap.ponder.munition/munition_ap.text_3": "Thus it's able to penetrate long distances, but causes less area of destruction",
+  "vswap.ponder.munition/munition_ap.text_4": "APCR has mid Penetration Ratio and mid Destruction Factor",
+  "vswap.ponder.munition/munition_ap.text_5": "Thus APCR penetrates a certain distance while inflicting a certain amount of damage",
+  "vswap.ponder.munition/munition_ap.text_6": "Blocks can also be used as AP warhead, with low Penetration Ratio and high Destruction Factor",
+  "vswap.ponder.munition/munition_ap.text_7": "Animation is for reference only, please refer to the actual effect",
+
+  "vswap.ponder.munition/munition_glider.header": "Glider",
+  "vswap.ponder.munition/munition_glider.text_1": "Projectile effect by gravity during flight",
+  "vswap.ponder.munition/munition_glider.text_2": "Glider will expand the wings and start gliding when reaching max height",
+
+
+  "vswap.ponder.munition/munition_tf.header": "Tail Fin",
+  "vswap.ponder.munition/munition_tf.text_1": "Projectile effect by air drag during flight",
+  "vswap.ponder.munition/munition_tf.text_2": "Which may cause displacement",
+  "vswap.ponder.munition/munition_tf.text_3": "With Fin Tail, wind drag is greatly decreased, which make projectile stable"
 }

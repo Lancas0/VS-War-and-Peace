@@ -1,9 +1,6 @@
 package com.lancas.vswap.sandbox.ballistics.data;
 
-import com.lancas.vswap.WapCommonConfig;
-import com.lancas.vswap.util.JomlUtil;
-import org.joml.Quaterniond;
-import org.joml.Quaterniondc;
+import com.lancas.vswap.WapConfig;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
 
@@ -17,6 +14,6 @@ public class BallisticFlyingContext {
     }
 
     public static BallisticFlyingContext getDefault() {
-        return new BallisticFlyingContext(new Vector3d(0, -9.8, 0), WapCommonConfig.projectileRandomDisplacement);
+        return new BallisticFlyingContext(new Vector3d(0, -9.8, 0), WapConfig.projectileRandomDisplacement);
     }
 }

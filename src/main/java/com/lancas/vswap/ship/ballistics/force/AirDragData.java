@@ -9,6 +9,7 @@ import com.lancas.vswap.util.MathUtil;
 import com.lancas.vswap.util.ShipUtil;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
+import org.apache.commons.lang3.NotImplementedException;
 import org.joml.Matrix4dc;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
@@ -80,6 +81,7 @@ public class AirDragData {
     }
 
 
+    @Deprecated
     private static Vector3d calAirDragCenter(ServerLevel level, ServerShip projectile) {
         //todo will excess the max?
         AtomicReference<Double> totalWeight = new AtomicReference<>((double) 0);
@@ -87,7 +89,7 @@ public class AirDragData {
         ShipUtil.foreachBlock(projectile, level, (pos, state, be) -> {
             if (state.isAir()) return;
 
-            double curDragFactor = WapBlockInfos.drag_factor.valueOrDefaultOf(state);
+            double curDragFactor = 1;//WapBlockInfos.drag_factor.valueOrDefaultOf(state);
             totalWeight.updateAndGet(v -> v + curDragFactor);
             sumCenter.add(JomlUtil.dCenter(pos).mul(curDragFactor));
         });

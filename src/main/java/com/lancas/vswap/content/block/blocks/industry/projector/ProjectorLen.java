@@ -2,8 +2,6 @@ package com.lancas.vswap.content.block.blocks.industry.projector;
 
 
 import com.lancas.vswap.content.WapBlockEntites;
-import com.lancas.vswap.content.block.blockentity.ProjectorLenBe;
-import com.lancas.vswap.debug.EzDebug;
 import com.lancas.vswap.subproject.blockplusapi.blockplus.BlockPlus;
 import com.lancas.vswap.subproject.blockplusapi.blockplus.adder.IBlockAdder;
 import com.lancas.vswap.subproject.blockplusapi.blockplus.adder.InteractableBlockAdder;
@@ -31,7 +29,7 @@ public class ProjectorLen extends BlockPlus implements IBE<ProjectorLenBe> {
     @Override
     public List<IBlockAdder> getAdders() {
         return BlockPlus.addersIfAbsent(ProjectorLen.class, () -> List.of(
-            new ShapeByStateAdder(state -> ShapeBuilder.ofBox(0, 0, 0, 16, 5, 16).get()),
+            new ShapeByStateAdder(state -> ShapeBuilder.ofBoxPixel(0, 0, 0, 16, 5, 16).get()),
             new InteractableBlockAdder() {
                 @Override
                 public InteractionResult onInteracted(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
@@ -39,7 +37,7 @@ public class ProjectorLen extends BlockPlus implements IBE<ProjectorLenBe> {
                     if (!level.isClientSide && level.getBlockEntity(pos) instanceof ProjectorLenBe be) {
                         boolean increase = !player.isShiftKeyDown();
                         be.stepScale(increase);
-                        EzDebug.warn("new scale:" + be.scale.getValue());
+                        //EzDebug.warn("new scale:" + be.scale.getValue());
                     }
 
                     return InteractionResult.PASS;

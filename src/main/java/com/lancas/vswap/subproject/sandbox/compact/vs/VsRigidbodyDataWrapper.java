@@ -171,8 +171,33 @@ public class VsRigidbodyDataWrapper implements IRigidbodyData, ISavedObject<VsRi
     public boolean isStatic() { return vsShipCache instanceof ServerShip sShip ? sShip.isStatic() : false; }
 
     @Override
+    public RigidbodyData getCopiedData(RigidbodyData dest) {
+        throw new NotImplementedException();
+    }
+
+    @Override
     public RigidbodyData getCopiedData() {
         throw new NotImplementedException();
+    }
+
+    @Override
+    public IRigidbodyDataWriter set(RigidbodyData other) {
+        RigidbodyData rdImm = other.getCopiedData();
+        updates.add((level, ship) -> {
+            if (!(level instanceof ServerLevel sLevel) || !(ship instanceof ServerShip sShip)) {
+                EzDebug.warn("client vs ship don't support change pos");
+                return;
+            }
+            VSGameUtilsKt.getShipObjectWorld(sLevel).teleportShip(sShip, TeleportDataBuilder.copy(sLevel, sShip)
+                .setPos(rdImm.getPosition())
+                .setRotation(rdImm.getRotation())
+                .setScale(rdImm.getScale().x())  //todo 3d scale?
+                .setVel(rdImm.getVelocity())
+                .setOmega(rdImm.getOmega())
+                .get()
+            );
+        });
+        return this;
     }
 
     @Override
@@ -230,6 +255,21 @@ public class VsRigidbodyDataWrapper implements IRigidbodyData, ISavedObject<VsRi
         });
         return this;
     }
+
+    @Override
+    public IRigidbodyDataWriter mulScale(Vector3dc s) {
+        Vector3d scaleImmutable = new Vector3d(s);
+        updates.add((level, ship) -> {
+            if (!(level instanceof ServerLevel sLevel) || !(ship instanceof ServerShip sShip)) {
+                EzDebug.warn("client vs ship don't support set scale");
+                return;
+            }
+            //todo 3d scale
+            VSGameUtilsKt.getShipObjectWorld(sLevel).teleportShip(sShip, TeleportDataBuilder.copy(sLevel, sShip).withScale(scaleImmutable.x));
+        });
+        return this;
+    }
+
     @Override
     public IRigidbodyDataWriter setTransform(ITransformPrimitive newTransform) {
         ITransformPrimitive transformImmutable = new TransformPrimitive(newTransform);

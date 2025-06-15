@@ -16,15 +16,15 @@ import java.util.List;
 
 public interface ISandBoxBallisticBlock {
     public default void serverTick(ServerLevel level, SandBoxServerShip ship, BallisticPos ballisticPos) {}
-    public default void physTick(SandBoxServerShip ship, BallisticData ballisticData) {}
+    public default void physTick(double dt, SandBoxServerShip ship, BallisticData ballisticData) {}
 
     public default void onExitBarrel(ServerLevel level, SandBoxServerShip onShip, BallisticPos ballisticPos) {}
 
     public default void appendTriggerInfos(ServerLevel level, BallisticPos ballisticPos, BlockState state, SandBoxServerShip ship, List<SandBoxTriggerInfo> dest) {}
 
     public default void doTerminalEffect(ServerLevel level, SandBoxServerShip ship, BallisticPos ballisticPos, BlockState state, List<SandBoxTriggerInfo> infos, Dest<Boolean> terminateByEffect) {
-        terminateByEffect.set(false);
+        //terminateByEffect.set(false);
     }
 
-    public default void modifyFlyingContext(ServerLevel level, SandBoxServerShip ship, BallisticPos ballisticPos, BlockState state,BallisticFlyingContext ctx) {}
+    public default void modifyFlyingContext(ServerLevel level, SandBoxServerShip ship, BallisticData ballisticData, BallisticPos ballisticPos, BlockState state,BallisticFlyingContext ctx) {}
 }

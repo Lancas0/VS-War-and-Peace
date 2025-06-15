@@ -15,7 +15,7 @@ import java.util.List;
 
 public class BlackBox extends BlockPlus implements ITicker {
     public static List<IBlockAdder> providers = List.of(
-        new DefaultCartridgeAdder()
+        new DefaultCartridgeAdder(true)
     );
     @Override
     public List<IBlockAdder> getAdders() { return providers; }

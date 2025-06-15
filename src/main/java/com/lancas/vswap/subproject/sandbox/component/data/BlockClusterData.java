@@ -117,6 +117,9 @@ public class BlockClusterData implements IComponentData<BlockClusterData>, IBloc
         return prevState;
     }*/
     protected void syncBlockUpdate(Vector3ic localPos, BlockState state) {
+        if (owner == null || owner.getUuid() == null)
+            return;
+
         LogicalSide logicalSide = EffectiveSide.get();
         boolean isClient = (logicalSide == LogicalSide.CLIENT);
 
@@ -200,6 +203,11 @@ public class BlockClusterData implements IComponentData<BlockClusterData>, IBloc
     public Iterable<BlockState> allBlockStates() { return blocks.values(); }
     @Override
     public Iterable<Map.Entry<Vector3ic, BlockState>> allBlocks() { return blocks.entrySet(); }
+
+    @Override
+    public BlockClusterData getCopiedData(BlockClusterData dest) {
+        return dest.copyData(this);
+    }
 
 
     /*@Override

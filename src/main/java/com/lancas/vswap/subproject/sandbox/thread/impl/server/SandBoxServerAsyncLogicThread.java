@@ -5,6 +5,7 @@ import com.lancas.vswap.subproject.sandbox.api.UUIDLazyParamWrapper;
 import com.lancas.vswap.subproject.sandbox.api.component.IServerAsyncLogicBehaviour;
 import com.lancas.vswap.subproject.sandbox.api.data.TransformPrimitive;
 import com.lancas.vswap.subproject.sandbox.thread.impl.TimerBasedThread;
+import net.minecraft.client.Minecraft;
 
 import java.util.Objects;
 import java.util.TimerTask;
@@ -12,6 +13,9 @@ import java.util.TimerTask;
 import static com.lancas.vswap.subproject.sandbox.event.SandBoxEventMgr.onServerShipTransformDirty;
 
 public class SandBoxServerAsyncLogicThread extends TimerBasedThread<SandBoxServerWorld> {
+    protected SandBoxServerWorld world;
+    public SandBoxServerAsyncLogicThread(SandBoxServerWorld inWorld) { world = inWorld; }
+
     @Override
     protected String getTimerName() { return "server-async-logic-thread"; }
 
@@ -20,6 +24,9 @@ public class SandBoxServerAsyncLogicThread extends TimerBasedThread<SandBoxServe
         return new TimerTask() {
             @Override
             public void run() {
+                if (Minecraft.getInstance().isPaused())
+                    return;
+
                 world.allServerShips().forEach(s -> {
                     s.allAddedBehaviours()
                         .map(x -> {

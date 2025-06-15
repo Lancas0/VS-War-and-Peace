@@ -45,7 +45,10 @@ public interface IRigidbodyDataReader extends IComponentDataReader<RigidbodyData
     public default Vector3d worldToLocalPos(Vector3dc worldPos, Vector3d dest) { return getWorldToLocal().transformPosition(worldPos, dest); }
     public default Vector3d worldToLocalPos(Vector3d worldPos) { return getWorldToLocal().transformPosition(worldPos); }
 
-    public RigidbodyData getCopiedData();
+    public RigidbodyData getCopiedData(RigidbodyData dest);
+    public default RigidbodyData getCopiedData() {
+        return getCopiedData(new RigidbodyData());
+    }
 
     public default Vector3d predictFurtherPos(double time, Vector3d dest) {
         return dest.add(getVelocity())

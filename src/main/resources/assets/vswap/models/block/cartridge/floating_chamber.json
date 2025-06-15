@@ -1,0 +1,24 @@
+{
+	"parent": "minecraft:block/block",
+	"credit": "Made with Blockbench",
+	"textures": {
+		"0": "vswap:block/cartridge/floating_chamber_side",
+		"1": "vswap:block/al_bottom",
+		"particle": "vswap:block/cartridge/floating_chamber_side"
+	},
+	"elements": [
+		{
+			"from": [3, 0, 3],
+			"to": [13, 16, 13],
+			"rotation": {"angle": 0, "axis": "y", "origin": [3, 0, 3]},
+			"faces": {
+				"north": {"uv": [3, 0, 13, 16], "texture": "#0"},
+				"east": {"uv": [3, 0, 13, 16], "texture": "#0"},
+				"south": {"uv": [3, 0, 13, 16], "texture": "#0"},
+				"west": {"uv": [3, 0, 13, 16], "texture": "#0"},
+				"up": {"uv": [0, 0, 16, 16], "texture": "#1"},
+				"down": {"uv": [0, 0, 16, 16], "texture": "#1"}
+			}
+		}
+	]
+}

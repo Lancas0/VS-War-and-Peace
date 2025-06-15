@@ -200,8 +200,10 @@ public class WorldUtil {
     }
     public static Vector3d getWorldDirection(Level level, BlockPos bp, Direction dir) {
         Ship ship = ShipUtil.getShipAt(level, bp);
+        return getWorldDirection(ship, dir);
+    }
+    public static Vector3d getWorldDirection(@Nullable Ship ship, Direction dir) {
         if (ship == null) return JomlUtil.dNormal(dir);
-
         return JomlUtil.dWorldNormal(ship.getShipToWorld(), dir);
     }
     public static Vector3d getWorldFaceCenter(Level level, BlockPos bp, Direction face) {

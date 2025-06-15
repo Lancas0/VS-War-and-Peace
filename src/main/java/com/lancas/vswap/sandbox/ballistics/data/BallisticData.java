@@ -1,10 +1,12 @@
 package com.lancas.vswap.sandbox.ballistics.data;
 
+import com.lancas.vswap.ship.ballistics.data.BallisticsHitInfo;
 import com.lancas.vswap.subproject.sandbox.api.component.IComponentData;
 import com.lancas.vswap.subproject.sandbox.api.component.IComponentDataReader;
 import com.lancas.vswap.subproject.sandbox.ship.ISandBoxShip;
 import com.lancas.vswap.util.NbtBuilder;
 import net.minecraft.nbt.CompoundTag;
+import org.joml.Vector3d;
 
 public class BallisticData implements IComponentData<BallisticData>, IComponentDataReader<BallisticData> {
     public static final double TIME_OUT_SECONDS = 60;
@@ -16,6 +18,13 @@ public class BallisticData implements IComponentData<BallisticData>, IComponentD
 
     public double elapsedTime = 0;
     public boolean terminated = false;
+
+    //public BallisticsHitInfo stuckHitInfo = null;
+    public Vector3d stuckHitPos = null;
+
+    public boolean firstTick = true;
+
+    public int destroyedCnt = 0;
 
 
     private BallisticData() {}
@@ -39,7 +48,7 @@ public class BallisticData implements IComponentData<BallisticData>, IComponentD
     public BallisticData overwriteDataByShip(ISandBoxShip ship) {
         initialStateData.overwriteDataByShip(ship);
         barrelCtx.overwriteDataByShip(ship);
-        airDragData.overwriteDataByShip(ship);
+        //airDragData.overwriteDataByShip(ship);
         return this;
     }
     @Override
@@ -49,6 +58,9 @@ public class BallisticData implements IComponentData<BallisticData>, IComponentD
             .putCompound("state_data", barrelCtx.saved())
             .putCompound("air_drag_data", airDragData.saved())
             .putBoolean("terminated", terminated)
+            .putBoolean("first_tick", firstTick)
+            .putInt("destroyed_cnt", destroyedCnt)
+            .putIfNonNull("stuck_hit_info", stuckHitPos, NbtBuilder::putVector3d)
             .get();
     }
     @Override
@@ -57,7 +69,10 @@ public class BallisticData implements IComponentData<BallisticData>, IComponentD
             .readCompoundDo("initial_state_data", initialStateData::load)
             .readCompoundDo("state_data", barrelCtx::load)
             .readCompoundDo("air_drag_data", airDragData::load)
-            .readBooleanDo("terminated", v -> terminated = v);
+            .readBooleanDo("terminated", v -> terminated = v)
+            .readBooleanDo("first_tick", v -> firstTick = v)
+            .readIntDo("destroyed_cnt", v -> destroyedCnt = v)
+            .readDoIfExist("stuck_hit_info", v -> stuckHitPos = v, NbtBuilder::getNewVector3d);
         return this;
     }
 

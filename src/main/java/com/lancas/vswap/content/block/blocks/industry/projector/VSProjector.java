@@ -1,20 +1,18 @@
 package com.lancas.vswap.content.block.blocks.industry.projector;
 
 import com.lancas.vswap.content.WapBlocks;
-import com.lancas.vswap.content.block.blockentity.VSProjectorBE;
 import com.lancas.vswap.content.block.blocks.blockplus.util.InteractToInsertOrExtractAdder;
 import com.lancas.vswap.debug.EzDebug;
 import com.lancas.vswap.subproject.blockplusapi.blockplus.BlockPlus;
 import com.lancas.vswap.subproject.blockplusapi.blockplus.adder.*;
+import com.lancas.vswap.subproject.blockplusapi.blockplus.ctx.BlockChangeContext;
+import com.lancas.vswap.subproject.blockplusapi.util.Action;
 import com.lancas.vswap.util.WorldUtil;
 import com.simibubi.create.content.kinetics.simpleRelays.ICogWheel;
 import com.simibubi.create.foundation.block.IBE;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
@@ -22,11 +20,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.Shapes;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -66,7 +60,7 @@ public class VSProjector extends BlockPlus implements IBE<VSProjectorBE>, ICogWh
 
                     @Override
                     public ItemStack insert(BlockEntity be, ItemStack stack) {
-                        VSProjectorBE projectorBE = (VSProjectorBE)be;
+                        VSProjectorBE projectorBE = (VSProjectorBE) be;
 
                         if (projectorBE.itemHandler.getStackInSlot(0).isEmpty()) {  //can insert only when inventory is empty
                             ItemStack remain = projectorBE.itemHandler.insertItem(0, stack, false);
@@ -83,7 +77,7 @@ public class VSProjector extends BlockPlus implements IBE<VSProjectorBE>, ICogWh
 
                     @Override
                     public ItemStack extract(BlockEntity be) {
-                        VSProjectorBE projectorBE = (VSProjectorBE)be;
+                        VSProjectorBE projectorBE = (VSProjectorBE) be;
 
                         if (!(be.getLevel() instanceof ServerLevel level)) {
                             EzDebug.warn("try extract in client! (or level is null?)");
@@ -99,6 +93,14 @@ public class VSProjector extends BlockPlus implements IBE<VSProjectorBE>, ICogWh
                         }
                         return extract;
                     }
+                },
+                new IBlockRemoveCallbackAdder() {
+                    private final Action<BlockChangeContext, Void> action = (Action.Pre<BlockChangeContext, Void>) (ctx, soFar, cancel) -> {
+                        IBE.onRemove(ctx.oldState, ctx.level, ctx.pos, ctx.newState);
+                        return null;
+                    };
+                    @Override
+                    public Action<BlockChangeContext, Void> onRemove() { return action; }
                 }
                 /*,
                 new InteractableBlockAdder() {

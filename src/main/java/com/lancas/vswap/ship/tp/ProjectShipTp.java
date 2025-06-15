@@ -1,6 +1,6 @@
 package com.lancas.vswap.ship.tp;
 
-import com.lancas.vswap.content.block.blockentity.VSProjectorBE;
+import com.lancas.vswap.content.block.blocks.industry.projector.VSProjectorBE;
 import com.lancas.vswap.debug.EzDebug;
 import com.lancas.vswap.ship.helper.LazyShip;
 import com.lancas.vswap.ship.helper.builder.ShipTransformBuilder;

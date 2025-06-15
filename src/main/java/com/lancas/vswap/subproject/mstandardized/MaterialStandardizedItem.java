@@ -40,7 +40,9 @@ import java.util.function.Consumer;
 
 public class MaterialStandardizedItem extends Item {
     public static int getCntByScale(double scale) {
-        return (int)Math.ceil(scale * 16);  //every 16 material for a block scaled by 1
+        //return (int)Math.ceil(scale * 16);  //every 16 material for a block scaled by 1
+        //FIXME tempory always return1
+        return 1;
     }
 
     public MaterialStandardizedItem(Properties p_41383_) {

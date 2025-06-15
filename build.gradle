@@ -116,15 +116,15 @@ minecraft {
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
+    flatDir {
+        dir 'libs'
+    }
+
     maven { url = 'https://libraries.minecraft.net/' }
     mavenCentral()
     maven { url = 'https://maven.minecraftforge.net/' }
 
-
     mavenLocal()
-    flatDir {
-        dir 'libs'
-    }
 
     maven {
         name = 'Kotlin for Forge'
@@ -235,6 +235,16 @@ dependencies {
     runtimeOnly fg.deobf("maven.modrinth:lhGA9TYQ:1MKTLiiG")
 
 
+    /*implementation fg.deobf("libs:physx-jni:2.6.0")
+    implementation fg.deobf("libs:physx-jni-natives-windows:2.6.0")
+
+    jarJar("libs:physx-jni:2.6.0") {
+        jarJar.ranged(it, "[2.6.0,)")
+    }
+    jarJar("libs:physx-jni-natives-windows:2.6.0") {
+        jarJar.ranged(it, "[2.6.0,)")
+    }*/
+
     // Add Kotlin for Forge.
     runtimeOnly fg.deobf("thedarkcolour:kotlinforforge:$forge_kotlin_version")
     //jei
@@ -267,7 +277,7 @@ dependencies {
 
 
     runtimeOnly fg.deobf("curse.maven:cc-tweaked-282001:5379173")
-    runtimeOnly fg.deobf("maven.modrinth:QCUnCyr8:YVLIBslE")  //control craft
+    runtimeOnly fg.deobf("maven.modrinth:QCUnCyr8:MO4nsdTK")  //control craft
 
     runtimeOnly fg.deobf("maven.modrinth:FXDpZRJG:qyQLIJgu")  //trackwork
 
@@ -275,6 +285,16 @@ dependencies {
     runtimeOnly fg.deobf("maven.modrinth:umyGl7zF:g5igndAv")  //kubejs
     runtimeOnly fg.deobf("maven.modrinth:l6YH9Als:4FXHDE9F")  //spark
     runtimeOnly fg.deobf("maven.modrinth:nvQzSEkH:9gf6jOO0")  //jade
+
+    runtimeOnly fg.deobf("maven.modrinth:84USeAvk:Bk2kwZr0")  //clockwork
+
+
+    runtimeOnly fg.deobf("maven.modrinth:nR8D9Tc2:a7n43YYk")  //vs addition
+
+
+
+    //runtimeOnly fg.deobf("maven.modrinth:Xy8aRQKS:JkM3OTEl")  //physics mod
+
     //runtimeOnly fg.deobf("maven.modrinth:dCKRaeBC:YncE2C0Y")  //Forgematica
     //runtimeOnly fg.deobf("maven.modrinth:SKI34J7B:6lS8JYz3")  //MaFgLib
 
@@ -287,8 +307,6 @@ dependencies {
 
     //runtimeOnly fg.deobf("maven.modrinth:nR8D9Tc2:a7n43YYk")  //vs addition
     //runtimeOnly fg.deobf("libs:tallyho:3.1.0c4")
-
-
 
     // Jackson Binary Dataformat for Object Serialization
     def jacksonVersion = '2.14.0'
@@ -357,6 +375,7 @@ tasks.named('jar', Jar).configure {
     // This is the preferred method to reobfuscate your jar file
     finalizedBy 'reobfJar'
 }
+
 
 // However if you are in a multi-project build, dev time needs unobfed jar files, so you can delay the obfuscation until publishing by doing:
 // tasks.named('publish').configure {

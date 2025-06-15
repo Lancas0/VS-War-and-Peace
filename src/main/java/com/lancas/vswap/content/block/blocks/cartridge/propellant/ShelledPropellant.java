@@ -1,6 +1,7 @@
 package com.lancas.vswap.content.block.blocks.cartridge.propellant;
 
 
+import com.lancas.vswap.content.WapBlocks;
 import com.lancas.vswap.content.block.blocks.blockplus.DefaultCartridgeAdder;
 import com.lancas.vswap.content.info.block.WapBlockInfos;
 import com.lancas.vswap.subproject.blockplusapi.blockplus.BlockPlus;
@@ -16,8 +17,16 @@ import java.util.List;
 import static com.lancas.vswap.content.WapBlocks.Cartridge.Propellant.Empty.EMPTY_PROPELLANT;
 
 public class ShelledPropellant extends BlockPlus implements IPropellant {
-    public static final BooleanProperty EMPTY = BooleanProperty.create("empty");
+    //public static final BooleanProperty EMPTY = BooleanProperty.create("empty");
     public static final double ENERGY = 8E4;
+
+    public static BlockState getState(boolean empty, Direction faceTo) {
+        if (empty)
+            return EMPTY_PROPELLANT.getDefaultState().setValue(DirectionAdder.FACING, faceTo);
+
+        return WapBlocks.Cartridge.Propellant.SHELLED_PROPELLANT.getDefaultState()
+            .setValue(DirectionAdder.FACING, faceTo);
+    }
 
     @Override
     public List<IBlockAdder> getAdders() {
@@ -57,8 +66,8 @@ public class ShelledPropellant extends BlockPlus implements IPropellant {
                     .build();*/
 
                 return List.of(
-                    new DefaultCartridgeAdder(),
-                    new PropertyAdder<>(EMPTY, false)
+                    new DefaultCartridgeAdder(true)//,
+                    //new PropertyAdder<>(EMPTY, false)
                     //,
                     //new BlockDropAdder(entry, 0, true, false, List.of(drop))
                 );
@@ -90,7 +99,7 @@ public class ShelledPropellant extends BlockPlus implements IPropellant {
     }*/
 
     @Override
-    public boolean isEmpty(BlockState state) { return state.getValue(EMPTY); }
+    public boolean isEmpty(BlockState state) { return false; }
     @Override
     public BlockState getEmptyState(BlockState state) {
         Direction dir = state.getValue(DirectionAdder.FACING);
@@ -99,5 +108,5 @@ public class ShelledPropellant extends BlockPlus implements IPropellant {
         //level.setBlockAndUpdate(pos, state.setValue(EMPTY, true));
     }
     @Override
-    public double getEnergy(BlockState state) { return WapBlockInfos.StdPropellantEnergy.valueOrDefaultOf(state); }
+    public double getSPE(BlockState state) { return WapBlockInfos.StdPropellantEnergy.valueOrDefaultOf(state); }
 }

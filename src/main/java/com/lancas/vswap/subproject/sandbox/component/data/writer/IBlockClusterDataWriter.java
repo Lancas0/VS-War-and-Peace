@@ -7,8 +7,20 @@ import org.joml.Vector3ic;
 
 public interface IBlockClusterDataWriter extends IComponentDataWriter<BlockClusterData> {
 
-    public default BlockState setBlock(Vector3ic localPos, BlockState state) { return setBlock(localPos, state, true); }
+    public default BlockState setBlock(Vector3ic localPos, BlockState state) {
+        return setBlock(localPos, state, true);
+    }
     public BlockState setBlock(Vector3ic localPos, BlockState state, boolean syncOtherSide);
+
+    public default IBlockClusterDataWriter chainedSetBlock(Vector3ic localPos, BlockState state, boolean syncOtherSide) {
+        setBlock(localPos, state, syncOtherSide);
+        return this;
+    }
+    public default IBlockClusterDataWriter chainedSetBlock(Vector3ic localPos, BlockState state) {
+        setBlock(localPos, state);
+        return this;
+    }
+
 
     public void clear(boolean syncOtherSide);
     public default void clear() { clear(true); }

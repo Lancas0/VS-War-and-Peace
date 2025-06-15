@@ -8,10 +8,8 @@ import com.lancas.vswap.util.JomlUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.player.Player;
-import org.joml.Matrix4dc;
-import org.joml.Quaterniond;
-import org.joml.Vector3d;
-import org.joml.Vector3dc;
+import org.jetbrains.annotations.Nullable;
+import org.joml.*;
 import org.valkyrienskies.core.api.ships.ServerShip;
 
 import java.util.List;
@@ -166,5 +164,9 @@ public class HoldableAttachment implements ISavableAttachment {
     @Override
     public void loadAllBp(List<BlockPos> bpsInShip) {
         holdPivotBpInShip = new SavedBlockPos(bpsInShip.get(0));
+    }
+
+    public @Nullable Vector3ic getSavedLocalPivot(Stream<Vector3ic> savedPoses) {
+        return savedPoses.findFirst().orElse(null);
     }
 }

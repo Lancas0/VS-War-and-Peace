@@ -2,9 +2,12 @@ package com.lancas.vswap.foundation.data;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
+import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3d;
 import org.joml.Vector3i;
+import org.valkyrienskies.core.impl.shadow.S;
 
 import java.util.Objects;
 
@@ -34,8 +37,20 @@ public class SavedBlockPos {
     public Vec3i toV3I() { return new Vec3i(x, y, z); }
     public Vector3i toJomlI() { return new Vector3i(x, y, z); }
 
+    public Vec3 center() { return new Vec3(x + 0.5, y + 0.5, z + 0.5); }
     public Vector3d dCenter() { return new Vector3d(x + 0.5, y + 0.5, z + 0.5); }
     public Vector3d dLowerCorner() { return new Vector3d(x, y, z); }
+
+    public SavedBlockPos relative(Direction d) {
+        return switch (d) {
+            case SOUTH -> new SavedBlockPos(x, y, z + 1);
+            case NORTH -> new SavedBlockPos(x, y, z - 1);
+            case UP ->  new SavedBlockPos(x, y + 1, z);
+            case DOWN -> new SavedBlockPos(x, y - 1, z);
+            case EAST -> new SavedBlockPos(x + 1, y, z);
+            case WEST -> new SavedBlockPos(x - 1, y, z);
+        };
+    }
 
     @Override
     public boolean equals(Object o) {

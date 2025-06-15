@@ -1,7 +1,7 @@
 package com.lancas.vswap.event;
 
 import com.lancas.vswap.VsWap;
-import com.lancas.vswap.content.block.blocks.cartridge.PrimerBlock;
+import com.lancas.vswap.content.block.blocks.cartridge.primer.PrimerBlock;
 import com.lancas.vswap.content.block.blocks.cartridge.ShellFrame;
 import com.lancas.vswap.content.saved.vs_constraint.ConstraintsMgr;
 import com.lancas.vswap.debug.EzDebug;

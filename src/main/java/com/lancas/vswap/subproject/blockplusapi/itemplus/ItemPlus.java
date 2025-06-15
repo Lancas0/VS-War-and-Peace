@@ -173,6 +173,15 @@ public abstract class ItemPlus<T extends Item>  {
                 });
                 return canAttack.get();
             }
+
+            @Override
+            public boolean isFoil(@NotNull ItemStack stack) {
+                for (var adder : itemPlus.getAdders()) {
+                    if (adder.foilAdder(stack))
+                        return true;
+                }
+                return false;
+            }
         };
     }
     private static void setActualItem(ItemPlus<Item> itemPlus, Item.Properties p) {
@@ -233,6 +242,14 @@ public abstract class ItemPlus<T extends Item>  {
                 return canAttack.get();
             }
 
+            @Override
+            public boolean isFoil(@NotNull ItemStack stack) {
+                for (var adder : itemPlus.getAdders()) {
+                    if (adder.foilAdder(stack))
+                        return true;
+                }
+                return false;
+            }
         };
     }
 

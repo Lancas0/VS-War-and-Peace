@@ -3,8 +3,8 @@ package com.lancas.vswap.content.block.blocks.artillery.breech.valkyiren;
 import com.lancas.vswap.content.block.blocks.artillery.IBarrel;
 import com.lancas.vswap.content.block.blocks.artillery.breech.IBreech;
 import com.lancas.vswap.content.block.blocks.blockplus.RefreshBlockRecordAdder;
-import com.lancas.vswap.content.block.blocks.cartridge.IPrimer;
-import com.lancas.vswap.content.block.blocks.cartridge.PrimerBlock;
+import com.lancas.vswap.content.block.blocks.cartridge.primer.IPrimer;
+import com.lancas.vswap.content.block.blocks.cartridge.primer.PrimerBlock;
 import com.lancas.vswap.content.item.items.docker.Docker;
 import com.lancas.vswap.content.saved.blockrecord.BlockRecordRWMgr;
 import com.lancas.vswap.debug.EzDebug;
@@ -105,14 +105,14 @@ public class HellBreech extends BlockPlus implements IBreech, IBarrel {
         new InteractableBlockAdder() {
             @Override
             public InteractionResult onInteracted(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
-                //todo sometime(in face always) repeat invoke
+                //todo move it to HoldingShipInteractableBlock
+                //FIXME sometime(in face always) repeat invoke
                 if (!(level instanceof ServerLevel sLevel)) return InteractionResult.PASS;
 
                 ICanHoldShip icanHoldShip = (ICanHoldShip)player;
-                Dest<Long> holdingShipId = new Dest<>();
-                icanHoldShip.getHoldingShipId(ShipHoldSlot.MainHand, holdingShipId);
+                Long holdingShipId = icanHoldShip.getHoldingShipId(ShipHoldSlot.MainHand);
+                ServerShip holdingShip = ShipUtil.getServerShipByID(sLevel, holdingShipId);
 
-                ServerShip holdingShip = ShipUtil.getServerShipByID(sLevel, holdingShipId.get());
                 if (holdingShip == null) return InteractionResult.PASS;  //not holding ship
 
                 if (!(state.getBlock() instanceof IBreech iBreech)) {
@@ -122,11 +122,11 @@ public class HellBreech extends BlockPlus implements IBreech, IBarrel {
 
                 iBreech.loadMunitionShip(sLevel, pos, state, holdingShip, false);
 
-                icanHoldShip.unholdShipInServer(ShipHoldSlot.MainHand, true, null);
+                icanHoldShip.unholdShipInServer(ShipHoldSlot.MainHand, true);
                 return InteractionResult.PASS;
             }
-        },
-        new RefreshBlockRecordAdder((level, bp, state) -> new IBreech.BreechRecord(level, bp, 40))
+        }//,
+        //todo tempory removed new RefreshBlockRecordAdder((level, bp, state) -> new IBreech.BreechRecord(level, bp, 40))
     );
     @Override
     public List<IBlockAdder> getAdders() { return adders; }
@@ -154,7 +154,7 @@ public class HellBreech extends BlockPlus implements IBreech, IBarrel {
     }*/
 
     @Override
-    public boolean canLoadDockerNow(Level level, BlockPos breechBp, ItemStack stack) {  //todo put cold down in it
+    public boolean canArmLoadDockerNow(ServerLevel level, BlockPos breechBp, ItemStack stack) {  //todo put cold down in it
         //hell breech can't load sep
         if (findPrimerAround(level, breechBp, null, null, null))
             return false;
@@ -163,7 +163,7 @@ public class HellBreech extends BlockPlus implements IBreech, IBarrel {
     }
 
     @Override
-    public void loadMunition(ServerLevel level, BlockPos breechBp, BlockState breechState, ItemStack munitionDocker) {
+    public boolean loadMunition(ServerLevel level, BlockPos breechBp, BlockState breechState, ItemStack munitionDocker) {
         @Nullable ServerShip artilleryShip = ShipUtil.getServerShipAt(level, breechBp);
 
         Vector3dc placePos = WorldUtil.getWorldCenter(level, breechBp);
@@ -174,7 +174,7 @@ public class HellBreech extends BlockPlus implements IBreech, IBarrel {
         ShipBuilder munitionBuilder = Docker.makeVsShipBuilder(level, munitionDocker, true, true);
         if (munitionBuilder == null) {
             EzDebug.warn("can't get munition ship from docker item");
-            return;
+            return false;
         }
         ServerShip newMunition = munitionBuilder.get();  //todo initialize the pos and rot
 
@@ -187,7 +187,7 @@ public class HellBreech extends BlockPlus implements IBreech, IBarrel {
 
         if (newMunition == null) {
             EzDebug.warn("fail to load munition ship");
-            return;
+            return false;
         } else {
             EzDebug.highlight("successfully make ship and place at:" + newMunition.getTransform().getPositionInWorld());
         }
@@ -203,6 +203,7 @@ public class HellBreech extends BlockPlus implements IBreech, IBarrel {
                     PrimerBlock.createConstraints(level, curBp, artilleryShip, finalNewMunition, breechBp, breechDirInWorldOrShip, holdable);
                 }
             });
+        return true;
     }
 
     @Override
@@ -238,7 +239,7 @@ public class HellBreech extends BlockPlus implements IBreech, IBarrel {
 
     @Override
     public void unloadShell(ServerLevel level, BlockPos breechBp, BlockState breechState) {
-        Dest<IPrimer> primerDest = new Dest<>();
+        /*FIXME tempory removed Dest<IPrimer> primerDest = new Dest<>();
         Dest<BlockPos> primerBpDest = new Dest<>();
         Dest<ServerShip> primerShipDest = new Dest<>();
 
@@ -260,7 +261,7 @@ public class HellBreech extends BlockPlus implements IBreech, IBarrel {
             //Vector3d worldLaunchDir = WorldUtil.getWorldDirection(level, )
 
             ServerShipEvent.delayedShipEvents.add(() -> unloadShellImpl(level, primerShipDest.get(), primerDir, breechBp));
-        }
+        }*/
     }
 
     //@Override

@@ -15,6 +15,7 @@ import com.lancas.vswap.util.NbtBuilder;
 import com.lancas.vswap.util.SerializeUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.primitives.AABBd;
 import org.joml.primitives.AABBdc;
@@ -104,7 +105,7 @@ public class SandBoxServerShip implements IServerSandBoxShip, ISavedLevelObject<
         return ship;
     }*/
 
-    public SandBoxServerShip(UUID inId, RigidbodyData rigidbodyData, BlockClusterData clusterData) {  //todo make sure ship is created in server
+    public SandBoxServerShip(UUID inId, @NotNull RigidbodyData rigidbodyData, @NotNull BlockClusterData clusterData) {  //todo make sure ship is created in server
         uuid = inId;
         //transform.loadData(this, transformData);
         blockCluster.loadData(this, clusterData);
@@ -212,9 +213,9 @@ public class SandBoxServerShip implements IServerSandBoxShip, ISavedLevelObject<
         behaviours.forEach(beh -> beh.serverTick(level));
     }
     @Override
-    public void physTick() {
-        rigidbody.physTick();
-        behaviours.forEach(IComponentBehaviour::physTick);
+    public void physTick(double dt) {
+        rigidbody.physTick(dt);
+        behaviours.forEach(x -> x.physTick(dt));
 
         //todo move snapshot to server tick?
         worldAABBSnapshot = getLocalAABB().transform(rigidbody.getDataReader().getLocalToWorld(), new AABBd());

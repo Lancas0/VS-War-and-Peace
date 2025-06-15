@@ -123,6 +123,10 @@ public class SliderConstraint extends AbstractBiConstraint implements ISliderCon
     public void setFixedDistance(@Nullable Double inFixedDist) {
         fixedDistance.set(inFixedDist);
     }
+    public SliderConstraint withFixedDistance(@Nullable Double inFixedDist) {
+        setFixedDistance(inFixedDist);
+        return this;
+    }
     @Override
     public void addFixedDistance(double addition) {
         fixedDistance.accumulateAndGet(addition, Double::sum);

@@ -18,7 +18,7 @@ public class CombustiblePropellantBlock extends BlockPlus implements IPropellant
         return BlockPlus.addersIfAbsent(
             CombustiblePropellantBlock.class,
 
-            () -> List.of(new DefaultCartridgeAdder())
+            () -> List.of(new DefaultCartridgeAdder(true))
         );
     }
 
@@ -58,5 +58,5 @@ public class CombustiblePropellantBlock extends BlockPlus implements IPropellant
     @Override
     public BlockState getEmptyState(BlockState state) { return Blocks.AIR.defaultBlockState(); }
     @Override
-    public double getEnergy(BlockState state) { return WapBlockInfos.StdPropellantEnergy.valueOrDefaultOf(state); }
+    public double getSPE(BlockState state) { return WapBlockInfos.StdPropellantEnergy.valueOrDefaultOf(state); }
 }

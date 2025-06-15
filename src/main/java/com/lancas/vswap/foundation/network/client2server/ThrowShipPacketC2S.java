@@ -46,15 +46,14 @@ public class ThrowShipPacketC2S {
                 return;
             }
 
-            Dest<Long> prevHoldShipId = new Dest<>();
-            icanHoldShip.unholdShipInServer(ShipHoldSlot.MainHand, true, prevHoldShipId);
+            Long prevHoldShipId = icanHoldShip.unholdShipInServer(ShipHoldSlot.MainHand, true);
 
-            if (!prevHoldShipId.hasValue()) {
+            if (prevHoldShipId == null) {
                 EzDebug.log("player is not holding a ship");
                 return;
                 //player is not holding a ship
             }
-            Ship ship = ShipUtil.getLoadedShipByID(level, prevHoldShipId.get());
+            Ship ship = ShipUtil.getLoadedShipByID(level, prevHoldShipId);
             if (ship == null) return;  //player is not holding a ship
 
             ThrowForceInducer.createOrReset((ServerShip)ship, getForce(player, this.tickCnt));

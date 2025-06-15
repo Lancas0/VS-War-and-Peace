@@ -53,7 +53,7 @@ public class CreateShipAtPlayerFromClientPacketC2S {
                 BlockClusterData blockData = new BlockClusterData();
                 Vector3ic p = new Vector3i();
                 for (int i = 0; i < blockCnt; ++i) {
-                    blockData.setBlock(p, WapBlocks.Cartridge.PRIMER.getDefaultState());
+                    blockData.setBlock(p, WapBlocks.Cartridge.Primer.PRIMER.getDefaultState());
 
                     while (blockData.contains(p)) {
                         switch (r.nextInt(0, 6)) {
@@ -82,12 +82,13 @@ public class CreateShipAtPlayerFromClientPacketC2S {
 
                 ship.addBehaviour(
                     new SandBoxTween(),
-                    new TweenData((prev, t01) -> {
+                    new TweenData(
+                        /*(prev, t01, step01) -> {
                         TransformPrimitive next = new TransformPrimitive(prev);
                         next.scale.set(Math.sin(t01));
                         //EzDebug.log("server transform:" + next);
                         return next;
-                    }, 10, true)
+                    }*/TweenData.TweenFunction.Scale, 10, true)
                 );
             } catch (Exception e) {
                 EzDebug.error("exception when create ship:" + e.toString());

@@ -25,26 +25,26 @@ import java.util.stream.Stream;
 //note that client ship will not be saved
 //todo extract a abstract ship from serverShip and clientShip
 public class SandBoxClientShip implements IClientSandBoxShip {
-    private UUID uuid;
+    protected UUID uuid;
     public boolean inWorld = false;
-    private final SandBoxRigidbody rigidbody = new SandBoxRigidbody();
-    private final SandBoxShipBlockCluster blockCluster = new SandBoxShipBlockCluster();
+    protected final SandBoxRigidbody rigidbody = new SandBoxRigidbody();
+    protected final SandBoxShipBlockCluster blockCluster = new SandBoxShipBlockCluster();
 
     //latestNetworkTransform is null means it's a client only ship
     //(or simply havn't be synced)
-    private volatile TransformPrimitive latestNetworkTransform = null;
-    private final TransformPrimitive prevTransform = new TransformPrimitive();
-    private final TransformPrimitive curTransform = new TransformPrimitive();
-    private final TransformPrimitive renderTransform = new TransformPrimitive();
+    protected volatile TransformPrimitive latestNetworkTransform = null;
+    protected final TransformPrimitive prevTransform = new TransformPrimitive();
+    protected final TransformPrimitive curTransform = new TransformPrimitive();
+    protected final TransformPrimitive renderTransform = new TransformPrimitive();
 
 
-    private final Queue<IClientBehaviour<?>> behaviours = new ConcurrentLinkedQueue<>();
+    protected final Queue<IClientBehaviour<?>> behaviours = new ConcurrentLinkedQueue<>();
 
     //private final AABBd cachedWorldAABB = new AABBd();
     //private boolean worldAABBDirty = true;
-    private volatile AABBd worldAABBSnapshot = new AABBd();
+    protected volatile AABBd worldAABBSnapshot = new AABBd();
 
-    private final AtomicInteger remainLifeTick = new AtomicInteger(-1);  //todo make it a tick destory. -1 for no destroy, 0 for should, >0 for ticking down
+    protected final AtomicInteger remainLifeTick = new AtomicInteger(-1);  //todo make it a tick destory. -1 for no destroy, 0 for should, >0 for ticking down
 
     /*@Override
     public int getRemainLifeTick() { return remainLifeTick.get(); }
@@ -221,10 +221,10 @@ public class SandBoxClientShip implements IClientSandBoxShip {
         behaviours.forEach(b -> b.clientTick(level));
     }
     @Override
-    public void physTick() {
+    public void physTick(double dt) {
         //EzDebug.log("client phys tick, uuid:" + uuid + ", pos:" + StrUtil.F2(rigidbody.getDataReader().getPosition()));
-        rigidbody.physTick();
-        behaviours.forEach(IComponentBehaviour::physTick);
+        rigidbody.physTick(dt);
+        behaviours.forEach(x -> x.physTick(dt));
         //move worldAABBSnapshot to client tick?
         worldAABBSnapshot = getLocalAABB().transform(rigidbody.getDataReader().getLocalToWorld(), new AABBd());
     }

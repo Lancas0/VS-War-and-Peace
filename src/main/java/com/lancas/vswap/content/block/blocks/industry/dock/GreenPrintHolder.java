@@ -2,7 +2,6 @@ package com.lancas.vswap.content.block.blocks.industry.dock;
 
 import com.lancas.vswap.content.WapBlockEntites;
 import com.lancas.vswap.content.WapBlocks;
-import com.lancas.vswap.content.block.blockentity.VSProjectorBE;
 import com.lancas.vswap.content.block.blocks.blockplus.util.InteractToInsertOrExtractAdder;
 import com.lancas.vswap.debug.EzDebug;
 import com.lancas.vswap.subproject.blockplusapi.blockplus.BlockPlus;
@@ -14,7 +13,6 @@ import com.lancas.vswap.subproject.blockplusapi.util.Action;
 import com.simibubi.create.foundation.block.IBE;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -23,7 +21,6 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.shapes.Shapes;
-import net.minecraftforge.common.util.LazyOptional;
 
 import java.util.List;
 import java.util.function.Supplier;

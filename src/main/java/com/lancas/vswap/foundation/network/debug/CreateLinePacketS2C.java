@@ -45,7 +45,6 @@ public class CreateLinePacketS2C {
         );
     }
 
-    // 客户端处理
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             ClientLevel level = Minecraft.getInstance().level;

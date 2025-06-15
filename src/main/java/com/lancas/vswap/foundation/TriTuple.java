@@ -97,9 +97,9 @@ public class TriTuple<T, U, V> {
 
         public BlockPos toRealBp() {
             return new BlockPos(
-                (getChunkX() >> 4) + getOffset().getX(),
+                (getChunkX() << 4) + getOffset().getX(),
                 getOffset().getY(),
-                (getChunkZ() >> 4) + getOffset().getZ()
+                (getChunkZ() << 4) + getOffset().getZ()
             );
         }
     }

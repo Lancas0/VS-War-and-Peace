@@ -1,16 +1,33 @@
 {
+  "key.vswap.scope_key": "瞄准键",
+  "key.vswap.throw_key": "投掷键",
+  "key.vswap.carry_to_back_key": "放到背后",
+  "key.vswap.switch_key": "切换键",
+
+  "block.vswap.torpedo_primer": "鱼雷底火",
+  "block.vswap.primer": "底火",
+
   "block.vswap.shelled_propellant": "具壳发射药",
+  "block.vswap.empty_shelled_propellant": "空带壳发射药",
+  "block.vswap.ccc": "可燃壳发射药",
+  "block.vswap.gauge12": "12号霰弹(未完成)",
+
+  "block.vswap.warhead_apcr": "硬芯穿甲弹头",
+  "block.vswap.blunt_ap_warhead": "被帽穿甲弹头",
+  "block.vswap.warhead_apds": "APDS脱壳穿甲战斗部",
+  "block.vswap.apds_quarter_shell": "APDS脱壳穿甲战斗部四分之一弹托",
+  "block.vswap.he_warhead": "普通高爆战斗部",
+  "block.vswap.warhead_heat": "破甲战斗部",
+  "block.vswap.impact_fuze": "触发引信",
+
+  "block.vswap.tail_fin": "尾翼",
   "block.vswap.rotator": "自旋稳定测试方块",
   "block.vswap.wind_cap": "风帽(可以用但未完成)",
-  "block.vswap.gauge12": "12号霰弹(未完成)",
-  "block.vswap.ap_core_warhead": "硬芯穿甲弹头",
-  "block.vswap.apfsds_warhead": "APFSDS尾翼稳定脱壳穿甲弹战斗部",
-  "block.vswap.apfsds_quarter_shell": "APFSDS四分之一弹托",
-  "block.vswap.blunt_ap_warhead": "被帽穿甲弹头",
-  "block.vswap.he_warhead": "普通高爆战斗部",
-  "block.vswap.impact_fuze": "触发引信",
-  "block.vswap.primer": "底火",
-  "block.vswap.tail_fin": "尾翼",
+  "block.vswap.glider": "滑翔套件",
+  "block.vswap.glider_wing": "滑翔翼",
+  "block.vswap.rocket_booster": "火箭推进器",
+  "block.vswap.floating_chamber": "浮力仓",
+
   "block.vswap.shell_frame": "弹药架",
   "block.vswap.mech_scope_block": "机械式瞄具",
   "block.vswap.tele_scope_block": "光学瞄准镜",
@@ -29,7 +46,8 @@
 
   "block.vswap.projection_center": "投影中心(技术物品)",
   "block.vswap.vs_projector": "vs投影仪",
-
+  "block.vswap.projector_len": "投影棱镜",
+  "block.vswap.carbon_fiber_sail": "碳纤维风帆",
   "block.vswap.shredder": "粉碎机",
 
   "block.vswap.dock": "置船台",
@@ -53,13 +71,89 @@
   "info.vswap.std_propellant": "推进药量",
   "info.vswap.normalization": "转正效应",
   "info.vswap.critical_degree": "临界角",
+  "info.vswap.current_degree": "当前角度",
   "info.vswap.penetration_mul": "侵彻倍率",
   "info.vswap.ke_destruction_scalar": "动能-毁伤面积倍率",
 
   "term.vswap.ricochet_probability": "跳弹概率",
   "term.vswap.fatal_propellant": "致命阈值",
-  "term.vswap.after_normalization_rhae": "转正后等效"
+  "term.vswap.after_normalization_rhae": "转正后等效",
 
 
 
+  "msg.vswap.hold_ship.failed.by_tp_nonnull": "这个瓦尔基里载具被其他玩家或者方块控制",
+  "msg.vswap.hold_ship.failed.by_no_holdable_attachment": "这个瓦尔基里载具没有挂载锚点，试一试对它使用“很有武德的杖”",
+  "msg.vswap.hold_ship.failed.by_has_constraint": "这个瓦尔基里载具和其他载具具有约束",
+  "msg.vswap.hold_ship.drop.by_has_item_in_hand": "你拿了一个物品，手中的瓦尔基里载具掉了下来",
+  "msg.vswap.green_print.has_already_ship_data": "这个绿图已经记录了船的信息",
+
+
+
+  "vswap.ponder.industry/carbon_fiber_sail.header" : "碳纤维风帆",
+  "vswap.ponder.industry/carbon_fiber_sail.text1" : "传统的风帆方块达到8个才能使得风车轴承运作",
+  "vswap.ponder.industry/carbon_fiber_sail.text2" : "一个碳纤维风帆相当于4个普通风帆方块",
+
+
+  "vswap.ponder.industry/gp_projector_basic.header": "绿图&投影仪基础",
+  "vswap.ponder.industry/gp_projector_basic.text_1": "对着VS投影仪使用空绿图, 一个带有\"投影中心方块\"的瓦尔基里物理体会出现",
+  "vswap.ponder.industry/gp_projector_basic.text_2": "你可以从投影中心方块开始构建你的瓦尔基里物理体",
+  "vswap.ponder.industry/gp_projector_basic.text_3": "通过投影棱镜，你可以缩放这个物理体",
+  "vswap.ponder.industry/gp_projector_basic.text_4": "你也可以通过VS投影仪侧边的控件来升高和降低物理体",
+
+  "vswap.ponder.industry/extract_and_insert_gp.header": "取出/放入绿图",
+
+  "vswap.ponder.industry/gp_use_on_ship.header": "对着瓦尔基里物理体使用绿图",
+  "vswap.ponder.industry/gp_use_on_ship.text_1": "对着瓦尔基里物理体使用绿图，物理体将被保存在绿图中",
+  "vswap.ponder.industry/gp_use_on_ship.text_2": "将保存有物理体的绿图放入VS投影仪中，将会生成相同的物理体",
+
+  "vswap.ponder.industry/projector_rotation.header": "投影旋转",
+
+  "vswap.ponder.artillery/artillery_assembly.header": "火炮组装",
+  "vswap.ponder.artillery/artillery_assembly.text_1": "你可以使用任意物理轴承控制火炮",
+
+  "vswap.ponder.artillery/artillery_docker_loading.header": "火炮装填",
+  "vswap.ponder.artillery/artillery_docker_loading.text_1": "有许多种方法装填火炮...",
+  "vswap.ponder.artillery/artillery_docker_loading.text_2": "你可以使用可抓取物理体，或舵㭘(物品化物理体)",
+  "vswap.ponder.artillery/artillery_docker_loading.text_3": "只需要右键交互炮闩...",
+  "vswap.ponder.artillery/artillery_docker_loading.text_4": "弹头部分会被发射出去",
+  "vswap.ponder.artillery/artillery_docker_loading.text_5": "弹壳部分会从后方弹出",
+
+  "vswap.ponder.artillery/artillery_arm_loading.header": "火炮自动装填",
+  "vswap.ponder.artillery/artillery_arm_loading.text_1": "可以使用动力臂自动装填火炮",
+
+  "vswap.ponder.artillery/artillery_phys_loading.header": "基于物理的火炮装填",
+  "vswap.ponder.artillery/artillery_phys_loading.text_1": "你可以使用任意物理活塞进行装填",
+
+
+  "vswap.ponder.munition/primer_general.header": "底火",
+  "vswap.ponder.munition/primer_general.text_1": "不同底火有不同的功能",
+  "vswap.ponder.munition/primer_general.text_2": "基础底火通过火药燃气发射",
+  "vswap.ponder.munition/primer_general.text_3": "鱼雷底火保留全部弹体，炮弹以低速发射",
+  "vswap.ponder.munition/primer_general.text_4": "火箭推进器保留弹体并中速发射，最高点开启推进器",
+
+
+  "vswap.ponder.munition/munition_structure.header": "炮弹结构",
+  "vswap.ponder.munition/munition_structure.text_1": "炮弹底部必须存在底火",
+  "vswap.ponder.munition/munition_structure.text_2": "可以使用各种炮弹附件自定义炮弹",
+  "vswap.ponder.munition/munition_structure.text_3": "某些引信或者穿甲战斗部必须放在炮弹顶端才能正常使用",
+
+
+  "vswap.ponder.munition/munition_ap.header": "穿甲战斗部",
+  "vswap.ponder.munition/munition_ap.text_1": "穿甲弹的后效取决于弹头和动能",
+  "vswap.ponder.munition/munition_ap.text_2": "APFSDS有高穿透倍率和低毁伤倍率",
+  "vswap.ponder.munition/munition_ap.text_3": "所以APFSDS能够穿透远距离，但是造成的毁伤面积较小",
+  "vswap.ponder.munition/munition_ap.text_4": "APCR有中等穿透倍率和中等毁伤倍率",
+  "vswap.ponder.munition/munition_ap.text_5": "所以APCR在造成一定的毁伤面积的同时穿透一定距离",
+  "vswap.ponder.munition/munition_ap.text_6": "普通方块也能作为穿甲弹头，其毁伤倍率较高但是穿透倍率很低",
+  "vswap.ponder.munition/munition_ap.text_7": "动画仅供参考，请以实际效果为准",
+
+  "vswap.ponder.munition/munition_glider.header": "滑翔套件",
+  "vswap.ponder.munition/munition_glider.text_1": "炮弹在飞行过程中会受到重力影响",
+  "vswap.ponder.munition/munition_glider.text_2": "使用滑翔套件，到达最高点时，滑翔翼将被展开，炮弹开始滑翔",
+
+
+  "vswap.ponder.munition/munition_tf.header": "尾翼",
+  "vswap.ponder.munition/munition_tf.text_1": "炮弹在飞行过程中受到空气阻力的影响",
+  "vswap.ponder.munition/munition_tf.text_2": "这可能导致轨迹偏转",
+  "vswap.ponder.munition/munition_tf.text_3": "带有尾翼的炮弹飞行轨迹更加稳定"
 }

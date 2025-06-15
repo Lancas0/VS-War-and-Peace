@@ -13,10 +13,10 @@ import static net.minecraft.world.level.block.Block.box;
 
 public class DefaultCartridgeAdder extends DirectionAdder {
     public static final VoxelShape UP_SHAPE =
-        box(2, 0, 2, 14, 16, 14);  //todo model remake
+        box(3, 0, 3, 13, 16, 13);  //todo model remake
 
-    public DefaultCartridgeAdder() {
-        super(true, true, UP_SHAPE);
+    public DefaultCartridgeAdder(boolean dirOppositeToLook) {
+        super(dirOppositeToLook, true, UP_SHAPE);
     }
 
     public AABBd getLocalBound(BlockState state) {

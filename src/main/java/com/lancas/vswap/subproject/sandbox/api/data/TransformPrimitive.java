@@ -31,6 +31,9 @@ public class TransformPrimitive implements ITransformPrimitive, ISavedObject<Tra
     }
 
     @Override
+    public TransformPrimitive copy() { return new TransformPrimitive(this); }
+
+    @Override
     public Vector3dc getPosition() { return position; }
     @Override
     public Quaterniondc getRotation() { return rotation; }
@@ -50,12 +53,15 @@ public class TransformPrimitive implements ITransformPrimitive, ISavedObject<Tra
     }
 
 
-    public TransformPrimitive setPosition(Vector3dc newPos) {
-        position.set(newPos);
+    public TransformPrimitive setPosition(Vector3dc newPos) { return setPosition(newPos.x(), newPos.y(), newPos.z()); }
+    public TransformPrimitive setPosition(double x, double y, double z) {
+        position.set(x, y, z);
         return this;
     }
-    public TransformPrimitive addPosition(Vector3dc movement) {
-        position.add(movement);
+
+    public TransformPrimitive translate(Vector3dc movement) { return translate(movement.x(), movement.y(), movement.z()); }
+    public TransformPrimitive translate(double x, double y, double z) {
+        position.add(x, y, z);
         return this;
     }
     public TransformPrimitive setRotation(Quaterniondc newRot) {  //todo check rot normilized?

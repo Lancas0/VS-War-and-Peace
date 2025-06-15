@@ -12,6 +12,7 @@ import com.lancas.vswap.util.ShipUtil;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EntityType;
@@ -49,16 +50,17 @@ public abstract class PlayerMixin extends LivingEntity implements ICanHoldShip {
     @Unique private final Hashtable<String, Long> eachSlotHoldShipId = new Hashtable<>();
 
     @Override
-    public void getHoldingShipId(ShipHoldSlot slot, @Nullable Dest<Long> holdingShipIdDest) {
-        Long id = eachSlotHoldShipId.get(slot.slotName());
-        if (id != null && id >= 0)
-            Dest.setIfExistDest(holdingShipIdDest, id);
+    public @Nullable Long getHoldingShipId(ShipHoldSlot slot) {
+        return eachSlotHoldShipId.get(slot.slotName());
+        //if (id != null && id >= 0)
+        //    Dest.setIfExistDest(holdingShipIdDest, id);
     }
     @Override
     public boolean isHoldingShip(ShipHoldSlot slot) {
-        Dest<Long> holdingIdDest = new Dest<>();
-        getHoldingShipId(slot, holdingIdDest);
-        return holdingIdDest.hasValue();
+        //Dest<Long> holdingIdDest = new Dest<>();
+        //getHoldingShipId(slot, holdingIdDest);
+        //return holdingIdDest.hasValue();
+        return getHoldingShipId(slot) != null;
     }
     @Override
     public boolean isShipHolding(long shipId) {
@@ -85,7 +87,7 @@ public abstract class PlayerMixin extends LivingEntity implements ICanHoldShip {
         //can hold
         //if (prevSlotHoldShipId >= 0)
         if (isHoldingShip(slot))
-            unholdShipInServer(slot, false, null);  //will sync at the end, avoid sending more package
+            unholdShipInServer(slot, false);  //will sync at the end, avoid sending more package
 
         shipToHold.setTransformProvider(new ServerHoldTransformProvider(slot, holdable, thisPlayer.getUUID()));
         shipToHold.setStatic(true);
@@ -104,29 +106,28 @@ public abstract class PlayerMixin extends LivingEntity implements ICanHoldShip {
     }
 
     @Override
-    public void unholdShipInServer(ShipHoldSlot slot, boolean syncClient, @Nullable Dest<Long> prevHoldShipIdDest) {
-        if (!(level() instanceof ServerLevel sLevel)) return;
+    public @Nullable Long unholdShipInServer(ShipHoldSlot slot, boolean syncClient) {
+        if (!(level() instanceof ServerLevel sLevel)) return null;
 
         //not holding ship, directly return
-        Dest<Long> prevHoldShipId = new Dest<>();
-        getHoldingShipId(slot, prevHoldShipId);
-        if (!prevHoldShipId.hasValue()) return;
+        Long prevHoldShipId = getHoldingShipId(slot);
+        if (prevHoldShipId == null) return null;
 
         ServerPlayer thisPlayer = (ServerPlayer)(Object)this;
 
-        ServerShip holdenShip = ShipUtil.getServerShipByID(sLevel, prevHoldShipId.get());
+        ServerShip holdenShip = ShipUtil.getServerShipByID(sLevel, prevHoldShipId);
         if (holdenShip == null) {
             EzDebug.warn("fail to unhold ship because holdingId>0 but the ship is null");
-            Dest.setIfExistDest(prevHoldShipIdDest, null);
+            //Dest.setIfExistDest(prevHoldShipIdDest, null);
             eachSlotHoldShipId.remove(slot.slotName());
-            return;
+            return null;
         }
         HoldableAttachment holdable = holdenShip.getAttachment(HoldableAttachment.class);
         if (holdable == null) {
             EzDebug.fatal("the holden ship has no holdable att");
-            Dest.setIfExistDest(prevHoldShipIdDest, null);
+            //Dest.setIfExistDest(prevHoldShipIdDest, null);
             eachSlotHoldShipId.remove(slot.slotName());
-            return;
+            return null;
         }
 
         holdenShip.setTransformProvider(null);
@@ -143,16 +144,16 @@ public abstract class PlayerMixin extends LivingEntity implements ICanHoldShip {
             );
         }
 
-        Dest.setIfExistDest(prevHoldShipIdDest, prevHoldShipId.get());
+        //Dest.setIfExistDest(prevHoldShipIdDest, prevHoldShipId);
+        return prevHoldShipId;
     }
     @Override
     public void syncHoldShipInClient(ShipHoldSlot slot, long newHoldShipId, BlockPos holdBpInShip, Direction forwardInShip) {
         if (!(level() instanceof ClientLevel cLevel)) return;
         //newHoldShipId < 0 for unhold
 
-        Dest<Long> prevHoldShipId = new Dest<>();
-        getHoldingShipId(slot, prevHoldShipId);
-        ClientShip prevHoldShip = ShipUtil.getClientShipByID(cLevel, prevHoldShipId.get());
+        Long prevHoldShipId = getHoldingShipId(slot);
+        ClientShip prevHoldShip = ShipUtil.getClientShipByID(cLevel, prevHoldShipId);
         if (prevHoldShip != null) {
             prevHoldShip.setTransformProvider(null);
             EzDebug.log("[syncHoldShipInClient]setPrevHoldShip null client transform");

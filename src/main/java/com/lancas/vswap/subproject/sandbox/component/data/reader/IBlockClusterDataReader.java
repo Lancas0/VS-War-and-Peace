@@ -27,4 +27,9 @@ public interface IBlockClusterDataReader extends IComponentDataReader<BlockClust
     public Iterable<Vector3ic> allLocalPoses();
     public Iterable<BlockState> allBlockStates();
     public Iterable<Map.Entry<Vector3ic, BlockState>> allBlocks();
+
+    public BlockClusterData getCopiedData(BlockClusterData dest);
+    public default BlockClusterData getCopiedData() {
+        return getCopiedData(new BlockClusterData());
+    }
 }

@@ -47,13 +47,13 @@ public class SandBoxClientWorld implements ISandBoxWorld<IClientSandBoxShip> {
 
     private SandBoxClientWorld() {
         SandBoxClientThread clientThread = new SandBoxClientThread();
-        SandBoxClientPhysThread physThread = new SandBoxClientPhysThread();
+        SandBoxClientPhysThread physThread = new SandBoxClientPhysThread(this);
 
         threadRegistry.register(clientThread);
         threadRegistry.register(physThread);
 
         clientThread.initial(this);
-        physThread.initial(this);
+        //physThread.initial(this);
     }
 
     private boolean running = false;
@@ -73,6 +73,7 @@ public class SandBoxClientWorld implements ISandBoxWorld<IClientSandBoxShip> {
     public void reloadLevel(String levelName, Iterable<SandBoxClientShip> syncingClientShips, UUID wrappedGroundShipUuid/*Map<UUID, CompoundTag> savedRenders*/) {
         curLevelName = levelName;
 
+        //FIXME the client level is not unload when server exit
         //vsShipsCompactor.clear();
         wrappedGroundShip = new GroundShipWrapped(wrappedGroundShipUuid);
 
@@ -253,7 +254,7 @@ public class SandBoxClientWorld implements ISandBoxWorld<IClientSandBoxShip> {
 
 
     @Override
-    public Level getMcLevel() { return Minecraft.getInstance().level; }
+    public Level getWorld() { return Minecraft.getInstance().level; }
 
     @Override
     public IClientSandBoxShip getShip(UUID uuid) {

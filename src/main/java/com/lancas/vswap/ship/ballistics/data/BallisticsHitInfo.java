@@ -2,16 +2,23 @@ package com.lancas.vswap.ship.ballistics.data;
 
 import com.lancas.vswap.debug.EzDebug;
 import com.lancas.vswap.util.JomlUtil;
+import com.lancas.vswap.util.ShipUtil;
 import com.lancas.vswap.util.StrUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
 import org.joml.*;
 import org.valkyrienskies.core.api.ships.ClientShip;
+import org.valkyrienskies.core.api.ships.ServerShip;
 import org.valkyrienskies.core.api.ships.Ship;
 import org.valkyrienskies.core.api.ships.properties.ShipTransform;
+import org.valkyrienskies.mod.common.world.RaycastUtilsKt;
 
 import java.util.Comparator;
 
@@ -79,6 +86,20 @@ public class BallisticsHitInfo {
             sqDist,  //I didn't take mistakes: mojang take the wrong name, it is the squared length. The name should be distanceToSq. (sqr means square root)
             shipBeHit.getId()
         );
+    }
+    public static @Nullable BallisticsHitInfo clipIncludeShip(Level level, ClipContext clip) {
+        BlockHitResult hitResult = RaycastUtilsKt.clipIncludeShips(level, clip, false);
+
+        if (hitResult.getType() == HitResult.Type.MISS)
+            return null;
+
+        Ship hitShip = ShipUtil.getShipAt(level, hitResult.getBlockPos());
+        if (hitShip == null)
+            return inWorld(clip.getFrom(), hitResult.getBlockPos(), hitResult.getLocation(), hitResult.getDirection());
+        else {
+            Vector3d fromInShip = hitShip.getWorldToShip().transformPosition(JomlUtil.d(clip.getFrom()));
+            return inShip(hitShip, JomlUtil.v3(fromInShip), hitResult.getBlockPos(), hitResult.getLocation(), hitResult.getDirection());
+        }
     }
 
     @Override

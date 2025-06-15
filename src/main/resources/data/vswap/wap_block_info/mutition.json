@@ -1,6 +1,6 @@
 [
   {
-    "block": "vswap:ap_core_warhead",
+    "block": "vswap:warhead_apcr",
     "mass": "25",
     "hardness": 2000E3,
     "oblique_degree": 0.5,
@@ -10,7 +10,7 @@
     "spe_destruction_scalar": 0.6
   },
   {
-    "block": "vswap:apfsds_warhead",
+    "block": "vswap:warhead_apds",
     "mass": 15,
     "hardness": 2500E3,
     "normalization": 0.25,
@@ -32,6 +32,14 @@
     "mass": 40
   },
   {
+    "block": "vswap:warhead_heat",
+    "mass": 50
+  },
+  {
+    "block": "vswap:thermobaric_warhead",
+    "mass": 70
+  },
+  {
     "block": "vswap:impact_fuze",
     "mass": 10
   },
@@ -46,18 +54,23 @@
     "mass": 5
   },
   {
+    "block": "vswap:torpedo_primer",
+    "mass": 40
+  },
+
+  {
     "block": "vswap:shelled_propellant",
-    "mass": 30
+    "mass": 30,
     "std_propellant_energy": 1
   },
   {
     "block": "vswap:ccc",
-    "mass": 25
+    "mass": 25,
     "std_propellant_energy": 0.8
   },
   {
     "block": "vswap:gauge12",
-    "mass": 30
+    "mass": 30,
     "std_propellant_energy": 0.65
   },
 
@@ -73,5 +86,13 @@
   {
     "block": "vswap:glider",
     "mass": 20
+  },
+  {
+    "block": "vswap:rocket_booster",
+    "mass": 50
+  },
+  {
+    "block": "vswap:floating_chamber",
+    "mass": 15
   }
 ]

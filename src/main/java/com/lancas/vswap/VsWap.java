@@ -14,7 +14,6 @@ import com.mojang.logging.LogUtils;
 import com.simibubi.create.foundation.data.CreateRegistrate;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
@@ -31,7 +30,6 @@ import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.slf4j.Logger;
 
 
@@ -70,6 +68,7 @@ public class VsWap {
         WapBlocks.register();
         WapBlockEntites.register();
         WapUI.register();
+        WapPonderIndex.register();
         ArmInteractionTypes.register();
 
         WapSounds.register(modEventBus);
@@ -94,7 +93,7 @@ public class VsWap {
         //modEventBus.addListener(this::addCreative);
 
         // Register our mod's ForgeConfigSpec so that Forge can create and load the config file for us
-        modLoadingContext.registerConfig(ModConfig.Type.COMMON, WapCommonConfig.SPEC, COMMON_FILENAME);
+        modLoadingContext.registerConfig(ModConfig.Type.COMMON, WapConfig.SPEC, COMMON_FILENAME);
 
 
         Mod.EventBusSubscriber.Bus.FORGE.bus().get().addListener(EventPriority.HIGH, this::registerHPResourceManagers);

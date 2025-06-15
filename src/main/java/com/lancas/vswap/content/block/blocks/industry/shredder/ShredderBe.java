@@ -91,7 +91,7 @@ public class ShredderBe extends BlockBreakingKineticBlockEntity /*KineticBlockEn
     public ShredderBe(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
         //AllBlockEntityTypes.ITEM_VAULT.ITEM_VAULT
-        EzDebug.log("on create inv:" + inInventory);
+        //EzDebug.log("on create inv:" + inInventory);
     }
 
     @Override

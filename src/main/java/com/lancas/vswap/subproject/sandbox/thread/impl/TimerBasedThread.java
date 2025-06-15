@@ -7,18 +7,18 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public abstract class TimerBasedThread<TWorld extends ISandBoxWorld<?>> implements ISandBoxThread<TWorld> {
-    protected TWorld world;
-    public TWorld getWorld() { return world; }
+    //protected TWorld world;
+    //public TWorld getWorld() { return world; }
 
     protected final Timer timer = new Timer(getTimerName());
     protected volatile boolean started = false;
     protected volatile boolean pausing = false;
 
 
-    @Override
-    public void initial(TWorld inWorld) {
+    /*@Override
+    //public void initial(TWorld inWorld) {
         world = inWorld;
-    }
+    }*/
     @Override
     public void start() {
         pausing = false;

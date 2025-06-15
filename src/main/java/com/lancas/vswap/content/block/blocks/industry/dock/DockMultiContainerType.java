@@ -1,6 +1,6 @@
 package com.lancas.vswap.content.block.blocks.industry.dock;
 
-import com.lancas.vswap.WapCommonConfig;
+import com.lancas.vswap.WapConfig;
 import com.lancas.vswap.foundation.handler.multiblock.IMultiContainerType;
 
 public class DockMultiContainerType implements IMultiContainerType {
@@ -12,13 +12,13 @@ public class DockMultiContainerType implements IMultiContainerType {
 
     @Override
     public int getMaxLength() {
-        int maxLen = WapCommonConfig.dockMaxLength;
+        int maxLen = WapConfig.dockMaxLength;
         return maxLen;
     }
 
     @Override
     public int getMaxWidth() {
-        int maxWidth = WapCommonConfig.dockMaxWidth;
+        int maxWidth = WapConfig.dockMaxWidth;
         return maxWidth;
     }
 }

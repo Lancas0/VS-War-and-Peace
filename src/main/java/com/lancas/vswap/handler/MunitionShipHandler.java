@@ -45,7 +45,7 @@ public class MunitionShipHandler {
             if (!(curState.getBlock() instanceof IPropellant propellant)) break;
 
 
-            propellingEnergy += propellant.getEnergy(curState);
+            propellingEnergy += propellant.getSPE(curState);
             if (propellantCallback != null)
                 propellantCallback.accept(curPos, curState);
 

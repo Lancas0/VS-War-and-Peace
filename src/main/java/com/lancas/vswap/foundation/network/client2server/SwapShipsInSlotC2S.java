@@ -41,28 +41,26 @@ public class SwapShipsInSlotC2S {
             ShipHoldSlot fromSlot = ShipHoldSlot.valueOf(fromSlotName);
             ShipHoldSlot toSlot = ShipHoldSlot.valueOf(toSlotName);
 
-            Dest<Long> fromSlotShipId = new Dest<>();
-            Dest<Long> toSlotShipId = new Dest<>();
-            icanHoldShip.getHoldingShipId(fromSlot, fromSlotShipId);
-            icanHoldShip.getHoldingShipId(toSlot, toSlotShipId);
+            Long fromSlotShipId = icanHoldShip.getHoldingShipId(fromSlot);
+            Long toSlotShipId = icanHoldShip.getHoldingShipId(toSlot);
 
-            if (fromSlotShipId.hasValue() && toSlotShipId.hasValue()) {
-                icanHoldShip.unholdShipInServer(fromSlot, false, null);
-                icanHoldShip.unholdShipInServer(toSlot, false, null);
-                icanHoldShip.tryHoldInServer(fromSlot, toSlotShipId.get(), true);
-                icanHoldShip.tryHoldInServer(toSlot, fromSlotShipId.get(), true);
+            if (fromSlotShipId != null && toSlotShipId != null) {
+                icanHoldShip.unholdShipInServer(fromSlot, false);
+                icanHoldShip.unholdShipInServer(toSlot, false);
+                icanHoldShip.tryHoldInServer(fromSlot, toSlotShipId, true);
+                icanHoldShip.tryHoldInServer(toSlot, fromSlotShipId, true);
                 return;
             }
 
-            //will packet arrive time effects?
-            if (fromSlotShipId.hasValue()) {
-                icanHoldShip.unholdShipInServer(fromSlot, true, null);
-                icanHoldShip.tryHoldInServer(toSlot, fromSlotShipId.get(), true);
+            //FIXME will packet arrive time effects?
+            if (fromSlotShipId != null) {
+                icanHoldShip.unholdShipInServer(fromSlot, true);
+                icanHoldShip.tryHoldInServer(toSlot, fromSlotShipId, true);
                 return;
             }
-            if (toSlotShipId.hasValue()) {
-                icanHoldShip.unholdShipInServer(toSlot, true, null);
-                icanHoldShip.tryHoldInServer(fromSlot, toSlotShipId.get(), true);
+            if (toSlotShipId != null) {
+                icanHoldShip.unholdShipInServer(toSlot, true);
+                icanHoldShip.tryHoldInServer(fromSlot, toSlotShipId, true);
                 return;
             }
         });

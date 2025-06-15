@@ -1,13 +1,9 @@
 package com.lancas.vswap.register;
 
-import com.lancas.vswap.WapCommonConfig;
-import net.minecraft.util.Mth;
-import net.minecraft.world.entity.player.Player;
+import com.lancas.vswap.WapConfig;
 import net.minecraftforge.client.event.ViewportEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import rbasamoyai.ritchiesprojectilelib.RPLClient;
-import rbasamoyai.ritchiesprojectilelib.forge.ForgeCameraModifier;
 
 
 @Mod.EventBusSubscriber
@@ -18,7 +14,7 @@ public class PlayerScreenShakeEvt {
     public static void setShakeTickNoLessThan(int x) {
         remainTick = Math.max(x, remainTick);
     }
-    public static void setShakeTicksNoLessThanDefaultTicks() { remainTick = Math.max(WapCommonConfig.shakeTicks, remainTick); }
+    public static void setShakeTicksNoLessThanDefaultTicks() { remainTick = Math.max(WapConfig.shakeTicks, remainTick); }
 
     @SubscribeEvent
     public static void onCameraSetup(ViewportEvent.ComputeCameraAngles event) {

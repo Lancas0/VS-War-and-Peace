@@ -4,49 +4,37 @@ import com.lancas.vswap.VsWap;
 import com.lancas.vswap.content.item.items.docker.Docker;
 import com.lancas.vswap.content.ui.DockerStateScreen;
 import com.lancas.vswap.debug.EzDebug;
-import com.lancas.vswap.foundation.network.KeyPressPacket;
 import com.lancas.vswap.foundation.network.NetworkHandler;
 import com.lancas.vswap.foundation.network.client2server.SwapShipsInSlotC2S;
 import com.lancas.vswap.foundation.network.client2server.ThrowShipPacketC2S;
 import com.lancas.vswap.ship.feature.hold.ShipHoldSlot;
 import com.lancas.vswap.subproject.mstandardized.MaterialStandardizedItem;
 import com.lancas.vswap.subproject.mstandardized.gui.MsSelectBlockMenu;
-import com.lancas.vswap.subproject.sandbox.SandBoxClientWorld;
-import com.lancas.vswap.subproject.sandbox.api.data.TransformPrimitive;
-import com.lancas.vswap.subproject.sandbox.component.data.BlockClusterData;
-import com.lancas.vswap.subproject.sandbox.component.data.RigidbodyData;
-import com.lancas.vswap.subproject.sandbox.ship.SandBoxClientShip;
-import com.lancas.vswap.util.JomlUtil;
 import com.simibubi.create.foundation.gui.ScreenOpener;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import org.joml.Quaterniond;
-import org.joml.Vector3d;
-import org.joml.Vector3i;
 import org.lwjgl.glfw.GLFW;
 
-import java.util.Hashtable;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.BiConsumer;
 
 @Mod.EventBusSubscriber(modid = VsWap.MODID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
 public enum KeyBinding {
-    FireKey(
+    /*FireKey(
         "Fire Key",
         GLFW.GLFW_MOUSE_BUTTON_LEFT,
         true,
         (kb, pressing) -> NetworkHandler.channel.sendToServer(new KeyPressPacket(kb.getKey(), pressing)),
         null, null
-    ),
+    ),*/
     /*MoveForwardKey(
         "Move Forward Key",
         GLFW.GLFW_KEY_W,
@@ -76,7 +64,7 @@ public enum KeyBinding {
         null, null
     ),*/
     ScopeKey(
-        "Scope Key",
+        Component.translatable("key.vswap.scope_key").getString(),
         GLFW.GLFW_MOUSE_BUTTON_RIGHT,
         true,
         null, null, null
@@ -98,7 +86,7 @@ public enum KeyBinding {
         null, null
     ),*/
     ThrowKey(
-        "Throw Key",
+        Component.translatable("key.vswap.throw_key").getString(),
         GLFW.GLFW_KEY_G,
         true,
         null,
@@ -106,7 +94,7 @@ public enum KeyBinding {
         (kb, tickCnt) -> { NetworkHandler.channel.sendToServer(new ThrowShipPacketC2S(tickCnt)); }
     ),
     CarryBackKey(
-        "Carry Back",
+        Component.translatable("key.vswap.carry_to_back_key").getString(),
         GLFW.GLFW_KEY_B,
         true,
         (key, keyDown) -> {
@@ -116,7 +104,7 @@ public enum KeyBinding {
         null
     ),
     LeftAlt(
-        "AltKey",
+        Component.translatable("key.vswap.switch_key").getString(),
         GLFW.GLFW_KEY_LEFT_ALT,
         true,
         (key, keyDown) -> {
@@ -138,8 +126,8 @@ public enum KeyBinding {
         GLFW.GLFW_KEY_P,
         true,
         (kb, keyDown) -> { if (!keyDown) return;
-            EzDebug.log("current sandbox client level:" + SandBoxClientWorld.INSTANCE.getCurLevelName());
-            EzDebug.logs(() -> SandBoxClientWorld.INSTANCE.allClientShips().iterator(), SandBoxClientShip::toString);
+            //EzDebug.log("current sandbox client level:" + SandBoxClientWorld.INSTANCE.getCurLevelName());
+            //EzDebug.logs(() -> SandBoxClientWorld.INSTANCE.allClientShips().iterator(), SandBoxClientShip::toString);
 
         },
         null, null
@@ -155,6 +143,21 @@ public enum KeyBinding {
                 EzDebug.log("server recieved remove all ships");
                 SandBoxServerWorld.removeAllShip(ctx.getSender().serverLevel());
             }));*/
+            //
+            try {
+                //HelloPhysX.main();
+                //Class.forName("physx.common.PxErrorCallback");
+                //EzDebug.highlight("has class");
+                /*Set<Class> all = findAllClassesUsingClassLoader("physx.common");//
+                EzDebug.log("all count:" + all.size());
+                EzDebug.logs(all, x -> x.getName());*/
+
+                //Package[] packs = Package.getPackages();
+                //EzDebug.logs(List.of(packs), p -> p.getName());
+                // .stream().map(x -> x.getName()).forEach(EzDebug::log);
+            } catch (Exception e) {
+                EzDebug.warn("fail " + e.toString());
+            }
         },
         null, null
     ),
@@ -163,7 +166,7 @@ public enum KeyBinding {
         GLFW.GLFW_KEY_I,
         true,
         (kb, keyDown) -> { if (!keyDown) return;
-            Player player = Minecraft.getInstance().player;
+            /*Player player = Minecraft.getInstance().player;
             EzDebug.log("try create ship");
             //NetworkHandler.sendToServer(new CreateShipAtPlayerFromClientPacketC2S(9));
             BlockClusterData blockData = new BlockClusterData();
@@ -173,10 +176,30 @@ public enum KeyBinding {
                 UUID.randomUUID(),
                 new RigidbodyData(new TransformPrimitive(JomlUtil.d(player.position()), new Quaterniond(), new Vector3d(1, 1, 1))),
                 blockData
-            ));
+            ));*/
         },
         null, null
     );
+
+
+    /*public static Set<Class> findAllClassesUsingClassLoader(String packageName) {
+        InputStream stream = ClassLoader.getSystemClassLoader()
+            .getResourceAsStream(packageName.replaceAll("[.]", "/"));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+        return reader.lines()
+            .filter(line -> line.endsWith(".class"))
+            .map(line -> getClax(line, packageName))
+            .collect(Collectors.toSet());
+    }
+    private static Class getClax(String className, String packageName) {
+        try {
+            return Class.forName(packageName + "."
+                + className.substring(0, className.lastIndexOf('.')));
+        } catch (ClassNotFoundException e) {
+            // handle the exception
+        }
+        return null;
+    }*/
 
 
     private static Hashtable<String, KeyBinding> name2key = new Hashtable<>();

@@ -1,12 +1,13 @@
 package com.lancas.vswap.content.block.blocks.cartridge.modifier;
 
+/*
 import com.lancas.vswap.subproject.blockplusapi.blockplus.BlockPlus;
 import com.lancas.vswap.subproject.blockplusapi.blockplus.adder.IBlockAdder;
 import com.lancas.vswap.content.block.blocks.blockplus.DefaultCartridgeAdder;
 
 import java.util.List;
 
-public class RocketBooster extends BlockPlus implements IModifier/*, IBE<RocketBoosterBE>*/ {
+public class RocketBooster extends BlockPlus implements IModifier/.*, IBE<RocketBoosterBE>*./ {
     public static double BOOST_POWER = 4E5;
 
     public static List<IBlockAdder> providers = List.of(
@@ -20,7 +21,7 @@ public class RocketBooster extends BlockPlus implements IModifier/*, IBE<RocketB
     }
 
 
-    /*@Override
+    /.*@Override
     public Vector3dc calculateForceInServerTick(ModifierData data) {
         if (!data.isOutArtillery) return new Vector3d();
 
@@ -41,5 +42,6 @@ public class RocketBooster extends BlockPlus implements IModifier/*, IBE<RocketB
     @Override
     public BlockEntityType<? extends RocketBoosterBE> getBlockEntityType() {
         return EinherjarBlockEntites.ROCKET_BOOSTER_BE.get();
-    }*/
+    }*./
 }
+*/

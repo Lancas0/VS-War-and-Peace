@@ -1,5 +1,11 @@
 [
   {
+    "block": "minecraft:iron_block",
+    "armour_rhae": 1,
+    "armour_ab_ratio": 1
+  },
+
+  {
     "block": "minecraft:copper_block",
     "hardness": 350E3,
     "toughness": 500E3

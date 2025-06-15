@@ -7,10 +7,11 @@ import com.lancas.vswap.subproject.blockplusapi.blockplus.adder.DirectionAdder;
 import com.lancas.vswap.subproject.blockplusapi.blockplus.adder.IBlockAdder;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.state.BlockState;
+import org.apache.commons.lang3.NotImplementedException;
 
 import java.util.List;
 
-import static com.lancas.vswap.content.WapBlocks.Cartridge.Propellant.Empty.EMPTY_GAUGE12;
+//import static com.lancas.vswap.content.WapBlocks.Cartridge.Propellant.Empty.EMPTY_GAUGE12;
 
 public class Gauge12Block extends BlockPlus implements IPropellant {
     @Override
@@ -18,7 +19,7 @@ public class Gauge12Block extends BlockPlus implements IPropellant {
         return BlockPlus.addersIfAbsent(
             Gauge12Block.class,
 
-            () -> List.of(new DefaultCartridgeAdder())
+            () -> List.of(new DefaultCartridgeAdder(true))
         );
     }
 
@@ -28,14 +29,15 @@ public class Gauge12Block extends BlockPlus implements IPropellant {
 
 
     @Override
-    public double getEnergy(BlockState state) { return WapBlockInfos.StdPropellantEnergy.valueOrDefaultOf(state); }
+    public double getSPE(BlockState state) { return WapBlockInfos.StdPropellantEnergy.valueOrDefaultOf(state); }
     @Override
     public boolean isEmpty(BlockState state) { return false; }
 
     @Override
     public BlockState getEmptyState(BlockState state) {
         Direction dir = state.getValue(DirectionAdder.FACING);
-        return EMPTY_GAUGE12.getDefaultState().setValue(DirectionAdder.FACING, dir);
+        throw new NotImplementedException("todo return empty gauge12");
+        //return EMPTY_GAUGE12.getDefaultState().setValue(DirectionAdder.FACING, dir);
         /*ServerShip onShip = ShipUtil.getServerShipAt(level, pos);
         if (onShip == null) {
             EzDebug.error("gauge should be on ship");

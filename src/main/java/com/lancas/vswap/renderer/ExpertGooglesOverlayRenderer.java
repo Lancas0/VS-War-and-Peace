@@ -254,7 +254,12 @@ public class ExpertGooglesOverlayRenderer {
                 double criticalDeg = WapBlockInfos.CriticalDegree.valueOrDefaultOf(warheadState);//BallisticsMath.calculateCriticalDegree(warheadHardness, armourHardness);
                 double incidenceDeg = BallisticsMath.calIncidenceDeg(incidenceDir, normal);
                 //todo translate
-                tooltip.add(Component.literal("临界角:" + StrUtil.F2(criticalDeg) + "°" + ", 当前角度:" + StrUtil.F2(incidenceDeg) + "°"));
+                tooltip.add(Component.translatable("info.vswap.critical_degree")
+                    .append(": " + StrUtil.F2(criticalDeg) + "°")
+                    .append(", ")
+                    .append(Component.translatable("info.vswap.current_degree"))
+                    .append(": " + StrUtil.F2(incidenceDeg) + "°")
+                );
 
                 double ricochetPob = WapBallisticMath.DEG.calRicochetPob(warheadState, incidenceDeg);
                 tooltip.add(Component.translatable("term.vswap.ricochet_probability").append(": ").append(WapLang.percent01Format(ricochetPob)));

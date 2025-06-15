@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "facing=down":  { "model": "vswap:block/industry/create/carbon_fiber_sail", "x": 180 },
+    "facing=up":    { "model": "vswap:block/industry/create/carbon_fiber_sail" },
+    "facing=north": { "model": "vswap:block/industry/create/carbon_fiber_sail", "x": 90 },
+    "facing=south": { "model": "vswap:block/industry/create/carbon_fiber_sail", "x": 90, "y": 180 },
+    "facing=west":  { "model": "vswap:block/industry/create/carbon_fiber_sail", "x": 90, "y": 270 },
+    "facing=east":  { "model": "vswap:block/industry/create/carbon_fiber_sail", "x": 90, "y": 90 }
+  }
+}

@@ -8,6 +8,7 @@ import com.lancas.vswap.util.StrUtil;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.LongArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import org.valkyrienskies.core.api.ships.ServerShip;
@@ -56,6 +57,26 @@ public class WapCommands {
                         ctx.getSource().getServer().getAllLevels().forEach(
                             l -> SandBoxServerWorld.getOrCreate(l).markAllDeleted()
                         );
+                        return 1;
+                    })
+                )
+            )
+        );
+
+        dispatcher.register(Commands.literal("sandbox").then(Commands.literal("debug-list")
+                .then(Commands.literal("pos")
+                    .executes(ctx -> {
+                        var allSaShips = SandBoxServerWorld.getOrCreate(ctx.getSource().getLevel()).allServerShips().toList();
+                        EzDebug.logs(allSaShips, s -> s.getUuid() + ": " + StrUtil.F2(s.getRigidbody().getDataReader().getPosition()));
+                        return 1;
+                    })
+                )
+                .then(Commands.literal("blocks")
+                    .executes(ctx -> {
+                        SandBoxServerWorld.getOrCreate(ctx.getSource().getLevel()).allServerShips().forEach(s -> {
+                            EzDebug.log("---ship " + s.getUuid() + " -----");
+                            EzDebug.logs(s.getBlockCluster().getDataReader().allBlocks(), e -> String.format("(%s, %s)", e.getKey(), StrUtil.getBlockName(e.getValue())));
+                        });
                         return 1;
                     })
                 )

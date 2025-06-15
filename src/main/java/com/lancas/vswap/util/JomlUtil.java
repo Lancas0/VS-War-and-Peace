@@ -53,6 +53,7 @@ public class JomlUtil {
     }
     public static Vector3i i(BlockPos pos) {  return new Vector3i(pos.getX(), pos.getY(), pos.getZ()); }
     public static Vector3i i(Vec3i v) { return new Vector3i(v.getX(), v.getY(), v.getZ()); }
+    public static Vector3i i(Vector3dc v) { return new Vector3i((int)v.x(), (int)v.y(), (int)v.z()); }
     public static Vector3i iNormal(Direction dir) { return i(dir.getNormal()); }
 
     public static Vec3 v3(Vector3dc v) {
@@ -64,6 +65,10 @@ public class JomlUtil {
 
     public static BlockPos bp(Vec3i v) { return new BlockPos(v.getX(), v.getY(), v.getZ()); }
     public static BlockPos bp(Vector3ic v) { return new BlockPos(v.x(), v.y(), v.z()); }
+
+
+    public static Vector3d dSet(Vector3d v, Vec3 val) { return v.set(val.x, val.y, val.z); }
+    public static Vector3i iSet(Vector3i v, Vec3i val) { return v.set(val.getX(), val.getY(), val.getZ()); }
 
     /*
     public static BlockPos bp(Vector3ic v) {
@@ -143,6 +148,8 @@ public class JomlUtil {
 
 
     public static Vector3d dCenter(BlockPos pos) { return JomlUtil.d(pos.getCenter()); }
+    public static Vector3d dCenter(int x, int y, int z) { return new Vector3d(x + 0.5, y + 0.5, z + 0.5); }
+    public static Vec3 center(int x, int y, int z) { return new Vec3(x + 0.5, y + 0.5, z + 0.5); }
     public static Vector3d dCenter(AABB aabb) { return JomlUtil.d(aabb.getCenter()); }
     public static Vector3d dNormal(Direction dir) { return JomlUtil.d(dir.getNormal()); }
     public static Vector3d dNormal(Direction dir, double len) { return JomlUtil.dNormal(dir).mul(len); }
@@ -333,6 +340,9 @@ public class JomlUtil {
     public static Vector3d dWorldNormal(Matrix4dc shipToWorld, Direction dir) {
         return shipToWorld.transformDirection(JomlUtil.dNormal(dir)).normalize();
     }
+    public static Vector3d dWorldNormal(Quaterniondc rotation, Direction dir) {
+        return rotation.transform(JomlUtil.dNormal(dir)).normalize();
+    }
 
     public static BlockPos bpContaining(Vector3dc p) {
         return new BlockPos((int)Math.floor(p.x()), (int)Math.floor(p.y()), (int)Math.floor(p.z()));
@@ -355,6 +365,20 @@ public class JomlUtil {
     public static double lerpD(double a, double b, double t) {
         return (1 - t) * a + t * b;
     }
+    public static Matrix4d lerpTransformerD(Matrix4dc a, Matrix4dc b, double t, Matrix4d dest) {
+        return dest.translationRotateScale(
+            a.getTranslation(new Vector3d()).lerp(b.getTranslation(new Vector3d()), t),
+            a.getNormalizedRotation(new Quaterniond()).slerp(b.getNormalizedRotation(new Quaterniond()), t),
+            a.getScale(new Vector3d()).lerp(b.getScale(new Vector3d()), t)
+        );
+    }
+    public static Matrix4f lerpTransformerF(Matrix4fc a, Matrix4fc b, float t, Matrix4f dest) {
+        return dest.translationRotateScale(
+            a.getTranslation(new Vector3f()).lerp(b.getTranslation(new Vector3f()), t),
+            a.getNormalizedRotation(new Quaternionf()).slerp(b.getNormalizedRotation(new Quaternionf()), t),
+            a.getScale(new Vector3f()).lerp(b.getScale(new Vector3f()), t)
+        );
+    }
     public static Vec3 lerpV3(Vec3 a, Vec3 b, double t) {
         return new Vec3(
             lerpD(a.x, b.x, t),
@@ -367,6 +391,27 @@ public class JomlUtil {
         dest.y = lerpD(a.y(), b.y(), t);
         dest.z = lerpD(a.z(), b.z(), t);
         return dest;
+    }
+    public static AABB lerpAABB(AABB from, AABB to, double t) {
+        return new AABB(
+            lerpD(from.minX, to.minX, t),
+            lerpD(from.minY, to.minY, t),
+            lerpD(from.minZ, to.minZ, t),
+            lerpD(from.maxX, to.maxX, t),
+            lerpD(from.maxY, to.maxY, t),
+            lerpD(from.maxZ, to.maxZ, t)
+        );
+    }
+    public static AABBd lerpAABBd(AABBd from, AABBd to, double t, AABBd dest) {
+        return dest.setMin(
+            lerpD(from.minX, to.minX, t),
+            lerpD(from.minY, to.minY, t),
+            lerpD(from.minZ, to.minZ, t)
+        ).setMax(
+            lerpD(from.maxX, to.maxX, t),
+            lerpD(from.maxY, to.maxY, t),
+            lerpD(from.maxZ, to.maxZ, t)
+        );
     }
 
     public static AABBd dCenterExtended(Vector3dc center, Vector3dc extend) {
@@ -638,25 +683,9 @@ public class JomlUtil {
 
     public static Quaterniond rotateXZYDeg(double xDeg, double zDeg, double yDeg) { return new Quaterniond().rotateX(Math.toRadians(xDeg)).rotateZ(Math.toRadians(zDeg)).rotateY(Math.toRadians(yDeg)); }
 
-    public static Quaterniond swingRotateTo(Vector3dc from, Vector3dc to, Quaterniond dest) {
-        Vector3d rotateAxis = from.cross(to, new Vector3d()).normalize();
-
-        //FIXME if A is parallel to B...
-        /*if (rotateAxis.length() < 1e-12) {
-            // A和B平行但方向相同
-            if (from.dot(to) > 0) {
-                return new Quaterniond(); // 单位旋转
-            }
-            return
-            // A和B方向相反，使用垂直的任意轴
-            rotationAxis.cross(A, up);
-            if (rotationAxis.length() < 1e-12) {
-                // 如果A与up平行，选择另一个轴
-                rotationAxis.cross(A, new Vector3d(1, 0, 0));
-            }
-        }*/
-        double rad = Math.acos(Math.min(1.0, Math.max(-1.0, from.dot(to))));
-        return dest.rotateAxis(rad, rotateAxis);
+    public static Quaterniond swingYXRotateTo(Vector3dc from, Vector3dc to, Quaterniond dest) {
+        Vector3d euler = new Quaterniond().rotateTo(from, to).getEulerAnglesYXZ(new Vector3d());
+        return dest.rotationYXZ(euler.y, euler.x, 0);
     }
 
 

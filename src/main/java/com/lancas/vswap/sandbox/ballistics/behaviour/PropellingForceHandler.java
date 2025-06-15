@@ -12,7 +12,7 @@ public class PropellingForceHandler {
     public static final double GUNPOWDER_GAS_GAMMA = 1.25;
     public static final double HIGH_PRESSURE_STAGE_ALPHA = 0.9;
 
-    public static final double STD_PROPELLANT_ENERGY = 1E4;//temp 1E4//1E5;
+    public static final double STD_PROPELLANT_ENERGY = 1E5;//temp 1E4//1E5;
 
     public static void applyPropellingForceIfShould(SandBoxServerShip ship, BallisticData data) {
         //EzDebug.log("termianted:" + data.terminated + ", always:" + data.barrelCtx.alwaysInBarrelSinceLaunch);

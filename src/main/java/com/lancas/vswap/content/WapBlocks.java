@@ -2,29 +2,23 @@ package com.lancas.vswap.content;
 
 import com.lancas.vswap.content.behaviour.block.ScopeMovementBehaviour;
 import com.lancas.vswap.content.block.blocks.artillery.ArtilleryBarrelBlock;
-import com.lancas.vswap.content.block.blocks.artillery.ArtilleryPart1Block;
-import com.lancas.vswap.content.block.blocks.artillery.ArtilleryPlateBlock;
 import com.lancas.vswap.content.block.blocks.artillery.CartridgeRailBlock;
 import com.lancas.vswap.content.block.blocks.artillery.breech.EjectingBreech;
-import com.lancas.vswap.content.block.blocks.artillery.breech.valkyiren.HellBreech;
-import com.lancas.vswap.content.block.blocks.cartridge.ShellFrame;
-import com.lancas.vswap.content.block.blocks.cartridge.glider.Glider;
-import com.lancas.vswap.content.block.blocks.cartridge.glider.GliderWing;
-import com.lancas.vswap.content.block.blocks.cartridge.modifier.WindCap;
+import com.lancas.vswap.content.block.blocks.cartridge.attach.FloatingChamber;
+import com.lancas.vswap.content.block.blocks.cartridge.booster.RocketBooster;
+import com.lancas.vswap.content.block.blocks.cartridge.attach.glider.Glider;
+import com.lancas.vswap.content.block.blocks.cartridge.attach.glider.GliderWing;
+import com.lancas.vswap.content.block.blocks.cartridge.primer.TorpedoPrimer;
 import com.lancas.vswap.content.block.blocks.cartridge.propellant.CombustiblePropellantBlock;
-import com.lancas.vswap.content.block.blocks.cartridge.propellant.Gauge12Block;
-import com.lancas.vswap.content.block.blocks.cartridge.PrimerBlock;
+import com.lancas.vswap.content.block.blocks.cartridge.primer.PrimerBlock;
 import com.lancas.vswap.content.block.blocks.cartridge.propellant.ShelledPropellant;
-import com.lancas.vswap.content.block.blocks.cartridge.warhead.ApCoreWarhead;
-import com.lancas.vswap.content.block.blocks.cartridge.warhead.BluntApWarhead;
-import com.lancas.vswap.content.block.blocks.cartridge.warhead.HeWarhead;
+import com.lancas.vswap.content.block.blocks.cartridge.warhead.*;
 import com.lancas.vswap.content.block.blocks.cartridge.fuze.ImpactFuze;
-import com.lancas.vswap.content.block.blocks.cartridge.modifier.TailFin;
-import com.lancas.vswap.content.block.blocks.cartridge.propellant.empty.EmptyGauge12;
+import com.lancas.vswap.content.block.blocks.cartridge.attach.TailFin;
 import com.lancas.vswap.content.block.blocks.cartridge.propellant.empty.EmptyShelledPropellant;
-import com.lancas.vswap.content.block.blocks.cartridge.warhead.apfsds.ApfsdsQuarterShell;
-import com.lancas.vswap.content.block.blocks.cartridge.warhead.apfsds.ApfsdsWarhead;
+import com.lancas.vswap.content.block.blocks.cartridge.warhead.apds.WarheadAPDS;
 import com.lancas.vswap.content.block.blocks.debug.Block01;
+import com.lancas.vswap.content.block.blocks.industry.create.CarbonFiberSail;
 import com.lancas.vswap.content.block.blocks.industry.dock.Dock;
 import com.lancas.vswap.content.block.blocks.industry.dock.DockCTBehaviour;
 import com.lancas.vswap.content.block.blocks.industry.dock.GreenPrintHolder;
@@ -32,7 +26,7 @@ import com.lancas.vswap.content.block.blocks.industry.shredder.Shredder;
 import com.lancas.vswap.content.block.blocks.industry.projector.ProjectionCenter;
 import com.lancas.vswap.content.block.blocks.industry.projector.ProjectorLen;
 import com.lancas.vswap.content.block.blocks.industry.projector.VSProjector;
-import com.lancas.vswap.content.block.blocks.redstone.ActivatorBlock;
+//import com.lancas.vswap.content.block.blocks.redstone.ActivatorBlock;
 import com.lancas.vswap.content.block.blocks.scope.MechScopeBlock;
 import com.lancas.vswap.content.block.blocks.scope.TelescopicScope;
 import com.lancas.vswap.subproject.blockplusapi.itemplus.ItemPlus;
@@ -57,13 +51,13 @@ public class WapBlocks {
         .build()
         .register();*/
 
-        public static BlockEntry<ArtilleryPlateBlock> ARTILLERY_PLATE = REGISTRATE //todo friction
+        /*public static BlockEntry<ArtilleryPlateBlock> ARTILLERY_PLATE = REGISTRATE //todo friction
             .block("artillery_plate", ArtilleryPlateBlock::new)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.STONE))
             .item()
             .build()
-            .register();
+            .register();*/
 
         public static BlockEntry<ArtilleryBarrelBlock> ARTILLERY_BARREL = REGISTRATE
             .block("artillery_barrel", ArtilleryBarrelBlock::new)
@@ -81,13 +75,13 @@ public class WapBlocks {
             .build()
             .register();
 
-        public static BlockEntry<ArtilleryPart1Block> ARTILLERY_PART1 = REGISTRATE
+        /*public static BlockEntry<ArtilleryPart1Block> ARTILLERY_PART1 = REGISTRATE
             .block("artillery_part1", ArtilleryPart1Block::new)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.STONE))  //todo friction
             .item()
             .build()
-            .register();
+            .register();*/
 
         public static BlockEntry<EjectingBreech> EJECTING_BREECH = REGISTRATE
             .block("ejecting_breech", EjectingBreech::new)
@@ -121,13 +115,13 @@ public class WapBlocks {
             .build()
             .register();*/
 
-        public static BlockEntry<HellBreech> HELL_BREECH = REGISTRATE
+        /*public static BlockEntry<HellBreech> HELL_BREECH = REGISTRATE
             .block("hell_breech", HellBreech::new)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.mapColor(MapColor.STONE))  //todo friction
             .item()
             .build()
-            .register();
+            .register();*/
 
         /*public static BlockEntry<ValkyrienBreech> VALKYRIEN_BREECH = REGISTRATE
             .block("valkyrien_breech", ValkyrienBreech::new)
@@ -150,13 +144,13 @@ public class WapBlocks {
                     .build()
                     .register();
 
-                public static BlockEntry<EmptyGauge12> EMPTY_GAUGE12 = REGISTRATE
+                /*public static BlockEntry<EmptyGauge12> EMPTY_GAUGE12 = REGISTRATE
                     .block("empty_gauge12", EmptyGauge12::new)
                     .initialProperties(SharedProperties::stone)
                     .properties(p -> p.noOcclusion().mapColor(MapColor.PODZOL))
                     .item()
                     .build()
-                    .register();
+                    .register();*/
 
                 public static void register() {}
             }
@@ -180,46 +174,46 @@ public class WapBlocks {
                 .build()
                 .register();
 
-            public static BlockEntry<Gauge12Block> GAUGE12 = REGISTRATE
+            /*public static BlockEntry<Gauge12Block> GAUGE12 = REGISTRATE
                 .block("gauge12", Gauge12Block::new)
                 .initialProperties(SharedProperties::stone)
                 .properties(p -> p.noOcclusion().mapColor(MapColor.PODZOL))
                 .item()
                 .build()
-                .register();
+                .register();*/
 
 
         }
         public static class Warhead {
 
-            public static BlockEntry<ApCoreWarhead> AP_CORE_WARHEAD = REGISTRATE
-                .block("ap_core_warhead", ApCoreWarhead::new)
+            public static BlockEntry<WarheadAPCR> WARHEAD_APCR = REGISTRATE
+                .block("warhead_apcr", WarheadAPCR::new)
                 .initialProperties(SharedProperties::stone)
                 .properties(p -> p.noOcclusion().mapColor(MapColor.PODZOL))
                 .item(ItemPlus::getOrCreateFromBlockAndGet)
                 .build()
                 .register();
 
-            public static BlockEntry<ApfsdsWarhead> APFSDS_WARHEAD = REGISTRATE
-                .block("apfsds_warhead", ApfsdsWarhead::new)
+            public static BlockEntry<WarheadAPDS> WARHEAD_APDS = REGISTRATE
+                .block("warhead_apds", WarheadAPDS::new)
                 .properties(p -> p.noOcclusion().mapColor(MapColor.PODZOL))
                 .item(ItemPlus::getOrCreateFromBlockAndGet)
                 .build()
                 .register();
-            public static BlockEntry<ApfsdsQuarterShell> APFSDS_QUARTER_SHELL = REGISTRATE
-                .block("apfsds_quarter_shell", ApfsdsQuarterShell::new)
+            /*public static BlockEntry<ApdsQuarterShell> APFSDS_QUARTER_SHELL = REGISTRATE
+                .block("apfsds_quarter_shell", ApdsQuarterShell::new)
                 .properties(p -> p.noOcclusion().mapColor(MapColor.PODZOL))
                 .item(ItemPlus::getOrCreateFromBlockAndGet)
                 .build()
-                .register();
+                .register();*/
 
-            public static BlockEntry<BluntApWarhead> BLUNT_AP_WARHEAD = REGISTRATE
+            /*public static BlockEntry<BluntApWarhead> BLUNT_AP_WARHEAD = REGISTRATE
                 .block("blunt_ap_warhead", BluntApWarhead::new)
                 .initialProperties(SharedProperties::stone)
                 .properties(p -> p.noOcclusion().mapColor(MapColor.PODZOL))
                 .item(ItemPlus::getOrCreateFromBlockAndGet)
                 .build()
-                .register();
+                .register();*/
 
             public static BlockEntry<HeWarhead> HE_WARHEAD = REGISTRATE
                 .block("he_warhead", HeWarhead::new)
@@ -228,6 +222,22 @@ public class WapBlocks {
                 .item(ItemPlus::getOrCreateFromBlockAndGet)
                 .build()
                 .register();
+
+            public static BlockEntry<WarheadHEAT> WARHEAD_HEAT = REGISTRATE
+                .block("warhead_heat", WarheadHEAT::new)
+                .initialProperties(SharedProperties::stone)
+                .properties(p -> p.noOcclusion().mapColor(MapColor.PODZOL))
+                .item(ItemPlus::getOrCreateFromBlockAndGet)
+                .build()
+                .register();
+
+            /*public static BlockEntry<ThermobaricWarhead> THERMOBARIC_WARHEAD = REGISTRATE
+                .block("thermobaric_warhead", ThermobaricWarhead::new)
+                .initialProperties(SharedProperties::stone)
+                .properties(p -> p.noOcclusion().mapColor(MapColor.PODZOL))
+                .item(ItemPlus::getOrCreateFromBlockAndGet)
+                .build()
+                .register();*/
 
             public static void register() {}
         }
@@ -251,33 +261,68 @@ public class WapBlocks {
 
             public static void register() {}
         }
-        //Cartridge
+        public static class Attach {
+            public static BlockEntry<Glider> GLIDER = REGISTRATE
+                .block("glider", Glider::new)
+                .initialProperties(SharedProperties::stone)
+                .properties(p -> p.noOcclusion().mapColor(MapColor.PODZOL))
+                .item(ItemPlus::getOrCreateFromBlockAndGet)
+                .build()
+                .register();
+
+            public static BlockEntry<GliderWing> GLIDER_WING = REGISTRATE
+                .block("glider_wing", GliderWing::new)
+                .initialProperties(SharedProperties::stone)
+                .properties(p -> p.noOcclusion().mapColor(MapColor.PODZOL))
+                .item(ItemPlus::getOrCreateFromBlockAndGet)
+                .build()
+                .register();
+
+
+            public static BlockEntry<RocketBooster> ROCKET_BOOSTER = REGISTRATE
+                .block("rocket_booster", RocketBooster::new)
+                .initialProperties(SharedProperties::stone)
+                .properties(p -> p.noOcclusion().mapColor(MapColor.PODZOL))
+                .item(ItemPlus::getOrCreateFromBlockAndGet)
+                .build()
+                .register();
+
+            public static BlockEntry<FloatingChamber> FLOATING_CHAMBER = REGISTRATE
+                .block("floating_chamber", FloatingChamber::new)
+                .initialProperties(SharedProperties::stone)
+                .properties(p -> p.noOcclusion().mapColor(MapColor.PODZOL))
+                .item(ItemPlus::getOrCreateFromBlockAndGet)
+                .build()
+                .register();
+
+
+            public static void register() {}
+        }
+
+
+        public static class Primer {
+            public static BlockEntry<PrimerBlock> PRIMER = REGISTRATE
+                .block("primer", PrimerBlock::new)
+                .initialProperties(SharedProperties::stone)
+                .properties(p -> p.noOcclusion().mapColor(MapColor.PODZOL))
+                .item(ItemPlus::getOrCreateFromBlockAndGet)
+                .build()
+                .register();
+
+            public static BlockEntry<TorpedoPrimer> TORPEDO_PRIMER = REGISTRATE
+                .block("torpedo_primer", TorpedoPrimer::new)
+                .initialProperties(SharedProperties::stone)
+                .properties(p -> p.noOcclusion().mapColor(MapColor.PODZOL))
+                .item(ItemPlus::getOrCreateFromBlockAndGet)
+                .build()
+                .register();
+
+            public static void register() {}
+        }
 
 
 
-        public static BlockEntry<PrimerBlock> PRIMER = REGISTRATE
-            .block("primer", PrimerBlock::new)
-            .initialProperties(SharedProperties::stone)
-            .properties(p -> p.noOcclusion().mapColor(MapColor.PODZOL))
-            .item(ItemPlus::getOrCreateFromBlockAndGet)
-            .build()
-            .register();
 
-        public static BlockEntry<Glider> GLIDER = REGISTRATE
-            .block("glider", Glider::new)
-            .initialProperties(SharedProperties::stone)
-            .properties(p -> p.noOcclusion().mapColor(MapColor.PODZOL))
-            .item(ItemPlus::getOrCreateFromBlockAndGet)
-            .build()
-            .register();
-
-        public static BlockEntry<GliderWing> GLIDER_WING = REGISTRATE
-            .block("glider_wing", GliderWing::new)
-            .initialProperties(SharedProperties::stone)
-            .properties(p -> p.noOcclusion().mapColor(MapColor.PODZOL))
-            .item(ItemPlus::getOrCreateFromBlockAndGet)
-            .build()
-            .register();
 
         /*public static BlockEntry<TestModifier> TEST_MODIFIER = REGISTRATE
             .block("test_modifier", TestModifier::new)
@@ -310,13 +355,13 @@ public class WapBlocks {
             .build()
             .register();
 
-        public static BlockEntry<ShellFrame> SHELL_FRAME = REGISTRATE
+        /*public static BlockEntry<ShellFrame> SHELL_FRAME = REGISTRATE
             .block("shell_frame", ShellFrame::new)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.noOcclusion().mapColor(MapColor.PODZOL))
             .item()
             .build()
-            .register();
+            .register();*/
 
         /*public static BlockEntry<DenseShell> DENSE_SHELL = REGISTRATE
             .block("dense_shell", DenseShell::new)
@@ -326,13 +371,13 @@ public class WapBlocks {
             .build()
             .register();*/
 
-        public static BlockEntry<WindCap> WIND_CAP = REGISTRATE
+        /*public static BlockEntry<WindCap> WIND_CAP = REGISTRATE
             .block("wind_cap", WindCap::new)
             .initialProperties(SharedProperties::stone)
             .properties(p -> p.noOcclusion().mapColor(MapColor.PODZOL))
             .item(ItemPlus::getOrCreateFromBlockAndGet)
             .build()
-            .register();
+            .register();*/
 
         /*public static BlockEntry<Rotator> ROTATOR = REGISTRATE
             .block("rotator", Rotator::new)
@@ -346,9 +391,11 @@ public class WapBlocks {
 
 
         public static void register() {
+            Primer.register();
             Propellant.register();
             Warhead.register();
             Fuze.register();
+            Attach.register();
         }
     }
 
@@ -360,6 +407,18 @@ public class WapBlocks {
             .item()
             .build()
             .register();*/
+        public static class Create {
+            public static BlockEntry<CarbonFiberSail> CARBON_FIBER_SAIL = REGISTRATE
+                .block("carbon_fiber_sail", CarbonFiberSail::new)
+                .initialProperties(SharedProperties::stone)
+                .properties(p -> p.noOcclusion().mapColor(MapColor.PODZOL))
+                .item()
+                .build()
+                .register();
+
+            public static void register() { }
+        }
+
         public static class Projector {
             public static BlockEntry<ProjectionCenter> PROJECTION_CENTER =  REGISTRATE
                 .block("projection_center", ProjectionCenter::new)
@@ -378,9 +437,11 @@ public class WapBlocks {
             public static BlockEntry<ProjectorLen> PROJECT_LEN =  REGISTRATE
                 .block("projector_len", ProjectorLen::new)
                 .properties(p -> p.noOcclusion().mapColor(MapColor.PODZOL))
-                //.item()  //no item
-                //.build()
+                .item()
+                .build()
                 .register();
+
+            public static void register() {}
         }
 
         public static class Machine {
@@ -428,7 +489,11 @@ public class WapBlocks {
 
 
 
-        public static void register() {}
+        public static void register() {
+            Projector.register();
+            Create.register();
+
+        }
     }
 
     public static class Debug {
@@ -439,6 +504,21 @@ public class WapBlocks {
             .item()
             .build()
             .register();*/
+        public static BlockEntry<Block> DIR_INDICATOR = REGISTRATE
+            .block("dir_indicator", Block::new)
+            .initialProperties(SharedProperties::stone)
+            .properties(p -> p.noOcclusion().mapColor(MapColor.PODZOL))
+            .item()
+            .build()
+            .register();
+
+        public static BlockEntry<Block01> BLOCK01 = REGISTRATE
+            .block("block01", Block01::new)
+            .initialProperties(SharedProperties::stone)
+            .properties(p -> p.noOcclusion().mapColor(MapColor.PODZOL))
+            .item()
+            .build()
+            .register();
 
         public static void register() {}
     }
@@ -541,13 +621,13 @@ public class WapBlocks {
         .build()
         .register();*/
 
-    public static BlockEntry<ActivatorBlock> ACTIVATOR = REGISTRATE
+    /*public static BlockEntry<ActivatorBlock> ACTIVATOR = REGISTRATE
         .block("activator", ActivatorBlock::new)
         .initialProperties(SharedProperties::stone)
         .properties(p -> p.noOcclusion().mapColor(MapColor.PODZOL))
         .item()
         .build()
-        .register();
+        .register();*/
 
 
     /*public static BlockEntry<SignalDetectorBlock> FIRE_DETECTOR_BLOCK = REGISTRATE
@@ -575,23 +655,6 @@ public class WapBlocks {
         .register();*/
 
 
-    public static BlockEntry<Block> DIR_INDICATOR = REGISTRATE
-        .block("dir_indicator", Block::new)
-        .initialProperties(SharedProperties::stone)
-        .properties(p -> p.noOcclusion().mapColor(MapColor.PODZOL))
-        .item()
-        .build()
-        .register();
-
-    public static BlockEntry<Block01> BLOCK01 = REGISTRATE
-        .block("block01", Block01::new)
-        .initialProperties(SharedProperties::stone)
-        .properties(p -> p.noOcclusion().mapColor(MapColor.PODZOL))
-        .item()
-        .build()
-        .register();
-
-
 
     public static void register() {
         Artillery.register();
@@ -599,7 +662,7 @@ public class WapBlocks {
 
         Industrial.register();
 
-        Debug.register();
+        //Debug.register();
     }
 
 /*

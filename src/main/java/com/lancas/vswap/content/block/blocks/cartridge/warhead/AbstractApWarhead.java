@@ -1,5 +1,6 @@
 package com.lancas.vswap.content.block.blocks.cartridge.warhead;
 
+import com.lancas.vswap.WapConfig;
 import com.lancas.vswap.content.WapBlockEntites;
 import com.lancas.vswap.content.block.blockentity.ApWarheadBlockEntity;
 import com.lancas.vswap.content.block.blocks.blockplus.DefaultCartridgeAdder;
@@ -48,7 +49,6 @@ import org.valkyrienskies.mod.common.world.RaycastUtilsKt;
 
 import java.lang.Math;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Predicate;
 
 public abstract class AbstractApWarhead extends BlockPlus implements ICollisionTrigger, ITerminalEffector, IBE<ApWarheadBlockEntity>, ISandBoxBallisticBlock {
@@ -60,9 +60,9 @@ public abstract class AbstractApWarhead extends BlockPlus implements ICollisionT
     @Override
     public List<IBlockAdder> getAdders() {
         return BlockPlus.addersIfAbsent(
-            ApCoreWarhead.class,
+            WarheadAPCR.class,
             () -> List.of(
-                new DefaultCartridgeAdder()//,
+                new DefaultCartridgeAdder(true)//,
                 //new RefreshBlockRecordAdder((bp, state) -> new ApWarheadRecord(bp))
             )
         );
@@ -374,7 +374,9 @@ public abstract class AbstractApWarhead extends BlockPlus implements ICollisionT
 
     }
     private void breakAroundBlocks(ServerLevel level, SandBoxServerShip ship, BallisticPos ballisticPos, Vector3d refHitVel, SandBoxTriggerInfo.CollisionTriggerInfo collisionInfo, Dest<Boolean> bouncing, Dest<Boolean> terminate) {
-        if (terminate.get() || bouncing.get()) return;
+        if (true) return;
+
+        /*if (terminate.get() || bouncing.get()) return;
         if (refHitVel.lengthSquared() < 0.1 || !Double.isFinite(refHitVel.lengthSquared())) return;
 
         var hitInfo = collisionInfo.hitInfo;
@@ -392,7 +394,7 @@ public abstract class AbstractApWarhead extends BlockPlus implements ICollisionT
         double incidenceRad = WapBallisticMath.RAD.calIncidenceRad(refHitVel, hitInfo.worldNormal);
         double ricochetProb = WapBallisticMath.RAD.calRicochetPob(warheadState, incidenceRad);
 
-        WapBallisticMath.calDestructionBlocks(hitInfo.hitBlockPos, stdPE, warheadState).forEach(bp -> {
+        WapBallisticMath.calDestructionBlocksIncludeShip(hitInfo.hitBlockPos, stdPE, warheadState, WapConfig.maxDestroyRadius).forEach(bp -> {
             if (bouncing.get() || terminate.get() || refHitVel.lengthSquared() < 0.1 || !Double.isFinite(refHitVel.lengthSquared()))
                 return;
 
@@ -437,11 +439,11 @@ public abstract class AbstractApWarhead extends BlockPlus implements ICollisionT
             BlockHelper.destroyBlock(level, bp, 1f);
 
             double afterEnergy = stdPE - WapBallisticMath.RAD.getAbsorbStdPP(curArmour, warheadState, incidenceRad) / pMul;
-            /*if (afterEnergy <= 0) {
+            /.*if (afterEnergy <= 0) {
                 refHitVel.set(0, 0, 0);
                 terminate.set(true);
                 return;
-            }*/
+            }*./
 
             Vector3d newVelDir;// = lastHitVel.normalize(new Vector3d());
             double newVelLength = Math.sqrt(2 * PropellingForceHandler.STD_PROPELLANT_ENERGY * afterEnergy / mass);
@@ -475,6 +477,6 @@ public abstract class AbstractApWarhead extends BlockPlus implements ICollisionT
 
             //todo use a constant to decide if to terminate
             //terminate.set(postVel.lengthSquared() < 0.1);
-        });
+        });*/
     }
 }

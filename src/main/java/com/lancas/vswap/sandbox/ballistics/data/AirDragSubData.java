@@ -7,6 +7,7 @@ import com.lancas.vswap.subproject.sandbox.ship.ISandBoxShip;
 import com.lancas.vswap.util.JomlUtil;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import org.apache.commons.lang3.NotImplementedException;
 import org.joml.Vector3d;
 import org.joml.primitives.AABBdc;
 
@@ -24,9 +25,10 @@ public class AirDragSubData implements IComponentData<AirDragSubData>, IComponen
         localAirDragCenter.set(src.localAirDragCenter);
         return this;
     }
+    @Deprecated
     @Override
     public AirDragSubData overwriteDataByShip(ISandBoxShip ship) {
-        localAirDragCenter.zero();
+        /*localAirDragCenter.zero();
 
         AtomicReference<Double> totalDragFactor = new AtomicReference<>(0.0);
         ship.getBlockCluster().getDataReader().seekAllBlocks((localPos, state) -> {
@@ -44,7 +46,8 @@ public class AirDragSubData implements IComponentData<AirDragSubData>, IComponen
         localYzArea = JomlUtil.sideArea(localAABB, Direction.EAST);
         localXzArea = JomlUtil.sideArea(localAABB, Direction.UP);
         localXyArea = JomlUtil.sideArea(localAABB, Direction.SOUTH);
-        return this;
+        return this;*/
+        throw new NotImplementedException("it is hard Deprecated!");
     }
 
     @Override

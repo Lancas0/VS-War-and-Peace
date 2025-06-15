@@ -5,17 +5,30 @@ import com.lancas.vswap.subproject.sandbox.SandBoxServerWorld;
 import com.lancas.vswap.subproject.sandbox.thread.api.ISandBoxThread;
 //import com.lancas.vs_wap.subproject.sandbox.thread.impl.ThreadBridgeImpl;
 import com.lancas.vswap.subproject.sandbox.thread.impl.ThreadScheduleExecutorImpl;
+import com.lancas.vswap.subproject.sandbox.thread.schedule.experimental.IServerThreadScheduler;
+import com.lancas.vswap.util.NbtBuilder;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraftforge.common.util.INBTSerializable;
+import org.jetbrains.annotations.NotNull;
 
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Consumer;
 
-public class SandBoxServerThread implements ISandBoxThread<SandBoxServerWorld> {
-    private SandBoxServerWorld world;
+public class SandBoxServerThread implements ISandBoxThread<SandBoxServerWorld>, INBTSerializable<CompoundTag> {
+    protected SandBoxServerWorld world;
     public SandBoxServerWorld getSandBoxWorld() { return world; }
     public ServerLevel getLevel() { return world.level; }
 
     //public final ThreadBridgeImpl<SandBoxServerThread> threadBridge = new ThreadBridgeImpl<>();
-    public final ThreadScheduleExecutorImpl<SandBoxServerThread> scheduleExecutor = new ThreadScheduleExecutorImpl<>();
+    protected final ThreadScheduleExecutorImpl<SandBoxServerThread> scheduleExecutor = new ThreadScheduleExecutorImpl<>();
+
+    protected final Queue<IServerThreadScheduler> schedulers = new ConcurrentLinkedQueue<>();  //expiermenting
+
+    public void addScheduler(@NotNull IServerThreadScheduler scheduler) {
+        schedulers.add(scheduler);
+    }
 
 
     private final Consumer<ServerLevel> serverTickWork = level -> {
@@ -36,12 +49,21 @@ public class SandBoxServerThread implements ISandBoxThread<SandBoxServerWorld> {
                 //new AABBdLazyParamWrapper(s.getLocalAABB())
             );*/
             scheduleExecutor.doScheduleAll(this);
+
+            //exp
+            var schedulerIt = schedulers.iterator();
+            while (schedulerIt.hasNext()) {
+                boolean discard = schedulerIt.next().tick(level);
+                if (discard)
+                    schedulerIt.remove();
+            }
+            //schedulers.forEach(x -> x.tick(level));
         });
     };
 
 
 
-    @Override
+    //todo remove @Override
     public void initial(SandBoxServerWorld inWorld) {
         this.world = inWorld;
     }
@@ -58,5 +80,23 @@ public class SandBoxServerThread implements ISandBoxThread<SandBoxServerWorld> {
     @Override
     public void pause() {
         world.serverTickSetEvent.remove(serverTickWork);
+    }
+
+
+
+    @Override
+    public CompoundTag serializeNBT() {
+        return new NbtBuilder()
+            //.putEach("schedulers", schedulers, INBTSerializable::serializeNBT)
+            .putEachSimpleJackson("schedulers", schedulers)
+            .get();
+    }
+    @Override
+    public void deserializeNBT(CompoundTag tag) {
+        schedulers.clear();
+
+        NbtBuilder.modify(tag)
+            .readEachSimpleJackson("schedulers", IServerThreadScheduler.class, schedulers);
+            //.readEachCompoundOverwrite("schedulers", t -> )
     }
 }

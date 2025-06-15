@@ -15,7 +15,7 @@ public class EmptyGauge12 extends BlockPlus implements IEmptyPropellant {
     public List<IBlockAdder> getAdders() {
         return BlockPlus.addersIfAbsent(
             EmptyShelledPropellant.class,
-            () -> List.of(new DefaultCartridgeAdder())
+            () -> List.of(new DefaultCartridgeAdder(true))
         );
     }
 }

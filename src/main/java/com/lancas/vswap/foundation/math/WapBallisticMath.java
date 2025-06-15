@@ -1,19 +1,24 @@
 package com.lancas.vswap.foundation.math;
 
-import com.lancas.vswap.WapCommonConfig;
+import com.lancas.vswap.WapConfig;
 import com.lancas.vswap.content.info.block.WapBlockInfos;
+import com.lancas.vswap.util.JomlUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Quaterniond;
 import org.joml.Quaterniondc;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
+import org.joml.primitives.AABBd;
+import org.valkyrienskies.core.api.ships.ServerShip;
+import org.valkyrienskies.core.api.ships.Ship;
+import org.valkyrienskies.mod.common.VSGameUtilsKt;
 
-import java.io.DataInput;
 import java.util.*;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.stream.Stream;
 
 public class WapBallisticMath {
@@ -28,7 +33,7 @@ public class WapBallisticMath {
             Vector3d negNormal = normal.normalize(new Vector3d()).negate();
             return Math.acos(velDir.normalize(new Vector3d()).dot(negNormal));
         }
-        public double calRhae(BlockState armour, double incidenceRad) {
+        public double caEquivalentRhae(BlockState armour, double incidenceRad) {
             double equivalentArmourDepth = 1.0 / Math.cos(incidenceRad);
             double rhae = WapBlockInfos.ArmourRhae.valueOrDefaultOf(armour);
 
@@ -43,12 +48,12 @@ public class WapBallisticMath {
 
             return rhae * afterNorEquivalentDepth;
         }
-        public double calFatalPP(BlockState armour, double incidenceRad) {
-            double rhae = calRhae(armour, incidenceRad);
-            if (!WapCommonConfig.isFatalKEOn())
+        public double calFatalSpe(BlockState armour, double incidenceRad) {
+            double rhae = caEquivalentRhae(armour, incidenceRad);
+            if (!WapConfig.isFatalKEOn())
                 return Double.POSITIVE_INFINITY;
 
-            return WapCommonConfig.rawFatalPPRatio * rhae;
+            return WapConfig.rawFatalPPRatio * rhae;
         }
         public double calRicochetPob(BlockState warhead, double incidenceRad) {
             double criticalRad = Math.toRadians(WapBlockInfos.CriticalDegree.valueOrDefaultOf(warhead));
@@ -87,20 +92,22 @@ public class WapBallisticMath {
     }
     public static class DegMath {
         public double calIncidenceDeg(Vector3dc velDir, Vector3dc normal) { return Math.toDegrees(RAD.calIncidenceRad(velDir, normal)); }
-        public double calRhae(BlockState armour, double incidenceDeg) { return RAD.calRhae(armour, Math.toRadians(incidenceDeg)); }
+        public double calRhae(BlockState armour, double incidenceDeg) { return RAD.caEquivalentRhae(armour, Math.toRadians(incidenceDeg)); }
         public double calAfterNormalizationRhae(BlockState armour, BlockState warhead, double incidenceDeg) {
             return RAD.calAfterNormalizationRhae(armour, warhead, Math.toRadians(incidenceDeg));
         }
-        public double calFatalPP(BlockState armour, double incidenceDeg) { return RAD.calFatalPP(armour, Math.toRadians(incidenceDeg)); }
+        public double calFatalPP(BlockState armour, double incidenceDeg) { return RAD.calFatalSpe(armour, Math.toRadians(incidenceDeg)); }
         public double calRicochetPob(BlockState warhead, double incidenceDeg) {
             return RAD.calRicochetPob(warhead, Math.toRadians(incidenceDeg));
         }
     }
 
-    public static Stream<BlockPos> calDestructionBlocks(BlockPos centerBp, double stdPE, BlockState warhead) {
-        double halfRadius = WapBlockInfos.Spe_DestructionScalar.valueOrDefaultOf(warhead) * stdPE / 2.0;
-        double sqRadius = (halfRadius * 2) * (halfRadius * 2);
-        Vec3 center = centerBp.getCenter();
+    public static Stream<BlockPos> calDestructionBlocksIncludeShip(ServerLevel level, Vector3dc hitWorldPos, double stdPE, BlockState warhead, double maxRadius) {
+        double radius = Math.min(WapBlockInfos.Spe_DestructionScalar.valueOrDefaultOf(warhead) * stdPE, maxRadius);
+        //double hfRadius = radius / 2.0;
+        double sqRadius = radius * radius;
+        Vec3 hitWorldPosV3 = JomlUtil.v3(hitWorldPos);
+        //Vec3 center = centerBp.getCenter();
 
         /*return BlockPos.betweenClosedStream(
             (int)Math.floor(centerBp.getX() - halfRadius),
@@ -112,12 +119,51 @@ public class WapBallisticMath {
         )
             .filter(bp -> bp.distToCenterSqr(center) <= sqRadius);*/
         //todo can also break in vsShip blocks
-        Queue<BlockPos> open = new LinkedList<>();
+        /*Queue<BlockPos> open = new LinkedList<>();
         LinkedHashSet<BlockPos> visited = new LinkedHashSet<>();
         open.add(centerBp);
-        visited.add(centerBp);
+        visited.add(centerBp);*/
 
-        while (!open.isEmpty()) {
+        PriorityQueue<BlockPos> bps = new PriorityQueue<>(
+            Comparator.comparingDouble(x -> x.getCenter().distanceToSqr(hitWorldPosV3))
+        );
+        //In world
+        BlockPos.betweenClosedStream(
+            (int)Math.floor(hitWorldPos.x() - radius),
+            (int)Math.floor(hitWorldPos.y() - radius),
+            (int)Math.floor(hitWorldPos.z() - radius),
+            (int)Math.floor(hitWorldPos.x() + radius),
+            (int)Math.floor(hitWorldPos.y() + radius),
+            (int)Math.floor(hitWorldPos.z() + radius)
+        ).filter(x -> x.getCenter().distanceToSqr(hitWorldPosV3) <= sqRadius)
+            .forEach(x -> bps.add(x.immutable()));
+
+        //In Ship
+        AABBd breakZone = new AABBd(
+            hitWorldPos.x() - radius,
+            hitWorldPos.y() - radius,
+            hitWorldPos.z() - radius,
+            hitWorldPos.x() + radius,
+            hitWorldPos.y() + radius,
+            hitWorldPos.z() + radius
+        );
+        for (ServerShip ship : VSGameUtilsKt.getShipObjectWorld(level).getAllShips().getIntersecting(breakZone)) {
+            //transform hit world pos in this ship
+            Vector3d inShipHitPos = ship.getWorldToShip().transformPosition(hitWorldPos, new Vector3d());
+            BlockPos.betweenClosedStream(
+                (int)Math.floor(inShipHitPos.x() - radius),
+                (int)Math.floor(inShipHitPos.y() - radius),
+                (int)Math.floor(inShipHitPos.z() - radius),
+                (int)Math.floor(inShipHitPos.x() + radius),
+                (int)Math.floor(inShipHitPos.y() + radius),
+                (int)Math.floor(inShipHitPos.z() + radius)
+            ).filter(x -> x.getCenter().distanceToSqr(JomlUtil.v3(inShipHitPos)) <= sqRadius)
+                .forEach(x -> bps.add(x.immutable()));
+        }
+
+        return bps.stream();
+
+        /*while (!open.isEmpty()) {
             BlockPos cur = open.poll();
             for (Direction d : Direction.values()) {
                 BlockPos next = cur.relative(d);
@@ -127,6 +173,6 @@ public class WapBallisticMath {
                 }
             }
         }
-        return visited.stream();
+        return visited.stream();*/
     }
 }

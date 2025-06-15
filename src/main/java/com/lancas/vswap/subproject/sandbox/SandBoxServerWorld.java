@@ -45,14 +45,19 @@ public class SandBoxServerWorld extends SavedData implements ISandBoxWorld<IServ
     public static final long SERVER_TICK_INTERVAL_MS = 50;
     public static final double SERVER_TICK_TIME_S = 0.05;*/
     private final SandBoxThreadRegistry<SandBoxServerWorld> threadRegistry = new SandBoxThreadRegistry<>();
-    public void registerThread(ISandBoxThread<SandBoxServerWorld> thread) {
+    /*public void registerThread(ISandBoxThread<SandBoxServerWorld> thread) {
         threadRegistry.register(thread);
         thread.initial(this);
+    }*/
+    //@Nullable
+    //public ISandBoxThread<SandBoxServerWorld> getThread(Class<?> type) { return threadRegistry.getThread(type); }
+    public @Nullable <T extends ISandBoxThread<SandBoxServerWorld>> T getThread(Class<T> type) {
+        try {
+            return (T)threadRegistry.getThread(type);
+        } catch (Exception e) {
+            return null;
+        }
     }
-
-
-    public static final long PHYS_TICK_INTERVAL_MS = 16;
-    public static final double PHYS_TICK_TIME_S = 0.016;
 
 
     static {
@@ -153,25 +158,28 @@ public class SandBoxServerWorld extends SavedData implements ISandBoxWorld<IServ
         anyClientSynced.set(isLoading);
     }
 
+
+    private final SandBoxServerThread serverThread;  //experimental
     private SandBoxServerWorld(ServerLevel inLevel) {
         level = inLevel;
         allWorlds.put(VSGameUtilsKt.getDimensionId(level), this);
 
         //put default threads
-        SandBoxServerThread serverThread = new SandBoxServerThread();
-        SandBoxServerPhysThread physThread = new SandBoxServerPhysThread();
-        SandBoxServerToClientSyncThread syncThread = new SandBoxServerToClientSyncThread();
-        SandBoxServerAsyncLogicThread asyncLogicThread = new SandBoxServerAsyncLogicThread();
+        //SandBoxServerThread serverThread = new SandBoxServerThread();
+        SandBoxServerPhysThread physThread = new SandBoxServerPhysThread(this);
+        SandBoxServerToClientSyncThread syncThread = new SandBoxServerToClientSyncThread(this);
+        SandBoxServerAsyncLogicThread asyncLogicThread = new SandBoxServerAsyncLogicThread(this);
 
+        serverThread = new SandBoxServerThread();
         threadRegistry.register(serverThread);
         threadRegistry.register(physThread);
         threadRegistry.register(syncThread);
         threadRegistry.register(asyncLogicThread);
 
         serverThread.initial(this);
-        physThread.initial(this);
-        syncThread.initial(this);
-        asyncLogicThread.initial(this);
+        //physThread.initial(this);
+        //syncThread.initial(this);
+        //asyncLogicThread.initial(this);
         //todo serverThread.scheduleExecutor.register();
     }
 
@@ -180,7 +188,7 @@ public class SandBoxServerWorld extends SavedData implements ISandBoxWorld<IServ
     public SandBoxConstraintSolver getConstraintSolver() { return constraintSolver; }
 
     @Override
-    public Level getMcLevel() { return level; }
+    public Level getWorld() { return level; }
 
     @Nullable
     public IServerSandBoxShip getShip(UUID uuid) { return getServerShip(uuid); }
@@ -553,13 +561,12 @@ public class SandBoxServerWorld extends SavedData implements ISandBoxWorld<IServ
         //List<SandBoxServerShip> toSaveShips = serverShips.values().stream().filter(ship -> !ship.isTimeOut()).toList();
         NbtBuilder builder = new NbtBuilder()
             .putCompound("constraint_data", constraintSolver.saved())
-            .putStream("ships", serverShips.values(), ship -> ship.saved(level));
+            .putStream("ships", serverShips.values(), ship -> ship.saved(level))
+            .putIfNonNull("ground_ship", wrappedGroundShip, (b, k, v) -> b.putCompound(k, v.saved()))
+            .putCompound("server_thread_saved", serverThread.serializeNBT());
             //.putCompound("vs_compact_ships", vsShipsCompactor.saved());
             //.putEach("schedule_ships", scheduleShips.values(), scheduleShip -> scheduleShip.saved(level));
 
-        if (wrappedGroundShip != null) {
-            builder.putCompound("ground_ship", wrappedGroundShip.saved());
-        }
 
         return builder.get();
     }
@@ -595,6 +602,8 @@ public class SandBoxServerWorld extends SavedData implements ISandBoxWorld<IServ
 
                     return new TriTuple<>(ship, remainTick, scheduleCb);
                 }, schedulingShips);*/
+
+            serverThread.deserializeNBT(builder.getCompound("server_thread_saved"));
         } catch (Exception e) {
             EzDebug.error("fail to load ship.");
             e.printStackTrace();

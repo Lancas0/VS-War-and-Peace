@@ -15,8 +15,6 @@ import org.joml.*;
 
 import java.lang.Math;
 
-import static com.lancas.vswap.subproject.sandbox.SandBoxServerWorld.PHYS_TICK_TIME_S;
-
 //todo sync
 //todo make it a necessary behaviour?
 public class SandBoxRigidbody
@@ -82,7 +80,7 @@ public class SandBoxRigidbody
     public Class<RigidbodyData> getDataType() { return RigidbodyData.class; }
 
     @Override
-    public synchronized void physTick() {
+    public synchronized void physTick(double dt) {
         //EzDebug.log("mass:" + data.mass + ", static:" + data.isStatic.get());
         if (isZero(data.mass) || data.isStatic()) {
             //EzDebug.log("applying force is cleared due to zeroMass or static, mass:" + data.mass + ", static?:" + data.isStatic);
@@ -90,8 +88,8 @@ public class SandBoxRigidbody
             data.applyingTorques.clear();
         } else {
             //EzDebug.light("applying force and torque");
-            applyForcesAndVelocity();
-            applyTorqueAndOmega();
+            applyForcesAndVelocity(dt);
+            applyTorqueAndOmega(dt);
         }
 
         //update at last so that constraint can be accurate
@@ -125,14 +123,14 @@ public class SandBoxRigidbody
             updateIt.remove();
         }
     }
-    private void applyForcesAndVelocity() {
+    private void applyForcesAndVelocity(double dt) {
         //EzDebug.log("rigidbody applying force count:" + StrUtil.F2(data.applyingForces.size()));
 
         while (!data.applyingForces.isEmpty()) {
             Vector3d force = data.applyingForces.poll();
             //EzDebug.log("polled rigidbody applying force:" + StrUtil.F2(force));
 
-            Vector3d addVelocity = force.div(data.mass, new Vector3d()).mul(PHYS_TICK_TIME_S);
+            Vector3d addVelocity = force.div(data.mass, new Vector3d()).mul(dt);
             //EzDebug.log("force:" + StrUtil.F2(force) + ", addVel:" + StrUtil.F2(addVelocity));
             if (force.isFinite())
                 data.velocity.add(addVelocity);
@@ -141,10 +139,10 @@ public class SandBoxRigidbody
         }
 
         if (!isZero(data.gravity))
-            data.velocity.add(data.gravity.mul(PHYS_TICK_TIME_S, new Vector3d()));
+            data.velocity.add(data.gravity.mul(dt, new Vector3d()));
 
         if (data.velocity.isFinite() && !isZero(data.velocity)) {
-            Vector3d movement = data.velocity.mul(PHYS_TICK_TIME_S, new Vector3d());
+            Vector3d movement = data.velocity.mul(dt, new Vector3d());
             data.transform.position.add(movement);
 
             //EzDebug.log("rigidbody movement:" + StrUtil.F2(movement));
@@ -152,7 +150,7 @@ public class SandBoxRigidbody
 
         if (!data.velocity.isFinite()) EzDebug.warn("ship:" + ship.getUuid() + ", have invalid velocity:" + data.velocity);
     }
-    private void applyTorqueAndOmega() {
+    private void applyTorqueAndOmega(double dt) {
         //todo save invInertia
         //todo check the ineratia?
         Matrix3d localInvInertia = new Matrix3d(
@@ -167,7 +165,7 @@ public class SandBoxRigidbody
 
         while (!data.applyingTorques.isEmpty()) {
             Vector3d torque = data.applyingTorques.poll();
-            Vector3d addOmega = torque.mul(invInertiaWorld, new Vector3d()).mul(PHYS_TICK_TIME_S);//torque.mul(localInvInertia, new Vector3d()).mul(PHYS_TICK_TIME_S);
+            Vector3d addOmega = torque.mul(invInertiaWorld, new Vector3d()).mul(dt);//torque.mul(localInvInertia, new Vector3d()).mul(PHYS_TICK_TIME_S);
 
             //EzDebug.log("applying torque:" + torque);
             /*EzDebug.log("localInvInertia:" + localInvInertia +
@@ -187,7 +185,7 @@ public class SandBoxRigidbody
         if (data.omega.isFinite() && !isZero(data.omega)) {
             //EzDebug.log("applying omega:" + StrUtil.F2(data.omega));
 
-            double angle = data.omega.length() * PHYS_TICK_TIME_S;
+            double angle = data.omega.length() * dt;
             Vector3d rotateAxis = data.omega.normalize(new Vector3d());
             Quaterniond deltaQ = new Quaterniond().fromAxisAngleRad(rotateAxis, angle);
 

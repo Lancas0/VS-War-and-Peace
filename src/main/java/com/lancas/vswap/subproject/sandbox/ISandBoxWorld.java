@@ -5,6 +5,7 @@ import com.lancas.vswap.subproject.sandbox.ship.ISandBoxShip;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -16,20 +17,20 @@ public interface ISandBoxWorld<TShip extends ISandBoxShip> {
         return SandBoxServerWorld.getOrCreate((ServerLevel)level);
     }
 
-    public Level getMcLevel();
+    public Level getWorld();
 
-    public TShip getShip(UUID uuid);
+    public @Nullable TShip getShip(UUID uuid);
     //public TShip getShipIncludeVS(UUID uuid);
     //public TShip getShipIncludeVSAndGround(UUID uuid);
     //public WrappedVsShip wrapOrGetVs(Ship vsShip);
-    public TShip wrapOrGetGround();
+    public ISandBoxShip wrapOrGetGround();
 
-    public default TShip getShipOrGround(UUID uuid) {
-        TShip ship = getShip(uuid);
+    public default ISandBoxShip getShipOrGround(UUID uuid) {
+        ISandBoxShip ship = getShip(uuid);
         if (ship != null)
             return ship;
 
-        TShip ground = wrapOrGetGround();
+        ISandBoxShip ground = wrapOrGetGround();
         return ground.getUuid().equals(uuid) ? ground : null;
     }
 

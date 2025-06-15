@@ -1,5 +1,6 @@
 package com.lancas.vswap.content.block.blocks.cartridge.fuze;
 
+import com.lancas.vswap.content.WapBlocks;
 import com.lancas.vswap.sandbox.ballistics.ISandBoxBallisticBlock;
 import com.lancas.vswap.sandbox.ballistics.data.BallisticPos;
 import com.lancas.vswap.sandbox.ballistics.trigger.SandBoxTriggerInfo;
@@ -7,6 +8,7 @@ import com.lancas.vswap.ship.ballistics.collision.traverse.BlockTraverser;
 import com.lancas.vswap.ship.ballistics.data.BallisticsHitInfo;
 import com.lancas.vswap.ship.ballistics.helper.BallisticsUtil;
 import com.lancas.vswap.subproject.blockplusapi.blockplus.BlockPlus;
+import com.lancas.vswap.subproject.blockplusapi.blockplus.adder.DirectionAdder;
 import com.lancas.vswap.subproject.blockplusapi.blockplus.adder.IBlockAdder;
 import com.lancas.vswap.subproject.blockplusapi.blockplus.adder.PropertyAdder;
 import com.lancas.vswap.content.block.blocks.blockplus.DefaultCartridgeAdder;
@@ -14,20 +16,25 @@ import com.lancas.vswap.ship.ballistics.data.BallisticStateData;
 import com.lancas.vswap.ship.ballistics.data.BallisticsShipData;
 import com.lancas.vswap.ship.ballistics.api.ICollisionTrigger;
 import com.lancas.vswap.ship.ballistics.api.TriggerInfo;
+import com.lancas.vswap.subproject.sandbox.component.data.reader.IRigidbodyDataReader;
 import com.lancas.vswap.subproject.sandbox.ship.SandBoxServerShip;
 import com.lancas.vswap.util.JomlUtil;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
 import org.joml.Vector3ic;
 import org.joml.primitives.AABBd;
 import org.valkyrienskies.core.api.ships.ServerShip;
+import org.valkyrienskies.mod.common.world.RaycastUtilsKt;
 
 import java.util.HashSet;
 import java.util.List;
@@ -36,8 +43,14 @@ import java.util.List;
 public class ImpactFuze extends BlockPlus implements ICollisionTrigger, ISandBoxBallisticBlock {
     public static BooleanProperty TRIGGERED = BooleanProperty.create("triggered");
 
+    public static BlockState getState(boolean triggered, Direction faceTo) {
+        return WapBlocks.Cartridge.Fuze.IMPACT_FUSE.getDefaultState()
+            .setValue(TRIGGERED, triggered)
+            .setValue(DirectionAdder.FACING, faceTo);
+    }
+
     private static final List<IBlockAdder> providers = List.of(
-        new DefaultCartridgeAdder(),
+        new DefaultCartridgeAdder(true),
         new PropertyAdder<>(TRIGGERED, false)
         //,
         //EinherjarBlockInfos.mass.getOrCreateExplicit(ImpactFuze.class, state -> 5.0)
@@ -117,16 +130,37 @@ public class ImpactFuze extends BlockPlus implements ICollisionTrigger, ISandBox
         setTriggered(state, true);
         ship.setBlock(localPos, state.setValue(TRIGGERED, true));*/
 
-        Vector3dc worldPos = ship.getRigidbody().getDataReader().localIToWorldPos(ballisticPos.localPos());
-        BlockPos blockPos = JomlUtil.bpContaining(worldPos);
-        BlockState findState = level.getBlockState(blockPos);
+        IRigidbodyDataReader rigidReader = ship.getRigidbody().getDataReader();
 
-        if (!findState.isAir()) {
+        Vector3dc fuzeWorldPos = rigidReader.localIToWorldPos(ballisticPos.localPos());
+        Vector3dc vel = rigidReader.getVelocity();
+
+        ClipContext clip = new ClipContext(
+            JomlUtil.v3(fuzeWorldPos), JomlUtil.v3(vel.mul(0.1, new Vector3d()).add(fuzeWorldPos)),
+            ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE,
+            null
+        );
+
+        BlockHitResult hit = RaycastUtilsKt.clipIncludeShips(level, clip, true);
+        if (hit.getType() == HitResult.Type.MISS)
+            return;
+
+
+        var activateInfo = new SandBoxTriggerInfo.ActivateTriggerInfo(ship.getUuid(), ballisticPos.localPos(), state, JomlUtil.d(hit.getLocation()));
+        dest.add(activateInfo);
+
+        ship.getBlockCluster().getDataWriter().setBlock(ballisticPos.localPos(), state.setValue(TRIGGERED, true));
+
+        //Vector3dc worldPos = ship.getRigidbody().getDataReader().localIToWorldPos(ballisticPos.localPos());
+        //BlockPos blockPos = JomlUtil.bpContaining(worldPos);
+        //BlockState findState = level.getBlockState(blockPos);
+
+        /*if (!findState.isAir()) {
             var activateInfo = new SandBoxTriggerInfo.ActivateTriggerInfo(ship.getUuid(), ballisticPos.localPos(), state, worldPos);
             dest.add(activateInfo);
 
             ship.getBlockCluster().getDataWriter().setBlock(ballisticPos.localPos(), state.setValue(TRIGGERED, true));
-        }
+        }*/
 
         /*EzDebug.log(
             "set state:" + ship.getCluster().getBlock(localPos).getValue(TRIGGERED) +

@@ -48,10 +48,9 @@ public class ScopeBE extends BlockEntity {
         onShip = (onShip != null ? onShip : ShipUtil.getShipAt(level, worldPosition));
         if (onShip == null) return;
         //todo other slot?
-        Dest<Long> holdingShipId = new Dest<>();
-        icanHoldShip.getHoldingShipId(ShipHoldSlot.MainHand, holdingShipId);
+        Long holdingShipId = icanHoldShip.getHoldingShipId(ShipHoldSlot.MainHand);
         //if the holding ship is not this ship, return
-        if (!Objects.equals(holdingShipId.get(), onShip.getId())) return;
+        if (!Objects.equals(holdingShipId, onShip.getId())) return;
 
         BlockState stateOfThis = getBlockState();
         if (!(stateOfThis.getBlock() instanceof IScopeBlock iscope))
