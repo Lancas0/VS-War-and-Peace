@@ -33,6 +33,6 @@ public interface IConstraint {
         return involveVsShip(inVsShip.getId());
     }
 
-    public void project(ISandBoxWorld<?> world);
+    public void project(ISandBoxWorld<?> world, SandBoxConstraintSolver solver);
     public default void tick(Level level, SandBoxConstraintSolver solver) {}
 }

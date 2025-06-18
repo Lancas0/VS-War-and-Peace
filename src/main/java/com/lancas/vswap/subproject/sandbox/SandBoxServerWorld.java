@@ -36,21 +36,7 @@ import java.util.stream.Stream;
 @Mod.EventBusSubscriber
 public class SandBoxServerWorld extends SavedData implements ISandBoxWorld<IServerSandBoxShip> {
 
-    /*private static Thread physicsThread = new Thread(SandBoxServerWorld::physTick, ModMain.MODID + "SandBox-Physics-Thread");
-    //private static final long UPDATE_INTERVAL_NS = 16_666_666; // ≈16.67ms (60Hz)
-    public static final AtomicInteger shouldServerTickCntDown = new AtomicInteger(0);
-    //public static final boolean DO_PHYS_IN_SERVER_THREAD = false;
-    private static double lastMicroS = 0;
-
-    public static final long SERVER_TICK_INTERVAL_MS = 50;
-    public static final double SERVER_TICK_TIME_S = 0.05;*/
     private final SandBoxThreadRegistry<SandBoxServerWorld> threadRegistry = new SandBoxThreadRegistry<>();
-    /*public void registerThread(ISandBoxThread<SandBoxServerWorld> thread) {
-        threadRegistry.register(thread);
-        thread.initial(this);
-    }*/
-    //@Nullable
-    //public ISandBoxThread<SandBoxServerWorld> getThread(Class<?> type) { return threadRegistry.getThread(type); }
     public @Nullable <T extends ISandBoxThread<SandBoxServerWorld>> T getThread(Class<T> type) {
         try {
             return (T)threadRegistry.getThread(type);
@@ -59,54 +45,6 @@ public class SandBoxServerWorld extends SavedData implements ISandBoxWorld<IServ
         }
     }
 
-
-    static {
-    /*    Timer physTimer = new Timer(ModMain.MODID + "-server-sandbox-phys-tick", true);
-        physTimer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                try {
-                    if (Minecraft.getInstance().isPaused()) return;  //works in multiplayer?
-                    /.*double currentMs = sw.getTime(TimeUnit.MICROSECONDS);
-                    //EzDebug.log("thread consume time:" + (currentMs - lastMicroS));
-                    lastMicroS = currentMs;
-
-                    //EzDebug.log("phys ticking");
-                    if (shouldServerTickCntDown.get() <= 0) {
-                        shouldServerTickCntDown.set(2);
-                        serverTick();
-                    } else {
-                        shouldServerTickCntDown.decrementAndGet();
-                    }*./
-
-                    //EzDebug.light("server world phys thread running");
-
-                    physTick();
-                } catch (Exception e) {
-                    EzDebug.error("phys thread failed.");
-                    e.printStackTrace();
-                }
-            }
-        }, 0, PHYS_TICK_INTERVAL_MS);*/
-        /*
-        Timer syncTimer = new Timer(ModMain.MODID + "-server-sync-tick", true);
-        syncTimer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                onServerShipTransformDirty.invokeAll();
-            }
-        }, 0, 20);
-        */
-        /*Timer serverThreadTimer = new Timer(ModMain.MODID + "_sandbox_server_tick", true);
-        serverThreadTimer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                if (Minecraft.getInstance().isPaused()) return;  //works in multiplayer?
-                //EzDebug.log("server ticking");
-                serverTick();
-            }
-        }, 0, SERVER_TICK_INTERVAL_MS);*/
-    }
 
     //todo only update ACTIVE worlds
     //key is dimId by VSGame.dimIdOf()

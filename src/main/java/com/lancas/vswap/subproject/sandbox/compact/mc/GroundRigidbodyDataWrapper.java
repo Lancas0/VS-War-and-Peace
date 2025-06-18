@@ -9,6 +9,7 @@ import com.lancas.vswap.subproject.sandbox.component.data.writer.IRigidbodyDataW
 import org.apache.commons.lang3.NotImplementedException;
 import org.joml.*;
 
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -80,6 +81,12 @@ public class GroundRigidbodyDataWrapper implements IRigidbodyData {
     }
 
     @Override
+    public IRigidbodyDataWriter update(Consumer<RigidbodyData> updater) {
+        EzDebug.warn("no use to update rigidbody of groudn!");
+        return this;
+    }
+
+    @Override
     public IRigidbodyDataWriter setPosition(Vector3dc p) {
         EzDebug.warn("no use to set position of ground");
         return this;
@@ -88,6 +95,12 @@ public class GroundRigidbodyDataWrapper implements IRigidbodyData {
     @Override
     public IRigidbodyDataWriter updatePosition(Function<Vector3dc, Vector3d> pTransformer) {
         EzDebug.warn("no use to update position of ground");
+        return this;
+    }
+
+    @Override
+    public IRigidbodyDataWriter rotateWorld(Quaterniondc r) {
+        EzDebug.warn("no use to rotate ground");
         return this;
     }
 

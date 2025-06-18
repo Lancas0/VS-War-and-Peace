@@ -119,6 +119,7 @@ public class TweenData implements IComponentData<TweenData> {
         public default Curve div(double d) { return t -> evaluate(t) / d; }
         public default Curve andThen(Curve other) { return t -> t < 0.5 ? evaluate(2 * t) : other.evaluate(2 * (t - 0.5)); }
         public default Curve reverse() { return t -> evaluate(1.0 - t); }
+        public default Curve upsideDown() { return t -> 1 - evaluate(t); }
 
         public static Curve One = t -> 1;
         public static Curve Zero = t -> 0;

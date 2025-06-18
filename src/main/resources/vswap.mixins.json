@@ -12,6 +12,7 @@
     "accessor.UseOnCtxAccessor",
     "create.BearingContraptionMixin",
     "create.SmartBlockEntityMixin",
+    "create.filter.FilterItemStackMixin",
     "create.ponder.PonderSceneAccessor",
     "create.ponder.PonderSceneHooks",
     "create.ponder.PonderSceneMixin",
@@ -22,7 +23,6 @@
     "create.ui.OutlineParamsAccessor",
     "debug.FluidTankBlockEntityMixin",
     "debug.SmartBlockEntityMixin",
-    "lostandfound.LevelMixin",
     "valkyrien.ShipObjectServerWorldAccessor",
     "valkyrien.ShipUnloadMixin"
   ],

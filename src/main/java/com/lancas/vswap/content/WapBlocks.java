@@ -19,9 +19,7 @@ import com.lancas.vswap.content.block.blocks.cartridge.propellant.empty.EmptyShe
 import com.lancas.vswap.content.block.blocks.cartridge.warhead.apds.WarheadAPDS;
 import com.lancas.vswap.content.block.blocks.debug.Block01;
 import com.lancas.vswap.content.block.blocks.industry.create.CarbonFiberSail;
-import com.lancas.vswap.content.block.blocks.industry.dock.Dock;
-import com.lancas.vswap.content.block.blocks.industry.dock.DockCTBehaviour;
-import com.lancas.vswap.content.block.blocks.industry.dock.GreenPrintHolder;
+import com.lancas.vswap.content.block.blocks.industry.dock.*;
 import com.lancas.vswap.content.block.blocks.industry.shredder.Shredder;
 import com.lancas.vswap.content.block.blocks.industry.projector.ProjectionCenter;
 import com.lancas.vswap.content.block.blocks.industry.projector.ProjectorLen;
@@ -462,11 +460,27 @@ public class WapBlocks {
             .build()
             .register();
 
-        public static BlockEntry<GreenPrintHolder> GREEN_PRINT_HOLDER = REGISTRATE
-            .block("green_print_holder", GreenPrintHolder::new)
+        public static BlockEntry<DockGreenPrintHolder> DOCK_GP_HOLDER = REGISTRATE
+            .block("dock_green_print_holder", DockGreenPrintHolder::new)
             .properties(p -> p.noOcclusion().mapColor(MapColor.PODZOL))
             .onRegister(CreateRegistrate.connectedTextures(DockCTBehaviour::new))
             //.item(ItemPlus::getOrCreateFromBlockAndGet)
+            .item()
+            .build()
+            .register();
+
+        public static BlockEntry<DockConstructionDetector> DOCK_CONSTRUCTION_DETECTOR = REGISTRATE
+            .block("dock_construction_detector", DockConstructionDetector::new)
+            .properties(p -> p.noOcclusion().mapColor(MapColor.PODZOL))
+            .onRegister(CreateRegistrate.connectedTextures(DockCTBehaviour::new))
+            .item()
+            .build()
+            .register();
+
+        public static BlockEntry<DockUnlocker> DOCK_UNLOCKER = REGISTRATE
+            .block("dock_unlocker", DockUnlocker::new)
+            .properties(p -> p.noOcclusion().mapColor(MapColor.PODZOL))
+            .onRegister(CreateRegistrate.connectedTextures(DockCTBehaviour::new))
             .item()
             .build()
             .register();

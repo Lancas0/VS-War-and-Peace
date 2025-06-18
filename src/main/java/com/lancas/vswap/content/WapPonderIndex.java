@@ -1,6 +1,7 @@
 package com.lancas.vswap.content;
 
 import com.lancas.vswap.VsWap;
+import com.lancas.vswap.content.item.items.docker.Docker;
 import com.lancas.vswap.content.ui.ponder.WapPonderScenes;
 import com.simibubi.create.foundation.ponder.PonderRegistrationHelper;
 import com.tterrag.registrate.util.entry.ItemProviderEntry;
@@ -52,9 +53,19 @@ public class WapPonderIndex {
             .addStoryBoard(WapPonderScenes.Munition.MunitionGliderApId, WapPonderScenes.Munition::munitionGlider)
             .addStoryBoard(WapPonderScenes.Munition.MunitionTailFindId, WapPonderScenes.Munition::munitionTailFin);
 
+        HELPER.forComponents(new ItemProviderEntry[]{
+            WapBlocks.Industrial.DOCK, WapBlocks.Industrial.DOCK_GP_HOLDER
+        })
+            .addStoryBoard(WapPonderScenes.Dock.DockUsageId, WapPonderScenes.Dock::dockUsage)
+            .addStoryBoard(WapPonderScenes.Dock.DockConstraintId, WapPonderScenes.Dock::dockConstraint)
+            .addStoryBoard(WapPonderScenes.Dock.DockConstructId, WapPonderScenes.Dock::dockConstruction);
         /*HELPER.forComponents(new ItemProviderEntry[]{
             WapBlocks.MECH_SCOPE_BLOCK
         })
             .addStoryBoard(WapPonderScenes.Artillery.TEST_ID, WapPonderScenes.Artillery::test);*/
+
+        HELPER.forComponents(new ItemProviderEntry[]{
+            WapItems.DOCKER
+        }).addStoryBoard(WapPonderScenes.DockerScene.DockUsageId, WapPonderScenes.DockerScene::dockerUsage);
     }
 }

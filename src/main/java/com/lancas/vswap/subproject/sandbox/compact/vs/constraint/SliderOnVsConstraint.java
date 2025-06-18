@@ -4,6 +4,7 @@ import com.lancas.vswap.debug.EzDebug;
 import com.lancas.vswap.subproject.sandbox.ISandBoxWorld;
 import com.lancas.vswap.subproject.sandbox.component.data.reader.IRigidbodyDataReader;
 import com.lancas.vswap.subproject.sandbox.component.data.writer.IRigidbodyDataWriter;
+import com.lancas.vswap.subproject.sandbox.constraint.SandBoxConstraintSolver;
 import com.lancas.vswap.subproject.sandbox.constraint.base.ISliderConstraint;
 import com.lancas.vswap.subproject.sandbox.ship.ISandBoxShip;
 import org.joml.Vector3d;
@@ -46,7 +47,7 @@ public class SliderOnVsConstraint extends AbstractSaOnVsConstraint implements IS
     public UUID getUuid() { return selfUuid; }
 
     @Override
-    public void project(ISandBoxWorld<?> world) {
+    public void project(ISandBoxWorld<?> world, SandBoxConstraintSolver solver) {
         Ship curVsShipCache = getVsShip();
         if (curVsShipCache == null) return;  //maybe it's not ready
 

@@ -25,11 +25,16 @@ public class SandBoxPonderMainThread implements ISandBoxThread<SandBoxPonderWorl
         if (world == null || mcLevel == null)
             return;
 
-        world.getConstraintSolver().tick();
-        world.getConstraintSolver().solve();
+
 
         world.allShips().forEach(s -> s.clientTick(mcLevel));
         world.allShips().forEach(s -> s.physTick(physDt * physTimeScale));
+
+        world.getConstraintSolver().tick();
+        world.getConstraintSolver().solve();
+
+        //make the constraint stable
+       // world.getConstraintSolver().solve();
     };
 
     @Override

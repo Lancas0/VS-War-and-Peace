@@ -43,9 +43,10 @@ public class SandBoxConstraintSolver implements ISavedObject<SandBoxConstraintSo
         });
     }
 
-    private final ISandBoxWorld<?> world;
+    protected final ISandBoxWorld<?> world;
+    public ISandBoxWorld<?> getWorld() { return world; }
 
-    private final AlwaysSafeRemoveMap<UUID, IConstraint> constraints = new AlwaysSafeRemoveMap<>();
+    protected final AlwaysSafeRemoveMap<UUID, IConstraint> constraints = new AlwaysSafeRemoveMap<>();
     //private final ConcurrentHashMap<UUID, IConstraint> constraints = new ConcurrentHashMap<>();
     //private final Set<UUID> toRemoveUuid = ConcurrentHashMap.newKeySet();
     //private final Set<Predicate<IConstraint>> toRemove = ConcurrentHashMap.newKeySet();
@@ -86,7 +87,7 @@ public class SandBoxConstraintSolver implements ISavedObject<SandBoxConstraintSo
     }
 
     public void solve() {
-        constraints.values().parallel().forEach(c -> c.project(world));
+        constraints.values().parallel().forEach(c -> c.project(world, this));
     }
     public void tick() {
         constraints.values().forEach(c -> c.tick(world.getWorld(), this));

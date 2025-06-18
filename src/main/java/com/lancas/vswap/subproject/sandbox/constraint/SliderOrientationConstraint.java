@@ -3,6 +3,8 @@ package com.lancas.vswap.subproject.sandbox.constraint;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.lancas.vswap.debug.EzDebug;
 import com.lancas.vswap.subproject.sandbox.ISandBoxWorld;
+import com.lancas.vswap.subproject.sandbox.component.behviour.SandBoxRigidbody;
+import com.lancas.vswap.subproject.sandbox.component.data.RigidbodyData;
 import com.lancas.vswap.subproject.sandbox.component.data.reader.IRigidbodyDataReader;
 import com.lancas.vswap.subproject.sandbox.component.data.writer.IRigidbodyDataWriter;
 import com.lancas.vswap.subproject.sandbox.constraint.base.AbstractBiConstraint;
@@ -63,7 +65,7 @@ public class SliderOrientationConstraint extends AbstractBiConstraint implements
     }
 
     @Override
-    public void project(ISandBoxWorld<?> world) {
+    public void project(ISandBoxWorld<?> world, SandBoxConstraintSolver constraintSolver) {
         if (!localBaseRot.isFinite() || !invLocalTargetRot.isFinite() || !localBaseAttPos.isFinite() || !localTargetAttPos.isFinite()) {
             EzDebug.warn("rot or pos is not finite!");
             return;
@@ -77,17 +79,42 @@ public class SliderOrientationConstraint extends AbstractBiConstraint implements
             return;
         }
 
-        IRigidbodyDataReader aRigidReader = aShip.getRigidbody().getDataReader();
-        IRigidbodyDataWriter bRigidWriter = bShip.getRigidbody().getDataWriter();
+        RigidbodyData aRigid = SandBoxRigidbody.resolveRigidData(aUuid, constraintSolver);
+        RigidbodyData bRigid = SandBoxRigidbody.resolveRigidData(bUuid, constraintSolver);
+        //
 
-        synchronized (mutex) {
-            Quaterniond targetSaRot = new Quaterniond(aRigidReader.getRotation()).mul(localBaseRot).mul(invLocalTargetRot);
-            bRigidWriter.setRotation(targetSaRot);
+        if (aRigid == null || bRigid == null) {
+            //Fall back
+            IRigidbodyDataReader aRigidReader = aShip.getRigidbody().getDataReader();
+            IRigidbodyDataWriter bRigidWriter = bShip.getRigidbody().getDataWriter();
 
-            Vector3d worldSlideAxis = aRigidReader.localToWorldNoScaleDir(localBaseSliderAxis, new Vector3d());
-            Vector3d worldBaseAttPos = aRigidReader.localToWorldPos(localBaseAttPos, new Vector3d());
-            Vector3d newWorldTargetPos = worldSlideAxis.mul(fixedLength, new Vector3d()).add(worldBaseAttPos);
-            bRigidWriter.moveLocalPosToWorld(localTargetAttPos, newWorldTargetPos);
+            synchronized (mutex) {
+                Quaterniond targetSaRot = new Quaterniond(aRigidReader.getRotation()).mul(localBaseRot).mul(invLocalTargetRot);
+                bRigidWriter.setRotation(targetSaRot);
+
+                Vector3d worldSlideAxis = aRigidReader.localToWorldNoScaleDir(localBaseSliderAxis, new Vector3d());
+                Vector3d worldBaseAttPos = aRigidReader.localToWorldPos(localBaseAttPos, new Vector3d());
+                Vector3d newWorldTargetPos = worldSlideAxis.mul(fixedLength, new Vector3d()).add(worldBaseAttPos);
+                bRigidWriter.moveLocalPosToWorld(localTargetAttPos, newWorldTargetPos);
+            }
+        } else {
+            synchronized (mutex) {
+                Quaterniond targetSaRot = new Quaterniond(aRigid.transform.rotation).mul(localBaseRot).mul(invLocalTargetRot);
+                bRigid.setRotImmediately(targetSaRot);
+
+                Vector3d worldSlideAxis = aRigid.localToWorldNoScaleDir(localBaseSliderAxis, new Vector3d());
+                Vector3d worldBaseAttPos = aRigid.localToWorldPos(localBaseAttPos, new Vector3d());
+                Vector3d newWorldTargetPos = worldSlideAxis.mul(fixedLength, new Vector3d()).add(worldBaseAttPos);
+
+
+                Vector3d transformedPos = bRigid.localToWorldPos(localTargetAttPos, new Vector3d());
+                Vector3d movement = newWorldTargetPos.sub(transformedPos, new Vector3d());
+                //the update pos is done sequently, don't worry the concurrent
+                bRigid.transform.translate(movement);
+
+                //bRigid.moveLocalPosToWorld(localTargetAttPos, newWorldTargetPos);
+            }
         }
+
     }
 }

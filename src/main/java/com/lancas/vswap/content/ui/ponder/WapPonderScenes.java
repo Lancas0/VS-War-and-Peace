@@ -1,5 +1,6 @@
 package com.lancas.vswap.content.ui.ponder;
 
+import com.lancas.vswap.VsWap;
 import com.lancas.vswap.WapConfig;
 import com.lancas.vswap.content.WapBlocks;
 import com.lancas.vswap.content.WapItems;
@@ -8,7 +9,7 @@ import com.lancas.vswap.content.block.blocks.cartridge.fuze.ImpactFuze;
 import com.lancas.vswap.content.block.blocks.cartridge.primer.PrimerBlock;
 import com.lancas.vswap.content.block.blocks.cartridge.propellant.ShelledPropellant;
 import com.lancas.vswap.content.block.blocks.cartridge.warhead.HeWarhead;
-import com.lancas.vswap.content.block.blocks.industry.dock.GreenPrintHolder;
+import com.lancas.vswap.content.block.blocks.industry.dock.DockGreenPrintHolder;
 import com.lancas.vswap.content.block.blocks.industry.projector.ProjectionCenter;
 import com.lancas.vswap.content.block.blocks.industry.projector.VSProjector;
 import com.lancas.vswap.content.block.blocks.industry.shredder.Shredder;
@@ -31,6 +32,7 @@ import com.lancas.vswap.util.RandUtil;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllItems;
 import com.simibubi.create.content.contraptions.chassis.StickerBlock;
+import com.simibubi.create.content.kinetics.deployer.DeployerBlockEntity;
 import com.simibubi.create.content.kinetics.mechanicalArm.ArmBlockEntity;
 import com.simibubi.create.foundation.ponder.*;
 import com.simibubi.create.foundation.ponder.element.EntityElement;
@@ -38,6 +40,7 @@ import com.simibubi.create.foundation.ponder.element.InputWindowElement;
 import com.simibubi.create.foundation.ponder.element.WorldSectionElement;
 import com.simibubi.create.foundation.ponder.instruction.FadeIntoSceneInstruction;
 import com.simibubi.create.foundation.utility.Pointing;
+import com.simibubi.create.infrastructure.ponder.PonderIndex;
 import com.tterrag.registrate.util.entry.BlockEntry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -56,6 +59,7 @@ import org.joml.*;
 
 import java.lang.Math;
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
@@ -387,7 +391,7 @@ public class WapPonderScenes {
                 Pointing.RIGHT
             ).rightClick().withItem(WapItems.GREEN_PRINT.asStack());
             scene.overlay.showControls(insertToGpHolder, 30);
-            scene.world.modifyBlock(gpHolderBp, s -> s.setValue(GreenPrintHolder.HAS, true), false);
+            scene.world.modifyBlock(gpHolderBp, s -> s.setValue(DockGreenPrintHolder.HAS, true), false);
             scene.idle(30);
         }
 
@@ -750,6 +754,8 @@ public class WapPonderScenes {
             scene.configureBasePlate(0, 0, 5);
             scene.scaleSceneView(0.9F);
             scene.showBasePlate();
+            PonderVsSceneBuilder ponderVs = new PonderVsSceneBuilder(scene);
+            PonderWorld ponderWorld = ponderVs.getPonderScene().getWorld();
 
             BlockPos leftShredder = util.grid.at(3, 2, 2);
             BlockPos rightShredder = util.grid.at(1, 2, 2);
@@ -758,7 +764,7 @@ public class WapPonderScenes {
             scene.idle(15);
             scene.world.showSection(util.select.layer(2), Direction.UP);
 
-            PonderVsSceneBuilder pvs = new PonderVsSceneBuilder(scene);
+
             scene.idle(5);
 
 
@@ -767,7 +773,7 @@ public class WapPonderScenes {
                 new Vec3(0, 0, 0),
                 Blocks.DIRT.asItem().getDefaultInstance()
             );
-            pvs.world.throwEntityTo(input1Link, JomlUtil.dFaceCenter(leftShredder, Direction.EAST).add(0, 0.5, 0), true);
+            ponderVs.world.throwEntityTo(input1Link, JomlUtil.dFaceCenter(leftShredder, Direction.EAST).add(0, 1, 0), (s, e) -> e.discard());
             scene.idle(20);
 
             ElementLink<EntityElement> input2Link = scene.world.createItemEntity(
@@ -775,7 +781,7 @@ public class WapPonderScenes {
                 new Vec3(0, 0, 0),
                 Blocks.GRASS_BLOCK.asItem().getDefaultInstance()
             );
-            pvs.world.throwEntityTo(input2Link, JomlUtil.dFaceCenter(rightShredder, Direction.WEST).add(0, 0.5, 0), true);
+            ponderVs.world.throwEntityTo(input2Link, JomlUtil.dFaceCenter(rightShredder, Direction.WEST).add(0, 1, 0), (s, e) -> e.discard());
             scene.idle(20);
 
 
@@ -787,7 +793,7 @@ public class WapPonderScenes {
                 new Vec3(0, 0, 0),
                 MaterialStandardizedItem.fromBlock(Blocks.DIRT, 1)
             );
-            pvs.world.throwEntityTo(output1Link, JomlUtil.dCenter(center).add(0, 0, 0), false);
+            ponderVs.world.throwEntityTo(output1Link, JomlUtil.dCenter(center).add(0, 0, 0), null);
             scene.idle(20);
 
             ElementLink<EntityElement> output2Link = scene.world.createItemEntity(
@@ -795,7 +801,7 @@ public class WapPonderScenes {
                 new Vec3(0, 0, 0),
                 MaterialStandardizedItem.fromBlock(Blocks.GRASS_BLOCK, 1)
             );
-            pvs.world.throwEntityTo(output2Link, JomlUtil.dCenter(center).add(0, 0, 0), true);
+            ponderVs.world.throwEntityTo(output2Link, JomlUtil.dCenter(center).add(0, 0, 0), (s, e) -> e.discard());
             scene.idle(10);
 
 
@@ -1759,8 +1765,8 @@ public class WapPonderScenes {
                 JomlUtil.dCenterExtended(new Vector3d(0, 0,0), 0.5),
                 PonderPalette.WHITE.getColor(),
                 t01 -> new Vector3d(0, 0, 4),
-                800,
-                40
+                400,
+                30
             );
 
             ponderVs.vs.modifyShip(munition3, s -> {
@@ -2303,7 +2309,7 @@ public class WapPonderScenes {
 
 
             for (int i = 0; i < 4; ++i) {
-                ponderVs.overlay.showAndTweenOutline("Wind" + i,
+                ponderVs.overlay.showAndTweenOutline("Wind1-1" + i,
                     JomlUtil.centerExtended(focusCenter.add(0, 0, -5, new Vector3d()), windExtend1, windExtend1, 0),
                     JomlUtil.centerExtended(focusCenter.add(0, 0, 5, new Vector3d()), windExtend1, windExtend1, 0),
                     PonderPalette.WHITE,
@@ -2326,29 +2332,33 @@ public class WapPonderScenes {
             final Vector3d[] initialVel = new Vector3d[] { null };
             final Vector3d[] displacedVel = new Vector3d[] { null };
             //int displaceTicks = 0;
+            int totalDisTicks = 100;
+            int displaceTicks = 80;
+            double td = (double)displaceTicks / totalDisTicks;
+            double tLerpTimes = 1.0 / (1.0 - td);
             ponderVs.vs.tweenShip(m1, (s, t01) -> {
                 Vector3dc vel = s.getRigidbody().getDataReader().getVelocity();
                 var rigidWriter = s.getRigidbody().getDataWriter();
-                if (t01 < 0.5) {
+                if (t01 < td) {
                     if (initialVel[0] == null) {
                         initialVel[0] = new Vector3d(vel);
                     }
-                    Quaterniond displacement = RandUtil.nextQuaterniond(0.01, 0.015);
+                    Quaterniond displacement = RandUtil.nextQuaterniond(0.005, 0.01);
                     rigidWriter.updateVelocity(v -> v.rotate(displacement, new Vector3d()));
                 } else {
                     if (displacedVel[0] == null) {
                         displacedVel[0] = new Vector3d(vel);
                     }
-                    Vector3d curLerp = displacedVel[0].lerp(initialVel[0], 2 * (t01 - 0.5), new Vector3d());
+                    Vector3d curLerp = displacedVel[0].lerp(initialVel[0], (t01 - td) * tLerpTimes, new Vector3d());
                     rigidWriter.setVelocity(curLerp);
                 }
 
                 //Vector3d curV = initialVel[0].lerp(displacedVel[0], t01, new Vector3d());
                 //s.getRigidbody().getDataWriter().setVelocity(displacement.transform(curV, new Vector3d()));
-            }, 80);
+            }, totalDisTicks);
 
             for (int i = 0; i < 5; ++i) {
-                ponderVs.overlay.showAndTweenOutline("Wind" + i + i,  //avoid same name
+                ponderVs.overlay.showAndTweenOutline("Wind1-2" + i,
                     JomlUtil.centerExtended(focusCenter.add(0, 0, -5, new Vector3d()), windExtend1, windExtend1, 0),
                     JomlUtil.centerExtended(focusCenter.add(0, 0, 5, new Vector3d()), windExtend1, windExtend1, 0),
                     PonderPalette.WHITE,
@@ -2420,7 +2430,7 @@ public class WapPonderScenes {
 
 
             for (int i = 0; i < 4; ++i) {
-                ponderVs.overlay.showAndTweenOutline("Wind" + i + i + i,  //avoid same name
+                ponderVs.overlay.showAndTweenOutline("Wind2" + i,  //avoid same name
                     JomlUtil.centerExtended(focusCenter.add(0, 0, -5, new Vector3d()), wind2Extend, wind2Extend, 0),
                     JomlUtil.centerExtended(focusCenter.add(0, 0, 5, new Vector3d()), wind2Extend, wind2Extend, 0),
                     PonderPalette.WHITE,
@@ -2436,6 +2446,731 @@ public class WapPonderScenes {
             ponderVs.vs.setPhysTimeScale(1);
 
 
+        }
+    }
+
+    public static class Dock {
+        public static final String DockUsageId = "dock/dock_usage";
+        public static void dockUsage(SceneBuilder scene, SceneBuildingUtil util) {
+            scene.title(DockUsageId, "Dock Usage");
+            scene.configureBasePlate(0, 0, 7);
+            scene.showBasePlate();
+            //scene.removeShadow();
+            PonderVsSceneBuilder ponderVs = new PonderVsSceneBuilder(scene);
+            PonderScene ponderScene = ponderVs.getPonderScene();
+            PonderWorld ponderWorld = ponderVs.getPonderScene().getWorld();
+
+            BlockPos centerDockPos = new BlockPos(3, 1, 3);
+            Selection dockSection = util.select.fromTo(2, 1, 2, 4, 1, 4);
+            Selection beltSection = util.select.fromTo(6, 1, 0, 6, 1, 6);
+            Selection gearsSection = util.select.fromTo(1, 1, 4, 1, 1, 6).add(util.select.fromTo(5, 1, 4, 5, 1, 6));
+            BlockPos toDockArm = new BlockPos(1, 1, 3);
+            BlockPos depot = new BlockPos(0, 1, 3);
+            BlockPos toBeltArm = new BlockPos(5, 1, 3);
+
+            Selection verticalMunSection = util.select.fromTo(0, 1, 0, 0, 3, 0);
+            Selection horizonMunSection = util.select.fromTo(1, 1, 0, 3, 1, 0);
+            BlockClusterData vertData = ponderVs.util.ship.copyWorldSectionAsShipBlocks(verticalMunSection, new Vector3i(0, 1, 0));
+            BlockClusterData horData = ponderVs.util.ship.copyWorldSectionAsShipBlocks(horizonMunSection, new Vector3i(1, 1, 0));
+
+            scene.idle(3);
+            scene.world.showSection(util.select.position(centerDockPos), Direction.DOWN);
+
+
+            scene.idle(15);
+            InputWindowElement dockerUseElement = new InputWindowElement(util.vector.blockSurface(centerDockPos, Direction.WEST), Pointing.LEFT)
+                .withItem(Docker.defaultStack())
+                .rightClick();
+
+            /*scene.overlay.showSelectionWithText(util.select.position(centerDockPos), 60)
+                .text("You can place ship on Dock by interactive with Docker or holding Ship")
+                .placeNearTarget()
+                .attachKeyFrame();*/
+            ponderVs.overlay.addNoLineText(60)
+                .text("You can place ship on Dock by interactive with Docker or holding Ship")
+                .pointAt(centerDockPos.above(2).getCenter())
+                .placeNearTarget()
+                .attachKeyFrame();
+
+            scene.idle(20);
+
+            scene.overlay.showControls(dockerUseElement, 25);
+
+            scene.idle(20);
+
+            UUID verPlacedShip = ponderVs.vs.makeShip(
+                new RigidbodyData().setPositionImmediately(JomlUtil.dCenter(centerDockPos.above()).sub(0, 0.5, 0)),
+                vertData,
+                false
+            );
+
+            scene.idle(30);
+
+            ponderVs.overlay.addNoLineText(60)
+                .pointAt(centerDockPos.above(2).getCenter())
+                .text("Then right click with empty hands on Dock to fetch the ship.")
+                .placeNearTarget()
+                .attachKeyFrame();
+
+            scene.idle(20);
+
+            InputWindowElement fetchDockerEle = new InputWindowElement(util.vector.blockSurface(centerDockPos, Direction.WEST), Pointing.LEFT)
+                .rightClick();
+            scene.overlay.showControls(fetchDockerEle, 25);
+
+            scene.idle(20);
+
+            ponderVs.vs.hideShip(verPlacedShip);
+
+            scene.idle(30);
+
+
+            scene.world.showSection(util.select.position(toDockArm), Direction.DOWN);
+            scene.world.showSection(util.select.position(toBeltArm), Direction.DOWN);
+            scene.idle(5);
+            scene.world.showSection(gearsSection, Direction.NORTH);
+            scene.idle(5);
+            scene.world.showSection(util.select.position(depot), Direction.EAST);
+            scene.world.showSection(beltSection, Direction.WEST);
+
+            scene.idle(15);
+
+            ItemStack vertDocker = Docker.stackOfSaBlockData(0, vertData);
+            ItemStack horDocker = Docker.stackOfSaBlockData(0, horData);
+
+            var verDockerLink = scene.world.createItemEntity(depot.above(10).getCenter(), Vec3.ZERO, vertDocker);
+            ponderVs.world.throwEntityTo(verDockerLink, JomlUtil.dCenter(depot), (s, e) -> {
+                e.discard();
+                ponderVs.util.beltPlaceLikePlaceImmediately(s, depot, vertDocker, Direction.WEST);
+            });
+
+            //scene.idle(26);
+            //scene.world.createItemOnBeltLike(depot, Direction.DOWN, vertDocker);
+
+            scene.idle(35);
+
+            scene.world.instructArm(toDockArm, ArmBlockEntity.Phase.MOVE_TO_INPUT, ItemStack.EMPTY, 0);
+            scene.idle(10);
+
+            scene.overlay.showText(60)
+                .pointAt(toDockArm.getCenter())
+                .placeNearTarget()
+                .attachKeyFrame()
+                .text("Arm can transport Docker to Dock");
+
+            scene.idle(10);
+            scene.world.instructArm(toDockArm, ArmBlockEntity.Phase.SEARCH_OUTPUTS, vertDocker, 0);
+            scene.world.removeItemsFromBelt(depot);
+            scene.idle(20);
+            scene.world.instructArm(toDockArm, ArmBlockEntity.Phase.MOVE_TO_OUTPUT, vertDocker, 0);
+            scene.idle(20);
+            scene.world.instructArm(toDockArm, ArmBlockEntity.Phase.SEARCH_INPUTS, ItemStack.EMPTY, -1);
+
+            ponderVs.vs.showShip(verPlacedShip);
+
+            scene.idle(15);
+
+            scene.world.instructArm(toBeltArm, ArmBlockEntity.Phase.MOVE_TO_INPUT, ItemStack.EMPTY, 0);
+            scene.idle(20);
+            scene.overlay.showText(60)
+                .pointAt(toBeltArm.getCenter())
+                .placeNearTarget()
+                .attachKeyFrame()
+                .text("And can also fetch ship from Dock");
+            scene.world.instructArm(toBeltArm, ArmBlockEntity.Phase.SEARCH_OUTPUTS, vertDocker, 0);
+            ponderVs.vs.hideShip(verPlacedShip);
+            scene.idle(20);
+            scene.world.instructArm(toBeltArm, ArmBlockEntity.Phase.MOVE_TO_OUTPUT, vertDocker, 0);
+            scene.idle(20);
+            scene.world.instructArm(toBeltArm, ArmBlockEntity.Phase.SEARCH_INPUTS, ItemStack.EMPTY, -1);
+            scene.world.createItemOnBelt(new BlockPos(6, 1, 3), Direction.EAST, vertDocker);
+
+            scene.idle(40);
+
+            var horDockerLink = scene.world.createItemEntity(depot.above(10).getCenter(), Vec3.ZERO, horDocker);
+            ponderVs.world.throwEntityTo(horDockerLink, JomlUtil.dCenter(depot), (s, e) -> {
+                e.discard();
+                ponderVs.util.beltPlaceLikePlaceImmediately(s, depot, horDocker, Direction.WEST);
+            });
+            scene.idle(35);
+
+            scene.overlay.showText(50)
+                .pointAt(util.vector.blockSurface(depot, Direction.UP))
+                .attachKeyFrame()
+                .placeNearTarget()
+                .text("When the bottom size is larger than docker's size...");
+
+            scene.idle(40);
+
+            scene.world.showSection(dockSection, Direction.UP);
+            scene.idle(15);
+
+            ponderVs.scene.setCameraRotateX(-75);
+
+            scene.idle(20);
+
+            ponderVs.overlay.addNoLineText(60)
+                .pointAt(toDockArm.getCenter().add(2, 4, 2))
+                .attachKeyFrame()
+                .placeNearTarget()
+                .text("You can expand the dock.");
+
+            scene.idle(15);
+
+            ponderVs.overlay.showAndTweenOutline("Dock",
+                JomlUtil.centerExtended(centerDockPos, 0),
+                JomlUtil.centerExtended(centerDockPos, 1.5, 0.5, 1.5),
+                PonderPalette.GREEN,
+                20, 40
+            );
+            scene.idle(5);
+            scene.overlay.showText(60)
+                .text("The connected rect sized docks are considered as a combined")
+                .pointAt(centerDockPos.getCenter())
+                .colored(PonderPalette.GREEN)
+                .placeNearTarget()
+                .attachKeyFrame();
+
+            scene.idle(45);
+
+            ponderVs.scene.setCameraRotateX(-45);
+
+            scene.idle(20);
+
+            //search input?
+            scene.world.instructArm(toDockArm, ArmBlockEntity.Phase.MOVE_TO_INPUT, ItemStack.EMPTY, 0);
+            scene.idle(20);
+            scene.world.instructArm(toDockArm, ArmBlockEntity.Phase.SEARCH_OUTPUTS, horDocker, 0);
+            scene.world.removeItemsFromBelt(depot);
+            scene.idle(20);
+            scene.world.instructArm(toDockArm, ArmBlockEntity.Phase.MOVE_TO_OUTPUT, horDocker, 0);
+            scene.idle(20);
+            scene.world.instructArm(toDockArm, ArmBlockEntity.Phase.SEARCH_INPUTS, ItemStack.EMPTY, -1);
+            UUID horPlacedShip = ponderVs.vs.makeShip(
+                new RigidbodyData().setPositionImmediately(JomlUtil.dCenter(2,2, 3).sub(0, 0.1875, 0)),
+                horData,
+                false
+            );
+            scene.idle(20);
+
+
+            scene.world.instructArm(toBeltArm, ArmBlockEntity.Phase.MOVE_TO_INPUT, ItemStack.EMPTY, 0);
+            scene.idle(20);
+            scene.world.instructArm(toBeltArm, ArmBlockEntity.Phase.SEARCH_OUTPUTS, horDocker, 0);
+            ponderVs.vs.hideShip(horPlacedShip);
+            scene.idle(20);
+            scene.world.instructArm(toBeltArm, ArmBlockEntity.Phase.MOVE_TO_OUTPUT, horDocker, 0);
+            scene.idle(20);
+            scene.world.instructArm(toBeltArm, ArmBlockEntity.Phase.SEARCH_INPUTS, ItemStack.EMPTY, -1);
+            scene.world.createItemOnBelt(new BlockPos(6, 1, 3), Direction.EAST, horDocker);
+        }
+
+        public static final String DockConstraintId = "dock/dock_constraint";
+        public static void dockConstraint(SceneBuilder scene, SceneBuildingUtil util) {
+            scene.title(DockConstraintId, "Dock Usage");
+            scene.configureBasePlate(0, 0, 5);
+           // scene.showBasePlate();
+            scene.removeShadow();
+            PonderVsSceneBuilder ponderVs = new PonderVsSceneBuilder(scene);
+            PonderScene ponderScene = ponderVs.getPonderScene();
+            PonderWorld ponderWorld = ponderVs.getPonderScene().getWorld();
+
+            Selection munitionSection = util.select.fromTo(0, 1, 0, 0, 5, 0);
+            Selection dockSection = util.select.fromTo(1, 1, 1, 3, 1, 3);
+
+
+            UUID dock = ponderVs.vs.makeShip(
+                new RigidbodyData(),//d.setOmegaImmediately(omega),
+                ponderVs.util.ship.copyWorldSectionAsShipBlocks(dockSection, new Vector3i(2, 1, 2)),
+                false
+            );
+            UUID munition = ponderVs.vs.makeShip(
+                new RigidbodyData().setPositionImmediately(0, 0.5, 0),//.setEarthGravityImmediately(),
+                ponderVs.util.ship.copyWorldSectionAsShipBlocks(munitionSection, new Vector3i(0, 1, 0)),
+                false
+            );
+            UUID constraint = ponderVs.vs.makeConstraint(u ->
+                new SliderOrientationConstraint(u, dock, munition,
+                    new Vector3d(0, 0.5, 0), new Vector3d(0, 0, 0),
+                    new Quaterniond(), new Quaterniond(),
+                    new Vector3d(0, 1, 0)
+                )
+            );
+            ponderVs.scene.focusOnShip(dock, new Vector3d(0, 0, 0), 200, false);
+
+
+            ponderVs.overlay.textPointToFocusRelative(Vec3.ZERO, 100)
+                .placeNearTarget()
+                .attachKeyFrame()
+                .text("The ship will be constrainted by dock, which make it usable on ship.");
+
+            scene.idle(20);
+
+            Vector3d targetOmega1 = new Vector3d(0, 6, 0);
+            ponderVs.vs.tweenShip(dock, (s, t01) -> {
+                s.getRigidbody().getDataWriter().setOmega(new Vector3d(0, 0, 0).lerp(targetOmega1, t01));
+            }, 50).curve(TweenData.Curve.OutCubic.andThen(TweenData.Curve.InCubic.upsideDown()));
+
+            scene.idle(50);
+
+            Vector3d targetOmega2 = new Vector3d(6, 0, 0);
+            ponderVs.vs.tweenShip(dock, (s, t01) -> {
+                s.getRigidbody().getDataWriter().setOmega(new Vector3d(0, 0, 0).lerp(targetOmega2, t01));
+            }, 50).curve(TweenData.Curve.OutCubic.andThen(TweenData.Curve.InCubic.upsideDown()));
+
+            scene.idle(50);
+
+            Vector3d targetOmega3 = new Vector3d(0, 0, 6);
+            ponderVs.vs.tweenShip(dock, (s, t01) -> {
+                s.getRigidbody().getDataWriter().setOmega(new Vector3d(0, 0, 0).lerp(targetOmega3, t01));
+            }, 50).curve(TweenData.Curve.OutCubic.andThen(TweenData.Curve.InCubic.upsideDown()));
+
+            scene.idle(50);
+            ponderVs.overlay.textPointToFocusRelativeNoLine(Vec3.ZERO, 200)
+                .placeNearTarget()
+                .attachKeyFrame()
+                .text("However, the ship will drop if the dock detect the possible multiblock change(Place or destory dock near the strucutre)");
+
+            scene.idle(20);
+
+            ponderVs.vs.modifyShip(dock, s -> {
+                s.getBlockCluster().getDataWriter().setBlock(new Vector3i(1, 1, 1), WapBlocks.Industrial.DOCK.getDefaultState());
+            });
+            ponderVs.vs.modifyShip(munition, s -> s.getRigidbody().getDataWriter().setEarthGravity());
+            ponderVs.vs.deleteConstraint(constraint);
+
+
+
+
+
+        }
+
+        public static final String DockConstructId = "dock/dock_construct";
+        public static void dockConstruction(SceneBuilder scene, SceneBuildingUtil util) {
+            scene.title(DockConstructId, "Dock Construct");
+            scene.configureBasePlate(0, 0, 16);
+            scene.showBasePlate();
+            scene.scaleSceneView(0.65f);
+            scene.rotateCameraY(90);
+            scene.removeShadow();
+            PonderVsSceneBuilder ponderVs = new PonderVsSceneBuilder(scene);
+            PonderScene ponderScene = ponderVs.getPonderScene();
+            PonderWorld ponderWorld = ponderVs.getPonderScene().getWorld();
+
+            BlockPos gpHolder = new BlockPos(20, 1, 17);
+            BlockPos detector = new BlockPos(19, 1, 17);
+            BlockPos unlocker = new BlockPos(18, 1, 17);
+
+            BlockPos wingDepot = new BlockPos(3, 1, 2);
+            BlockPos wingArm = new BlockPos(4, 1, 2);
+
+            scene.world.modifyBlock(gpHolder, s -> s.setValue(DockGreenPrintHolder.HAS, true), false);
+
+            Selection planeBodySection = util.select.fromTo(5, 2, 4, 16, 8, 16).add(util.select.position(17, 7, 10));
+            Selection propSection = util.select.fromTo(17, 2, 8, 17, 6, 12);
+
+            BlockPos planeOrigin = new BlockPos(16, 4, 10);
+            BlockPos propOrigin = new BlockPos(17, 4, 10);
+
+            //BlockPos armsFocusPos = new BlockPos(3, 2, 4);
+
+            UUID planeBody = ponderVs.vs.makeShip(
+                new RigidbodyData().setPositionImmediately(JomlUtil.dCenter(planeOrigin)),
+                ponderVs.util.ship.copyWorldSectionAsShipBlocks(planeBodySection, JomlUtil.i(planeOrigin)),
+                false
+            );
+            UUID prop = ponderVs.vs.makeShip(
+                new RigidbodyData().setPositionImmediately(JomlUtil.dCenter(propOrigin)),
+                ponderVs.util.ship.copyWorldSectionAsShipBlocks(propSection, JomlUtil.i(propOrigin)),
+                false
+            );
+            UUID constraint = ponderVs.vs.makeConstraint(u ->
+                new SliderOrientationConstraint(
+                    u, planeBody, prop,
+                    new Vector3d(), new Vector3d(),
+                    new Quaterniond(), new Quaterniond(),
+                    new Vector3d(1, 0, 0)
+                ).withFixedDistance(1.25)
+            );
+
+            List<Vector3i> wingBlockPoses = List.of(
+                new Vector3i(0, 1, 0),
+                new Vector3i(0, 2, 0),
+                //new Vector3i(0, -1, 0),
+                new Vector3i(0, -2, 0)
+                /*new Vector3i(0, 0, 1),
+                new Vector3i(0, 0, 2),
+                new Vector3i(0, 0, -1),
+                new Vector3i(0, 0, -2)*/
+            );
+            for (Vector3i wingPos : wingBlockPoses) {
+                ponderVs.vs.modifyShipBlock(prop, wingPos, s -> Blocks.AIR.defaultBlockState());
+            }
+
+            scene.world.showSection(util.select.everywhere().substract(planeBodySection).substract(propSection), Direction.DOWN);
+
+            scene.idle(20);
+
+            ponderVs.overlay.textPointToFocusRelativeNoLine(Vec3.ZERO, 100)
+                .text("You can use dock to assemble ships")
+                .placeNearTarget()
+                .attachKeyFrame();
+
+            scene.idle(40);
+
+            scene.rotateCameraY(90);
+            //ponderVs.scene.tweenSceneView(0.5f, 0.75f, 20).curve(TweenData.Curve.InOutCubic);
+
+            scene.idle(10);
+            /*UUID gpFocusPoint = ponderVs.vs.makeShip(
+                new RigidbodyData().setPositionImmediately(JomlUtil.dCenter(gpHolder)),
+                new BlockClusterData(),
+                true
+            );*/
+            //ponderVs.scene.focusOnShip(gpFocusPoint, new Vector3d(0, 4, 0), 60, false);
+            InputWindowElement pointToGp = new InputWindowElement(util.vector.blockSurface(gpHolder, Direction.UP), Pointing.DOWN)
+                .withItem(WapBlocks.Industrial.DOCK_GP_HOLDER.asStack());
+            scene.overlay.showControls(pointToGp, 20);
+
+            scene.idle(15);
+
+            scene.overlay.showText(75)
+                .pointAt(gpHolder.getCenter())
+                .text("To assemble ship on a dock, there must be a gp holder in it")
+                .placeNearTarget()
+                .attachKeyFrame();
+
+            scene.idle(60);
+
+            /*InputWindowElement hasGp = new InputWindowElement(util.vector.blockSurface(gpHolder, Direction.UP), Pointing.DOWN)
+                .withItem(WapItems.GREEN_PRINT.asStack());
+            scene.overlay.showControls(hasGp, 20);
+
+            scene.idle(25);*/
+
+            ponderVs.overlay.addNoLineText(60)
+                .pointAt(gpHolder.above().west(4).getCenter())
+                .text("And it must contain the gp which contain the ship you want to assemble")
+                .placeNearTarget()
+                .attachKeyFrame();
+
+
+            scene.idle(65);
+
+            scene.rotateCameraY(-90);
+            //ponderVs.scene.tweenSceneView(0.75f, 0.5f, 20).curve(TweenData.Curve.InOutCubic);
+
+            scene.idle(20);
+
+            scene.overlay.showText(60)
+                .pointAt(wingDepot.getCenter())
+                .text("And then arm will start to work")
+                .placeNearTarget()
+                .attachKeyFrame();
+
+            scene.idle(5);
+
+
+            int stepTicks = 9;
+            ItemStack sailMs = MaterialStandardizedItem.fromBlock(AllBlocks.SAIL.get(), 1);
+            int wingIx = 0;
+            for (Vector3i wingPos : wingBlockPoses) {
+                scene.world.createItemOnBeltLike(wingDepot, Direction.WEST, sailMs);
+                scene.idle(2);
+                scene.world.instructArm(wingArm, ArmBlockEntity.Phase.SEARCH_INPUTS, ItemStack.EMPTY, 0);
+                scene.idle(stepTicks);
+                scene.world.instructArm(wingArm, ArmBlockEntity.Phase.MOVE_TO_INPUT, ItemStack.EMPTY, 0);
+                scene.idle(stepTicks);
+                scene.world.removeItemsFromBelt(wingDepot);
+                scene.world.instructArm(wingArm, ArmBlockEntity.Phase.SEARCH_OUTPUTS, sailMs, 0);
+                scene.idle(stepTicks);
+                scene.world.instructArm(wingArm, ArmBlockEntity.Phase.MOVE_TO_OUTPUT, sailMs, 0);
+                scene.idle(stepTicks);
+                scene.world.instructArm(wingArm, ArmBlockEntity.Phase.SEARCH_INPUTS, ItemStack.EMPTY, -1);
+
+                ponderVs.vs.modifyShipBlock(prop, wingPos,
+                    s -> AllBlocks.SAIL.getDefaultState().setValue(BlockStateProperties.FACING, Direction.EAST)
+                );
+
+                if (wingIx == 0)
+                    scene.overlay.showText(60)
+                        .pointAt(propOrigin.getCenter())
+                        .attachKeyFrame()
+                        .text("The block in ship can be placed")
+                        .placeNearTarget();
+
+                wingIx++;
+            }
+            scene.idle(5);
+            scene.rotateCameraY(90);
+
+            scene.idle(10);
+
+            InputWindowElement pointToDetector = new InputWindowElement(detector.getCenter(), Pointing.DOWN)
+                .withItem(WapBlocks.Industrial.DOCK_CONSTRUCTION_DETECTOR.asStack());
+            scene.overlay.showControls(pointToDetector, 20);
+
+            scene.idle(15);
+
+            scene.overlay.showText(65)
+                .pointAt(detector.east(4).getCenter())
+                .text("When the construction is completed, the detector will emit redstone signal")
+                .placeNearTarget()
+                .attachKeyFrame();
+
+            scene.idle(20);
+
+            scene.world.modifyBlock(detector, s -> s.setValue(BlockStateProperties.POWERED, true), false);
+
+            scene.idle(40);
+
+            InputWindowElement pointToUnlocker = new InputWindowElement(unlocker.getCenter(), Pointing.DOWN)
+                .withItem(WapBlocks.Industrial.DOCK_UNLOCKER.asStack());
+            scene.overlay.showControls(pointToUnlocker, 20);
+
+            scene.idle(15);
+
+            scene.overlay.showText(65)
+                .pointAt(unlocker.east(2).getCenter())
+                .text("When DockUnlocker receive redstone signal, the ship will be unlocked")
+                .placeNearTarget()
+                .attachKeyFrame();
+
+            scene.idle(25);
+
+            ponderVs.vs.playMotionForShip(planeBody, VsWap.MODID, "airplane_drop", 1.5, 40);
+
+            ponderVs.vs.playMotionForShip(planeBody, VsWap.MODID, "airplane_motion", 2, 100);
+
+            Quaterniond rot = new Quaterniond();
+            Quaterniond tickRot = new Quaterniond(new AxisAngle4d(Math.PI / 5, 1, 0, 0));
+
+            scene.idle(20);
+
+            ponderVs.vs.<SliderOrientationConstraint>tweenConstraint(constraint, (c, t01) -> {
+                //rot.premul(new Quaterniond(tickRot.scale(t01))).normalize();
+                tickRot.scale(t01, new Quaterniond()).mul(rot, rot);
+                rot.normalize();
+                c.setTargetLocalRot(rot);
+            }, 220).curve(TweenData.Curve.InOutQuint);
+
+            scene.idle(140);
+
+            AABB docksAABB = new AABB(5, 1, 2, 21, 2, 18);
+            ponderVs.overlay.showAndTweenOutline("AirPlane",
+                new AABB(13, 2, 10, 13, 4, 10),
+                docksAABB.setMinY(2).setMaxY(4),
+                PonderPalette.GREEN,
+                //0.1f,
+                20, 60
+            ).curve(TweenData.Curve.InOutCubic);
+
+            scene.idle(15);
+
+            ponderVs.overlay.textPointToFocusRelativeNoLine(Vec3.ZERO, 100)
+                .text("Only after the above ship are moved away can dock construct next ship")
+                .placeNearTarget()
+                .attachKeyFrame();
+
+        }
+    }
+
+    public static class DockerScene {
+        public static final String DockUsageId = "docker/docker_usage";
+        public static void dockerUsage(SceneBuilder scene, SceneBuildingUtil util) {
+            scene.title(DockUsageId, "Docker Usage");
+            scene.configureBasePlate(0, 0, 5);
+            //scene.showBasePlate();
+            scene.removeShadow();
+            PonderVsSceneBuilder ponderVs = new PonderVsSceneBuilder(scene);
+            PonderScene ponderScene = ponderVs.getPonderScene();
+            PonderWorld ponderWorld = ponderVs.getPonderScene().getWorld();
+
+            UUID base = ponderVs.vs.makeShip(
+                new RigidbodyData().setPositionImmediately(JomlUtil.dCenter(2, 0, 2)),
+                ponderVs.util.ship.copyWorldSectionAsShipBlocks(util.select.layer(0), new Vector3i(2, 0, 2)),
+                false
+            );
+
+            ponderVs.overlay.textPointToFocusRelativeNoLine(Vec3.ZERO, 70)
+                .text("Docker can spawn a ship when use on block")
+                .attachKeyFrame()
+                .placeNearTarget();
+
+            scene.idle(20);
+
+            InputWindowElement dockShipPlace = new InputWindowElement(
+                util.vector.blockSurface(new BlockPos(2, 1, 1), Direction.NORTH),
+                Pointing.RIGHT
+            ).withItem(WapItems.DOCKER.asStack()).rightClick();
+            scene.overlay.showControls(dockShipPlace, 20);
+
+            scene.idle(15);
+
+
+            UUID dockerPlaced = ponderVs.vs.makeShip(
+                new RigidbodyData().setPositionImmediately(JomlUtil.dCenter(2, 1, 1).sub(0, 0.1875, 0)),
+                makeStandardHeMunition(Direction.SOUTH),
+                false
+            );
+
+            scene.idle(20);
+
+            ponderVs.vs.playMotionForShip(base, VsWap.MODID, "base_rotate", 4, 80);
+            ponderVs.vs.playMotionForShip(dockerPlaced, VsWap.MODID, "base_rotate_push_away_obj", 0.25, 80);
+
+            scene.idle(25);
+
+            AtomicReference<Quaterniond> firstRot = new AtomicReference<>();
+            Quaterniond targetRot = new Quaterniond();
+            ponderVs.vs.tweenShip(base, (s, t01) -> {
+                if (firstRot.get() == null) {
+                    firstRot.set(new Quaterniond(s.getRigidbody().getDataReader().getRotation()));
+                }
+                Quaterniond cur = firstRot.get().get(new Quaterniond()).slerp(targetRot, t01);
+                s.getRigidbody().getDataWriter().setRotation(cur);
+            }, 15).curve(TweenData.Curve.InOutCubic);
+
+            scene.idle(35);
+
+            ponderVs.overlay.textPointToFocusRelativeNoLine(Vec3.ZERO, 60)
+                .text("Use Alt to switch to Block Place Mode(Only when scale is 1)")
+                .attachKeyFrame()
+                .placeNearTarget();
+
+            scene.idle(10);
+
+            InputWindowElement dockBlockPlace = new InputWindowElement(
+                util.vector.blockSurface(new BlockPos(4, 1, 4), Direction.EAST),
+                Pointing.RIGHT
+            ).withItem(WapItems.DOCKER.asStack()).rightClick();
+            scene.overlay.showControls(dockBlockPlace, 20);
+
+            scene.idle(15);
+
+            ponderVs.vs.modifyShip(base, s -> s.getBlockCluster().getDataWriter()
+                .chainedSetBlock(new Vector3i(2, 1, 2), PrimerBlock.faceTo(Direction.WEST))
+                .chainedSetBlock(new Vector3i(1, 1, 2), ShelledPropellant.getState(false, Direction.WEST))
+                .chainedSetBlock(new Vector3i(0, 1, 2), HeWarhead.faceTo(Direction.WEST))
+                .chainedSetBlock(new Vector3i(-1, 1, 2), ImpactFuze.getState(false, Direction.WEST))
+            );
+
+            scene.idle(20);
+
+            ponderVs.vs.playMotionForShip(base, VsWap.MODID, "base_rotate", 4, 80);
+            scene.idle(25);
+
+            firstRot.set(null);
+            ponderVs.vs.tweenShip(base, (s, t01) -> {
+                if (firstRot.get() == null) {
+                    firstRot.set(new Quaterniond(s.getRigidbody().getDataReader().getRotation()));
+                }
+                Quaterniond cur = firstRot.get().get(new Quaterniond()).slerp(targetRot, t01);
+                s.getRigidbody().getDataWriter().setRotation(cur);
+            }, 15).curve(TweenData.Curve.InOutCubic);
+
+            scene.idle(25);
+
+            /*ponderVs.vs.tweenShipPosition(
+                dockerPlaced,
+                JomlUtil.dCenter(2, 1, 1).sub(0, 0.1875, 0),
+                JomlUtil.dCenter(2, 0, 1),
+                15
+            ).curve(TweenData.Curve.OutQuint);
+            scene.idle(20);*/
+
+            Selection gears1 = util.select.fromTo(0, 1, 4, 4, 4, 4);
+            Selection gears2 = util.select.fromTo(0, 1, 3, 4, 2, 3);
+            Selection machines = util.select.fromTo(0, 1, 2, 4, 1, 2);
+            Selection docks = util.select.fromTo(3, 1, 0, 4, 1, 1);
+            Selection artillery = util.select.fromTo(1, 3, 1, 4, 3, 1);
+
+            BlockPos breech = new BlockPos(1, 3, 3);
+
+            BlockPos depot = new BlockPos(4, 1, 2);
+            BlockPos arm = new BlockPos(2, 1, 2);
+            BlockPos deployer = new BlockPos(0, 1, 2);
+
+            scene.world.showSection(gears1, Direction.EAST);
+            scene.idle(5);
+            scene.world.showSection(gears2, Direction.EAST);
+            scene.idle(5);
+            scene.world.showSection(machines, Direction.EAST);
+
+            scene.idle(20);
+
+            BlockClusterData deployerPlaceBlocks = makeStandardHeMunition(Direction.UP);
+            ItemStack deployerDocker = Docker.stackOfSaBlockData(0, deployerPlaceBlocks);
+
+            scene.world.createItemOnBeltLike(depot, Direction.WEST, deployerDocker);
+            scene.idle(10);
+            scene.world.instructArm(arm, ArmBlockEntity.Phase.MOVE_TO_INPUT, ItemStack.EMPTY, 0);
+            scene.idle(20);
+            scene.world.removeItemsFromBelt(depot);
+            scene.world.instructArm(arm, ArmBlockEntity.Phase.SEARCH_OUTPUTS, deployerDocker, 0);
+            scene.idle(20);
+            scene.world.instructArm(arm, ArmBlockEntity.Phase.MOVE_TO_OUTPUT, deployerDocker, 0);
+            scene.idle(20);
+            scene.world.instructArm(arm, ArmBlockEntity.Phase.SEARCH_INPUTS, ItemStack.EMPTY, 1);
+            scene.world.modifyBlockEntityNBT(
+                util.select.position(deployer),
+                DeployerBlockEntity.class,
+                t -> t.put("HeldItem", deployerDocker.serializeNBT())
+            );
+            scene.world.moveDeployer(deployer, 1f, 20);
+
+            scene.idle(4);
+
+            scene.overlay.showText(60)
+                .pointAt(deployer.getCenter())
+                .placeNearTarget()
+                .attachKeyFrame()
+                .text("Deployer can also use Docker to place ship");
+
+
+            scene.idle(20);
+
+            scene.world.modifyBlockEntityNBT(
+                util.select.position(deployer),
+                DeployerBlockEntity.class,
+                t -> t.put("HeldItem", ItemStack.EMPTY.serializeNBT())
+            );
+            ponderVs.vs.makeShip(
+                new RigidbodyData().setPositionImmediately(JomlUtil.dCenter(-2, 1, 2)).setEarthGravityImmediately(),
+                deployerPlaceBlocks,
+                false
+            );
+
+            scene.idle(40);
+
+            scene.world.showSection(docks, Direction.DOWN);
+            scene.idle(10);
+            scene.world.showSection(/*artillery*/util.select.layer(3), Direction.DOWN);
+
+            scene.idle(20);
+
+            ponderVs.overlay.showAndTweenOutline(
+                "Docks",
+                JomlUtil.centerExtended(JomlUtil.d(docks.getCenter()), 0, 0.5, 0),
+                JomlUtil.centerExtended(JomlUtil.d(docks.getCenter()), 1, 0.5, 1),
+                PonderPalette.GREEN,
+                20, 60
+            ).curve(TweenData.Curve.OutElastic);
+            ponderVs.overlay.showAndTweenOutline(
+                "Breech",
+                JomlUtil.centerExtended(breech, 0, 0.5, 0),
+                JomlUtil.centerExtended(breech, 0.5, 0.5, 0.5),
+                PonderPalette.GREEN,
+                20, 60
+            ).curve(TweenData.Curve.OutElastic);
+
+            scene.idle(10);
+
+            ponderVs.overlay.textPointToFocusRelativeNoLine(Vec3.ZERO, 200)
+                .text("Most blocks in this mod that can interact with ships can also interact docker")
+                .colored(PonderPalette.GREEN)
+                .attachKeyFrame()
+                .placeNearTarget();
         }
     }
 

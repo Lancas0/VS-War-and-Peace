@@ -5,6 +5,7 @@ import com.lancas.vswap.debug.EzDebug;
 import com.lancas.vswap.subproject.sandbox.ISandBoxWorld;
 import com.lancas.vswap.subproject.sandbox.component.data.reader.IRigidbodyDataReader;
 import com.lancas.vswap.subproject.sandbox.component.data.writer.IRigidbodyDataWriter;
+import com.lancas.vswap.subproject.sandbox.constraint.SandBoxConstraintSolver;
 import com.lancas.vswap.subproject.sandbox.constraint.base.IOrientationConstraint;
 import com.lancas.vswap.subproject.sandbox.ship.ISandBoxShip;
 import org.joml.Quaterniond;
@@ -35,7 +36,7 @@ public class OrientationOnVsConstraint extends AbstractSaOnVsConstraint implemen
     }
 
     @Override
-    public void project(ISandBoxWorld<?> world) {
+    public void project(ISandBoxWorld<?> world, SandBoxConstraintSolver solver) {
         Ship vsShip = getVsShip();
         if (vsShip == null) return;
 

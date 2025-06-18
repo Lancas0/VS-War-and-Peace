@@ -8,6 +8,7 @@ import com.lancas.vswap.event.EventMgr;
 import com.lancas.vswap.foundation.api.Dest;
 import com.lancas.vswap.util.NbtBuilder;
 import com.lancas.vswap.util.ShipUtil;
+import com.lancas.vswap.util.VsUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.saveddata.SavedData;
@@ -194,6 +195,11 @@ public class ConstraintsMgr extends SavedData {
         SavedConstraint inLevel;
         inLevel = constraintsInLevel.remove(key);
         if (inLevel == null) return false;
+
+        if (VsUtil.isDummy(serverLevel)) {
+            EzDebug.warn("Fail to remove constraint because the level is dummy!");
+            return false;
+        }
 
         boolean removed = VSGameUtilsKt.getShipObjectWorld(serverLevel).removeConstraint(inLevel.getAddedID());
         if (!removed) {

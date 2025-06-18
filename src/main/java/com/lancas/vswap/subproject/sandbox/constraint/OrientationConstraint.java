@@ -32,7 +32,7 @@ public class OrientationConstraint extends AbstractBiConstraint implements IOrie
     public void setTargetLocalRot(Quaterniondc inLocalRot) { synchronized (mutex) { invLocalBRot.set(inLocalRot).invert(); } }
 
     @Override
-    public void project(ISandBoxWorld<?> world) {
+    public void project(ISandBoxWorld<?> world, SandBoxConstraintSolver solver) {
         ISandBoxShip aShip = getA(world);
         ISandBoxShip bShip = getB(world);
 

@@ -19,6 +19,7 @@ import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -347,6 +348,13 @@ public class RigidbodyData implements IComponentData<RigidbodyData>, IRigidbodyD
         return this;
     }
 
+    //todo this is dangrous! may the upadter can't be saved!
+    @Override
+    public IRigidbodyDataWriter update(Consumer<RigidbodyData> updater) {
+        updates.add(updater::accept);
+        return this;
+    }
+
     @Override
     public IRigidbodyDataWriter setVelocity(double x, double y, double z) {
         if (!Double.isFinite(x) || !Double.isFinite(y) || !Double.isFinite(z)) {
@@ -424,6 +432,17 @@ public class RigidbodyData implements IComponentData<RigidbodyData>, IRigidbodyD
 
             d.transform.position.set(newP);
         });
+        return this;
+    }
+
+    @Override
+    public IRigidbodyDataWriter rotateWorld(Quaterniondc r) {
+        if (!r.isFinite()) {
+            EzDebug.warn("fail to rotate world, invalid rot:" + r);
+            return this;
+        }
+        Quaterniond rotImm = new Quaterniond(r);
+        updates.add(d -> transform.rotateWorld(rotImm));
         return this;
     }
 

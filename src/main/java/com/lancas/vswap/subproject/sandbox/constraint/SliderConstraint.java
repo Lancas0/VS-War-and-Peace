@@ -54,7 +54,7 @@ public class SliderConstraint extends AbstractBiConstraint implements ISliderCon
 
 
     @Override
-    public void project(ISandBoxWorld<?> world) {
+    public void project(ISandBoxWorld<?> world, SandBoxConstraintSolver solver) {
         //EzDebug.light("projecting slider att");
         if (!localSliderAxis.isFinite()) {
             EzDebug.warn("the local slider axis is not valid!");

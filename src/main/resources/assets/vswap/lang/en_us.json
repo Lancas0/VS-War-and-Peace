@@ -154,5 +154,34 @@
   "vswap.ponder.munition/munition_tf.header": "Tail Fin",
   "vswap.ponder.munition/munition_tf.text_1": "Projectile effect by air drag during flight",
   "vswap.ponder.munition/munition_tf.text_2": "Which may cause displacement",
-  "vswap.ponder.munition/munition_tf.text_3": "With Fin Tail, wind drag is greatly decreased, which make projectile stable"
+  "vswap.ponder.munition/munition_tf.text_3": "With Fin Tail, wind drag is greatly decreased, which make projectile stable",
+
+  "vswap.ponder.dock/dock_usage.header": "Place Ship on Dock",
+  "vswap.ponder.dock/dock_usage.text_1": "Hold Ship or Docker to place ship on Dock",
+  "vswap.ponder.dock/dock_usage.text_2": "Right click a Docker with empty hands to fetch the Ship on it",
+  "vswap.ponder.dock/dock_usage.text_3": "Mechanical Arm can place Ship to Dock",
+  "vswap.ponder.dock/dock_usage.text_4": "And it can also fetch Ship from Dock",
+  "vswap.ponder.dock/dock_usage.text_5": "When Ship's bottom size is larger than Dock's size...",
+  "vswap.ponder.dock/dock_usage.text_6": "You can expand Dock, default max size is 16*16",
+  "vswap.ponder.dock/dock_usage.text_7": "The connected rect Docks are considered as one Multiblock Structure.",
+
+  "vswap.ponder.dock/dock_constraint.header": "Dock Constraint",
+  "vswap.ponder.dock/dock_constraint.text_1": "The Ship placed on Dock will be constrained",
+  "vswap.ponder.dock/dock_constraint.text_2": "When Dock attempt to from a Multiblock Structure, the Ship placed on Dock will be unlocked.",
+
+  "vswap.ponder.dock/dock_construct.header": "Dock Construction",
+  "vswap.ponder.dock/dock_construct.text_1": "You can use Dock to assemble Ships",
+  "vswap.ponder.dock/dock_construct.text_2": "To assemble ship on a dock, there must be a Dock GreenPrint Holder in it",
+  "vswap.ponder.dock/dock_construct.text_3": "Dock can't assemble Ships that have large size that Dock Multiblock Structure",
+  "vswap.ponder.dock/dock_construct.text_4": "If there is any valid GreenPrint, Mechanical Arm will start to work",
+  "vswap.ponder.dock/dock_construct.text_5": "Mechanical Arm will use Material to place the corresponding block",
+  "vswap.ponder.dock/dock_construct.text_6": "When the construction is completed, Dock Construction Detector will emit redstone signal",
+  "vswap.ponder.dock/dock_construct.text_7": "When Dock Unlocked Detector receive redstone signal, the constructed Ship will be unlocked",
+  "vswap.ponder.dock/dock_construct.text_8": "Next construction will be start as there is no Ship above the Dock Multiblock Structure",
+
+  "vswap.ponder.docker/docker_usage.header": "Docker Usage",
+  "vswap.ponder.docker/docker_usage.text_1": "Right click with Docker to place Ship",
+  "vswap.ponder.docker/docker_usage.text_2": "Alt to switch to Block Place Mode(Only when scale is 1.0)",
+  "vswap.ponder.docker/docker_usage.text_3": "Deployer can also use Docker to place ship",
+  "vswap.ponder.docker/docker_usage.text_4": "Most blocks in this mod that can interact with ships can also interact docker"
 }

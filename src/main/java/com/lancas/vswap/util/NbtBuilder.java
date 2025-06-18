@@ -517,25 +517,28 @@ public class NbtBuilder {
         return aabb;
     }
 
-    public NbtBuilder putQuaternion(String key, Quaterniondc q) {
-        return this.putCompound(key,
-            new NbtBuilder()
-                .putDouble("x", q.x())
-                .putDouble("y", q.y())
-                .putDouble("z", q.z())
-                .putDouble("w", q.w())
-                .get()
-        );
+    public static CompoundTag tagOfQuaterniond(Quaterniondc q) {
+        CompoundTag tag = new CompoundTag();
+        tag.putDouble("x", q.x());
+        tag.putDouble("y", q.y());
+        tag.putDouble("z", q.z());
+        tag.putDouble("w", q.w());
+        return tag;
     }
-    public NbtBuilder putQuaternion(String key, Quaternionfc q) {
-        return this.putCompound(key,
-            new NbtBuilder()
-                .putFloat("x", q.x())
-                .putFloat("y", q.y())
-                .putFloat("z", q.z())
-                .putFloat("w", q.w())
-                .get()
-        );
+    public static CompoundTag tagOfQuaternionf(Quaternionfc q) {
+        CompoundTag tag = new CompoundTag();
+        tag.putFloat("x", q.x());
+        tag.putFloat("y", q.y());
+        tag.putFloat("z", q.z());
+        tag.putFloat("w", q.w());
+        return tag;
+    }
+
+    public NbtBuilder putQuaterniond(String key, Quaterniondc q) {
+        return this.putCompound(key, tagOfQuaterniond(q));
+    }
+    public NbtBuilder putQuaternionf(String key, Quaternionfc q) {
+        return this.putCompound(key, tagOfQuaternionf(q));
     }
 
     public NbtBuilder readQuaternionD(String key, Quaterniond dest) {
@@ -570,6 +573,12 @@ public class NbtBuilder {
     public <T> NbtBuilder putStream(String key, Stream<T> stream, Function<T, Tag> nbtCreator) {
         ListTag listTag = new ListTag();
         stream.forEach(x -> listTag.add(nbtCreator.apply(x)));
+        nbt.put(key, listTag);
+        return this;
+    }
+    public NbtBuilder putStream(String key, Stream<CompoundTag> stream) {
+        ListTag listTag = new ListTag();
+        stream.forEach(listTag::add);
         nbt.put(key, listTag);
         return this;
     }

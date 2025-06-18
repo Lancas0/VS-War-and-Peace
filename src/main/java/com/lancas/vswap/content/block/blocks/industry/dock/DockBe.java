@@ -6,13 +6,11 @@ import com.lancas.vswap.content.saved.vs_constraint.ConstraintTarget;
 import com.lancas.vswap.debug.EzDebug;
 import com.lancas.vswap.event.EventMgr;
 import com.lancas.vswap.foundation.api.Dest;
-import com.lancas.vswap.foundation.data.SavedBlockPos;
 import com.lancas.vswap.foundation.handler.construct.ShipConstructHandler;
 import com.lancas.vswap.foundation.handler.multiblock.IMultiContainerBE;
 import com.lancas.vswap.foundation.handler.multiblock.IMultiContainerType;
 import com.lancas.vswap.foundation.handler.multiblock.util.MultiContainerBeData;
 import com.lancas.vswap.ship.data.RRWChunkyShipSchemeData;
-import com.lancas.vswap.ship.helper.LazyShip;
 import com.lancas.vswap.ship.helper.builder.ShipBuilder;
 import com.lancas.vswap.ship.helper.builder.TeleportDataBuilder;
 import com.lancas.vswap.subproject.mstandardized.MaterialStandardizedItem;
@@ -29,6 +27,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.joml.*;
 import org.joml.primitives.AABBd;
 import org.joml.primitives.AABBdc;
@@ -53,7 +52,7 @@ public class DockBe extends SyncedBlockEntity implements IMultiContainerBE, IHav
     public ShipConstructHandler constructHandler = null;
 
     //don't save
-    private final LazyShip lazyOnShip = LazyShip.ofBlockPos(new SavedBlockPos(worldPosition));
+    //private final LazyShip lazyOnShip = LazyShip.ofBlockPos(new SavedBlockPos(worldPosition));
 
     public boolean isHoldingShip() { return holdingVsShipId >= 0; }
 
@@ -125,10 +124,10 @@ public class DockBe extends SyncedBlockEntity implements IMultiContainerBE, IHav
         );
     }*/
     protected Vector3d getMultiCenterTopInWorld(ServerLevel level) {
-        ServerShip inShip = lazyOnShip.get(level, this);
+        ServerShip inShip = ShipUtil.getServerShipAt(level, worldPosition);//lazyOnShip.get(level, this);
         Vector3d multiDockCenterTop = JomlUtil.dLowerCorner(worldPosition).add(
             multiData.getLengthOfAxis(Direction.Axis.X) / 2.0,
-            0.875,  //todo topY adjust
+            1,  //todo topY adjust
             multiData.getLengthOfAxis(Direction.Axis.Z) / 2.0
         );
         if (inShip != null)
@@ -376,6 +375,20 @@ public class DockBe extends SyncedBlockEntity implements IMultiContainerBE, IHav
         if (holdingVsShipId >= 0)
             return material;  //holding ship and not constructing
 
+
+        ServerShip inShip = ShipUtil.getServerShipAt(sLevel, worldPosition);
+        double inShipScale = inShip == null ? 1 : inShip.getTransform().getShipToWorldScaling().x();
+        double xLen = multiData.getLengthOfAxis(Direction.Axis.X) * inShipScale;
+        double zLen = multiData.getLengthOfAxis(Direction.Axis.Z) * inShipScale;
+        for (ServerShip aboveShip : VSGameUtilsKt.getShipObjectWorld(sLevel).getAllShips().getIntersecting(
+            JomlUtil.dCenterExtended(getMultiCenterTopInWorld(sLevel).add(0, 1.5, 0), xLen / 2.0, 1.5, zLen / 2.0)
+        )) {
+            if (inShip == null)
+                return material;
+            if (aboveShip.getId() != inShip.getId())
+                return material;  //has ship above, do not construct
+        }
+
         if (!(material.getItem() instanceof MaterialStandardizedItem ms)) {
             EzDebug.warn("construct accept not ms item:" + material.getItem());
             return material;
@@ -384,7 +397,7 @@ public class DockBe extends SyncedBlockEntity implements IMultiContainerBE, IHav
         Vector3d centerTop = getMultiCenterTopInWorld(sLevel);
 
         for (BlockPos gpHolderBp : greenPrintHolders) {
-            if (!(sLevel.getBlockEntity(gpHolderBp) instanceof GreenPrintHolderBe gpHolderBe)) {
+            if (!(sLevel.getBlockEntity(gpHolderBp) instanceof DockGreenPrintHolderBe gpHolderBe)) {
                 EzDebug.warn("at " + gpHolderBp + " can't get GreenPrintHolderBe");
                 continue;
             }
@@ -447,7 +460,7 @@ public class DockBe extends SyncedBlockEntity implements IMultiContainerBE, IHav
         Vector3d centerTop = getMultiCenterTopInWorld(sLevel);
 
         for (BlockPos gpHolderBp : greenPrintHolders) {
-            if (!(sLevel.getBlockEntity(gpHolderBp) instanceof GreenPrintHolderBe gpHolderBe)) {
+            if (!(sLevel.getBlockEntity(gpHolderBp) instanceof DockGreenPrintHolderBe gpHolderBe)) {
                 EzDebug.warn("at " + gpHolderBp + " can't get GreenPrintHolderBe");
                 continue;
             }
@@ -524,7 +537,7 @@ public class DockBe extends SyncedBlockEntity implements IMultiContainerBE, IHav
     }
 
 
-    public boolean unboundHoldingShip(boolean forceUnboundEvenIncomplete, boolean simulate, Dest<ServerShip> dest) {
+    public boolean unboundHoldingShip(boolean forceUnboundEvenIncomplete, boolean simulate, @Nullable Dest<ServerShip> dest) {
         if (VsUtil.isDummy(level))
             return false;
 
@@ -557,7 +570,7 @@ public class DockBe extends SyncedBlockEntity implements IMultiContainerBE, IHav
             constructHandler = null;
             constraintHolder.setRemoved();
             constraintHolder = null;
-            dest.set(ShipUtil.getServerShipByID(sLevel, holdingVsShipId));
+            Dest.setIfExistDest(dest, ShipUtil.getServerShipByID(sLevel, holdingVsShipId));
             holdingVsShipId = -1;
 
             notifyUpdate();
@@ -707,7 +720,7 @@ public class DockBe extends SyncedBlockEntity implements IMultiContainerBE, IHav
 
     @Override
     public void onIncludePart(BlockPos bp, IMultiContainerBE part) {
-        if (part instanceof GreenPrintHolderBe) {
+        if (part instanceof DockGreenPrintHolderBe) {
             greenPrintHolders.add(bp);
         }
     }

@@ -1,0 +1,6 @@
+{
+  "variants": {
+    "has=false" : { "model": "vswap:block/industry/dock/dock_gp_holder_empty" },
+    "has=true" : { "model": "vswap:block/industry/dock/dock_gp_holder_has" }
+  }
+}

@@ -155,5 +155,35 @@
   "vswap.ponder.munition/munition_tf.header": "尾翼",
   "vswap.ponder.munition/munition_tf.text_1": "炮弹在飞行过程中受到空气阻力的影响",
   "vswap.ponder.munition/munition_tf.text_2": "这可能导致轨迹偏转",
-  "vswap.ponder.munition/munition_tf.text_3": "带有尾翼的炮弹飞行轨迹更加稳定"
+  "vswap.ponder.munition/munition_tf.text_3": "带有尾翼的炮弹飞行轨迹更加稳定",
+
+
+  "vswap.ponder.dock/dock_usage.header": "把物理体放置到置船台上",
+  "vswap.ponder.dock/dock_usage.text_1": "手持物理体或舵㭘右键置船台即可将放到置船台上",
+  "vswap.ponder.dock/dock_usage.text_2": "空手右键将其取回",
+  "vswap.ponder.dock/dock_usage.text_3": "动力臂可将物理体放到置船台上",
+  "vswap.ponder.dock/dock_usage.text_4": "也可取出",
+  "vswap.ponder.dock/dock_usage.text_5": "当物理体的尺寸大于置船台时...",
+  "vswap.ponder.dock/dock_usage.text_6": "你可以扩展置船台, 默认配置最大16*16",
+  "vswap.ponder.dock/dock_usage.text_7": "相连的矩形置船台被认为是置船多方块结构",
+
+  "vswap.ponder.dock/dock_constraint.header": "置船台约束",
+  "vswap.ponder.dock/dock_constraint.text_1": "放在置船台上的物理体会被置船台约束",
+  "vswap.ponder.dock/dock_constraint.text_2": "但是当置船多方块结构尝试更新时，会解锁放置在置船台上的物理体",
+
+  "vswap.ponder.dock/dock_construct.header": "置船台工程",
+  "vswap.ponder.dock/dock_construct.text_1": "你可以通过置船台来组装物理体",
+  "vswap.ponder.dock/dock_construct.text_2": "为了组装物理体, 置船多方块结构必须存在设计图置船台",
+  "vswap.ponder.dock/dock_construct.text_3": "绿图存储的物理体尺寸需小于置船多方块结构",
+  "vswap.ponder.dock/dock_construct.text_4": "如果存在可行的绿图，会尝试开始一项物理体工程",
+  "vswap.ponder.dock/dock_construct.text_5": "动力臂会放置物料对应的方块",
+  "vswap.ponder.dock/dock_construct.text_6": "当工程完成, 工程侦测置船台会发送红石信号",
+  "vswap.ponder.dock/dock_construct.text_7": "当解锁置船台收到红石信号时, 建造好的物理体将被解锁",
+  "vswap.ponder.dock/dock_construct.text_8": "当置船多方块结构上方不存在物理体时才可开始下一项工程",
+
+  "vswap.ponder.docker/docker_usage.header": "舵㭘的使用",
+  "vswap.ponder.docker/docker_usage.text_1": "手持舵㭘右键可放置物理体",
+  "vswap.ponder.docker/docker_usage.text_2": "按下Alt可切换为方块放置模式(仅当物理体缩放为1.0时)",
+  "vswap.ponder.docker/docker_usage.text_3": "机械手也可放置物理体",
+  "vswap.ponder.docker/docker_usage.text_4": "该模组大部分可以与手持物理体交互的方块也可与舵㭘交互"
 }

@@ -6,14 +6,19 @@ import com.lancas.vswap.subproject.sandbox.component.behviour.abs.BothSideBehavi
 import com.lancas.vswap.subproject.sandbox.component.data.RigidbodyData;
 import com.lancas.vswap.subproject.sandbox.component.data.reader.IRigidbodyDataReader;
 import com.lancas.vswap.subproject.sandbox.component.data.writer.IRigidbodyDataWriter;
+import com.lancas.vswap.subproject.sandbox.constraint.SandBoxConstraintSolver;
+import com.lancas.vswap.subproject.sandbox.ship.ISandBoxShip;
+import com.lancas.vswap.subproject.sandbox.ship.SandBoxClientShip;
 import com.lancas.vswap.util.JomlUtil;
 import com.lancas.vswap.util.StrUtil;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.Nullable;
 import org.joml.*;
 
 import java.lang.Math;
+import java.util.UUID;
 
 //todo sync
 //todo make it a necessary behaviour?
@@ -65,6 +70,16 @@ public class SandBoxRigidbody
     @Override
     public IRigidbodyDataWriter getDataWriter() { return data; }
 
+    //public RigidbodyData getDataInPhysThread() { return data; } //todo check phy thread
+
+    public static @Nullable RigidbodyData resolveRigidData(UUID uuid, SandBoxConstraintSolver constraintSolver) {
+        ISandBoxShip s = constraintSolver.getWorld().getShip(uuid);
+        if (s == null)
+            return null;
+        if (s.getRigidbody() instanceof SandBoxRigidbody r)
+            return r.data;
+        return null;
+    }
 
     /*public void addForce(Vector3dc force) {
         //if (data.mass < 1E-10) return;  //don't check mass now: sometimes mass is still zero right after created, physTick will handle it.

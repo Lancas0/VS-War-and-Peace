@@ -48,23 +48,22 @@ public class EzDebug {
     }
 
     public static EzDebug log(String str) {
-        if (!WapConfig.debug_on) return DEFAULT;
 
-        Minecraft mc = Minecraft.getInstance();
-        boolean isClient = (mc.player != null);
-        if (isClient) {
-            mc.player.sendSystemMessage(Component.literal(str));
-        } else {
-            //todo temp
+        if (WapConfig.debug_on) {
+            Minecraft mc = Minecraft.getInstance();
+            boolean isClient = (mc.player != null);
+            if (isClient) {
+                mc.player.sendSystemMessage(Component.literal(str));
+            } else {
+                //todo temp
+            }
         }
 
-        advancedLog(Level.INFO, (isClient ? "[Client]" : "[Server]") + str);
+        advancedLog(Level.INFO, str);
         return DEFAULT;
     }
 
     public static <T> EzDebug logs(Iterable<T> c, @Nullable Function<T, String> strGetter) {
-        if (!WapConfig.debug_on) return DEFAULT;
-
         if (c == null) {
             EzDebug.log("the collection is null.");
             return DEFAULT;
@@ -82,8 +81,6 @@ public class EzDebug {
         return DEFAULT;
     }
     public static <K, V> EzDebug logs(Map<K, V> m, @Nullable BiFunction<K, V, String> strGetter) {
-        if (!WapConfig.debug_on) return DEFAULT;
-
         if (m == null) {
             EzDebug.log("the map is null.");
             return DEFAULT;
@@ -101,11 +98,11 @@ public class EzDebug {
     }
 
     public static EzDebug highlight(String str) {
-        if (!WapConfig.debug_on) return DEFAULT;
-
-        Minecraft mcInst = Minecraft.getInstance();
-        if (mcInst != null && mcInst.player != null) {
-            mcInst.player.sendSystemMessage(Component.literal("§a" + str));
+        if (WapConfig.debug_on) {
+            Minecraft mcInst = Minecraft.getInstance();
+            if (mcInst != null && mcInst.player != null) {
+                mcInst.player.sendSystemMessage(Component.literal("§a" + str));
+            }
         }
 
         //System.out.println(str.startsWith("[Highlight]") ? str : "[Highlight]" + str);
@@ -113,11 +110,11 @@ public class EzDebug {
         return DEFAULT;
     }
     public static EzDebug light(String str) {
-        if (!WapConfig.debug_on) return DEFAULT;
-
-        Minecraft mc = Minecraft.getInstance();
-        if (mc.player != null) {
-            mc.player.sendSystemMessage(Component.literal("§7" + str));
+        if (WapConfig.debug_on) {
+            Minecraft mc = Minecraft.getInstance();
+            if (mc.player != null) {
+                mc.player.sendSystemMessage(Component.literal("§7" + str));
+            }
         }
 
         advancedLog(Level.FINER, str.startsWith("[Light]") ? str : "[Light]" + str);
@@ -125,33 +122,34 @@ public class EzDebug {
     }
 
     public static EzDebug warn(String str) {
-        if (!WapConfig.debug_on) return DEFAULT;
+        if (WapConfig.debug_on) {
+            Minecraft mc = Minecraft.getInstance();
+            if (mc.player != null) {
+                mc.player.sendSystemMessage(Component.literal("§6" + str));
+            }
 
-        Minecraft mc = Minecraft.getInstance();
-        if (mc.player != null) {
-            mc.player.sendSystemMessage(Component.literal("§6" + str));
         }
 
         advancedLog(Level.WARNING, str.startsWith("[Warn]") ? str : "[Warn]" + str);
         return DEFAULT;
     }
     public static EzDebug error(String str) {
-        if (!WapConfig.debug_on) return DEFAULT;
-
-        Minecraft mc = Minecraft.getInstance();
-        if (mc.player != null) {
-            mc.player.sendSystemMessage(Component.literal("§4" + str));
+        if (WapConfig.debug_on) {
+            Minecraft mc = Minecraft.getInstance();
+            if (mc.player != null) {
+                mc.player.sendSystemMessage(Component.literal("§4" + str));
+            }
         }
 
         advancedLog(Level.WARNING, str.startsWith("[Error]") ? str : "[Error]" + str);
         return DEFAULT;
     }
     public static EzDebug fatal(String str) {
-        if (!WapConfig.debug_on) return DEFAULT;
-
-        Minecraft mc = Minecraft.getInstance();
-        if (mc.player != null) {
-            mc.player.sendSystemMessage(Component.literal("§4" + str));
+        if (WapConfig.debug_on) {
+            Minecraft mc = Minecraft.getInstance();
+            if (mc.player != null) {
+                mc.player.sendSystemMessage(Component.literal("§4" + str));
+            }
         }
 
         advancedLog(Level.WARNING, str.startsWith("[Fatal]") ? str : "[Fatal]" + str);

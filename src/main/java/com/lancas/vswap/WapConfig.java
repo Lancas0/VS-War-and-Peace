@@ -39,74 +39,97 @@ public class WapConfig
     public static Set<Item> items;*/
 
     private static final ForgeConfigSpec.ConfigValue<Integer> DOCK_MAX_LENGTH = BUILDER
-        .comment("The max length of connected docks. (default 16)")
+        .comment(
+            "The max length of connected docks. (default 16)",
+            "置船多方块结构的最大长度，默认16"
+        )
         .defineInRange("dockMaxLength", 16, 1, Integer.MAX_VALUE);
 
     private static final ForgeConfigSpec.ConfigValue<Integer> DOCK_MAX_WIDTH = BUILDER
-        .comment("The max width of connected docks. (default 16)")
+        .comment(
+            "The max width of connected docks. (default 16)",
+            "置船多方块结构的最大宽度，默认16"
+        )
         .defineInRange("dockMaxWidth", 16, 1, Integer.MAX_VALUE);
 
-    private static final ForgeConfigSpec.ConfigValue<Double> FATAL_KE_RATIO = BUILDER
+    /*private static final ForgeConfigSpec.ConfigValue<Double> FATAL_KE_RATIO = BUILDER
         .comment(
             "When the kinetic energy of projectile is x times of (armourHardness * equivalentArmourDepth), the projectile never ricochets. (default 4.0)",
             "When this value is less or equals to 1.0, the attribute is off"
         )
-        .defineInRange("fatalKeRatio", 4.0, 1.0, Double.MAX_VALUE);
+        .defineInRange("fatalKeRatio", 4.0, 1.0, Double.MAX_VALUE);*/
 
     private static final ForgeConfigSpec.ConfigValue<Double> SHAKE_INTENSITY = BUILDER
-        .comment("Shake intense of artillery.")
+        .comment(
+            "Shake intense of artillery.(Not impl)",
+            "火炮发射时的视角震动强度(目前未实现视角震动)"
+        )
         .defineInRange("shake_intensity", 2.0, 0.0, Float.MAX_VALUE);
     private static final ForgeConfigSpec.ConfigValue<Integer> SHAKE_TICKS = BUILDER
-        .comment("Shake ticks of artillery.")
+        .comment("Shake ticks of artillery.(Not impl)",
+            "火炮发射时的视角震动时长，单位为tick(目前未实现视角震动)")
         .defineInRange("shake_ticks", 60, 0, Integer.MAX_VALUE);
 
     private static final ForgeConfigSpec.ConfigValue<Double> STANDARD_PROPELLANT_ENERGY = BUILDER
-        .comment("The value of standard propellant energy, with unit of J (default 1E5)")
+        .comment("The value of standard propellant energy, with unit of J (default 1E5)",
+            "标准火药力的能量，单位为焦，默认100000焦")
         .defineInRange("standard_propellant_energy", 1E5, 0.0, Double.MAX_VALUE);
 
     private static final ForgeConfigSpec.ConfigValue<Double> PROJECTILE_RANDOM_DISPLACEMENT = BUILDER
-        .comment("During projectile flies, random displacement will be applied to it. As the value increase, the projectile will be less accuracy. (default 0.004)")
+        .comment("During projectile flies, random displacement will be applied to it. As the value increase, the projectile will be less accuracy. (default 0.004)",
+            "炮弹飞行时的随机扰动，这个值越大，炮弹飞行越不稳定，默认0.004")
         .defineInRange("projectile_random_displacement", 0.004, 0.0, Double.MAX_VALUE);
 
     private static final ForgeConfigSpec.ConfigValue<Double> PROJECTILE_COLLISION_STEP = BUILDER
-        .comment("Smaller the step is, the collision will be more precisely, however it consumes performance.")
+        .comment("Smaller the step is, the collision will be more precisely, however it consumes performance.(Not used now)",
+            "炮弹碰撞精度，越大越精准，但会带来额外的性能开销(目前碰撞算法改动，所以此设置无效)")
         .defineInRange("projectile_collision_step", 0.3, 0.1, 1);
 
     private static final ForgeConfigSpec.ConfigValue<Double> AIR_DRAG_FACTOR = BUILDER
-        .comment("F(airDrag) = 0.5 * AIR_DRAG_FACTOR * v^2 (default 0.1)")
+        .comment("F(airDrag) = 0.5 * AIR_DRAG_FACTOR * v^2 (default 0.1)",
+            "此值为空气阻力系数， 空气阻力 = 0.5 * 空气阻力系数 * 速度平方，越大炮弹速度衰减越快，默认0.1")
         .defineInRange("air_drag_factor", 0.1, 0, Double.MAX_VALUE);
 
     private static final ForgeConfigSpec.ConfigValue<Integer> FLYING_PROJECTILE_LIFE_SPAN = BUILDER
-        .comment("The life span of flying projectile, unit is tick, 20 ticks for 1 sec, and 1200 ticks for 1min. (default 4800, 4min)")
+        .comment("The life span of flying projectile, unit is tick, 20 ticks for 1 sec, and 1200 ticks for 1min. (default 4800, 4min)",
+            "飞行中的炮弹能存在的最大时长，单位为tick，默认4800ticks，即四分钟")
         .defineInRange("flying_projectile_life_span", 4800, 20, Integer.MAX_VALUE);
 
     private static final ForgeConfigSpec.ConfigValue<Integer> STOPPED_PROJECTILE_LIFE_SPAN = BUILDER
-        .comment("The life span of stopped projectile, unit is tick, 20 ticks for 1 sec, and 1200 ticks for 1min. (default 200, 10sec)")
+        .comment("The life span of stopped projectile, unit is tick, 20 ticks for 1 sec, and 1200 ticks for 1min. (default 200, 10sec)",
+            "停止后的炮弹能存在的最大时长，单位为tick，默认200ticks，即10秒")
         .defineInRange("stopped_projectile_life_span", 200, 20, Integer.MAX_VALUE);
 
     private static final ForgeConfigSpec.ConfigValue<Double> MAX_DESTROY_RADIUS = BUILDER
-        .comment("When projectile hits block, it will also try to destroy around blocks. The radius is SPE_DES_SCALAR * spe, and not exceeds max_destroy_radius.(default 3)")
+        .comment("When projectile hits block, it will also try to destroy around blocks. The radius is SPE_DES_SCALAR * spe, and not exceeds max_destroy_radius.(default 3)",
+            "当炮弹击中方块，所能产生的损毁半径上限，默认为3")
         .defineInRange("max_destroy_radius", 3, 1, Double.MAX_VALUE);
 
     private static final ForgeConfigSpec.ConfigValue<Integer> MAX_DESTROY_CNT = BUILDER
-        .comment("The max count of blocks that a projectile can destroy(default 100)")
+        .comment("The max count of blocks that a projectile can destroy(default 100)",
+            "一个炮弹最大能摧毁多少方块，默认100个")
         .defineInRange("max_destroy_cnt", 100, 0, Integer.MAX_VALUE);
 
     private static final ForgeConfigSpec.ConfigValue<Double> HOT_X = BUILDER
-        .comment("HitLoad Debug Value")
+        .comment("HitLoad Debug Value",
+            "热重载预留值1")
         .define("hot_x", 0.0);
     private static final ForgeConfigSpec.ConfigValue<Double> HOT_Y = BUILDER
-        .comment("HitLoad Debug Value")
+        .comment("HitLoad Debug Value",
+            "热重载预留值2")
         .define("hot_y", 0.0);
     private static final ForgeConfigSpec.ConfigValue<Double> HOT_Z = BUILDER
-        .comment("HitLoad Debug Value")
+        .comment("HitLoad Debug Value",
+            "热重载预留值3")
         .define("hot_z", 0.0);
 
     private static final ForgeConfigSpec.ConfigValue<Boolean> DEBUG_ON =  BUILDER
-        .comment("Should print debug info?")
+        .comment("Should print debug info?",
+            "开启debug信息游戏中可见")
         .define("debug_on", false);
     private static final ForgeConfigSpec.ConfigValue<Boolean> DEBUG_STACK_TRACE =  BUILDER
-        .comment("Should print debug stack trace info?")
+        .comment("Should print debug stack trace info?",
+            "在日志输出debug栈信息")
         .define("debug_stack_trace", false);
 
     static final ForgeConfigSpec SPEC = BUILDER.build();
@@ -114,7 +137,7 @@ public class WapConfig
     public static int dockMaxLength;
     public static int dockMaxWidth;
 
-    public static double rawFatalPPRatio;
+    //public static double rawFatalPPRatio;
 
     public static double shakeIntensity;
     public static int shakeTicks;
@@ -137,7 +160,10 @@ public class WapConfig
     public static boolean debug_on;
     public static boolean debug_stack_trace;
 
-    public static boolean isFatalKEOn() { return rawFatalPPRatio > 1.0; }
+    public static boolean isFatalKEOn() {
+        //return rawFatalPPRatio > 1.0;
+        return false;
+    }
 
     private static boolean validateItemName(final Object obj)
     {
@@ -157,7 +183,7 @@ public class WapConfig
 
         dockMaxLength = DOCK_MAX_LENGTH.get();
         dockMaxWidth = DOCK_MAX_WIDTH.get();
-        rawFatalPPRatio = FATAL_KE_RATIO.get();
+        //rawFatalPPRatio = FATAL_KE_RATIO.get();
 
         shakeIntensity = SHAKE_INTENSITY.get();
         shakeTicks = SHAKE_TICKS.get();

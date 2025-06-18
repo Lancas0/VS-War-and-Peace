@@ -62,7 +62,7 @@ public class SerializeUtil {
         //no need to save aabb, it is initialy dirty
         return new NbtBuilder()
             .putVector3d("pos", pos)
-            .putQuaternion("rot", rot)
+            .putQuaterniond("rot", rot)
             .putVector3d("scale", scale)
             .get();
     }

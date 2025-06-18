@@ -22,6 +22,7 @@ import org.valkyrienskies.mod.common.VSGameUtilsKt;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -201,6 +202,11 @@ public class VsRigidbodyDataWrapper implements IRigidbodyData, ISavedObject<VsRi
     }
 
     @Override
+    public IRigidbodyDataWriter update(Consumer<RigidbodyData> updater) {
+        throw new NotImplementedException();
+    }
+
+    @Override
     public IRigidbodyDataWriter setPosition(Vector3dc p) {
         Vector3d posImmutable = new Vector3d(p);
         updates.add((level, ship) -> {
@@ -228,6 +234,11 @@ public class VsRigidbodyDataWrapper implements IRigidbodyData, ISavedObject<VsRi
             VSGameUtilsKt.getShipObjectWorld(sLevel).teleportShip(sShip, TeleportDataBuilder.copy(sLevel, sShip).withPos(newP));
         });
         return this;
+    }
+
+    @Override
+    public IRigidbodyDataWriter rotateWorld(Quaterniondc r) {
+        throw new NotImplementedException();
     }
 
     @Override

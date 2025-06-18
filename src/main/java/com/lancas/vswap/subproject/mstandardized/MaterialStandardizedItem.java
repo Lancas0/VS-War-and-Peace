@@ -1,11 +1,15 @@
 package com.lancas.vswap.subproject.mstandardized;
 
 import com.lancas.vswap.content.WapItems;
+import com.lancas.vswap.content.item.IFilterItem;
 import com.lancas.vswap.debug.EzDebug;
 import com.lancas.vswap.mixins.accessor.UseOnCtxAccessor;
 import com.lancas.vswap.subproject.mstandardized.renderer.MaterialStandardizedRenderer;
 import com.lancas.vswap.util.ShipUtil;
 import com.lancas.vswap.util.StrUtil;
+import com.simibubi.create.content.logistics.filter.FilterItemStack;
+import com.simibubi.create.content.logistics.filter.ItemAttribute;
+import com.simibubi.create.foundation.utility.Pair;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -26,6 +30,7 @@ import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.BlockSnapshot;
 import net.minecraftforge.event.level.BlockEvent;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -38,7 +43,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 
-public class MaterialStandardizedItem extends Item {
+public class MaterialStandardizedItem extends Item implements IFilterItem {
     public static int getCntByScale(double scale) {
         //return (int)Math.ceil(scale * 16);  //every 16 material for a block scaled by 1
         //FIXME tempory always return1
@@ -257,5 +262,19 @@ public class MaterialStandardizedItem extends Item {
                 return MaterialStandardizedRenderer.INSTANCE;
             }
         });
+    }
+
+    @Override
+    public FilterItemStack getFilterItemStack(ItemStack stack) {
+        return new FilterItemStack(stack) {
+            private final String categoryName = getCategoryName(stack);
+            public boolean test(Level world, FluidStack stack, boolean matchNBT) {
+                return false;
+            }
+
+            public boolean test(Level world, ItemStack stack, boolean matchNBT) {
+                return Objects.equals(getCategoryName(stack), categoryName);
+            }
+        };
     }
 }

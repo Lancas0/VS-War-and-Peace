@@ -1,0 +1,6 @@
+{
+  "variants": {
+    "powered=false" : { "model": "vswap:block/industry/dock/dock_construction_detector" },
+    "powered=true" : { "model": "vswap:block/industry/dock/dock_construction_detector_powered" }
+  }
+}

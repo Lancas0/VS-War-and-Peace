@@ -11,6 +11,7 @@ import com.lancas.vswap.subproject.sandbox.component.behviour.SandBoxRigidbody;
 import com.lancas.vswap.subproject.sandbox.component.behviour.SandBoxShipBlockCluster;
 import com.lancas.vswap.subproject.sandbox.component.data.BlockClusterData;
 import com.lancas.vswap.subproject.sandbox.component.data.RigidbodyData;
+import com.lancas.vswap.subproject.sandbox.constraint.SandBoxConstraintSolver;
 import net.minecraft.client.multiplayer.ClientLevel;
 import org.jetbrains.annotations.Nullable;
 import org.joml.primitives.AABBd;
@@ -29,6 +30,8 @@ public class SandBoxClientShip implements IClientSandBoxShip {
     public boolean inWorld = false;
     protected final SandBoxRigidbody rigidbody = new SandBoxRigidbody();
     protected final SandBoxShipBlockCluster blockCluster = new SandBoxShipBlockCluster();
+
+
 
     //latestNetworkTransform is null means it's a client only ship
     //(or simply havn't be synced)
@@ -228,7 +231,6 @@ public class SandBoxClientShip implements IClientSandBoxShip {
         //move worldAABBSnapshot to client tick?
         worldAABBSnapshot = getLocalAABB().transform(rigidbody.getDataReader().getLocalToWorld(), new AABBd());
     }
-
 
     /// todo
     /*

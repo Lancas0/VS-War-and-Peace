@@ -51,6 +51,7 @@ public class TransformPrimitive implements ITransformPrimitive, ISavedObject<Tra
 
         return dest.set(lerpPos, lerpRot, lerpScale);
     }
+    public TransformPrimitive lerp(ITransformPrimitive other, double t) { return lerp(other, t, this); }
 
 
     public TransformPrimitive setPosition(Vector3dc newPos) { return setPosition(newPos.x(), newPos.y(), newPos.z()); }
@@ -104,20 +105,37 @@ public class TransformPrimitive implements ITransformPrimitive, ISavedObject<Tra
         return this;
     }
 
+    public TransformPrimitive deltaFromTo(ITransformPrimitive to, TransformPrimitive dest) {
+        dest.setPosition(to.getPosition().sub(this.getPosition(), new Vector3d()));
+        dest.setRotation(
+            this.getRotation().invert(new Quaterniond())
+                .premul(to.getRotation())
+        );
+        dest.setScale(to.getScale().sub(this.getScale(), new Vector3d()));
+        return dest;
+    }
+    public TransformPrimitive addDelta(ITransformPrimitive delta, TransformPrimitive dest) {
+        dest.position.set(new Vector3d(this.position).add(delta.getPosition()));
+        dest.rotation.set(new Quaterniond(delta.getRotation()).mul(this.rotation));
+        dest.scale.set(new Vector3d(this.scale).add(delta.getScale()));
+        return dest;
+    }
+    public TransformPrimitive addDelta(ITransformPrimitive delta) { return addDelta(delta, this); }
+
     @Override
     public CompoundTag saved() {
         return new NbtBuilder()
-            .putVector3d("position", position)
-            .putQuaternion("rotation", rotation)
-            .putVector3d("scale", scale)
+            .putVector3d("p", position)
+            .putQuaterniond("r", rotation)
+            .putVector3d("s", scale)
             .get();
     }
     @Override
     public TransformPrimitive load(CompoundTag tag) {
         NbtBuilder.modify(tag)
-            .readVector3d("position", position)
-            .readQuaternionD("rotation", rotation)
-            .readVector3d("scale", scale);
+            .readVector3d("p", position)
+            .readQuaternionD("r", rotation)
+            .readVector3d("s", scale);
         return this;
     }
 

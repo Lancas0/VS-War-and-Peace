@@ -53,7 +53,7 @@ public class FixedConstraint extends AbstractBiConstraint {
 
 
     @Override
-    public void project(ISandBoxWorld<?> world) {
+    public void project(ISandBoxWorld<?> world, SandBoxConstraintSolver solver) {
         if (!localARot.isFinite() || !invLocalBRot.isFinite() || !localAttAPos.isFinite() || !localAttBPos.isFinite()) {
             EzDebug.warn("rot or pos is not finite!");
             return;

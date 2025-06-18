@@ -27,20 +27,20 @@ public class LevelMixin {
 
         LostAndFoundEvent.preBlockChangeEvt.invokeAll(level, pos, oldState, newState);
     }*/
-    @Inject(
+    /*@Inject(
         method = "removeBlockEntity",
         at = @At("HEAD")
     )
     private void onRemoveBe(BlockPos bp, CallbackInfo ci) {
         Level level = (Level)(Object)this;
         BlockEntity be = level.getBlockEntity(bp);
-        /*if (be instanceof IRemoveCallbackBe rcbe) {
+        /.*if (be instanceof IRemoveCallbackBe rcbe) {
             rcbe.onRemoveFromLevel(level);
-        }*/
+        }*./
         if (be instanceof SmartBlockEntity smartBe) {
             var lafBehaviour = smartBe.getBehaviour(LostAndFoundBehaviour.TYPE);
             if (lafBehaviour != null)
                 lafBehaviour.onRemoveFromLevel();
         }
-    }
+    }*/
 }

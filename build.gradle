@@ -276,6 +276,7 @@ dependencies {
     implementation fg.deobf("maven.modrinth:MyfCcqiE:ogrWXsFW")  //create interactive
 
 
+
     runtimeOnly fg.deobf("curse.maven:cc-tweaked-282001:5379173")
     runtimeOnly fg.deobf("maven.modrinth:QCUnCyr8:MO4nsdTK")  //control craft
 
@@ -291,6 +292,10 @@ dependencies {
 
     runtimeOnly fg.deobf("maven.modrinth:nR8D9Tc2:a7n43YYk")  //vs addition
 
+
+    runtimeOnly fg.deobf("maven.modrinth:jIVvzR1C:e2W89mnA")  //vs tournament
+    runtimeOnly fg.deobf("maven.modrinth:Vg5TIO6d:1o1CPwZD")
+    //runtimeOnly fg.deobf("libs:create_connected:1.1.4")
 
 
     //runtimeOnly fg.deobf("maven.modrinth:Xy8aRQKS:JkM3OTEl")  //physics mod

@@ -16,6 +16,7 @@ import com.lancas.vswap.subproject.blockplusapi.blockplus.adder.PropertyAdder;
 import com.lancas.vswap.subproject.blockplusapi.blockplus.adder.ShapeByStateAdder;
 import com.lancas.vswap.subproject.blockplusapi.blockplus.ctx.BlockChangeContext;
 import com.lancas.vswap.subproject.blockplusapi.util.Action;
+import com.lancas.vswap.subproject.blockplusapi.util.QuadConsumer;
 import com.lancas.vswap.util.ShipUtil;
 import com.lancas.vswap.util.WapColors;
 import com.simibubi.create.foundation.block.IBE;
@@ -43,12 +44,13 @@ import org.valkyrienskies.core.api.ships.Ship;
 
 import java.util.List;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class Dock extends BlockPlus implements IBE<DockBe>, IDockerInteractableBlock, IHoldingShipInteractableBlock {  //todo a interface DockerInterable, handling interact logic and preview
     //public static BooleanProperty PINGPONG = BooleanProperty.create("ping_pong");
     //public static BlockState pingPongState(BlockState pre) { return pre.setValue(PINGPONG, !pre.getValue(PINGPONG)); }
-    public static Action<BlockChangeContext, Void> DockOnPlaceAction = new Action<BlockChangeContext, Void>() {
+    public static final Action<BlockChangeContext, Void> DockOnPlaceAction = new Action<BlockChangeContext, Void>() {
         private void updateContinuousAtAxis(ServerLevel level, BlockPos pos, Direction.Axis axis, Function<DockBe, Integer> getter, BiConsumer<DockBe, Integer> setter) {
             if (!(level.getBlockEntity(pos) instanceof DockBe selfBe)) {
                 EzDebug.error("after place get be at this pos is not DockeBe");
@@ -96,7 +98,7 @@ public class Dock extends BlockPlus implements IBE<DockBe>, IDockerInteractableB
             return null;
         }
     };
-    public static Action<BlockChangeContext, Void> DockOnRemoveAction = new Action<BlockChangeContext, Void>() {
+    public static final Action<BlockChangeContext, Void> DockOnRemoveAction = new Action<BlockChangeContext, Void>() {
         private void updateContinuousAtAxis(ServerLevel level, BlockPos pos, Direction.Axis axis, BiConsumer<DockBe, Integer> setter) {
             if (!(level.getBlockEntity(pos) instanceof DockBe selfBe)) {
                 EzDebug.error("after place get be at this pos is not DockeBe");
@@ -146,6 +148,42 @@ public class Dock extends BlockPlus implements IBE<DockBe>, IDockerInteractableB
             return null;
         }
     };
+    public static final QuadConsumer<BlockState, Level, BlockPos, BlockPos> DockNeighborUpdateFunc = (s, l, thisPos, otherPos) -> {
+        BlockPos delta = otherPos.subtract(thisPos);
+        boolean connective = l.getBlockEntity(otherPos) instanceof DockBe;//level.getBlockState(fromPos).is(WapBlocks.Industrial.DOCK.get());
+
+        Direction dir = Direction.fromDelta(delta.getX(), delta.getY(), delta.getZ());
+        if (dir == null) {
+            EzDebug.warn("get null dir!");
+            return;
+        }
+
+        switch (dir) {
+            case UP, DOWN -> {}
+            case NORTH -> l.setBlockAndUpdate(thisPos, s.setValue(Dock.CONNECT_N, connective));
+            case SOUTH -> l.setBlockAndUpdate(thisPos, s.setValue(Dock.CONNECT_S, connective));
+            case WEST -> l.setBlockAndUpdate(thisPos, s.setValue(Dock.CONNECT_W, connective));
+            case EAST -> l.setBlockAndUpdate(thisPos, s.setValue(Dock.CONNECT_E, connective));
+        }
+    };
+
+    public static final IBlockAdder DockBlockAdder = new IBlockAdder() {
+        @Override
+        public void onNeighborChanged(BlockState state, Level level, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving) {
+            IBlockAdder.super.onNeighborChanged(state, level, pos, block, fromPos, isMoving);
+            DockNeighborUpdateFunc.apply(state, level, pos, fromPos);
+        }
+
+        @Override
+        public Action<BlockChangeContext, Void> onPlace() {
+            return DockOnPlaceAction;
+        }
+
+        @Override
+        public Action<BlockChangeContext, Void> onRemove() {
+            return DockOnRemoveAction;
+        }
+    };
 
 
     /*public static enum ConnectType {
@@ -171,96 +209,7 @@ public class Dock extends BlockPlus implements IBE<DockBe>, IDockerInteractableB
             new PropertyAdder<>(CONNECT_W, false),
             new PropertyAdder<>(CONNECT_E, false),
 
-            new IBlockAdder() {
-                @Override
-                public void onNeighborChanged(BlockState state, Level level, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving) {
-                    IBlockAdder.super.onNeighborChanged(state, level, pos, block, fromPos, isMoving);
-                    BlockPos delta = fromPos.subtract(pos);
-                    boolean connective = level.getBlockEntity(fromPos) instanceof DockBe;//level.getBlockState(fromPos).is(WapBlocks.Industrial.DOCK.get());
-
-                    Direction dir = Direction.fromDelta(delta.getX(), delta.getY(), delta.getZ());
-                    if (dir == null) {
-                        EzDebug.warn("get null dir!");
-                        return;
-                    }
-
-                    /*if (connective) {
-                        level.setBlockAndUpdate(pos, pingPongState(state));  //update block to make connect texture
-                    }*/
-                    switch (dir) {
-                        case UP, DOWN -> {
-                        }
-                        case NORTH -> level.setBlockAndUpdate(pos, state.setValue(CONNECT_N, connective));
-                        case SOUTH -> level.setBlockAndUpdate(pos, state.setValue(CONNECT_S, connective));
-                        case WEST -> level.setBlockAndUpdate(pos, state.setValue(CONNECT_W, connective));
-                        case EAST -> level.setBlockAndUpdate(pos, state.setValue(CONNECT_E, connective));
-                    }
-                }
-
-                /*@Override
-                public InteractionResult onInteracted(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
-                    ItemStack withStack = player.getItemInHand(hand);
-                    withBlockEntityDo(level, pos, be -> {
-                        ItemStack afterStack = be.onInteract(withStack);
-                        player.setItemInHand(hand, afterStack);
-                    });
-
-                    return InteractionResult.PASS;
-                    //return IBlockAdder.super.onInteracted(state, level, pos, player, hand, hit);
-                }*/
-
-                /*@Override
-                public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
-                    IBlockAdder.super.onRemove(state, level, pos, newState, isMoving);
-                    EzDebug.log("state has be:" + state.hasBlockEntity() + ", blockChange:" + (state.getBlock() != newState.getBlock()) + ", new empty be:" + (!newState.hasBlockEntity()) + ", be is " + level.getBlockEntity(pos));
-                    if (state.hasBlockEntity()) {
-                        if (state.getBlock() != newState.getBlock() || !newState.hasBlockEntity()) {
-                            /.*BlockEntity be = level.getBlockEntity(pos);
-                            if (!(be instanceof DockBe dockBe)) {
-                                return;
-                            }*./
-
-                            //ItemHelper.dropContents(world, pos, vaultBE.inventory);
-                            level.removeBlockEntity(pos);
-                            ConnectivityHandler.splitMulti(dockBe);
-                            EzDebug.log("ConnectivityHandler split multi");
-                        }
-                    }
-                }*/
-
-                @Override
-                public Action<BlockChangeContext, Void> onPlace() {
-                    return DockOnPlaceAction;
-                }
-
-                @Override
-                public Action<BlockChangeContext, Void> onRemove() {
-                    return DockOnRemoveAction;
-                }
-                /*@Override
-                public Action<BlockChangeContext, Void> onRemove() {
-                    return new Action<>() {
-                        @Override
-                        public Void pre(BlockChangeContext ctx, Void soFar, Dest<Boolean> cancel) {
-                            if (!(ctx.level instanceof ServerLevel level))
-                                return null;
-
-                            //override the onRemove
-                            cancel.set(true);
-                            BlockState oldState = ctx.oldState;
-                            BlockState newState = ctx.newState;
-                            if (oldState.hasBlockEntity() && (oldState.getBlock() != newState.getBlock() || !newState.hasBlockEntity())) {
-                                if (level.getBlockEntity(ctx.pos) instanceof DockBe dockBe) {
-                                    level.removeBlockEntity(ctx.pos);
-                                    ConnectivityHandler.splitMulti(dockBe);
-                                }
-                            }
-
-                            return null;
-                        }
-                    };
-                }*/
-            },
+            DockBlockAdder,
             new InteractableBlockAdder() {
                 @Override
                 public InteractionResult onInteracted(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {

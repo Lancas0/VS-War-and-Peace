@@ -26,9 +26,12 @@ public class BallisticData implements IComponentData<BallisticData>, IComponentD
 
     public int destroyedCnt = 0;
 
+    public long vsShipFirer = -1;
+
 
     private BallisticData() {}
-    public BallisticData(BallisticInitialStateSubData inInitialStateData, BallisticBarrelContextSubData inBarrelCtx, AirDragSubData inAirDragData) {
+    public BallisticData(long inVsShipFirer, BallisticInitialStateSubData inInitialStateData, BallisticBarrelContextSubData inBarrelCtx, AirDragSubData inAirDragData) {
+        vsShipFirer = inVsShipFirer;
         initialStateData.copyData(inInitialStateData);
         barrelCtx.copyData(inBarrelCtx);
         airDragData.copyData(inAirDragData);
@@ -54,6 +57,7 @@ public class BallisticData implements IComponentData<BallisticData>, IComponentD
     @Override
     public CompoundTag saved() {
         return new NbtBuilder()
+            .putLong("vs_ship_firer", vsShipFirer)
             .putCompound("initial_state_data", initialStateData.saved())
             .putCompound("state_data", barrelCtx.saved())
             .putCompound("air_drag_data", airDragData.saved())
@@ -66,6 +70,7 @@ public class BallisticData implements IComponentData<BallisticData>, IComponentD
     @Override
     public IComponentData<BallisticData> load(CompoundTag tag) {
         NbtBuilder.modify(tag)
+            .readLongDo("vs_ship_firer", v -> vsShipFirer = v)
             .readCompoundDo("initial_state_data", initialStateData::load)
             .readCompoundDo("state_data", barrelCtx::load)
             .readCompoundDo("air_drag_data", airDragData::load)

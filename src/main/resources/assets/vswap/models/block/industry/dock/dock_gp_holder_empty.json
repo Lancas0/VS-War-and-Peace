@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "particle": "vswap:block/create/dock/gp_holder_side_empty",
+    "up": "vswap:block/create/dock/dock_top",
+    "down": "vswap:block/create/dock/dock_bottom",
+    "north": "vswap:block/create/dock/gp_holder_side_empty",
+    "south": "vswap:block/create/dock/gp_holder_side_empty",
+    "east": "vswap:block/create/dock/gp_holder_side_empty",
+    "west": "vswap:block/create/dock/gp_holder_side_empty"
+  }
+}

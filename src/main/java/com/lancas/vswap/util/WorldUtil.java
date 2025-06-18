@@ -12,6 +12,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.ticks.ScheduledTick;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
@@ -305,15 +306,21 @@ public class WorldUtil {
         level.getChunk(pos).setBlockState(pos, Blocks.AIR.defaultBlockState(), false);
     }
 
-    public static void setBlock(Level level, BlockPos pos, BlockState state, CompoundTag entityTag) {
+    public static void setBlock(Level level, BlockPos pos, BlockState state, @Nullable CompoundTag entityTag) {
         level.setBlock(pos, state, Block.UPDATE_ALL);
+
         //恢复方块实体数据
         if (level.getBlockEntity(pos) != null) {
-            BlockEntity blockEntity = BlockEntity.loadStatic(pos, state, entityTag);
-            if (blockEntity != null) {
-                level.setBlockEntity(blockEntity);
+            if (entityTag == null) {
+                EzDebug.warn("block " + StrUtil.getBlockName(state) + " has be but with param null BeNbt");
+            } else {
+                BlockEntity blockEntity = BlockEntity.loadStatic(pos, state, entityTag);
+                if (blockEntity != null) {
+                    level.setBlockEntity(blockEntity);
+                }
             }
         }
+
     }
 
     public static void updateBlockStateOfBe(BlockEntity be, BlockState newState) {

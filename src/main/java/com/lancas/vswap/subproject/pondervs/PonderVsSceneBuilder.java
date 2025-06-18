@@ -1,5 +1,7 @@
 package com.lancas.vswap.subproject.pondervs;
 
+import com.lancas.vswap.VsWap;
+import com.lancas.vswap.content.item.items.vsmotion.MotionRecord;
 import com.lancas.vswap.debug.EzDebug;
 import com.lancas.vswap.foundation.BiTuple;
 import com.lancas.vswap.mixinfriend.HookedPonderScene;
@@ -24,6 +26,8 @@ import com.lancas.vswap.subproject.sandbox.constraint.base.IConstraint;
 import com.lancas.vswap.subproject.sandbox.ship.SandBoxPonderShip;
 import com.lancas.vswap.util.JomlUtil;
 import com.lancas.vswap.util.RandUtil;
+import com.simibubi.create.content.kinetics.belt.behaviour.DirectBeltInputBehaviour;
+import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.ponder.*;
 import com.simibubi.create.foundation.ponder.element.*;
 import com.simibubi.create.foundation.ponder.instruction.*;
@@ -34,7 +38,9 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.RedstoneTorchBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
@@ -277,6 +283,37 @@ public class PonderVsSceneBuilder {
                     withSandBoxPonderDo(scene, saPonder -> {
                         saPonder.getConstraintSolver().markConstraintRemoved(uuid);
                     });
+                }
+            });
+        }
+
+        public void playMotionForShip(UUID uuid, String modId, String motionName, double speed, double startFrame) {
+            MotionRecord record = MotionRecord.loadMotion(modId, motionName);
+            record.setCurrentFrame(startFrame);
+            if (record.isEmpty()) {
+                EzDebug.warn("get empty motion");
+                return;
+            }
+
+            addInstruction(new PonderInstruction() {
+                boolean completed = false;
+                @Override
+                public boolean isComplete() { return completed; }
+
+                @Override
+                public void tick(PonderScene scene) {
+                    if (!completed) {
+                        withPonderShipDo(scene, uuid, (p, s) -> {
+                            completed = !record.play(s.getRigidbody().getDataWriter(), speed);
+                        });
+                    }
+                }
+
+                @Override
+                public void reset(PonderScene scene) {
+                    super.reset(scene);
+                    record.setCurrentFrame(startFrame);
+                    completed = false;
                 }
             });
         }
@@ -862,6 +899,9 @@ public class PonderVsSceneBuilder {
                 }
             });
         }*/
+        public void focusOn(Vector3dc pos, int ticks, boolean doReturn) {
+            focusOn((float)pos.x(), (float)pos.y(), (float)pos.z(), ticks, doReturn);
+        }
         public void focusOn(float x, float y, float z, int ticks, boolean doReturn) {
             addInstruction(new TickingInstruction(false, ticks) {
                 private final Matrix4f prevMatrix = new Matrix4f();
@@ -1015,12 +1055,13 @@ public class PonderVsSceneBuilder {
                     double curve01 = curve.get().evaluate(t01);
                     float curScale = (float)((to - from) * curve01 + from);
 
-                    HookedPonderScene hooked = (HookedPonderScene)scene;
+                    /*HookedPonderScene hooked = (HookedPonderScene)scene;
                     hooked.setOverSceneTarget(
                         new Matrix4f(hooked.getOverSceneTarget()).scaling(
                             new Vector3f(curScale, curScale, curScale)
                         )
-                    );
+                    );*/
+                    origin.scaleSceneView(curScale);
                 }
             });
             return new TweenBuilder(curve::set, curve::get);
@@ -1076,7 +1117,8 @@ public class PonderVsSceneBuilder {
                 }
             });
         }
-        public void throwEntityTo(ElementLink<EntityElement> link, Vector3dc to, boolean discardWhenArrive) {
+        public void throwEntityTo(ElementLink<EntityElement> link, Vector3dc to, @Nullable BiConsumer<PonderScene, Entity> arriveCallback) {
+            int preTicks = 4;
             CallbackBuilder cb = new CallbackBuilder();
             Vector3d toPos = new Vector3d(to);
             //AtomicInteger needTicks = new AtomicInteger(0);
@@ -1095,8 +1137,10 @@ public class PonderVsSceneBuilder {
                             remainTicks--;
                             if (remainTicks == 0) {
                                 cb.invoke();
-                                if (discardWhenArrive)
-                                    scene.resolve(link).ifPresent(Entity::discard);
+                                //if (discardWhenArrive)
+                                //    scene.resolve(link).ifPresent(Entity::discard);
+                                if (arriveCallback != null)
+                                    scene.resolve(link).ifPresent(x -> arriveCallback.accept(scene, x));
                             }
                         }
                         return;
@@ -1119,6 +1163,7 @@ public class PonderVsSceneBuilder {
                             x.setDeltaMovement(diff.x / ticks, 9.8 * time * 0.05, diff.z / ticks);
                             remainTicks = ticks;
                         }
+                        remainTicks -= preTicks;
                     });
                 }
 
@@ -1464,6 +1509,17 @@ public class PonderVsSceneBuilder {
         public BlockUtil block = new BlockUtil();
         public ShipUtil ship = new ShipUtil();
         public TransformUtil transform = new TransformUtil();
+
+        public void beltPlaceLikePlaceImmediately(PonderScene scene, BlockPos bp, ItemStack stack, Direction insertionSide) {
+            PonderWorld world = scene.getWorld();
+            BlockEntity blockEntity = world.getBlockEntity(bp);
+            if (blockEntity instanceof SmartBlockEntity beltLikeBe) {
+                DirectBeltInputBehaviour behaviour = beltLikeBe.getBehaviour(DirectBeltInputBehaviour.TYPE);
+                if (behaviour != null) {
+                    behaviour.handleInsertion(stack, insertionSide.getOpposite(), false);
+                }
+            }
+        }
 
         public class BlockUtil {
             public AABB blockFace(BlockPos bp, Direction face) {

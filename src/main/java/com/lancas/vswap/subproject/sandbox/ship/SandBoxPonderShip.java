@@ -17,13 +17,13 @@ public class SandBoxPonderShip extends SandBoxClientShip {
 
     private Map<Vector3ic, Integer> breakProgressions = new ConcurrentHashMap<>();
 
-    private final Deque<PonderShipInitialState> stateStack = new ArrayDeque<>();
+    /*private final Deque<PonderShipInitialState> stateStack = new ArrayDeque<>();*/
 
     public SandBoxPonderShip(UUID inId, RigidbodyData rigidbodyData, BlockClusterData clusterData) {
         super(inId, rigidbodyData, clusterData);
     }
 
-    public void pushState() {
+    /*public void pushState() {
         stateStack.add(new PonderShipInitialState(this));
     }
     public void popState() {
@@ -32,7 +32,7 @@ public class SandBoxPonderShip extends SandBoxClientShip {
             return;
         }
         stateStack.pop().setState(this);
-    }
+    }*/
 
     public void addBreakProgress(Vector3ic localPos, boolean canBreak, @Nullable Consumer<BlockState> breakCallback) {
         //todo check to ensure don't try to break air

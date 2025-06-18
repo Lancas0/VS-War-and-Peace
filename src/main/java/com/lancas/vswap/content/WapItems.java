@@ -6,6 +6,7 @@ import com.lancas.vswap.content.item.items.DebugTool;
 import com.lancas.vswap.content.item.items.EinherjarWand;
 import com.lancas.vswap.content.item.items.GreenPrint;
 import com.lancas.vswap.content.item.items.docker.Docker;
+import com.lancas.vswap.content.item.items.vsmotion.MotionRecorder;
 import com.lancas.vswap.subproject.mstandardized.MaterialStandardizedItem;
 import com.tterrag.registrate.util.entry.ItemEntry;
 import net.minecraft.world.item.Item;
@@ -64,6 +65,11 @@ public class WapItems {
     public static final ItemEntry<MaterialStandardizedItem> MATERIAL_STANDARDIZED = REGISTRATE
         .item("ms_item", MaterialStandardizedItem::new)
         .properties(p -> p.stacksTo(64))
+        .register();
+
+    public static final ItemEntry<MotionRecorder> MOTION_RECORDER = REGISTRATE
+        .item("motions_recorder", MotionRecorder::new)
+        .properties(p -> p.stacksTo(1))
         .register();
 
     /*public static final ItemEntry<BlockItemPlus> WIND_CAP = REGISTRATE

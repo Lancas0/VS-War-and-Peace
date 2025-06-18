@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "particle": "vswap:block/create/dock/dock_side",
+    "up": "vswap:block/create/dock/dock_top",
+    "down": "vswap:block/create/dock/dock_bottom",
+    "north": "vswap:block/create/dock/dock_construction_detector_side_powered",
+    "south": "vswap:block/create/dock/dock_construction_detector_side_powered",
+    "east": "vswap:block/create/dock/dock_construction_detector_side_powered",
+    "west": "vswap:block/create/dock/dock_construction_detector_side_powered"
+  }
+}

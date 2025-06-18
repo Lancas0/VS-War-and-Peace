@@ -3,15 +3,14 @@ package com.lancas.vswap.subproject.sandbox.component.data.writer;
 import com.lancas.vswap.subproject.sandbox.api.component.IComponentDataWriter;
 import com.lancas.vswap.subproject.sandbox.api.data.ITransformPrimitive;
 import com.lancas.vswap.subproject.sandbox.component.data.RigidbodyData;
-import org.joml.Quaterniondc;
-import org.joml.Vector3d;
-import org.joml.Vector3dc;
-import org.joml.Vector3ic;
+import org.joml.*;
 
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 public interface IRigidbodyDataWriter extends IComponentDataWriter<RigidbodyData> {
     public IRigidbodyDataWriter set(RigidbodyData other);
+    public IRigidbodyDataWriter update(Consumer<RigidbodyData> updater);
 
     public IRigidbodyDataWriter setPosition(Vector3dc p);
     public IRigidbodyDataWriter updatePosition(Function<Vector3dc, Vector3d> pTransformer);
@@ -20,6 +19,8 @@ public interface IRigidbodyDataWriter extends IComponentDataWriter<RigidbodyData
         Vector3d movementImm = new Vector3d(movement);
         return updatePosition(p -> movementImm.add(p));
     }
+
+    public IRigidbodyDataWriter rotateWorld(Quaterniondc r);
 
     public IRigidbodyDataWriter setRotation(Quaterniondc r);
     public IRigidbodyDataWriter setScale(Vector3dc s);

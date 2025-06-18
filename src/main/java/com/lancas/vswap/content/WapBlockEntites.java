@@ -3,7 +3,8 @@ package com.lancas.vswap.content;
 import com.lancas.vswap.content.block.blockentity.*;
 import com.lancas.vswap.content.block.blocks.artillery.breech.EjectingBreechBe;
 import com.lancas.vswap.content.block.blocks.industry.dock.DockBe;
-import com.lancas.vswap.content.block.blocks.industry.dock.GreenPrintHolderBe;
+import com.lancas.vswap.content.block.blocks.industry.dock.DockConstructionDetectorBe;
+import com.lancas.vswap.content.block.blocks.industry.dock.DockGreenPrintHolderBe;
 import com.lancas.vswap.content.block.blocks.industry.projector.ProjectorLenBe;
 import com.lancas.vswap.content.block.blocks.industry.projector.VSProjectorBE;
 import com.lancas.vswap.content.block.blocks.industry.shredder.ShredderBe;
@@ -134,12 +135,18 @@ public class WapBlockEntites {
         .register();
 
 
-    public static final BlockEntityEntry<GreenPrintHolderBe> GREEN_PRINT_HOLDER_BE = REGISTRATE
-        .blockEntity("green_print_holder", GreenPrintHolderBe::new)
+    public static final BlockEntityEntry<DockGreenPrintHolderBe> GREEN_PRINT_HOLDER_BE = REGISTRATE
+        .blockEntity("dock_gp_holder_be", DockGreenPrintHolderBe::new)
         //.instance(() -> DockInstance::new)
-        .validBlocks(Industrial.GREEN_PRINT_HOLDER)
+        .validBlocks(Industrial.DOCK_GP_HOLDER)
         //.renderer(() -> PulverizerRenderer::new)
         .register();
+
+    public static final BlockEntityEntry<DockConstructionDetectorBe> DOCK_CONSTRUCTION_DETECTOR_BE = REGISTRATE
+        .blockEntity("dock_construction_be", DockConstructionDetectorBe::new)
+        .validBlocks(Industrial.DOCK_CONSTRUCTION_DETECTOR)
+        .register();
+
     /*public static final BlockEntityEntry<ArmBlockEntity> INDUSTRIAL_ROBOT_ARM_BE = REGISTRATE
         .blockEntity("industrial_robot_arm_be", ArmBlockEntity::new)
         //.visual(() -> ArmRenderer::new, false)
