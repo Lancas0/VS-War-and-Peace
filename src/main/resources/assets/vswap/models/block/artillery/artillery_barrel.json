@@ -2,6 +2,7 @@
 	"credit": "Made with Blockbench",
 	"parent": "minecraft:block/block",
 	"textures": {
+		"particle": "vswap:block/artillery/breech_2",
 		"2": "vswap:block/artillery/breech_2",
 		"3": "vswap:block/dark_shell_bottom",
 		"4": "vswap:block/create/dark_industrial_iron_block_top"

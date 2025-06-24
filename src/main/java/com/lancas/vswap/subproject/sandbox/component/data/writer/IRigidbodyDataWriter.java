@@ -33,6 +33,12 @@ public interface IRigidbodyDataWriter extends IComponentDataWriter<RigidbodyData
     public default IRigidbodyDataWriter setVelocity(Vector3dc v) { return setVelocity(v.x(), v.y(), v.z()); }
     public IRigidbodyDataWriter setVelocity(double x, double y, double z);
     public IRigidbodyDataWriter updateVelocity(Function<Vector3dc, Vector3d> vTransformer);
+    public default IRigidbodyDataWriter addVelocity(double x, double y, double z) {
+        return updateVelocity(v -> v.add(x, y, z, new Vector3d()));
+    }
+    public default IRigidbodyDataWriter addVelocity(Vector3dc v) {
+        return addVelocity(v.x(), v.y(), v.z());
+    }
     public IRigidbodyDataWriter setOmega(Vector3dc v);
     public IRigidbodyDataWriter setGravity(Vector3dc newGravity);
 

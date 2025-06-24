@@ -1,6 +1,8 @@
 package com.lancas.vswap.content.block.blocks.artillery.breech;
 
+import com.lancas.vswap.WapConfig;
 import com.lancas.vswap.content.WapSounds;
+import com.lancas.vswap.content.block.blocks.artillery.IBarrel;
 import com.lancas.vswap.content.block.blocks.artillery.breech.helper.BreechHelper;
 import com.lancas.vswap.content.block.blocks.artillery.breech.helper.LoadedMunitionData;
 import com.lancas.vswap.content.block.blocks.cartridge.primer.IPrimer;
@@ -50,6 +52,7 @@ import org.valkyrienskies.core.api.ships.ServerShip;
 import org.valkyrienskies.core.api.ships.Ship;
 import org.valkyrienskies.mod.common.VSGameUtilsKt;
 
+import java.lang.Math;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -125,22 +128,27 @@ public class EjectingBreechBe extends SmartBlockEntity implements IBreechBe {
 
             Vector3d breechWorldCenter = WorldUtil.getWorldCenter(sLevel, worldPosition);
             AABBd breechInnerBound = JomlUtil.dCenterExtended(breechWorldCenter, 0.35);  //todo hell breech will reload multi times?
-            for (Ship ship : VSGameUtilsKt.getShipsIntersecting(sLevel, breechInnerBound)) {
-                ServerShip sShip = (ServerShip)ship;
+            for (ServerShip ship : VSGameUtilsKt.getShipObjectWorld(sLevel).getAllShips().getIntersecting(breechInnerBound)) {
+                //ServerShip sShip = (ServerShip)ship;
 
-                if (Objects.equals(ship.getId(), artilleryShipId) || ConstraintsMgr.anyLoadedConstraintWith(sLevel, ship.getId()) || ICanHoldShip.isShipHolden(sShip))
+                if (Objects.equals(ship.getId(), artilleryShipId) || ConstraintsMgr.anyLoadedConstraintWith(sLevel, ship.getId()) || ICanHoldShip.isShipHolden(ship))
                     continue;
 
-                HoldableAttachment holdable = sShip.getAttachment(HoldableAttachment.class);
+                /*HoldableAttachment holdable = sShip.getAttachment(HoldableAttachment.class);
                 if (holdable == null)
-                    continue;
+                    continue;*/
 
-                Vector3dc worldHoldPivotCenter = WorldUtil.getWorldCenter(sShip, holdable.holdPivotBpInShip.toBp());
-                AABBd holdPivotBound = JomlUtil.dCenterExtended(worldHoldPivotCenter, 0.5);
+                //Vector3dc worldHoldPivotCenter = WorldUtil.getWorldCenter(sShip, holdable.holdPivotBpInShip.toBp());
+                //AABBd holdPivotBound = JomlUtil.dCenterExtended(worldHoldPivotCenter, 0.5);
+                AABBd centerTinyBound = JomlUtil.dCenterExtended(ship.getTransform().getPositionInWorld(), 0.3);
 
-                if (breechInnerBound.intersectsAABB(holdPivotBound)) {
-                    if (loadShipMunition(holdable)) {
+                if (breechInnerBound.intersectsAABB(centerTinyBound)) {
+                    /*if (loadShipMunition(holdable)) {
                         ShipUtil.deleteShip(sLevel, sShip);
+                        anyChange = true;
+                    }*/
+                    if (loadShipMunition(ship)) {
+                        ShipUtil.deleteShip(sLevel, ship);
                         anyChange = true;
                     }
                 }
@@ -170,7 +178,7 @@ public class EjectingBreechBe extends SmartBlockEntity implements IBreechBe {
     }
 
     @Override
-    public boolean loadShipMunition(@NotNull HoldableAttachment holdable) {
+    public boolean loadShipMunition(@NotNull ServerShip toLoadShip/*@NotNull HoldableAttachment holdable*/) {
         if (!(level instanceof ServerLevel sLevel))
             return false;
         BreechMunitionHolderBehaviour munitionHolder = getBehaviour(BreechMunitionHolderBehaviour.TYPE);
@@ -179,11 +187,11 @@ public class EjectingBreechBe extends SmartBlockEntity implements IBreechBe {
             return false;
         }
 
-        ServerShip toLoadShip = ShipUtil.getServerShipAt(sLevel, holdable.getPivotBpInShip());
-        if (toLoadShip == null) {
+        //ServerShip toLoadShip = ShipUtil.getServerShipAt(sLevel, holdable.getPivotBpInShip());
+        /*if (toLoadShip == null) {
             EzDebug.warn("try load null ship!");
             return false;
-        }
+        }*/
         ServerShip artilleryShip = ShipUtil.getServerShipAt(sLevel, worldPosition);
         if (artilleryShip != null && artilleryShip.getId() == toLoadShip.getId()) {
             EzDebug.warn("try load self ship!");
@@ -192,18 +200,31 @@ public class EjectingBreechBe extends SmartBlockEntity implements IBreechBe {
 
         BlockClusterData munitionBlockData = new BlockClusterData();
 
-        //todo foreach for primer
-        BlockPos startPos = holdable.getPivotBpInShip();
+        AtomicReference<BlockPos> startPos = new AtomicReference<>(null);
+        AtomicReference<BlockState> primerState = new AtomicReference<>(null);
+        ShipUtil.foreachBlock(toLoadShip, sLevel, (bp, state, be) -> {
+            if (startPos.get() != null)
+                return;
+            if (state.getBlock() instanceof IPrimer primer) {
+                startPos.set(bp);
+                primerState.set(state);
+            }
+        });
 
-        BlockState primerState = sLevel.getBlockState(startPos);
-        if (!(primerState.getBlock() instanceof IPrimer)) {
+        //todo foreach for primer
+        //BlockPos startPos = holdable.getPivotBpInShip();
+
+        //BlockState primerState = sLevel.getBlockState(startPos);
+        /*if (!(primerState.get().getBlock() instanceof IPrimer)) {
             EzDebug.log("[should send msg]The hold pos must be primer");
             return false;
-        }
+        }*/
+        if (startPos.get() == null || primerState.get() == null)
+            return false;
 
         Vector3i munitionLocPos = new Vector3i(LOADED_MUNITION_ORIGIN);
-        Direction primerDir = primerState.getValue(DirectionAdder.FACING);
-        BlockPos.MutableBlockPos curPos = startPos.mutable();
+        Direction primerDir = primerState.get().getValue(DirectionAdder.FACING);
+        BlockPos.MutableBlockPos curPos = startPos.get().mutable();
         while (true) {
             BlockState state = level.getBlockState(curPos);
             if (state.isAir()) break;
@@ -244,7 +265,7 @@ public class EjectingBreechBe extends SmartBlockEntity implements IBreechBe {
         }
 
         //AtomicReference<HoldableAttachment> holdableAtt = new AtomicReference<>(null);
-        AtomicReference<BlockPos> savedLocalPivotBp = new AtomicReference<>(null);
+        /*AtomicReference<BlockPos> savedLocalPivotBp = new AtomicReference<>(null);
         shipData.withSavedAttachmentDo(HoldableAttachment.class, (att, localPoses) -> {
             Vector3ic savedLocalPivot = att.getSavedLocalPivot(localPoses);
             if (savedLocalPivot == null)
@@ -254,25 +275,38 @@ public class EjectingBreechBe extends SmartBlockEntity implements IBreechBe {
         });
 
         if (savedLocalPivotBp.get() == null)
-            return false;
+            return false;*/
+        AtomicReference<BlockPos> startPos = new AtomicReference<>(null);
+        AtomicReference<BlockState> primerState = new AtomicReference<>(null);
+        shipData.foreachBlockInLocal((bp, state) -> {
+            if (startPos.get() != null)
+                return;
+            if (state.getBlock() instanceof IPrimer primer) {
+                startPos.set(bp);
+                primerState.set(state);
+            }
+        });
 
-        BlockState primerState = shipData.getBlockStateByLocalPos(savedLocalPivotBp.get());
-        if (!(primerState.getBlock() instanceof IPrimer primer))
+       // BlockState primerState = shipData.getBlockStateByLocalPos(savedLocalPivotBp.get());
+        //if (!(primerState.getBlock() instanceof IPrimer primer))
+        //    return false;
+        if (startPos.get() == null || primerState.get() == null)
             return false;
 
         BlockClusterData munitionBlockData = new BlockClusterData();
         Vector3i curPos = new Vector3i(LOADED_MUNITION_ORIGIN);
-        BlockPos.MutableBlockPos savedCurBp = savedLocalPivotBp.get().mutable();
-        Direction primerDir = primerState.getValue(DirectionAdder.FACING);
+        //BlockPos.MutableBlockPos savedCurBp = savedLocalPivotBp.get().mutable();
+        Direction primerDir = primerState.get().getValue(DirectionAdder.FACING);
+        BlockPos.MutableBlockPos curBp = startPos.get().mutable();
         while (true) {
-            BlockState curSavedState = shipData.getBlockStateByLocalPos(savedCurBp);
+            BlockState curSavedState = shipData.getBlockStateByLocalPos(curBp);
             if (curSavedState.isAir())
                 break;
 
             munitionBlockData.setBlock(curPos, curSavedState.trySetValue(DirectionAdder.FACING, LOADED_MUNITION_DIRECTION));
 
             curPos.add(LOADED_MUNITION_FORWARD);
-            savedCurBp.move(primerDir);
+            curBp.move(primerDir);
         }
 
         return munitionHolder.loadMunition(munitionBlockData);
@@ -330,8 +364,9 @@ public class EjectingBreechBe extends SmartBlockEntity implements IBreechBe {
         @Nullable ServerShip artilleryShip = ShipUtil.getServerShipAt(sLevel, worldPosition);
 
         BlockState breechState = level.getBlockState(worldPosition);
+        Direction breechBlockDir = breechState.getValue(DirectionAdder.FACING);
         Vector3d worldBreechPos = WorldUtil.getWorldCenter(artilleryShip, worldPosition);
-        Vector3d worldLaunchDir = WorldUtil.getWorldDirection(artilleryShip, breechState.getValue(DirectionAdder.FACING));
+        Vector3d worldLaunchDir = WorldUtil.getWorldDirection(artilleryShip, breechBlockDir);
 
         Vector3d throwDir = worldLaunchDir.negate(new Vector3d());
         Vector3d throwDeltaMove = throwDir.mul(0.2, new Vector3d());
@@ -339,15 +374,30 @@ public class EjectingBreechBe extends SmartBlockEntity implements IBreechBe {
         //throw remain items FIXME now will throw even no propellant power, keep it or fix it : keep it, or don't do anything when no propellant power
         BreechHelper.ejectAllRemainMunition(sLevel, munitionRemains, () -> spawnPos, () -> throwDeltaMove);
 
+        BlockPos.MutableBlockPos outBarrelPos = worldPosition.mutable();
+        while (level.getBlockState(outBarrelPos).getBlock() instanceof IBarrel) {
+            outBarrelPos.move(breechBlockDir);
+        }
 
         if (projectileBlockData != null) {
+            /*double energy = speDest.get() * WapConfig.standardPropellantEnergy;
+            Vector3d vel = worldLaunchDir.normalize(Math.sqrt(2 * energy / rigidReader.getMass()), new Vector3d());
+            //ship.getRigidbody().getDataWriter().setVelocity(vel);
+            ship.getRigidbody().getDataWriter().addVelocity(vel);
+            EzDebug.log("energy:" + data.initialStateData.stdPropellingEnergy / 1000 + " KJ" + ", vel:" + vel + ", velLen:" + vel.length());
+            data.barrelCtx.appliedHighPressureStage = true;*/
+
             RigidbodyData rigidbodyData = new RigidbodyData(
                 new TransformPrimitive(
-                    worldBreechPos,
+                    WorldUtil.getWorldCenter(artilleryShip, outBarrelPos),
                     JomlUtil.swingYXRotateTo(IBreech.LOADED_MUNITION_FORWARD_D, worldLaunchDir, new Quaterniond()),
                     new Vector3d(1, 1, 1)  //todo use scale
                 )
+            ).setVelocityImmediately(
+                new Vector3d(0, -0.1 ,0) //temp to avoid inital rot is invalid
+                    .add((artilleryShip == null ? new Vector3d() : artilleryShip.getVelocity()))
             );
+
 
             SandBoxServerShip ship = new SandBoxServerShip(
                 UUID.randomUUID(),
@@ -355,6 +405,7 @@ public class EjectingBreechBe extends SmartBlockEntity implements IBreechBe {
                 projectileBlockData
             );
             ship.addBehaviour(new BallisticBehaviour(), new BallisticData(
+                artilleryShip == null ? -1 : artilleryShip.getId(),
                 new BallisticInitialStateSubData(worldBreechPos, IBreech.LOADED_MUNITION_FORWARD, worldLaunchDir, speDest.get()),
                 new BallisticBarrelContextSubData(),
                 new AirDragSubData()

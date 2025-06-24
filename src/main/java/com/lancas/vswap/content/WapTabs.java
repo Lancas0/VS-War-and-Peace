@@ -24,7 +24,7 @@ public class WapTabs {
         () -> CreativeModeTab.builder()
             .title(Components.literal(MODID))
             .withTabsBefore(AllCreativeModeTabs.BASE_CREATIVE_TAB.getKey())
-            //.icon(ControlCraftBlocks.ANCHOR_BLOCK::asStack)
+            .icon(WapBlocks.Cartridge.Warhead.HE_WARHEAD::asStack)
             .displayItems((params, output) -> {
 
                 List<ItemStack> items = VsWap.REGISTRATE.getAll(Registries.ITEM)
@@ -52,7 +52,7 @@ public class WapTabs {
         .withTabsBefore(CreativeModeTabs.COMBAT)
         //.icon(() -> EXAMPLE_ITEM.get().getDefaultInstance())
         .displayItems((parameters, output) -> {
-            //output.accept(AllItems.EXAMPLE_ITEM.get()); // Add the vanilla.json item to the tab. For your own tabs, this method is preferred over the event
+            //output.accept(AllItems.EXAMPLE_ITEM.get()); // Add the vanilla.disabled item to the tab. For your own tabs, this method is preferred over the event
             AllItems.tabAccept(output);
         }).build());*/
 

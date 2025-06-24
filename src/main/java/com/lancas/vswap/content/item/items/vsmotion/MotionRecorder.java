@@ -4,15 +4,18 @@ import com.lancas.vswap.content.item.items.base.ShipInteractableItem;
 import com.lancas.vswap.debug.EzDebug;
 import com.lancas.vswap.subproject.sandbox.api.data.TransformPrimitive;
 import com.lancas.vswap.util.ShipUtil;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.valkyrienskies.core.api.ships.ServerShip;
 import org.valkyrienskies.core.api.ships.Ship;
 
@@ -55,6 +58,15 @@ public class MotionRecorder extends ShipInteractableItem {
             records.clear();
             return InteractionResult.SUCCESS;
         }
+    }
+
+    @Override
+    public void appendHoverText(ItemStack p_41421_, @Nullable Level p_41422_, List<Component> texts, TooltipFlag p_41424_) {
+        super.appendHoverText(p_41421_, p_41422_, texts, p_41424_);
+        texts.add(Component.literal("Used for record motions of a VS Ship, and play it in PonderVs"));
+        texts.add(Component.literal("Don't use it if you really known how to use it. Or your memory can be so full that game may crash."));
+        texts.add(Component.literal("记录物理运动和在思索的播放程度的能力"));
+        texts.add(Component.literal("除非你明确知道这个东西如何使用，否则不要碰它：你的内存可能会被榨干"));
     }
 
     private static int lastTickCnt = -1;

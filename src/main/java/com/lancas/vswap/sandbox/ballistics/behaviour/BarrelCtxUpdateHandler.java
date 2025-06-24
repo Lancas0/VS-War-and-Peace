@@ -16,7 +16,7 @@ import org.valkyrienskies.core.api.ships.Ship;
 import org.valkyrienskies.mod.common.VSGameUtilsKt;
 
 public class BarrelCtxUpdateHandler {
-    public static void updateBarrelCtx(ServerLevel level, SandBoxServerShip ship, BallisticData data) {
+    /*public static void updateBarrelCtx(ServerLevel level, SandBoxServerShip ship, BallisticData data) {
         var barrelCtx = data.barrelCtx;
         AABBdc localAABB = ship.getLocalAABB();
         AABBdc worldAABB = ship.getWorldAABB();
@@ -81,5 +81,5 @@ public class BarrelCtxUpdateHandler {
         }
 
         return;
-    }
+    }*/
 }

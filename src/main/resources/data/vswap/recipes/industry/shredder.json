@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "S S",
+    " I ",
+    "SCS"
+  ],
+  "key": {
+    "S": { "tag": "forge:plates/iron" },
+    "I": { "tag": "forge:ingots/iron" },
+    "C": { "item": "create:andesite_casing" }
+  },
+  "result": {
+    "item": "vswap:shredder",
+    "count": 1
+  }
+}

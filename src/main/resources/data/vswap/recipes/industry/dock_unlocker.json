@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    { "item" : "vswap:dock" },
+    { "item" : "minecraft:redstone" }
+  ],
+  "result": {
+    "item": "vswap:dock_unlocker",
+    "count": 1
+  }
+}

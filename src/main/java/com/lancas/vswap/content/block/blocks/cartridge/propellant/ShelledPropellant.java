@@ -14,7 +14,6 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 
 import java.util.List;
 
-import static com.lancas.vswap.content.WapBlocks.Cartridge.Propellant.Empty.EMPTY_PROPELLANT;
 
 public class ShelledPropellant extends BlockPlus implements IPropellant {
     //public static final BooleanProperty EMPTY = BooleanProperty.create("empty");
@@ -22,7 +21,7 @@ public class ShelledPropellant extends BlockPlus implements IPropellant {
 
     public static BlockState getState(boolean empty, Direction faceTo) {
         if (empty)
-            return EMPTY_PROPELLANT.getDefaultState().setValue(DirectionAdder.FACING, faceTo);
+            return WapBlocks.General.EMPTY_SHELL.getDefaultState().setValue(DirectionAdder.FACING, faceTo);
 
         return WapBlocks.Cartridge.Propellant.SHELLED_PROPELLANT.getDefaultState()
             .setValue(DirectionAdder.FACING, faceTo);
@@ -103,7 +102,7 @@ public class ShelledPropellant extends BlockPlus implements IPropellant {
     @Override
     public BlockState getEmptyState(BlockState state) {
         Direction dir = state.getValue(DirectionAdder.FACING);
-        return EMPTY_PROPELLANT.getDefaultState().setValue(DirectionAdder.FACING, dir);
+        return WapBlocks.General.EMPTY_SHELL.getDefaultState().setValue(DirectionAdder.FACING, dir);
         //level.setBlock(pos, EMPTY_PROPELLANT.getDefaultState().setValue(DirectionAdder.FACING, dir), Block.UPDATE_ALL);
         //level.setBlockAndUpdate(pos, state.setValue(EMPTY, true));
     }

@@ -52,7 +52,7 @@ public class CustomExplosion extends Explosion {
 
 
     public CustomExplosion(Level level, @Nullable Entity src, double x, double y, double z, Vector3dc inProjVel, float size, boolean fire, BlockInteraction bInteract) {
-        this(level, src, null, null, x, y, z, inProjVel, size, fire, bInteract);
+        this(level, src, null, new ExplosionDamageCalculator(), x, y, z, inProjVel, size, fire, bInteract);
     }
     public CustomExplosion(Level inLevel, @Nullable Entity src, @Nullable DamageSource dmgSrc, @Nullable ExplosionDamageCalculator cal, double x, double y, double z, Vector3dc inProjVel, float size, boolean fire, BlockInteraction blockInteract) {
         super(inLevel, src, dmgSrc, cal, x, y, z, size, fire, blockInteract);
@@ -204,7 +204,7 @@ public class CustomExplosion extends Explosion {
                         ship.getRigidbody().getDataWriter().setVelocity(shardVel);
 
             });*/
-            ClientShardShipScheduler.ShardShipScheduleData data = new ClientShardShipScheduler.ShardShipScheduleData(
+            /*ClientShardShipScheduler.ShardShipScheduleData data = new ClientShardShipScheduler.ShardShipScheduleData(
                 4, //delay about 4 ticks
                 spawnPos,
                 state,
@@ -213,7 +213,7 @@ public class CustomExplosion extends Explosion {
             );
             NetworkHandler.sendToAllPlayers(
                 SendScheduleToClientS2C.create(sLevel, SandBoxClientThread.class, data)
-            );//todo send to near players
+            );//todo send to near players*/
         }
 
 

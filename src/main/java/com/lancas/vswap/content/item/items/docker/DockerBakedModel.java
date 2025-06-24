@@ -147,7 +147,7 @@ public class DockerBakedModel implements BakedModel {
 
         transformer = switch (transformType) {
             case FIRST_PERSON_LEFT_HAND, THIRD_PERSON_LEFT_HAND, FIRST_PERSON_RIGHT_HAND, THIRD_PERSON_RIGHT_HAND -> (data) -> {
-                var localAABB = data.getLocalAabbContainsCoordinate();
+                var localAABB = data.getLocalAabbContainsShape();
                 int xSize = JomlUtil.lengthX(localAABB);
                 int ySize = JomlUtil.lengthY(localAABB);
                 int zSize = JomlUtil.lengthZ(localAABB);
@@ -155,14 +155,14 @@ public class DockerBakedModel implements BakedModel {
                 float scale = MathUtil.min(1f / xSize, 1f / ySize, 1f / zSize);
 
                 return new Matrix4f().translationRotateScale(
-                    -xSize / 2f * scale, ySize / 2f * scale, -zSize / 2f * scale,
+                    xSize / 2f * scale, ySize / 2f * scale, zSize / 2f * scale,
                     0, 0, 0, 1,
                     scale, scale, scale
                 );
                 //return new Matrix4f().translate(-xSize / 2f, ySize / 2f, -zSize / 2f);
             };
-            case GROUND, NONE, FIXED -> (data) -> {
-                var localAABB = data.getLocalAabbContainsCoordinate();
+            case GROUND, NONE, FIXED -> (data) -> {  //todo apply ship scale
+                var localAABB = data.getLocalAabbContainsShape();
                 //int xSize = JomlUtil.lengthX(localAABB);
                 int ySize = JomlUtil.lengthY(localAABB);
                 //int zSize = JomlUtil.lengthZ(localAABB);
@@ -170,7 +170,7 @@ public class DockerBakedModel implements BakedModel {
                 return new Matrix4f().translate(/*-xSize / 2f*/0, ySize / 2f, /*-zSize / 2f*/0);
             };
             case GUI -> {
-                EzDebug.warn("Dock Model should never have transformer type GUI");
+                EzDebug.warn("Dock Model should never have transformer type GUI for now");
                 yield (data) -> new Matrix4f();
             }
             case HEAD -> (data) -> new Matrix4f();

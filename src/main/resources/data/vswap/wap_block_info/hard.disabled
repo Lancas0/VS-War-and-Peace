@@ -1,0 +1,438 @@
+[
+  {
+    "block": "minecraft:netherite_block",
+    "armour_rhae": 6.0,
+    "armour_ab_ratio": 0.6
+  },
+  {
+    "block": "minecraft:obsidian",
+    "armour_rhae": 8.0,
+    "armour_ab_ratio": 0.3
+  },
+  {
+    "block": "create:industrial_iron_block",
+    "armour_rhae": 3.0,
+    "armour_ab_ratio": 0.6
+  },
+  {
+    "block": "minecraft:anvil",
+    "armour_rhae": 3.5,
+    "armour_ab_ratio": 0.8
+  },
+
+  {
+    "tag": "minecraft:wool",
+    "armour_rhae": 0.2,
+    "armour_ab_ratio": 8
+  },
+  {
+    "block": "create:fluid_tank",
+    "armour_rhae": 1.4,
+    "armour_ab_ratio": 1.7
+  },
+  {
+    "tag": "minecraft:stone_bricks",
+    "armour_rhae": 0.6,
+    "armour_ab_ratio": 0.6
+  },
+  {
+    "block": "create:brass_block",
+    "armour_rhae": 0.8,
+    "armour_ab_ratio": 1.8
+  },
+  {
+    "block": "create:railway_casing",
+    "armour_rhae": 2.5,
+    "armour_ab_ratio": 1.6
+  },
+  {
+    "block": "create:blaze_burner",
+    "armour_rhae": 1.0,
+    "armour_ab_ratio": 1.8
+  },
+  {
+    "tag": "create:windmill_sails",
+    "armour_rhae": 0.2,
+    "armour_ab_ratio": 8
+  },
+  {
+    "block": "minecraft:honey_block",
+    "armour_rhae": 0.3,
+    "armour_ab_ratio": 10
+  },
+  {
+    "block": "minecraft:bedrock",
+    "armour_rhae": "Infinity",
+    "armour_ab_ratio": "Infinity"
+  },
+  {
+    "block": "minecraft:slime_block",
+    "armour_rhae": 0.1,
+    "armour_ab_ratio": 28
+  },
+  {
+    "block": "create:mechanical_drill",
+    "armour_rhae": 4.0,
+    "armour_ab_ratio": 0.3
+  },
+
+
+  {
+    "tag": "minecraft:terracotta",
+    "armour_rhae": 0.8,
+    "armour_ab_ratio": 0.5
+  },
+  {
+    "tag": "minecraft:glass",
+    "armour_rhae": 0.2,
+    "armour_ab_ratio": 0.5
+  },
+  {
+    "tag": "minecraft:wool",
+    "armour_rhae": 0.06,
+    "armour_ab_ratio": 8.5
+  },
+  {
+    "tag": "minecraft:leaves",
+    "armour_rhae": 0.03,
+    "armour_ab_ratio": 9.0
+  },
+  {
+    "tag": "minecraft:anvil",
+    "armour_rhae": 4.8,
+    "armour_ab_ratio": 0.65
+  },
+  {
+    "block": "minecraft:iron_block",
+    "armour_rhae": 1.0,
+    "armour_ab_ratio": 1.0
+  },
+  {
+    "block": "minecraft:gold_block",
+    "armour_rhae": 0.5,
+    "armour_ab_ratio": 2.8
+  },
+  {
+    "block": "minecraft:diamond_block",
+    "armour_rhae": 6.5,
+    "armour_ab_ratio": 0.25
+  },
+  {
+    "block": "minecraft:emerald_block",
+    "armour_rhae": 5.2,
+    "armour_ab_ratio": 0.35
+  },
+  {
+    "block": "minecraft:copper_block",
+    "armour_rhae": 1.8,
+    "armour_ab_ratio": 1.9
+  },
+  {
+    "block": "minecraft:obsidian",
+    "armour_rhae": 8.5,
+    "armour_ab_ratio": 0.35
+  },
+  {
+    "block": "minecraft:crying_obsidian",
+    "armour_rhae": 7.2,
+    "armour_ab_ratio": 0.45
+  },
+  {
+    "block": "minecraft:respawn_anchor",
+    "armour_rhae": 9.0,
+    "armour_ab_ratio": 0.3
+  },
+  {
+    "tag": "create:windmill_sails",
+    "armour_rhae": 0.12,
+    "armour_ab_ratio": 6.5
+  },
+  {
+    "tag": "create:seats",
+    "armour_rhae": 0.15,
+    "armour_ab_ratio": 7.0
+  },
+  {
+    "block": "create:brass_block",
+    "armour_rhae": 2.4,
+    "armour_ab_ratio": 1.9
+  },
+  {
+    "block": "create:zinc_block",
+    "armour_rhae": 1.6,
+    "armour_ab_ratio": 2.3
+  },
+  {
+    "block": "create:industrial_iron_block",
+    "armour_rhae": 5.5,
+    "armour_ab_ratio": 0.55
+  },
+  {
+    "block": "create:mechanical_piston",
+    "armour_rhae": 1.2,
+    "armour_ab_ratio": 0.9
+  },
+  {
+    "block": "create:gantry_carriage",
+    "armour_rhae": 2.0,
+    "armour_ab_ratio": 0.8
+  },
+  {
+    "block": "create:mechanical_saw",
+    "armour_rhae": 2,
+    "armour_ab_ratio": 0.8
+  },
+  {
+    "block": "minecraft:bookshelf",
+    "armour_rhae": 0.4,
+    "armour_ab_ratio": 0.5
+  },
+  {
+    "block": "minecraft:hay_block",
+    "armour_rhae": 0.4,
+    "armour_ab_ratio": 8
+  },
+  {
+    "block": "create:copper_casing",
+    "armour_rhae": 0.8,
+    "armour_ab_ratio": 1.4
+  },
+  {
+    "block": "create:andesite_casing",
+    "armour_rhae": 2.1,
+    "armour_ab_ratio": 1.8
+  },
+  {
+    "block": "minecraft:chain",
+    "armour_rhae": 0.6,
+    "armour_ab_ratio": 1.5
+  },
+  {
+    "block": "minecraft:iron_bars",
+    "armour_rhae": 0.8,
+    "armour_ab_ratio": 1.5
+  },
+  {
+    "block": "minecraft:sponge",
+    "armour_rhae": 0.2,
+    "armour_ab_ratio": 12
+  },
+  {
+    "block": "create:rose_quartz_lamp",
+    "armour_rhae": 0.5,
+    "armour_ab_ratio": 1.0
+  },
+  {
+    "block": "create:peculiar_bell",
+    "armour_rhae": 1.5,
+    "armour_ab_ratio": 2.5
+  },
+  {
+    "block": "minecraft:scaffolding",
+    "armour_rhae": 0.15,
+    "armour_ab_ratio": 5.5
+  },
+
+
+
+  {
+    "tag": "minecraft:sand",
+    "armour_rhae": 0.1,
+    "armour_ab_ratio": 4
+  },
+  {
+    "block": "minecraft:gravel",
+    "armour_rhae": 0.12,
+    "armour_ab_ratio": 4
+  },
+  {
+    "tag": "minecraft:concrete",
+    "armour_rhae": 0.8,
+    "armour_ab_ratio": 1.5
+  },
+  {
+    "tag": "minecraft:concrete_powder",
+    "armour_rhae": 0.3,
+    "armour_ab_ratio": 2
+  },
+  {
+    "block": "minecraft:clay",
+    "armour_rhae": 0.25,
+    "armour_ab_ratio": 3.8
+  },
+  {
+    "block": "minecraft:packed_mud",
+    "armour_rhae": 0.4,
+    "armour_ab_ratio": 4
+  },
+  {
+    "block": "minecraft:mud_bricks",
+    "armour_rhae": 0.5,
+    "armour_ab_ratio": 3
+  },
+  {
+    "tag": "minecraft:deepslate_blocks",
+    "armour_rhae": 0.9,
+    "armour_ab_ratio": 0.5
+  },
+  {
+    "block": "minecraft:deepslate_bricks",
+    "armour_rhae": 1,
+    "armour_ab_ratio": 0.6
+  },
+  {
+    "tag": "minecraft:blackstone_blocks",
+    "armour_rhae": 0.7,
+    "armour_ab_ratio": 0.4
+  },
+  {
+    "block": "minecraft:gilded_blackstone",
+    "armour_rhae": 0.6,
+    "armour_ab_ratio": 0.6
+  },
+  {
+    "tag": "minecraft:prismarine_blocks",
+    "armour_rhae": 0.6,
+    "armour_ab_ratio": 1.4
+  },
+  {
+    "block": "minecraft:sea_lantern",
+    "armour_rhae": 0.5,
+    "armour_ab_ratio": 0.5
+  },
+  {
+    "block": "minecraft:glowstone",
+    "armour_rhae": 0.7,
+    "armour_ab_ratio": 0.4
+  },
+  {
+    "block": "minecraft:shroomlight",
+    "armour_rhae": 0.5,
+    "armour_ab_ratio": 2.0
+  },
+  {
+    "tag": "minecraft:nether_bricks",
+    "armour_rhae": 1.1,
+    "armour_ab_ratio": 0.5
+  },
+  {
+    "block": "minecraft:red_nether_bricks",
+    "armour_rhae": 1.1,
+    "armour_ab_ratio": 0.5
+  },
+  {
+    "block": "minecraft:end_stone",
+    "armour_rhae": 0.6,
+    "armour_ab_ratio": 0.8
+  },
+  {
+    "block": "minecraft:purpur_block",
+    "armour_rhae": 0.5,
+    "armour_ab_ratio": 2.4
+  },
+  {
+    "block": "create:mechanical_bearing",
+    "armour_rhae": 2.2,
+    "armour_ab_ratio": 1.2
+  },
+  {
+    "block": "create:clockwork_bearing",
+    "armour_rhae": 1.5,
+    "armour_ab_ratio": 2.8
+  },
+  {
+    "block": "create:linear_chassis",
+    "armour_rhae": 1.5,
+    "armour_ab_ratio": 1.6
+  },
+  {
+    "block": "create:secondary_linear_chassis",
+    "armour_rhae": 1.5,
+    "armour_ab_ratio": 1.6
+  },
+  {
+    "block": "create:redstone_contact",
+    "armour_rhae": 0.8,
+    "armour_ab_ratio": 0.6
+  },
+  {
+    "block": "create:rotation_speed_controller",
+    "armour_rhae": 1.5,
+    "armour_ab_ratio": 2.5
+  },
+  {
+    "block": "create:large_cogwheel",
+    "armour_rhae": 0.35,
+    "armour_ab_ratio": 0.8
+  },
+  {
+    "block": "create:belt",
+    "armour_rhae": 0.2,
+    "armour_ab_ratio": 2
+  },
+  {
+    "block": "minecraft:hopper",
+    "armour_rhae": 1.5,
+    "armour_ab_ratio": 0.9
+  },
+  {
+    "block": "create:smart_chute",
+    "armour_rhae": 1.1,
+    "armour_ab_ratio": 2.4
+  },
+  {
+    "block": "create:adjustable_gear_shift",
+    "armour_rhae": 0.4,
+    "armour_ab_ratio": 1.8
+  },
+  {
+    "block": "create:chain_drive",
+    "armour_rhae": 0.8,
+    "armour_ab_ratio": 0.8
+  },
+  {
+    "block": "create:encased_fan",
+    "armour_rhae": 0.8,
+    "armour_ab_ratio": 2.2
+  },
+  {
+    "block": "create:nozzle",
+    "armour_rhae": 0.7,
+    "armour_ab_ratio": 3
+  },
+  {
+    "block": "create:steam_engine",
+    "armour_rhae": 0.9,
+    "armour_ab_ratio": 2
+  },
+  {
+    "block": "create:flywheel",
+    "armour_rhae": 2.8,
+    "armour_ab_ratio": 1.2
+  },
+  {
+    "block": "minecraft:amethyst_block",
+    "armour_rhae": 3.0,
+    "armour_ab_ratio": 0.5
+  },
+  {
+    "block": "minecraft:budding_amethyst",
+    "armour_rhae": 2.5,
+    "armour_ab_ratio": 0.6
+  },
+  {
+    "block": "minecraft:calcite",
+    "armour_rhae": 0.9,
+    "armour_ab_ratio": 0.4
+  },
+  {
+    "block": "minecraft:tuff",
+    "armour_rhae": 0.4,
+    "armour_ab_ratio": 2.1
+  },
+  {
+    "block": "minecraft:dripstone_block",
+    "armour_rhae": 0.5,
+    "armour_ab_ratio": 0.4
+  }
+]

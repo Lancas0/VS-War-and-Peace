@@ -35,7 +35,8 @@ public class WapPonderIndex {
 
 
         HELPER.forComponents(new ItemProviderEntry[]{
-            WapBlocks.Artillery.EJECTING_BREECH
+            WapBlocks.Artillery.EJECTING_BREECH,
+            WapBlocks.Artillery.ARTILLERY_BARREL
         })
             .addStoryBoard(WapPonderScenes.Artillery.AssemblyId, WapPonderScenes.Artillery::assembly)
             .addStoryBoard(WapPonderScenes.Artillery.DockerLoadingId, WapPonderScenes.Artillery::dockerLoading)
@@ -45,20 +46,57 @@ public class WapPonderIndex {
         HELPER.forComponents(new ItemProviderEntry[]{
             WapBlocks.Cartridge.Primer.PRIMER,
             WapBlocks.Cartridge.Primer.TORPEDO_PRIMER,
-            WapBlocks.Cartridge.Attach.ROCKET_BOOSTER
+            WapBlocks.Cartridge.Attach.ROCKET_BOOSTER,
+
         })
-            .addStoryBoard(WapPonderScenes.Munition.PrimerGeneralId, WapPonderScenes.Munition::primerGeneral)
-            .addStoryBoard(WapPonderScenes.Munition.MunitionStructureId, WapPonderScenes.Munition::munitionStructure)
-            .addStoryBoard(WapPonderScenes.Munition.MunitionApId, WapPonderScenes.Munition::munitionAp)
-            .addStoryBoard(WapPonderScenes.Munition.MunitionGliderApId, WapPonderScenes.Munition::munitionGlider)
+            .addStoryBoard(WapPonderScenes.Munition.PrimerGeneralId, WapPonderScenes.Munition::primerGeneral);
+
+        HELPER.forComponents(new ItemProviderEntry[]{
+            WapBlocks.Cartridge.Primer.PRIMER,
+            WapBlocks.Cartridge.Primer.TORPEDO_PRIMER,
+            WapBlocks.Cartridge.Attach.ROCKET_BOOSTER,
+            WapBlocks.Cartridge.Attach.FLOATING_CHAMBER,
+                WapBlocks.Cartridge.Attach.GLIDER,
+                WapBlocks.Cartridge.Warhead.HE_WARHEAD,
+                WapBlocks.Cartridge.Warhead.WARHEAD_APCR,
+                WapBlocks.Cartridge.Warhead.WARHEAD_APDS,
+                WapBlocks.Cartridge.Warhead.WARHEAD_HEAT,
+                WapBlocks.Cartridge.Propellant.SHELLED_PROPELLANT,
+                WapBlocks.Cartridge.Propellant.COMBUSTIBLE_PROPELLANT,
+                WapBlocks.Cartridge.Fuze.IMPACT_FUSE,
+
+                WapBlocks.Cartridge.TAIL_FIN,
+        })
+            //.addStoryBoard(WapPonderScenes.Munition.PrimerGeneralId, WapPonderScenes.Munition::primerGeneral);
+            .addStoryBoard(WapPonderScenes.Munition.MunitionStructureId, WapPonderScenes.Munition::munitionStructure);
+            //.addStoryBoard(WapPonderScenes.Munition.MunitionApId, WapPonderScenes.Munition::munitionAp)
+            //.addStoryBoard(WapPonderScenes.Munition.MunitionGliderApId, WapPonderScenes.Munition::munitionGlider)
+            //.addStoryBoard(WapPonderScenes.Munition.MunitionTailFindId, WapPonderScenes.Munition::munitionTailFin);
+
+        HELPER.forComponents(new ItemProviderEntry[]{
+                WapBlocks.Cartridge.Warhead.WARHEAD_APCR,
+                WapBlocks.Cartridge.Warhead.WARHEAD_APDS,
+        })
+            .addStoryBoard(WapPonderScenes.Munition.MunitionApId, WapPonderScenes.Munition::munitionAp);
+
+        HELPER.forComponents(new ItemProviderEntry[]{
+                WapBlocks.Cartridge.TAIL_FIN,
+            })
             .addStoryBoard(WapPonderScenes.Munition.MunitionTailFindId, WapPonderScenes.Munition::munitionTailFin);
 
         HELPER.forComponents(new ItemProviderEntry[]{
-            WapBlocks.Industrial.DOCK, WapBlocks.Industrial.DOCK_GP_HOLDER
+                WapBlocks.Cartridge.Attach.GLIDER,
+            })
+            .addStoryBoard(WapPonderScenes.Munition.MunitionGliderApId, WapPonderScenes.Munition::munitionGlider);
+
+        HELPER.forComponents(new ItemProviderEntry[]{
+            WapBlocks.Industrial.DOCK, WapBlocks.Industrial.DOCK_GP_HOLDER,
+            WapBlocks.Industrial.DOCK_UNLOCKER, WapBlocks.Industrial.DOCK_CONSTRUCTION_DETECTOR
         })
             .addStoryBoard(WapPonderScenes.Dock.DockUsageId, WapPonderScenes.Dock::dockUsage)
             .addStoryBoard(WapPonderScenes.Dock.DockConstraintId, WapPonderScenes.Dock::dockConstraint)
-            .addStoryBoard(WapPonderScenes.Dock.DockConstructId, WapPonderScenes.Dock::dockConstruction);
+            .addStoryBoard(WapPonderScenes.Dock.DockConstructId, WapPonderScenes.Dock::dockConstruction)
+            .addStoryBoard(WapPonderScenes.Dock.DockDisplayId, WapPonderScenes.Dock::dockDisplay);
         /*HELPER.forComponents(new ItemProviderEntry[]{
             WapBlocks.MECH_SCOPE_BLOCK
         })

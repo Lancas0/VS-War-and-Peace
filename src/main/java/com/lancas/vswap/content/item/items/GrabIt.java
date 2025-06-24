@@ -25,8 +25,8 @@ import org.joml.Vector3d;
 import org.valkyrienskies.core.api.ships.ServerShip;
 import org.valkyrienskies.core.api.ships.Ship;
 
-public class EinherjarWand extends ShipInteractableItem {
-    public EinherjarWand(Item.Properties p_41383_) { super(p_41383_); }
+public class GrabIt extends ShipInteractableItem {
+    public GrabIt(Item.Properties p_41383_) { super(p_41383_); }
 
     @Override
     public InteractionResult onItemUseOnShip(ItemStack stack, @NotNull Ship ship, @NotNull Level level, @NotNull Player player, UseOnContext ctx) {

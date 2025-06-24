@@ -1,5 +1,6 @@
 package com.lancas.vswap.compact.create.arminteraction;
 
+import com.lancas.vswap.content.WapItems;
 import com.lancas.vswap.content.block.blocks.industry.dock.DockBe;
 import com.lancas.vswap.content.item.items.docker.Docker;
 import com.lancas.vswap.debug.EzDebug;
@@ -65,6 +66,11 @@ public class DockArmPoint extends ArmInteractionPoint {
             }
         }*/
         DockBe controllerBe = dockBe.getControllerBE();
+
+        if (WapItems.CREATIVE_MS.isIn(stack)) {
+            boolean success = controllerBe.creativeConstruct(simulate);
+            return success ? stack.copyWithCount(stack.getCount() - 1) : stack;
+        }
 
         if (stack.getItem() instanceof MaterialStandardizedItem) {  //try construct
             return controllerBe.construct(stack, simulate);//controllerBe.creativeConstruct(simulate);

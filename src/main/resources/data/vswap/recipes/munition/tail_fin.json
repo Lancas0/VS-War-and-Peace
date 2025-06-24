@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "   ",
+    " S ",
+    "PNP"
+  ],
+  "key": {
+    "S": { "item": "vswap:empty_shell" },
+    "N": { "tag": "forge:nuggets/brass" },
+    "P": { "tag": "forge:plates/brass" }
+  },
+  "result": {
+    "item": "vswap:tail_fin",
+    "count": 1
+  }
+}

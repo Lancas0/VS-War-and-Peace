@@ -32,8 +32,8 @@ public class PonderSceneMixin {
 
     @Inject(
         method = "renderScene",
-        at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;pushPose()V", shift = At.Shift.AFTER),
-        remap = false
+        at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;pushPose()V"),
+        remap = true
     )
     public void overSceneTransform(SuperRenderTypeBuffer buffer, PoseStack ms, float pt, CallbackInfo ci) {
         if (!(this instanceof HookedPonderScene hooked)) {

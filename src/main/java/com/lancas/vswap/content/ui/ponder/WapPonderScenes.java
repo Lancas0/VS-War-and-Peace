@@ -4,6 +4,7 @@ import com.lancas.vswap.VsWap;
 import com.lancas.vswap.WapConfig;
 import com.lancas.vswap.content.WapBlocks;
 import com.lancas.vswap.content.WapItems;
+import com.lancas.vswap.content.block.blocks.cartridge.warhead.WarheadAPCR;
 import com.lancas.vswap.content.block.blocks.industry.projector.ProjectorLenBe;
 import com.lancas.vswap.content.block.blocks.cartridge.fuze.ImpactFuze;
 import com.lancas.vswap.content.block.blocks.cartridge.primer.PrimerBlock;
@@ -15,6 +16,7 @@ import com.lancas.vswap.content.block.blocks.industry.projector.VSProjector;
 import com.lancas.vswap.content.block.blocks.industry.shredder.Shredder;
 import com.lancas.vswap.content.item.items.docker.Docker;
 import com.lancas.vswap.foundation.api.Dest;
+import com.lancas.vswap.subproject.blockplusapi.blockplus.adder.DirectionAdder;
 import com.lancas.vswap.subproject.pondervs.PonderVsSceneBuilder;
 import com.lancas.vswap.subproject.mstandardized.MaterialStandardizedItem;
 import com.lancas.vswap.subproject.pondervs.element.NoPointLineTextElement;
@@ -846,6 +848,7 @@ public class WapPonderScenes {
                 .pointAt(util.vector.blockSurface(dirtPos, Direction.WEST))
                 .attachKeyFrame()
                 .placeNearTarget();*/
+
 
             scene.idle(30);
             scene.overlay.showText(100)
@@ -1918,7 +1921,7 @@ public class WapPonderScenes {
             ponderVs.overlay.textPointToFocusRelative(Vec3.ZERO.add(0, 0, 0), 60)
                 .attachKeyFrame()
                 .placeNearTarget()
-                .text("APFSDS有高穿透倍率和低毁伤倍率");
+                .text("APDS有高穿透倍率和低毁伤倍率");
 
             scene.idle(40);
 
@@ -1936,14 +1939,14 @@ public class WapPonderScenes {
             //scene.
             BlockPos breakMidBp = new BlockPos(2, 12, 2);
             Vec3 breakMid = breakMidBp.getCenter();
-            ponderVs.overlay.showAndTweenOutline("APFSDS",
+            ponderVs.overlay.showAndTweenOutline("APDS",
                 new AABB(breakMid, breakMid),
                 new AABB(breakMidBp),
                 PonderPalette.OUTPUT,
                 20, 20
             ).curve(TweenData.Curve.OutElastic);
             ponderVs.overlay.addNoLineText(70)
-                .text("所以APFSDS能够穿透远距离，但是造成的毁伤面积较小")
+                .text("所以APDS能够穿透远距离，但是造成的毁伤面积较小")
                 .pointAt(breakMid)
                 .placeNearTarget()
                 .attachKeyFrame();
@@ -2204,7 +2207,7 @@ public class WapPonderScenes {
             UUID c1 = ponderVs.vs.makeConstraint(u ->
                 new SliderOrientationConstraint(
                     u, m2, wing1,
-                    new Vector3d(0, 0, 0), new Vector3d(0, 0, 0),
+                    new Vector3d(0, 0, 0), new Vector3d(0, 0, -1),
                     new Quaterniond(), new Quaterniond(),
                     new Vector3d(1, 0, 0)
                 )
@@ -2212,7 +2215,7 @@ public class WapPonderScenes {
             UUID c2 = ponderVs.vs.makeConstraint(u ->
                 new SliderOrientationConstraint(
                     u, m2, wing2,
-                    new Vector3d(0, 0, 0), new Vector3d(0, 0, 0),
+                    new Vector3d(0, 0, 0), new Vector3d(0, 0, -1),
                     new Quaterniond(), new Quaterniond(),
                     new Vector3d(-1, 0, 0)
                 )
@@ -2972,6 +2975,221 @@ public class WapPonderScenes {
                 .placeNearTarget()
                 .attachKeyFrame();
 
+        }
+
+        public static final String DockDisplayId = "dock/dock_display";
+        public static void dockDisplay(SceneBuilder scene, SceneBuildingUtil util) {
+            scene.title(DockDisplayId, "Dock Display");
+            scene.configureBasePlate(0, 0, 7);
+            scene.showBasePlate();
+            //scene.removeShadow();
+            PonderVsSceneBuilder ponderVs = new PonderVsSceneBuilder(scene);
+            PonderScene ponderScene = ponderVs.getPonderScene();
+            PonderWorld ponderWorld = ponderVs.getPonderScene().getWorld();
+
+            ItemStack primerMsStack = MaterialStandardizedItem.fromBlock(WapBlocks.Cartridge.Primer.PRIMER.get(), 1);
+            ItemStack propellantMsStack = MaterialStandardizedItem.fromBlock(WapBlocks.Cartridge.Propellant.SHELLED_PROPELLANT.get(), 1);
+            ItemStack apdsMsStack = MaterialStandardizedItem.fromBlock(WapBlocks.Cartridge.Warhead.WARHEAD_APDS.get(), 1);
+
+            UUID dockConstructed = ponderVs.vs.makeShip(
+                new RigidbodyData().setPositionImmediately(4.5, 2.5 - 0.18, 3),
+                BlockClusterData.EMPTY(),
+                false
+            );
+
+            BlockPos toDockArm = new BlockPos(6, 1, 2);
+            BlockPos getDockerArm = new BlockPos(6, 1, 1);
+            Selection armAndGearsSection = util.select.fromTo(6, 1, 0, 6, 1, 6);
+            BlockPos displayLink = new BlockPos(2, 1, 0);
+            BlockPos inBelt = new BlockPos(5, 1, 5);
+            BlockPos board = new BlockPos(5, 5, 6);
+            BlockPos depot = new BlockPos(5, 1, 0);
+
+            scene.world.setDisplayBoardText(board, 0, Component.literal("There is no started construction"));
+
+            scene.idle(15);
+
+            scene.world.showSection(util.select.layer(1), Direction.DOWN);
+            scene.idle(5);
+            scene.world.showSection(util.select.fromTo(0, 2, 6, 6, 5, 6), Direction.DOWN);
+            scene.idle(5);
+
+            scene.overlay.showText(60)
+                .text("Display link can be used to display the status of Dock Construction")
+                .pointAt(new BlockPos(0, 3, 6).getCenter())
+                .attachKeyFrame()
+                .placeNearTarget();
+
+            scene.idle(30);
+
+
+            //scene.world.createItemOnBelt(inBelt, Direction.NORTH, primerMsStack);
+            scene.world.createItemOnBeltLike(inBelt, Direction.DOWN, primerMsStack);
+            scene.idle(30);
+
+            scene.world.instructArm(toDockArm, ArmBlockEntity.Phase.MOVE_TO_INPUT, ItemStack.EMPTY, 0);
+
+            scene.idle(10);
+
+            scene.world.setKineticSpeed(armAndGearsSection, 4);
+
+            scene.world.flashDisplayLink(displayLink);
+            scene.world.setDisplayBoardText(board, 0, Component.literal("Needed Material:"));
+            scene.idle(3);
+            scene.world.setDisplayBoardText(board, 1, Component.literal("1 of Primer"));
+            scene.idle(3);
+            scene.world.setDisplayBoardText(board, 2, Component.literal("2 of Shelled Propellant"));
+            scene.idle(3);
+            scene.world.setDisplayBoardText(board, 3, Component.literal("1 of APDS Warhead"));
+            scene.idle(5);
+
+            scene.overlay.showText(60)
+                .text("When a construction is started, all needed material will be displayed")
+                .pointAt(new BlockPos(2, 3, 6).getCenter())
+                .placeNearTarget()
+                .attachKeyFrame();
+
+            scene.idle(45);
+
+            scene.world.setKineticSpeed(armAndGearsSection, 64);
+            scene.idle(5);
+
+            scene.world.instructArm(toDockArm, ArmBlockEntity.Phase.SEARCH_OUTPUTS, primerMsStack, 0);
+            scene.world.removeItemsFromBelt(depot);
+
+            scene.idle(20);
+            scene.world.instructArm(toDockArm, ArmBlockEntity.Phase.MOVE_TO_OUTPUT, primerMsStack, 0);
+
+            scene.idle(20);
+            scene.world.instructArm(toDockArm, ArmBlockEntity.Phase.SEARCH_INPUTS, ItemStack.EMPTY, -1);
+            ponderVs.vs.modifyShip(dockConstructed, s -> {
+                s.getBlockCluster().getDataWriter().setBlock(new Vector3i(), PrimerBlock.faceTo(Direction.WEST), false);
+            });
+
+            scene.world.flashDisplayLink(displayLink);
+            scene.world.setDisplayBoardText(board, 0, Component.literal("Needed Material:"));
+            scene.idle(3);
+            scene.world.setDisplayBoardText(board, 1, Component.literal("2 of Shelled Propellant"));
+            scene.idle(3);
+            scene.world.setDisplayBoardText(board, 2, Component.literal("1 of APDS Warhead"));
+            scene.idle(3);
+            scene.world.setDisplayBoardText(board, 3, Component.empty());
+
+            int armTicks = 16;
+
+            scene.world.createItemOnBeltLike(inBelt, Direction.DOWN, propellantMsStack);
+            scene.idle(30);
+            scene.world.instructArm(toDockArm, ArmBlockEntity.Phase.MOVE_TO_INPUT, ItemStack.EMPTY, 0);
+            scene.idle(armTicks);
+            scene.world.removeItemsFromBelt(depot);
+            scene.world.instructArm(toDockArm, ArmBlockEntity.Phase.SEARCH_OUTPUTS, propellantMsStack, 0);
+            scene.idle(armTicks);
+            scene.world.instructArm(toDockArm, ArmBlockEntity.Phase.MOVE_TO_OUTPUT, propellantMsStack, 0);
+            scene.idle(armTicks);
+            scene.world.instructArm(toDockArm, ArmBlockEntity.Phase.SEARCH_INPUTS, ItemStack.EMPTY, -1);
+
+
+            ponderVs.vs.modifyShip(dockConstructed, s -> {
+                s.getBlockCluster().getDataWriter().setBlock(new Vector3i(-1, 0, 0), ShelledPropellant.getState(false, Direction.WEST), false);
+            });
+            scene.world.flashDisplayLink(displayLink);
+            scene.world.setDisplayBoardText(board, 0, Component.literal("Needed Material:"));
+            scene.idle(3);
+            scene.world.setDisplayBoardText(board, 1, Component.literal("1 of Shelled Propellant"));
+            scene.idle(3);
+            scene.world.setDisplayBoardText(board, 2, Component.literal("1 of APDS Warhead"));
+            scene.idle(3);
+            scene.world.setDisplayBoardText(board, 3, Component.empty());
+
+
+            scene.world.createItemOnBeltLike(inBelt, Direction.DOWN, propellantMsStack);
+            scene.idle(30);
+            scene.world.instructArm(toDockArm, ArmBlockEntity.Phase.MOVE_TO_INPUT, ItemStack.EMPTY, 0);
+            scene.idle(armTicks);
+            scene.world.removeItemsFromBelt(depot);
+            scene.world.instructArm(toDockArm, ArmBlockEntity.Phase.SEARCH_OUTPUTS, propellantMsStack, 0);
+            scene.idle(armTicks);
+            scene.world.instructArm(toDockArm, ArmBlockEntity.Phase.MOVE_TO_OUTPUT, propellantMsStack, 0);
+            scene.idle(armTicks);
+            scene.world.instructArm(toDockArm, ArmBlockEntity.Phase.SEARCH_INPUTS, ItemStack.EMPTY, -1);
+
+            ponderVs.vs.modifyShip(dockConstructed, s -> {
+                s.getBlockCluster().getDataWriter().setBlock(new Vector3i(-2, 0, 0), ShelledPropellant.getState(false, Direction.WEST), false);
+            });
+            scene.world.flashDisplayLink(displayLink);
+            scene.world.setDisplayBoardText(board, 0, Component.literal("Needed Material:"));
+            scene.idle(3);
+            scene.world.setDisplayBoardText(board, 1, Component.literal("1 of APDS Warhead"));
+            scene.idle(3);
+            scene.world.setDisplayBoardText(board, 2, Component.empty());
+
+
+            scene.world.createItemOnBeltLike(inBelt, Direction.DOWN, apdsMsStack);
+            scene.idle(30);
+            scene.world.instructArm(toDockArm, ArmBlockEntity.Phase.MOVE_TO_INPUT, ItemStack.EMPTY, 0);
+            scene.idle(armTicks);
+            scene.world.removeItemsFromBelt(depot);
+            scene.world.instructArm(toDockArm, ArmBlockEntity.Phase.SEARCH_OUTPUTS, apdsMsStack, 0);
+            scene.idle(armTicks);
+            scene.world.instructArm(toDockArm, ArmBlockEntity.Phase.MOVE_TO_OUTPUT, apdsMsStack, 0);
+            scene.idle(armTicks);
+            scene.world.instructArm(toDockArm, ArmBlockEntity.Phase.SEARCH_INPUTS, ItemStack.EMPTY, -1);
+
+            ponderVs.vs.modifyShip(dockConstructed, s -> {
+                s.getBlockCluster()
+                    .getDataWriter()
+                    .setBlock(
+                        new Vector3i(-3, 0, 0),
+                        WapBlocks.Cartridge.Warhead.WARHEAD_APDS.getDefaultState().setValue(DirectionAdder.FACING, Direction.WEST),
+                        false
+                    );
+            });
+            scene.world.flashDisplayLink(displayLink);
+            scene.world.setDisplayBoardText(board, 0, Component.literal("The construction is completed"));
+            scene.idle(3);
+            scene.world.setDisplayBoardText(board, 1, Component.empty());
+            scene.idle(3);
+            scene.world.setDisplayBoardText(board, 2, Component.empty());
+            scene.idle(3);
+            scene.world.setDisplayBoardText(board, 3, Component.empty());
+
+            scene.idle(10);
+            scene.overlay.showText(200)
+                .text("Arm can then fetch the completed ship")
+                .attachKeyFrame()
+                .pointAt(getDockerArm.getCenter())
+                .placeNearTarget();
+
+            scene.idle(30);
+
+
+
+            ItemStack getDocker = Docker.stackOfSaBlockData(0,
+                ponderVs.util.ship.copyWorldSectionAsShipBlocks(util.select.fromTo(1, 2, 1, 4, 2, 1), new Vector3i(1, 2, 1))
+            );
+
+            scene.world.instructArm(getDockerArm, ArmBlockEntity.Phase.MOVE_TO_INPUT, ItemStack.EMPTY, 0);
+            scene.idle(armTicks);
+            //scene.world.removeItemsFromBelt(depot);
+            ponderVs.vs.hideShip(dockConstructed);
+            scene.world.instructArm(getDockerArm, ArmBlockEntity.Phase.SEARCH_OUTPUTS, getDocker, 0);
+
+            scene.world.flashDisplayLink(displayLink);
+            scene.world.setDisplayBoardText(board, 0, Component.literal("There is no started construction"));
+            scene.idle(3);
+            scene.world.setDisplayBoardText(board, 1, Component.empty());
+            scene.idle(3);
+            scene.world.setDisplayBoardText(board, 2, Component.empty());
+            scene.idle(3);
+            scene.world.setDisplayBoardText(board, 3, Component.empty());
+
+            scene.idle(armTicks - 9);
+            scene.world.instructArm(getDockerArm, ArmBlockEntity.Phase.MOVE_TO_OUTPUT, getDocker, 0);
+            scene.idle(armTicks);
+            scene.world.instructArm(getDockerArm, ArmBlockEntity.Phase.SEARCH_INPUTS, ItemStack.EMPTY, -1);
+
+            BlockPos outputDepot = new BlockPos(6, 1, 0);
+            scene.world.createItemOnBeltLike(outputDepot, Direction.NORTH, getDocker);
         }
     }
 

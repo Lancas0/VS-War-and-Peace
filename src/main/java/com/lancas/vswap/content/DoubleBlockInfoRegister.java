@@ -113,6 +113,11 @@ public class DoubleBlockInfoRegister extends SimpleJsonResourceReloadListener {
             return;
         }
 
+        if (jsonObj.has("category")) {
+            addCategoryInfo(location, jsonObj);
+            return;
+        }
+
         StringBuilder allKeys = new StringBuilder();
         for (String key : jsonObj.keySet()) {
             allKeys.append(key).append(", ");
@@ -175,6 +180,32 @@ public class DoubleBlockInfoRegister extends SimpleJsonResourceReloadListener {
             }
 
             blockInfo.addTag(tag, state -> infoVal);
+            //registeredBlockInfos.add(new BiTuple<>(tag, infoName));
+        }
+    }
+    private void addCategoryInfo(ResourceLocation location, JsonObject jsonObj) {
+        String categoryName = jsonObj.get("category").getAsString();
+        categoryName = categoryName.startsWith("*") ? categoryName.substring(1) : categoryName;
+
+        for (var infoEntry : jsonObj.entrySet()) {
+            //do not treat block as a double field name
+            if (infoEntry.getKey().equals("category"))
+                continue;
+
+            String infoName = infoEntry.getKey();
+            double infoVal = Double.parseDouble(infoEntry.getValue().getAsString());
+            WapBlockInfos.BlockInfo<Double> blockInfo;
+
+            try {
+                blockInfo = (WapBlockInfos.BlockInfo<Double>) WapBlockInfos.infoById(infoName);
+                if (blockInfo == null)
+                    throw new IllegalArgumentException();
+            } catch (Exception e) {
+                EzDebug.warn("fail to get info, category:" + categoryName + ", infoName:" + infoName + ", cause:" + e.toString());
+                continue;
+            }
+
+            blockInfo.addCategory(categoryName, state -> infoVal);
             //registeredBlockInfos.add(new BiTuple<>(tag, infoName));
         }
     }

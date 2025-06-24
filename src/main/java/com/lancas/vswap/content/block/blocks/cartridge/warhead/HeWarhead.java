@@ -2,6 +2,7 @@ package com.lancas.vswap.content.block.blocks.cartridge.warhead;
 
 import com.lancas.vswap.content.WapBlocks;
 import com.lancas.vswap.content.explosion.CustomExplosion;
+import com.lancas.vswap.content.explosion.IgnoreFluidExplosionDamageCalculator;
 import com.lancas.vswap.foundation.api.Dest;
 import com.lancas.vswap.sandbox.ballistics.ISandBoxBallisticBlock;
 import com.lancas.vswap.sandbox.ballistics.data.BallisticPos;
@@ -76,9 +77,19 @@ public class HeWarhead extends BlockPlus implements ITerminalEffector, ISandBoxB
         infos.forEach(info -> {
             if (!(info instanceof SandBoxTriggerInfo.ActivateTriggerInfo activateInfo)) return;
             Vector3dc targetPos = activateInfo.activatePos;
-            level.explode(null, activateInfo.activatePos.x, activateInfo.activatePos.y, activateInfo.activatePos.z, EXPLOSIVE_POWER, Level.ExplosionInteraction.BLOCK);
+            //level.explode(null, activateInfo.activatePos.x, activateInfo.activatePos.y, activateInfo.activatePos.z, EXPLOSIVE_POWER, Level.ExplosionInteraction.BLOCK);
+
+            boolean fire = false;
+
+            level.explode(
+                null, null, new IgnoreFluidExplosionDamageCalculator(),
+                activateInfo.activatePos.x, activateInfo.activatePos.y, activateInfo.activatePos.z,
+                EXPLOSIVE_POWER,
+                fire,
+                Level.ExplosionInteraction.BLOCK
+            );
             //EzDebug.highlight("explode at pos:" + StrUtil.F2(activateInfo.targetPos));
-            CustomExplosion exp = new CustomExplosion(
+            /*CustomExplosion exp = new CustomExplosion(
                 level,
                 null,
                 targetPos.x(), targetPos.y(), targetPos.z(),
@@ -91,7 +102,7 @@ public class HeWarhead extends BlockPlus implements ITerminalEffector, ISandBoxB
             exp.finalizeExplosion(true);
 
             terminateByEffect.set(true);
-            SandBoxServerWorld.markShipDeleted(level, ship.getUuid());
+            SandBoxServerWorld.markShipDeleted(level, ship.getUuid());*/
         });
     }
 }

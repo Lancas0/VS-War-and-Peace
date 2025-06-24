@@ -2,6 +2,8 @@ package com.lancas.vswap.content.info.block;
 
 import com.lancas.vswap.VsWap;
 import com.lancas.vswap.debug.EzDebug;
+import com.lancas.vswap.subproject.mstandardized.Category;
+import com.lancas.vswap.subproject.mstandardized.CategoryRegistry;
 import com.lancas.vswap.util.StrUtil;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -92,7 +94,7 @@ public class WapBlockInfos {
         //ap_area = new BlockInfoRegistry<Double>("ap_area").registryDefinedAdvancedExplicit(Component.literal("info.vswap.ap_area"), state -> 1.0, unitedFormatter("m^2", false).andThen(grey)),
 
         Normalization = new BlockInfoRegistry<Double>("normalization").registryDefinedExplicit(Component.translatable("info.vswap.normalization"), state -> 0.0, percentFormatter()),
-        CriticalDegree = new BlockInfoRegistry<Double>("critical_degree").registryDefinedExplicit(Component.translatable("info.vswap.critical_degree"), state -> 0.0, degreeFormatter()),
+        CriticalDegree = new BlockInfoRegistry<Double>("critical_degree").registryDefinedExplicit(Component.translatable("info.vswap.critical_degree"), state -> 45.0, degreeFormatter()),
         PenetrationMultiplier = new BlockInfoRegistry<Double>("penetration_mul").registryDefinedExplicit(Component.translatable("info.vswap.penetration_mul"), state -> 1.0, StrUtil::F2),
         Spe_DestructionScalar = new BlockInfoRegistry<Double>("spe_destruction_scalar").registryDefinedExplicit(Component.translatable("info.vswap.ke_destruction_scalar"), state -> 1.0, StrUtil::F2),
 
@@ -216,7 +218,15 @@ public class WapBlockInfos {
         }
         public @Nullable T valueOrNullOf(BlockState state) {
             T blockVal = blockValueOrNullOf(state);
-            return blockVal == null ? tagValueOrNullOf(state) : blockVal;
+            if (blockVal != null)
+                return blockVal;
+
+            T tagVal = tagValueOrNullOf(state);
+            if (tagVal != null)
+                return tagVal;
+
+            //return blockVal == null ? tagValueOrNullOf(state) : blockVal;
+            return categoryValueOrNullOf(state);
         }
 
         private @Nullable T blockValueOrNullOf(BlockState state) {
@@ -246,6 +256,14 @@ public class WapBlockInfos {
                 .apply(state);
         }
 
+        private @Nullable T categoryValueOrNullOf(BlockState state) {
+            Category category =  CategoryRegistry.getCategory(state.getBlock());
+            return Optional.ofNullable(idOrTagCache.get("*" + category.categoryName))
+                .map(f -> f.apply(state))
+                .orElse(null);
+        }
+
+
         public void removeBlock(String blockID) {
             idOrTagCache.remove(blockID);
         }
@@ -255,6 +273,19 @@ public class WapBlockInfos {
 
         public void removeTag(TagKey<Block> tag) { idOrTagCache.remove("#" + tag.location().toString()); }
         public void addTag(TagKey<Block> tag, Function<BlockState, T> getter) { idOrTagCache.put("#" + tag.location().toString(), getter); }
+
+        public void addCategory(String categoryName, Function<BlockState, T> getter) {
+            if (categoryName.startsWith("*"))
+                idOrTagCache.put(categoryName, getter);
+            else
+                idOrTagCache.put("*" + categoryName, getter);
+        }
+        public void removeCategory(String categoryName) {
+            if (categoryName.startsWith("*"))
+                idOrTagCache.remove(categoryName);
+            else
+                idOrTagCache.remove("*" + categoryName);
+        }
     }
 
     //suppose stack is block item stack

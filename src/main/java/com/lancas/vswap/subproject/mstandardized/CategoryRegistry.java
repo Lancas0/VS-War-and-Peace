@@ -16,6 +16,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class CategoryRegistry extends SimpleJsonResourceReloadListener  {
     //public static final ResourceKey<Registry<CategoryBuilder>> KEY =
@@ -41,8 +42,9 @@ public class CategoryRegistry extends SimpleJsonResourceReloadListener  {
 
 
     //protected boolean initialized = false;
-    protected static HashMap<String, Category> runtimeCategories = new HashMap<>();  //outside is readonly so no worry about concurrent
-    protected static HashMap<Block, String> blockCategoryCache = new HashMap<>();
+    //sometime it cause ConcurrentModificationException(when i use HashMap), so now I use ConcurrentHashMap
+    protected static ConcurrentHashMap<String, Category> runtimeCategories = new ConcurrentHashMap<>();  //outside is readonly so no worry about concurrent
+    protected static ConcurrentHashMap<Block, String> blockCategoryCache = new ConcurrentHashMap<>();
     //protected HashMap<Block, Category> blockCategoryCache = new HashMap<>();
 
     /*protected void initialize() {
@@ -58,6 +60,9 @@ public class CategoryRegistry extends SimpleJsonResourceReloadListener  {
     }
 
     @NotNull public static Category getCategory(String categoryName) {
+        if (runtimeCategories.isEmpty())
+            buildAll();
+
         Category existed = runtimeCategories.get(categoryName);
         if (existed != null) {
             return existed;
@@ -67,8 +72,10 @@ public class CategoryRegistry extends SimpleJsonResourceReloadListener  {
     }
     @NotNull  //todo handle when block is air
     public static Category getCategory(Block block) {
-        //String blockID = Objects.requireNonNull(ForgeRegistries.BLOCKS.getKey(state.getBlock())).toString();
+        if (runtimeCategories.isEmpty())
+            buildAll();
 
+        //String blockID = Objects.requireNonNull(ForgeRegistries.BLOCKS.getKey(state.getBlock())).toString();
         String cachedCategoryName = blockCategoryCache.get(block);
         if (cachedCategoryName != null) {  //has cache
             Category cached = runtimeCategories.get(cachedCategoryName);
@@ -95,12 +102,12 @@ public class CategoryRegistry extends SimpleJsonResourceReloadListener  {
 
     @NotNull
     private static Category buildRuntimeCategory(String categoryName) {
-        CategoryBuilder builder = categoryBuilders.get(categoryName);
+        /*CategoryBuilder builder = categoryBuilders.get(categoryName);
         if (builder != null) {
             Category category = builder.build();
             runtimeCategories.put(categoryName, category);
             return category;
-        }
+        }*/
 
         //existed builder is null, the categoryName should be a blockID, will make a single-block category
         Block block = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(categoryName));
@@ -115,6 +122,17 @@ public class CategoryRegistry extends SimpleJsonResourceReloadListener  {
     }
     @NotNull
     private static Category buildRuntimeCategory(Block block) {
+        if (block == null) {
+            EzDebug.warn("block is null!");
+            return Category.EMPTY;
+        }
+
+        Category category = Category.oneBlockCategory(block);
+        runtimeCategories.put(Objects.requireNonNull(ForgeRegistries.BLOCKS.getKey(block)).toString(), category);
+        return category;
+    }
+    /*@NotNull
+    private static Category buildRuntimeCategory(Block block) {
         Category built = categoryBuilders.values().stream()
             .filter(x -> x.contains(block))
             .map(CategoryBuilder::build)
@@ -124,6 +142,21 @@ public class CategoryRegistry extends SimpleJsonResourceReloadListener  {
         runtimeCategories.put(built.categoryName, built);
         blockCategoryCache.put(block, built.categoryName);
         return built;
+    }*/
+    private static void buildAll() {
+        if (!runtimeCategories.isEmpty()) {
+            EzDebug.warn("have build already!");
+            return;
+        }
+
+        ForgeRegistries.BLOCKS.forEach(b -> {
+            for (var builder : categoryBuilders.values()) {
+                if (builder.contains(b)) {
+                    Category category = runtimeCategories.computeIfAbsent(builder.categoryName, k -> new Category(k, builder.localizationKey, builder.iconKey));
+                    category.add(Objects.requireNonNull(ForgeRegistries.BLOCKS.getKey(b)).toString());
+                }
+            }
+        });
     }
 
 
@@ -158,7 +191,11 @@ public class CategoryRegistry extends SimpleJsonResourceReloadListener  {
                             return;
                         }
 
-                        categoryBuilders.put(categoryName.get(), builderDest.get());
+                        CategoryBuilder prevBuilder = categoryBuilders.get(categoryName.get());
+                        if (prevBuilder != null)
+                            prevBuilder.append(builderDest.get());
+                        else
+                            categoryBuilders.put(categoryName.get(), builderDest.get());
                     }
                 });
         }
@@ -171,12 +208,22 @@ public class CategoryRegistry extends SimpleJsonResourceReloadListener  {
         Set<String> include = getStringSetByFieldOfJsonObj(jsonObj, "include");
         Set<String> exclude = getStringSetByFieldOfJsonObj(jsonObj, "exclude");
 
+        Dest<String> localizationKey = new Dest<>();
+
         @NotNull ResourceLocation iconKey;
         //@NotNull String categoryName;
 
         try {
             String categoryName = jsonObj.get("name").getAsString();
             categoryNameDest.set(categoryName);
+
+            if (jsonObj.has("localization")) {
+                String locKey = jsonObj.get("localization").getAsString();
+                localizationKey.set(locKey);
+            } else {
+                localizationKey.set(categoryName);
+            }
+
 
             if (ForgeRegistries.BLOCKS.containsKey(new ResourceLocation(categoryName))) {
                 EzDebug.warn("category name can't be same to a block's id. will not record this. categoryName:" + categoryName);
@@ -187,9 +234,10 @@ public class CategoryRegistry extends SimpleJsonResourceReloadListener  {
                 return false;
             }
 
-            if (runtimeCategories.containsKey(categoryName)) {
+            /*if (runtimeCategories.containsKey(categoryName)) {
                 EzDebug.warn("existed category name: " + categoryName + " will override the previous category if it's not empty");
-            }
+            }*/
+
         } catch (Exception e) {
             EzDebug.warn("fail to get category name");
             return false;
@@ -226,7 +274,7 @@ public class CategoryRegistry extends SimpleJsonResourceReloadListener  {
         });
 
         builderDest.set(new CategoryBuilder(
-            categoryNameDest.get(), includeTags, includeIDs, excludeTags, excludeIDs, iconKey.toString()
+            categoryNameDest.get(), localizationKey.get(), includeTags, includeIDs, excludeTags, excludeIDs, iconKey.toString()
         ));
         return true;
     }

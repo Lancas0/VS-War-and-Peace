@@ -1,6 +1,8 @@
 package com.lancas.vswap.subproject.mstandardized;
 
 import com.lancas.vswap.debug.EzDebug;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -24,9 +26,9 @@ public class Category {
         ResourceLocation blockKey = Objects.requireNonNull(ForgeRegistries.BLOCKS.getKey(block));
         String blockID = blockKey.toString();
 
-        return new Category(blockID, List.of(blockID), blockID);
+        return new Category(blockID, blockID, List.of(blockID), blockID);
     }
-    public static final Category EMPTY = new Category(EmptyCategoryName, List.of(), EmptyIconItemKey.toString());  //todo iconID set a emptyItemIcon
+    public static final Category EMPTY = new Category(EmptyCategoryName, "vswap.category.empty", List.of(), EmptyIconItemKey.toString());  //todo iconID set a emptyItemIcon
 
     /*
     "name": "dirt_category",
@@ -39,6 +41,23 @@ public class Category {
      */
 
     public final String categoryName;  //can be translatable
+    protected final String localizationKey;
+
+    public MutableComponent getLocalized() {
+
+        MutableComponent findLocalized = Component.translatable(localizationKey);
+        if (!findLocalized.getString().equals(localizationKey)) {
+            return findLocalized;
+        }
+
+        ResourceLocation blockId = new ResourceLocation(localizationKey);
+        Block block = ForgeRegistries.BLOCKS.getValue(blockId);
+        if (block != null && !block.defaultBlockState().isAir()) {
+            return block.getName();
+        }
+        return Component.literal(localizationKey);
+    }
+
     //todo concurrent?
     protected Set<String> ids = new HashSet<>();
     public @Nullable Block getMainBlock() {
@@ -65,9 +84,9 @@ public class Category {
             .filter(Objects::nonNull);
     }
 
-    protected Category(String inCategoryName, Collection<String> inIDs, String inIconID) {
+    protected Category(String inCategoryName, String inLocalizationKey, Collection<String> inIDs, String inIconID) {
         categoryName = inCategoryName;
-
+        localizationKey = inLocalizationKey;
         ids.addAll(inIDs);
 
         iconKey = inIconID;
@@ -75,6 +94,18 @@ public class Category {
             EzDebug.warn("create category icon fail. will create default icon of DIRT");
             iconKey = Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(Items.DIRT));
         }*/
+    }
+    protected Category(String inCategoryName, String inLocalizationKey, String inIconID) {
+        categoryName = inCategoryName;
+        localizationKey = inLocalizationKey;
+        iconKey = inIconID;
+    }
+
+    protected void add(String id) {
+        ids.add(id);
+    }
+    protected void addAll(Collection<String> inIds) {
+        ids.addAll(inIds);
     }
 
     protected String iconKey;  //todo icon maybe a picture or itemStack.

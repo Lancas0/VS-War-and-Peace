@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " I ",
+    " S ",
+    " I "
+  ],
+  "key": {
+    "S": { "item": "vswap:empty_shell" },
+    "I": { "tag": "forge:plates/iron" }
+  },
+  "result": {
+    "item": "vswap:floating_chamber",
+    "count": 1
+  }
+}

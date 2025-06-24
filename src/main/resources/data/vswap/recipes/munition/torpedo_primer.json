@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " I ",
+    " S ",
+    " P "
+  ],
+  "key": {
+    "S": { "item": "vswap:empty_shell" },
+    "P": { "item": "vswap:primer" },
+    "I": { "tag": "forge:plates/iron" }
+  },
+  "result": {
+    "item": "vswap:torpedo_primer",
+    "count": 1
+  }
+}

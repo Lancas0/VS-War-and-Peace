@@ -25,6 +25,7 @@ import net.minecraft.world.level.block.Block;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class MsSelectBlockMenu extends AbstractSimiScreen {
     protected final ItemStack targetStack;
@@ -66,7 +67,12 @@ public class MsSelectBlockMenu extends AbstractSimiScreen {
         super.init();
 
         items.clear();
-        category.getAllBlock().map(b -> (BlockItem)b.asItem()).forEach(items::add);
+        category.getAllBlock().map(b -> {
+            Item item = b.asItem();
+            if (item instanceof BlockItem bi)
+                return bi;
+            return null;
+        }).filter(Objects::nonNull).forEach(items::add);
 
         iconItem = category.getIconItem();
 

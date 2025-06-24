@@ -111,13 +111,15 @@ public class PrimerBlock extends BlockPlus implements IPrimer/*, IBE<PrimerBE>*/
     //todo frequencely called
     @Override
     public boolean isTriggered(BlockState state) {
-        return state.getValue(TRIGGERED);
+        return false;
+        //return state.getValue(TRIGGERED);
     }
     @Override
     public BlockState getTriggeredState(BlockState prevState) {
         //level.setBlockAndUpdate(pos, prevState.setValue(TRIGGERED, true));
         //removeConstraint(level, pos);
-        return prevState.setValue(TRIGGERED, true);
+        //return prevState.setValue(TRIGGERED, true);
+        return WapBlocks.Cartridge.Primer.EMPTY_PRIMER.getDefaultState().setValue(DirectionAdder.FACING, prevState.getValue(DirectionAdder.FACING));
     }
 
     @Override

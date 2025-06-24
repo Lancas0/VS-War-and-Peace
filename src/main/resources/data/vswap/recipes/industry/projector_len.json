@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " B ",
+    "BGB",
+    " B "
+  ],
+  "key": {
+    "B": { "tag" : "forge:ingots/brass" },
+    "G": { "item": "minecraft:spyglass" }
+  },
+  "result": {
+    "item": "vswap:projector_len",
+    "count": 1
+  }
+}

@@ -1,0 +1,63 @@
+[
+  {
+    "category": "*wooden_deco_category",
+    "armour_rhae": 0.2,
+    "armour_ab_ratio": 0.8
+  },
+  {
+    "category": "*cobblestone_deco_category",
+    "armour_rhae": 0.4,
+    "armour_ab_ratio": 0.4
+  },
+  {
+    "category": "*stone_deco_category",
+    "armour_rhae": 0.4,
+    "armour_ab_ratio": 0.4
+  },
+  {
+    "category": "*bricks_deco_category",
+    "armour_rhae": 0.4,
+    "armour_ab_ratio": 0.5
+  },
+  {
+    "category": "*mud_bricks_deco_category",
+    "armour_rhae": 0.25,
+    "armour_ab_ratio": 0.28
+  },
+  {
+    "category": "*sandstone_deco_category",
+    "armour_rhae": 0.3,
+    "armour_ab_ratio": 0.5
+  },
+  {
+    "category": "*prismarine_deco_category",
+    "armour_rhae": 0.5,
+    "armour_ab_ratio": 0.9
+  },
+  {
+    "category": "*nether_cobblestone_deco_category",
+    "armour_rhae": 0.7,
+    "armour_ab_ratio": 0.3
+  },
+  {
+    "category": "*nether_stone_deco_category",
+    "armour_rhae": 0.8,
+    "armour_ab_ratio": 0.7
+  },
+  {
+    "category": "*ender_stone_deco_category",
+    "armour_rhae": 0.5,
+    "armour_ab_ratio": 0.8
+  },
+  {
+    "category": "*purpur_deco_category",
+    "armour_rhae": 0.1,
+    "armour_ab_ratio": 5
+  },
+  {
+    "category": "*copper_deco_category",
+    "armour_rhae": 0.8,
+    "armour_ab_ratio": 1.4
+  }
+
+]

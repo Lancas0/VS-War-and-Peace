@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    { "item" : "vswap:empty_primer" },
+    { "tag" : "forge:gunpowder" }
+  ],
+  "result": {
+    "item": "vswap:primer",
+    "count": 1
+  }
+}

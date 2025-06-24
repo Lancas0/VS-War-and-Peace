@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " D ",
+    " T ",
+    " O "
+  ],
+  "key": {
+    "D": { "item": "vswap:dock" },
+    "T": { "item": "create:electron_tube" },
+    "O": { "item": "minecraft:observer" }
+  },
+  "result": {
+    "item": "vswap:dock_construction_detector",
+    "count": 1
+  }
+}

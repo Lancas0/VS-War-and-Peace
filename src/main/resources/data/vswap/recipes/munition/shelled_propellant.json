@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    { "item" : "vswap:empty_shell" },
+    { "tag" : "forge:gunpowder" },
+    { "tag" : "forge:gunpowder" },
+    { "tag": "forge:gunpowder" }
+  ],
+  "result": {
+    "item": "vswap:shelled_propellant",
+    "count": 1
+  }
+}

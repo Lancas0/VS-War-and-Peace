@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "C C",
+    "TCT",
+    " S "
+  ],
+  "key": {
+    "T": { "item": "minecraft:tnt" },
+    "S": { "item": "vswap:empty_shell" },
+    "C": { "tag": "forge:plates/copper" }
+  },
+  "result": {
+    "item": "vswap:warhead_heat",
+    "count": 1
+  }
+}

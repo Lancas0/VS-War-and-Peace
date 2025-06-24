@@ -1,0 +1,15 @@
+{
+  "type": "create:mixing",
+  "heatRequirement": "heated",
+  "ingredients": [
+    { "tag": "minecraft:coals" },
+    { "tag": "minecraft:coals" },
+    { "tag": "minecraft:wool" }
+  ],
+  "results": [
+    {
+      "count": 1,
+      "item": "vswap:carbon_fiber"
+    }
+  ]
+}

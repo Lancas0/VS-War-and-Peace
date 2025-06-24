@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    { "tag" : "forge:nuggets/copper" },
+    { "tag" : "forge:gunpowder" }
+  ],
+  "result": {
+    "item": "vswap:impact_fuze",
+    "count": 1
+  }
+}

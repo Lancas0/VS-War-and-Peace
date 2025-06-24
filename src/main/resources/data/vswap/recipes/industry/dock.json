@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    { "item" : "create:brass_casing" },
+    { "tag" : "forge:ingots/brass" }
+  ],
+  "result": {
+    "item": "vswap:dock",
+    "count": 1
+  }
+}

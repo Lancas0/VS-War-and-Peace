@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " N ",
+    " S ",
+    " P "
+  ],
+  "key": {
+    "P": { "item": "create:sturdy_sheet" },
+    "S": { "item": "vswap:empty_shell" },
+    "N": { "tag": "forge:nuggets/iron" }
+  },
+  "result": {
+    "item": "vswap:warhead_apcr",
+    "count": 1
+  }
+}

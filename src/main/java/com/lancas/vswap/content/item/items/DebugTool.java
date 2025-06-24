@@ -6,26 +6,39 @@ import com.lancas.vswap.debug.EzDebug;
 import com.lancas.vswap.util.StrUtil;
 import com.simibubi.create.foundation.blockEntity.IMultiBlockEntityContainer;
 import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4dc;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
+import org.valkyrienskies.core.api.ships.PhysShip;
 import org.valkyrienskies.core.api.ships.ServerShip;
 import org.valkyrienskies.core.api.ships.Ship;
+import org.valkyrienskies.core.api.ships.ShipForcesInducer;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.List;
 
 public class DebugTool extends ShipInteractableItem {
     public DebugTool(Properties p_41383_) {
         super(p_41383_);
+    }
+
+    private static class ExceptionForceInducer implements ShipForcesInducer {
+        @Override
+        public void applyForces(@NotNull PhysShip physShip) {
+            physShip.applyInvariantForce(new Vector3d(Double.NaN, Double.NaN, Double.NaN));
+        }
     }
 
     @Override
@@ -57,6 +70,7 @@ public class DebugTool extends ShipInteractableItem {
 
         EzDebug.log("ship aabb:" + ship.getShipAABB());
 
+        ((ServerShip) ship).saveAttachment(ExceptionForceInducer.class, new ExceptionForceInducer());
         /*Matrix4dc ship2World = sShip.getTransform().getShipToWorld();
         Vector3dc shipPos = sShip.getTransform().getPositionInShip();
 
@@ -196,5 +210,14 @@ public class DebugTool extends ShipInteractableItem {
         if (hit.getType() == HitResult.Type.BLOCK) {
             EzDebug.log("hit block:" + level.getBlockState(hit.getBlockPos()).getBlock().getName().getString() + ", dir:" + hit.getDirection());
         }*/
+    }
+
+    @Override
+    public void appendHoverText(ItemStack p_41421_, @Nullable Level p_41422_, List<Component> texts, TooltipFlag p_41424_) {
+        super.appendHoverText(p_41421_, p_41422_, texts, p_41424_);
+        texts.add(Component.literal("Used for finding any possible bugs."));
+        texts.add(Component.literal("Don't use it if you really known how to use it. Or your game may crush"));
+        texts.add(Component.literal("测试可能的bug程度的能力"));
+        texts.add(Component.literal("除非你明确知道这个东西如何使用，否则不要碰它：游戏可能会崩溃"));
     }
 }

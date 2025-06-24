@@ -8,7 +8,7 @@ import net.minecraftforge.fml.event.config.ModConfigEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.joml.Vector3d;
 
-// An vanilla.json config class. This is not required, but it's a good idea to have one to keep your config organized.
+// An vanilla.disabled config class. This is not required, but it's a good idea to have one to keep your config organized.
 // Demonstrates how to use Forge's config APIs
 @Mod.EventBusSubscriber(modid = VsWap.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class WapConfig
@@ -52,12 +52,13 @@ public class WapConfig
         )
         .defineInRange("dockMaxWidth", 16, 1, Integer.MAX_VALUE);
 
-    /*private static final ForgeConfigSpec.ConfigValue<Double> FATAL_KE_RATIO = BUILDER
+    private static final ForgeConfigSpec.ConfigValue<Double> FATAL_KE_RATIO = BUILDER
         .comment(
             "When the kinetic energy of projectile is x times of (armourHardness * equivalentArmourDepth), the projectile never ricochets. (default 4.0)",
-            "When this value is less or equals to 1.0, the attribute is off"
+            "When this value is less or equals to 1.0, the attribute is off",
+            "当炮弹动能超过致命阈值，不会发生跳弹"
         )
-        .defineInRange("fatalKeRatio", 4.0, 1.0, Double.MAX_VALUE);*/
+        .defineInRange("fatalKeRatio", 4.0, 1.0, Double.MAX_VALUE);
 
     private static final ForgeConfigSpec.ConfigValue<Double> SHAKE_INTENSITY = BUILDER
         .comment(
@@ -132,12 +133,17 @@ public class WapConfig
             "在日志输出debug栈信息")
         .define("debug_stack_trace", false);
 
+    private static final ForgeConfigSpec.ConfigValue<Boolean> VS_SAFE_PHYS_THREAD = BUILDER
+        .comment("VS phys safe thread",
+            "瓦尔基里安全物理线程")
+        .define("vs_phys_safe_thread", false);
+
     static final ForgeConfigSpec SPEC = BUILDER.build();
 
     public static int dockMaxLength;
     public static int dockMaxWidth;
 
-    //public static double rawFatalPPRatio;
+    public static double rawFatalPPRatio;
 
     public static double shakeIntensity;
     public static int shakeTicks;
@@ -160,9 +166,10 @@ public class WapConfig
     public static boolean debug_on;
     public static boolean debug_stack_trace;
 
+    public static boolean vsPhysSafeThread;
+
     public static boolean isFatalKEOn() {
-        //return rawFatalPPRatio > 1.0;
-        return false;
+        return rawFatalPPRatio > 1.0;
     }
 
     private static boolean validateItemName(final Object obj)
@@ -183,7 +190,7 @@ public class WapConfig
 
         dockMaxLength = DOCK_MAX_LENGTH.get();
         dockMaxWidth = DOCK_MAX_WIDTH.get();
-        //rawFatalPPRatio = FATAL_KE_RATIO.get();
+        rawFatalPPRatio = FATAL_KE_RATIO.get();
 
         shakeIntensity = SHAKE_INTENSITY.get();
         shakeTicks = SHAKE_TICKS.get();
@@ -206,5 +213,7 @@ public class WapConfig
 
         debug_on = DEBUG_ON.get();
         debug_stack_trace = DEBUG_STACK_TRACE.get();
+
+        vsPhysSafeThread = VS_SAFE_PHYS_THREAD.get();
     }
 }

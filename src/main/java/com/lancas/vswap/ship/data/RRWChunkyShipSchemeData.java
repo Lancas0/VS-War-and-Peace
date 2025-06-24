@@ -12,9 +12,11 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraftforge.fml.ModList;
 import org.apache.logging.log4j.util.TriConsumer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -228,6 +230,8 @@ public class RRWChunkyShipSchemeData implements IShipSchemeData, IShipSchemeRand
         BlockPos startBp = JomlUtil.bpContaining(ship.getTransform().getPositionInShip()).atY(localToWorldAddY);
         int startChunkX = startBp.getX() >> 4;
         int startChunkZ = startBp.getZ() >> 4;
+        List<Runnable> lazyBePlace = new ArrayList<>();
+        List<Runnable> lazyBlockUpdates = new ArrayList<>();
         //int startY = WorldUtil.midY(level);
 
         //offset pos is offset from the start chunk lower corner
@@ -270,17 +274,70 @@ public class RRWChunkyShipSchemeData implements IShipSchemeData, IShipSchemeRand
 
                 //目前无法更改履带等方块，可能需要和vmod一样做一个延时更新机制
                 curChunk.setBlockState(curRealBp, curState, true);
+                curChunk.removeBlockEntity(curRealBp);  //like vmod do
                 //level.setBlock(realPos, state, Block.UPDATE_ALL);
                 if (beNbt != null) {
-                    BlockEntity be = BlockEntity.loadStatic(curRealBp, curState, beNbt);
-                    if (be != null)
-                        curChunk.addAndRegisterBlockEntity(be);
-                }
-                level.getChunkSource().blockChanged(curRealBp);
+                    if (!curState.hasBlockEntity()) {
+                        EzDebug.warn(StrUtil.getBlockName(curState) + " has no Be but recorded beNbt");
+                    } else {
+                        CompoundTag toLoadBeNbt = NbtBuilder.copy(beNbt)
+                            .putInt("x", curRealBp.getX())
+                            .putInt("y", curRealBp.getY())
+                            .putInt("z", curRealBp.getZ())
+                            .get();
 
-                EzDebug.log("set block:" + StrUtil.getBlockName(curState) + ", at " + curRealBp.toShortString());
+                        lazyBePlace.add(() -> {
+                            if (!(curState.getBlock() instanceof EntityBlock eBlock)) {
+                                EzDebug.error("curState is verfied as eBlock, but when lazy place be, it is failed to convert to eBlock");
+                                return;
+                            }
+
+                            if (ModList.get().isLoaded("vmod")) {  //todo preserved
+                                //if (curState.getBlock() instanceof ICopyableBlock);
+                            }
+                            //todo this is temp compact, to remove later
+                            if (ModList.get().isLoaded("trackwork")) {
+                                toLoadBeNbt.putBoolean("Assembled", false);
+                                toLoadBeNbt.remove("trackBlockID");
+                            }
+
+                            BlockEntity newBe = eBlock.newBlockEntity(curRealBp, curState);
+                            curChunk.addAndRegisterBlockEntity(newBe);
+                            if (newBe == null) {
+                                EzDebug.warn("get null be by Block.newBe()");
+                                return;
+                            }
+
+                            newBe.load(toLoadBeNbt);
+                        });
+
+
+                        /*BlockEntity be = BlockEntity.loadStatic(curRealBp, curState, beNbt);
+                        if (be != null)
+                            curChunk.addAndRegisterBlockEntity(be);*/
+                    }
+                }
+                lazyBlockUpdates.add(() -> {
+                    level.getChunkSource().blockChanged(curRealBp);
+                    level.setBlocksDirty(curRealBp, curState, curState);  //why vmod update curState to curState?
+                    level.blockUpdated(curRealBp, curState.getBlock());
+                    level.updateNeighbourForOutputSignal(curRealBp, curState.getBlock());
+                });
+                //level.getChunkSource().blockChanged(curRealBp);
+
+                //EzDebug.log("set block:" + StrUtil.getBlockName(curState) + ", at " + curRealBp.toShortString());
             }
         }
+
+        for (var bePlace : lazyBePlace) {
+            bePlace.run();
+        }
+        for (var blockUpdate : lazyBlockUpdates) {
+            blockUpdate.run();
+        }
+
+        //update all blocks
+
         //for (var dataEntry : shipData.entrySet()) {
             /*EzDebug.log(
                 //"chunkX:" + chunkX + ", chunkZ:" + chunkZ +
@@ -309,6 +366,9 @@ public class RRWChunkyShipSchemeData implements IShipSchemeData, IShipSchemeRand
 
         return ship;
     }
+    /*private void updateChunk(ServerLevel level, Collection<BiTuple.ChunkXZ> toUpdateChunks) {
+
+    }*/
     public void placeAsBlocks(ServerLevel level, BlockPos localToWorld) {
         AtomicReference<Integer> worldChunkX = new AtomicReference<>(null);
         AtomicReference<Integer> worldChunkZ = new AtomicReference<>(null);

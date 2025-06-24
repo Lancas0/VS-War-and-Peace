@@ -74,18 +74,11 @@ public class SandBoxServerWorld extends SavedData implements ISandBoxWorld<IServ
     }
 
     private final AlwaysSafeRemoveMap<UUID, SandBoxServerShip> serverShips = new AlwaysSafeRemoveMap<>();
-    //private final Map<UUID, SandBoxServerShip> serverShips = new ConcurrentHashMap<>();
-    //private final VsShipsCompactor vsShipsCompactor = new VsShipsCompactor();
     private GroundShipWrapped wrappedGroundShip;
 
-    //LazyDelete,将会在获取船或者遍历船的时候删除
-    //private final Set<UUID> toDeleteShips = ConcurrentHashMap.newKeySet();
-    //private final Map<UUID, ScheduleShipData> scheduleShips = new ConcurrentHashMap<>();  //map use uuid key avoid add ships with same key
     private final SandBoxConstraintSolver constraintSolver = new SandBoxConstraintSolver(this);
 
     public final ServerLevel level;
-    //private final AtomicBoolean initialized = new AtomicBoolean(false);  //make sure ship are fully loaded before tick event
-    //private final AtomicBoolean started = new AtomicBoolean(false);
     private final AtomicBoolean initialized = new AtomicBoolean(false);
     private final AtomicBoolean anyClientSynced = new AtomicBoolean(false);  //todo further change it to anyClientLoading - stop ticks when no client is in the world.
     private final AtomicBoolean running = new AtomicBoolean(false);
@@ -115,9 +108,6 @@ public class SandBoxServerWorld extends SavedData implements ISandBoxWorld<IServ
         threadRegistry.register(asyncLogicThread);
 
         serverThread.initial(this);
-        //physThread.initial(this);
-        //syncThread.initial(this);
-        //asyncLogicThread.initial(this);
         //todo serverThread.scheduleExecutor.register();
     }
 
@@ -130,23 +120,7 @@ public class SandBoxServerWorld extends SavedData implements ISandBoxWorld<IServ
 
     @Nullable
     public IServerSandBoxShip getShip(UUID uuid) { return getServerShip(uuid); }
-    /*@Override
-    public IServerSandBoxShip getShipIncludeVS(UUID uuid) {
-        IServerSandBoxShip ship = serverShips.get(uuid);
-        return ship == null ? vsShipsCompactor.getWrappedVsShip(uuid) : ship;
-    }
-    @Override
-    public IServerSandBoxShip getShipIncludeVSAndGround(UUID uuid) {
-        IServerSandBoxShip ship = getShipIncludeVS(uuid);
-        if (ship != null) return ship;
-        return wrapOrGetGround().getUuid().equals(uuid) ? wrappedGroundShip : null;
-    }
 
-    @Override
-    public WrappedVsShip wrapOrGetVs(Ship vsShip) {
-        //todo setDirty();
-        return vsShipsCompactor.wrapOrGet(vsShip);
-    }*/
     @Override
     public GroundShipWrapped wrapOrGetGround() {
         if (wrappedGroundShip == null) {
@@ -158,11 +132,6 @@ public class SandBoxServerWorld extends SavedData implements ISandBoxWorld<IServ
 
     @Nullable
     public SandBoxServerShip getServerShip(UUID uuid) {
-        /*if (toDeleteShips.contains(uuid)) {
-            serverShips.remove(uuid);
-            toDeleteShips.remove(uuid);
-            return null;
-        }*/
         if (uuid == null) return null;
         return serverShips.get(uuid);
     }
@@ -179,52 +148,10 @@ public class SandBoxServerWorld extends SavedData implements ISandBoxWorld<IServ
         return true;
     }); }
 
-    /*@Override
-    public Stream<IServerSandBoxShip> allShipsIncludeVs() {
-        Stream<IServerSandBoxShip> sandBoxShips = allShips();
-        return Stream.concat(sandBoxShips, vsShipsCompactor.allWrapped());
-    }*/
     public Stream<SandBoxServerShip> allServerShips() {
-        /*if (!toDeleteShips.isEmpty()) {
-            var toDeleteShipsIt = toDeleteShips.iterator();
-            while (toDeleteShipsIt.hasNext()) {
-                UUID toDeleteUuid = toDeleteShipsIt.next();
-                toDeleteShipsIt.remove();
-                serverShips.remove(toDeleteUuid);
-                vsShipsCompactor.remove(toDeleteUuid);
-            }
-        }*/
         return serverShips.values();
     }
-    /*public Map<UUID, CompoundTag> getSavedRenderers() {
-        Hashtable<UUID, CompoundTag> allSavedRenderers = new Hashtable<>();
 
-        serverShips.entrySet().stream().map(entry ->
-            new BiTuple<>(entry.getKey(), entry.getValue().createRenderer().saved())
-        ).forEach(
-            tuple -> allSavedRenderers.put(tuple.getFirst(), tuple.getSecond())
-        );
-
-        return allSavedRenderers;
-    }*/
-    /*public Map<UUID, CompoundTag> getAllSaved() {
-        var allSaved = serverShips.entrySet().stream().map(entry ->
-            new AbstractMap.SimpleEntry<UUID, CompoundTag>(entry.getKey(), SerializeUtil.serializeShip(entry.getValue()))
-        ).toList();
-        Hashtable<UUID, CompoundTag> allSavedMap = new Hashtable<>();
-        for (var saved : allSaved) {
-            allSavedMap.put(saved.getKey(), saved.getValue());
-        }
-        return allSavedMap;
-    }*/
-
-    //todo server ship only createable in SandBoxServerWorld, want to create need a ServerShipCreateData or something
-    //todo schedule add ship, and add ship only initialized
-    /*public static void addShipAndSyncClient(ServerLevel level, SandBoxServerShip ship) {
-        SandBoxServerWorld world = SandBoxServerWorld.getOrCreate(level);
-        world.addShipImpl(ship);
-        SandBoxEventMgr.onSyncServerShipToClient.invokeAll(level, ship);
-    }*/
     public static void addShip(ServerLevel level, SandBoxServerShip ship, boolean syncToClient) {
         SandBoxServerWorld world = SandBoxServerWorld.getOrCreate(level);
         world.addShipImpl(ship, syncToClient);
@@ -284,27 +211,6 @@ public class SandBoxServerWorld extends SavedData implements ISandBoxWorld<IServ
     }
     @Override
     public void markShipDeleted(UUID uuid) {
-        /*SandBoxServerShip removedShip = serverShips.remove(shipUuid);
-        if (removedShip != null) {
-            SandBoxEventMgr.onRemoveShipFromServerWorld.invokeAll(level, removedShip);
-            setDirty();
-            return true;
-        }
-
-        return false;*/
-        /*var toRemoveSandBoxShip = serverShips.get(shipUuid);
-        if (toRemoveSandBoxShip != null) {
-            toDeleteShips.add(shipUuid);
-            SandBoxEventMgr.onRemoveShip.invokeAll(this, toRemoveSandBoxShip);
-            return;
-        }
-
-        IServerSandBoxShip toRemoveVsShip = vsShipsCompactor.getWrappedVsShip(shipUuid);
-        if (toRemoveVsShip != null) {
-            toDeleteShips.add(shipUuid);
-            SandBoxEventMgr.onRemoveShip.invokeAll(this, toRemoveVsShip);  //should i invoke the event?
-            return;
-        }*/
         if (uuid == null) return;
 
         var ship = serverShips.get(uuid);
@@ -319,13 +225,6 @@ public class SandBoxServerWorld extends SavedData implements ISandBoxWorld<IServ
         //FIXME don't remove inWorld because some behaviour have to use inWorld when deleting?
         ship.setWorldDimId(null);
     }
-    /*public static void removeAllShip(ServerLevel level) {
-        SandBoxServerWorld world = SandBoxServerWorld.getOrCreate(level);
-        for (UUID key : world.serverShips.keySet()) {
-            world.markShipDeletedImpl(key);
-        }
-    }*/
-
 
     private AtomicInteger lazy = new AtomicInteger(20);
 
@@ -360,137 +259,14 @@ public class SandBoxServerWorld extends SavedData implements ISandBoxWorld<IServ
                 }
 
                 world.serverTickSetEvent.invokeAll(world.level);
-                //world.serverTickLoadedShip();
-                //world.serverTickScheduleShip();
 
                 world.setDirty();  //todo should set dirty every server tick?
             }
-            /*if (DO_PHYS_IN_SERVER_THREAD) {
-                physTick();
-            }*/
         } catch (Exception e) {
             EzDebug.error("server tick exception:" + e.toString());
             e.printStackTrace();
         }
     }
-    //todo pool
-    /*private static void serverTick() {
-        try {
-            for (SandBoxServerWorld world : allWorlds.values()) {
-                if (!world.initialized.get() || !world.anyClientSynced.get()) continue;
-                if (world.lazy.get() > 0) {
-                    EzDebug.log("lazy:" + world.lazy.decrementAndGet());
-                    continue;
-                }
-
-                //world.serverTickLoadedShip();
-                world.serverTickScheduleShip();
-
-                world.setDirty();  //todo should set dirty every server tick?
-            }
-            /.*if (DO_PHYS_IN_SERVER_THREAD) {
-                physTick();
-            }*./
-        } catch (Exception e) {
-            EzDebug.error("server tick exception:" + e.toString());
-            e.printStackTrace();
-        }
-    }*/
-    /*private void serverTickLoadedShip() {
-        var shipsIt = serverShips.values().iterator();
-        while (shipsIt.hasNext()) {
-            SandBoxServerShip ship = shipsIt.next();
-            if (ship.tickDownTimeOut()) {
-                //EzDebug.light("time out a ship");
-
-                SandBoxEventMgr.onRemoveShipFromServerWorld.invokeAll(level, ship);
-                shipsIt.remove();  //hopefully ConcurrentMap will successfully handle this
-                continue;
-            }
-
-            ship.serverTick(level);
-
-            onServerShipTransformDirty.schedule(
-                ship.getUuid(),
-                new UUIDLazyParamWrapper(ship.getUuid()),
-                new TransformPrimitive(ship.getRigidbody().getDataReader().getTransform()),
-                new AABBdLazyParamWrapper(ship.getLocalAABB())
-            );
-        }
-    }*/
-    /*private void serverTickScheduleShip() {
-        var scheduleShipIt = scheduleShips.values().iterator();
-        while (scheduleShipIt.hasNext()) {
-            var curSchedule = scheduleShipIt.next();
-            if (!(curSchedule.ship instanceof SandBoxServerShip serverShip)) {
-                EzDebug.warn("try schedule a client ship in client is illegal!");
-                scheduleShipIt.remove();
-                continue;
-            }
-
-            curSchedule.scheduleTick(level);
-
-            if (curSchedule.isCanceled()) {
-                scheduleShipIt.remove();
-                continue;
-            }
-            if (curSchedule.shouldSpawn()) {
-                scheduleShipIt.remove();
-                addShipImpl(serverShip);
-                continue;
-            }
-        }
-    }*/
-    /*private void scheduleShips() {
-        var schedulingIt = scheduleShips.values().iterator();
-        while (schedulingIt.hasNext()) {
-            var scheduling = schedulingIt.next();
-            SandBoxServerShip ship = scheduling.getFirst();
-            Integer remainTick = scheduling.getSecond();
-            @Nullable var callback = scheduling.getThird();
-
-            if (remainTick < 0) {  //remainTick = 0也会进行一次callback, < 0才加入world
-                EzDebug.highlight("add a scheduled ship!");
-                addShipImpl(ship);
-                schedulingIt.remove();
-                continue;
-            }
-
-            if (callback != null)
-                callback.onScheduling(level, ship, remainTick);
-
-            scheduling.setSecond(remainTick - 1);
-        }
-    }*/
-    /*
-    private static void physTick() {
-        if (Minecraft.getInstance().isPaused())  //can it work in multiplayer?
-            return;
-
-        // 物理帧行为
-        for (SandBoxServerWorld world : allWorlds.values()) {
-            if (!world.initialized.get() || !world.anyClientSynced.get()) continue;
-            if (world.lazy.get() > 0) {
-                EzDebug.log("lazy:" + world.lazy.decrementAndGet());
-                continue;
-            }
-
-            try {
-                for (SandBoxServerShip ship : world.serverShips.values()) {
-                    if (ship.isTimeOut()) continue;
-
-                    ship.physTick();
-
-                    //NetworkHandler.sendToAllPlayers(new UpdateShipTransformPacketS2C(ship.getUuid(), transformData));
-                    //todo temp: i just want to see if it's smooth
-                    //SandBoxEventMgr.onServerShipTransformDirty.invokeAll();
-                }
-            } catch (Exception e) {
-                EzDebug.error("server tick failed.");
-                e.printStackTrace();
-            }
-        }
-    }*/
 
     @Override
     public CompoundTag save(CompoundTag tag) {
@@ -509,8 +285,6 @@ public class SandBoxServerWorld extends SavedData implements ISandBoxWorld<IServ
         return builder.get();
     }
     public SandBoxServerWorld load(CompoundTag tag) {
-        //List<SandBoxServerShip> loadedShips = new ArrayList<>();
-        //List<ScheduleShipData> schedulingShips = new ArrayList<>();
         try {
             NbtBuilder builder = NbtBuilder.modify(tag)
                 .readCompoundDo("constraint_data", constraintSolver::load)
@@ -518,42 +292,16 @@ public class SandBoxServerWorld extends SavedData implements ISandBoxWorld<IServ
                     SandBoxServerShip ship = new SandBoxServerShip(level, t);
                     serverShips.put(ship.getUuid(), ship);
                 });
-                //.readCompoundDo("vs_compact_ships", vsShipsCompactor::load);
-                //.readEachCompound("schedule_ships", t -> ScheduleShipData.getServerBySavedData(level, t), schedulingShips);
 
-            if (builder.contains("ground_ship"))
+            if (builder.contains("ground_ship")) {
                 wrappedGroundShip = new GroundShipWrapped(builder.getCompound("ground_ship"));
-
-                /*.readEachCompound("schedule_ships", t -> {
-                    NbtBuilder tReader = NbtBuilder.modify(t);
-                    ScheduleCallback scheduleCb = null;
-
-                    if (tReader.contains("schedule_callback")) {
-                        scheduleCb = SerializeUtil.safeDeserialize(tReader.getBytes("scheduling_callback"));
-                        if (scheduleCb == null) {
-                            EzDebug.warn("fail to read schedule callback");
-                        }
-                    }
-
-                    SandBoxServerShip ship = new SandBoxServerShip(tReader.getCompound("saved_ship"));
-                    int remainTick = tReader.getInt("remain_tick");
-
-                    return new TriTuple<>(ship, remainTick, scheduleCb);
-                }, schedulingShips);*/
+            }
 
             serverThread.deserializeNBT(builder.getCompound("server_thread_saved"));
         } catch (Exception e) {
             EzDebug.error("fail to load ship.");
             e.printStackTrace();
         }
-
-        /*serverShips.clear();
-        for (var ship : loadedShips)
-            serverShips.put(ship.getUuid(), ship);
-
-        /*scheduleShips.clear();
-        for (var scheduleShip : schedulingShips)
-            scheduleShips.put(scheduleShip.ship.getUuid(), scheduleShip);*/
 
         return this;
     }

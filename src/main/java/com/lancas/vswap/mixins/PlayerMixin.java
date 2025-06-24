@@ -79,7 +79,7 @@ public abstract class PlayerMixin extends LivingEntity implements ICanHoldShip {
 
         var holdable = shipToHold.getAttachment(HoldableAttachment.class);
         if (holdable == null) {
-            EzDebug.log("the ship has no holdable att, so can't be holded");
+            //EzDebug.log("the ship has no holdable att, so can't be holded");
             return false;  //the ship can not be hold
         }
 

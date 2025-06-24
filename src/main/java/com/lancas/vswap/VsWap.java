@@ -121,7 +121,7 @@ public class VsWap {
         DispenserBlock.registerBehavior(WapItems.DOCKER.get(), new DockerDispenseBehaviour());
     }
 
-    // Add the vanilla.json block item to the building blocks tab
+    // Add the vanilla.disabled block item to the building blocks tab
     /*private void addCreative(BuildCreativeModeTabContentsEvent event)
     {
         if (event.getTabKey() == CreativeModeTabs.BUILDING_BLOCKS)

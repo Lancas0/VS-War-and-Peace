@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "   ",
+    "WSW",
+    "   "
+  ],
+  "key": {
+    "W": { "item": "vswap:glider_wing" },
+    "S": { "item": "vswap:empty_shell" }
+  },
+  "result": {
+    "item": "vswap:glider",
+    "count": 1
+  }
+}

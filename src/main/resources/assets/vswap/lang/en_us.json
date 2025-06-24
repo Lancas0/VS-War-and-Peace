@@ -5,6 +5,7 @@
   "key.vswap.switch_key": "Switch Key",
 
   "block.vswap.primer": "Primer",
+  "block.vswap.empty_primer": "Empty Primer",
   "block.vswap.torpedo_primer": "Torpedo Primer",
 
 
@@ -55,14 +56,19 @@
   "block.vswap.shredder": "Shredder",
 
   "block.vswap.dock": "Dock",
-  "block.vswap.green_print_holder": "Dock Green Print Holder",
+  "block.vswap.dock_green_print_holder": "Dock Green Print Holder",
+  "block.vswap.dock_construction_detector": "Dock Construction Detector",
+  "block.vswap.dock_unlocker": "Dock Unlocker",
 
 
   "item.vswap.vswap_wand": "VsWap Wand",
+  "item.vswap.grab_it": "Grab It",
   "item.vswap.docker": "Docker",
   "item.vswap.green_print": "Green Print",
   "item.vswap.ms_item": "Material",
+  "item.vswap.ms_creative": "Creative Material",
   "item.vswap.breech_unloader": "Breech Unloader",
+  "item.vswap.carbon_fiber": "Carbon Fiber",
 
   "info.vswap.mass": "Mass",
   "info.vswap.armour_rhae": "RHAe",
@@ -83,16 +89,90 @@
   "term.vswap.after_normalization_rhae": "After Normalization RHAe",
 
   "msg.vswap.hold_ship.failed.by_tp_nonnull": "The ship is controlled by a block or other player.",
-  "msg.vswap.hold_ship.failed.by_no_holdable_attachment": "The ship have no hold pivot. Try to use VsWapWand on this ship.",
-  "msg.vswap.hold_ship.failed.by_has_constraint": "The ship has at least one constraint, thus you can't hold it.'",
+  "msg.vswap.hold_ship.failed.by_no_holdable_attachment": "The ship have no hold pivot. Try to use \"Grab It\" on this ship.",
+  "msg.vswap.hold_ship.failed.by_has_constraint": "The ship has at least one constraint, thus you can't grab it.'",
   "msg.vswap.hold_ship.drop.by_has_item_in_hand": "The holden ship is dropped because you are holding a item in hand.",
   "msg.vswap.green_print.has_already_ship_data": "The greenPrint has already recorded a ship.",
+  "msg.vswap.display_link.no_construction": "There is no started construction",
+  "msg.vswap.display_link.construction_completed": "The construction is completed",
+
+
+  "vswap.category.empty": "Empty Category(It's a bug. Please report to the author)",
+  "vswap.category.word.needed_material": "Needed Material:",
+  "vswap.category.word.of": " of ",
+
+  "vswap.category.transmission_part": "Transmission Part",
+  "vswap.category.transmission_control_part": "Transmission Control Part",
+  "vswap.category.simple_create_machine": "Simple Create Machine",
+  "vswap.category.create_factory_machine": "Create Factory Machine",
+  "vswap.category.create_logistic_part": "Create Logistic Part",
+  "vswap.category.create_advanced_logistic_part": "Create Advanced Logistic Part",
+  "vswap.category.create_pipe_part": "Create Pipe Part",
+  "vswap.category.create_delicate_part": "Create Delicate Part",
+  "vswap.category.create_creative_part": "Create Creative Part",
+
+  "vswap.category.dirt": "Dirt Material",
+
+  "vswap.category.quartz": "Quartz Material",
+
+  "vswap.category.log": "Log Material",
+  "vswap.category.wooden_planks": "Wooden Planks Material",
+  "vswap.category.wooden_deco": "Wooden Decoration Material",
+
+  "vswap.category.cobblestone": "Cobblestone Material",
+  "vswap.category.cobblestone_deco" : "Cobblestone Decoration Material",
+  "vswap.category.stone": "Stone Material",
+  "vswap.category.stone_deco": "Stone Decoration Material",
+
+  "vswap.category.bricks": "Bricks Material",
+  "vswap.category.bricks_deco": "Bricks Decoration Material",
+
+  "vswap.category.mud_bricks": "Mud Bricks Material",
+  "vswap.category.mud_bricks_deco": "Mud Bricks Decoration Material",
+
+  "vswap.category.sandstone": "Sandstone Material",
+  "vswap.category.sandstone_deco": "Sandstone Decoration Material",
+
+  "vswap.category.prismarine": "Prismarine Material",
+  "vswap.category.prismarine_deco": "Prismarine Decoration Material",
+
+  "vswap.category.nether_cobblestone": "Nether Cobblestone Material",
+  "vswap.category.nether_stone": "Nether Stone Material",
+  "vswap.category.nether_cobblestone_deco": "Nether Cobblestone Decoration Material",
+  "vswap.category.nether_stone_deco": "Nether Stone Decoration Material",
+
+  "vswap.category.ender_stone": "Ender Stone Material",
+  "vswap.category.ender_stone_deco": "Ender Stone Decoration Material",
+  "vswap.category.purpur": "Purpur Material",
+  "vswap.category.purpur_deco": "Purpur Decoration Material",
+
+  "vswap.category.copper": "Copper Material",
+  "vswap.category.copper_deco": "Copper Decoration Material",
+
+
+
+  "vswap.category.wool": "Wool Material",
+  "vswap.category.wool_carpets": "Wool Carpets Material",
+
+  "vswap.category.terracotta": "Terracotta Material",
+  "vswap.category.glazed_terracotta": "Glazed Terracotta Material",
+
+  "vswap.category.concrete": "Concrete Material",
+  "vswap.category.concrete_powder": "Concrete Powder Material",
+
+  "vswap.category.glass": "Glass Material",
+  "vswap.category.glass_panes": "Glass Panes Material",
+
+  "vswap.category.shulker_box": "Shulker Box Material",
+  "vswap.category.candle": "Candle Material",
+  "vswap.category.banner": "Banner Material",
+
 
 
 
   "vswap.ponder.industry/carbon_fiber_sail.header" : "Carbon Fiber Sail",
-  "vswap.ponder.industry/carbon_fiber_sail.text1" : "It takes 8 traditional sail blocks to start a Windmill Bearing.",
-  "vswap.ponder.industry/carbon_fiber_sail.text2" : "One Carbon Fiber Sail is equals to 4 sail blocks.",
+  "vswap.ponder.industry/carbon_fiber_sail.text_1" : "It takes 8 traditional sail blocks to start a Windmill Bearing.",
+  "vswap.ponder.industry/carbon_fiber_sail.text_2" : "One Carbon Fiber Sail is equals to 4 sail blocks.",
 
   "vswap.ponder.industry/gp_projector_basic.header": "GreenPrint & VS Projector Basic",
   "vswap.ponder.industry/gp_projector_basic.text_1": "Use empty GreenPrint on VS Projector, a ship with Projection Center will arise.",
@@ -117,6 +197,7 @@
   "vswap.ponder.artillery/artillery_docker_loading.text_3": "Just use it on Breech",
   "vswap.ponder.artillery/artillery_docker_loading.text_4": "The projectile part will fly away",
   "vswap.ponder.artillery/artillery_docker_loading.text_5": "The remain shell will be ejected",
+  "vswap.ponder.artillery/artillery_docker_loading.text_6": "When loading by hand or by phys, it's possible to separated load",
 
   "vswap.ponder.artillery/artillery_arm_loading.header": "Artillery Auto Loading",
   "vswap.ponder.artillery/artillery_arm_loading.text_1": "You can also load with Mechanical Arm",
@@ -139,7 +220,7 @@
 
   "vswap.ponder.munition/munition_ap.header": "AP Warhead",
   "vswap.ponder.munition/munition_ap.text_1": "AP's terminal effect is decided by warhead and kinetic energy",
-  "vswap.ponder.munition/munition_ap.text_2": "APFSDS has high Penetration Ratio and low Destruction Factor",
+  "vswap.ponder.munition/munition_ap.text_2": "APDS has high Penetration Ratio and low Destruction Factor",
   "vswap.ponder.munition/munition_ap.text_3": "Thus it's able to penetrate long distances, but causes less area of destruction",
   "vswap.ponder.munition/munition_ap.text_4": "APCR has mid Penetration Ratio and mid Destruction Factor",
   "vswap.ponder.munition/munition_ap.text_5": "Thus APCR penetrates a certain distance while inflicting a certain amount of damage",
@@ -158,7 +239,7 @@
 
   "vswap.ponder.dock/dock_usage.header": "Place Ship on Dock",
   "vswap.ponder.dock/dock_usage.text_1": "Hold Ship or Docker to place ship on Dock",
-  "vswap.ponder.dock/dock_usage.text_2": "Right click a Docker with empty hands to fetch the Ship on it",
+  "vswap.ponder.dock/dock_usage.text_2": "Right click a Dock with empty hands to fetch the Ship on it",
   "vswap.ponder.dock/dock_usage.text_3": "Mechanical Arm can place Ship to Dock",
   "vswap.ponder.dock/dock_usage.text_4": "And it can also fetch Ship from Dock",
   "vswap.ponder.dock/dock_usage.text_5": "When Ship's bottom size is larger than Dock's size...",
@@ -183,5 +264,26 @@
   "vswap.ponder.docker/docker_usage.text_1": "Right click with Docker to place Ship",
   "vswap.ponder.docker/docker_usage.text_2": "Alt to switch to Block Place Mode(Only when scale is 1.0)",
   "vswap.ponder.docker/docker_usage.text_3": "Deployer can also use Docker to place ship",
-  "vswap.ponder.docker/docker_usage.text_4": "Most blocks in this mod that can interact with ships can also interact docker"
+  "vswap.ponder.docker/docker_usage.text_4": "Most blocks in this mod that can interact with ships can also interact docker",
+
+  "vswap.ponder.dock/dock_display.header": "Dock and DisplayLink",
+  "vswap.ponder.dock/dock_display.text_1": "Display link can be used to display the status of Dock Construction(Remember to set DisplayLink)",
+  "vswap.ponder.dock/dock_display.text_2": "When a construction is started, all needed material will be displayed",
+  "vswap.ponder.dock/dock_display.text_3": "Mechanical Arm can fetch the completed Ship",
+
+  "vswap.ponder.industry/shredder_usage.header": "Shredder Usage",
+  "vswap.ponder.industry/shredder_usage.text_1": "Shredder can shred the BlockItem fall on it",
+  "vswap.ponder.industry/shredder_usage.text_2": "After finishing shredding, the output will drop from it's bottom side",
+  "vswap.ponder.industry/shredder_usage.text_3": "Shredder can also accept BlockItem from belt",
+  "vswap.ponder.industry/shredder_usage.text_4": "Shredder can also output to the container below it",
+
+  "vswap.ponder.industry/shredder_breaking.header": "Shredder Breaking",
+  "vswap.ponder.industry/shredder_breaking.text_1": "Shredder can break block in front it.",
+  "vswap.ponder.industry/shredder_breaking.text_2": "After breaking block, the output will drop from it's bottom side.",
+  "vswap.ponder.industry/shredder_breaking.text_3": "Shredder can also break blocks in ship",
+
+  "vswap.ponder.industry/shredder_ms_integration.header": "Material Integration",
+  "vswap.ponder.industry/shredder_ms_integration.text_1": "Blocks in same category will be shredded into same item",
+  "vswap.ponder.industry/shredder_ms_integration.text_2":"Don't worry, you can place any block in same category with Material",
+  "vswap.ponder.industry/shredder_ms_integration.text_3":"With switch key you can change the block to place"
 }

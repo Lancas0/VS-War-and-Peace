@@ -1,0 +1,9 @@
+{
+  "type": "create:pressing",
+  "ingredients": [
+    { "item": "vswap:carbon_fiber" }
+  ],
+  "results": [
+    { "item": "vswap:glider_wing" }
+  ]
+}

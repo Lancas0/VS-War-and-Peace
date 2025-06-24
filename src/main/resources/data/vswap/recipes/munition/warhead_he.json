@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " T ",
+    "NSN",
+    "   "
+  ],
+  "key": {
+    "T": { "item": "minecraft:tnt" },
+    "S": { "item": "vswap:empty_shell" },
+    "N": { "tag": "forge:nuggets/copper" }
+  },
+  "result": {
+    "item": "vswap:he_warhead",
+    "count": 1
+  }
+}

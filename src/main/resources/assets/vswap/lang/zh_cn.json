@@ -5,6 +5,7 @@
   "key.vswap.switch_key": "切换键",
 
   "block.vswap.torpedo_primer": "鱼雷底火",
+  "block.vswap.empty_primer": "空底火",
   "block.vswap.primer": "底火",
 
   "block.vswap.shelled_propellant": "具壳发射药",
@@ -51,14 +52,19 @@
   "block.vswap.shredder": "粉碎机",
 
   "block.vswap.dock": "置船台",
-  "block.vswap.green_print_holder": "设计图船台",
+  "block.vswap.dock_green_print_holder": "设计图置船台",
+  "block.vswap.dock_construction_detector": "工程侦测置船台",
+  "block.vswap.dock_unlocker": "解锁置船台",
 
   "item.vswap.vswap_wand": "很有武德的杖",
   "item.vswap.docker": "舵㭘",
+  "item.vswap.grab_it": "抓ta",
   "item.vswap.green_print": "绿图",
 
   "item.vswap.ms_item": "物料",
+  "item.vswap.ms_creative": "创造物料",
   "item.vswap.breech_unloader": "卸弹器",
+  "item.vswap.carbon_fiber": "碳纤维",
 
 
   "info.vswap.mass": "质量",
@@ -81,17 +87,95 @@
 
 
 
-  "msg.vswap.hold_ship.failed.by_tp_nonnull": "这个瓦尔基里载具被其他玩家或者方块控制",
-  "msg.vswap.hold_ship.failed.by_no_holdable_attachment": "这个瓦尔基里载具没有挂载锚点，试一试对它使用“很有武德的杖”",
-  "msg.vswap.hold_ship.failed.by_has_constraint": "这个瓦尔基里载具和其他载具具有约束",
-  "msg.vswap.hold_ship.drop.by_has_item_in_hand": "你拿了一个物品，手中的瓦尔基里载具掉了下来",
-  "msg.vswap.green_print.has_already_ship_data": "这个绿图已经记录了船的信息",
+  "msg.vswap.hold_ship.failed.by_tp_nonnull": "这个瓦尔基里物理体被其他玩家或者方块控制",
+  "msg.vswap.hold_ship.failed.by_no_holdable_attachment": "这个瓦尔基里载具没有挂载锚点，试一试对它使用“抓ta”",
+  "msg.vswap.hold_ship.failed.by_has_constraint": "这个瓦尔基里物理体和其他物理体具有约束",
+  "msg.vswap.hold_ship.drop.by_has_item_in_hand": "你拿了一个物品，手中的瓦尔基里物理体掉了下来",
+  "msg.vswap.green_print.has_already_ship_data": "这个绿图已经记录了物理体的信息",
+
+
+  "msg.vswap.display_link.no_construction": "无正在进行的工程",
+  "msg.vswap.display_link.construction_completed": "工程完成",
+
+  "vswap.category.empty": "空类别(这是个BUG，请报告给模组作者)",
+  "vswap.category.word.needed_material": "所需物料：",
+  "vswap.category.word.of": "个",
+
+  "vswap.category.transmission_part": "传动部件",
+  "vswap.category.transmission_control_part": "传动控制部件",
+  "vswap.category.simple_create_machine": "简单机动部件",
+  "vswap.category.create_factory_machine": "机动工厂机械",
+  "vswap.category.create_logistic_part": "机动物流部件",
+  "vswap.category.create_advanced_logistic_part": "机动先进物流部件",
+  "vswap.category.create_pipe_part": "机动管道部件",
+  "vswap.category.create_delicate_part": "机动精致部件",
+  "vswap.category.create_creative_part": "机动创造部件",
+
+  "vswap.category.dirt": "泥土物料",
+
+  "vswap.category.quartz": "石英物料",
+
+  "vswap.category.log": "原木物料",
+  "vswap.category.wooden_planks": "木制板材物料",
+  "vswap.category.wooden_deco": "木制装饰品物料",
+
+  "vswap.category.cobblestone": "卵石物料",
+  "vswap.category.cobblestone_deco" : "卵石装饰品物料",
+
+  "vswap.category.stone": "石材物料",
+  "vswap.category.stone_deco": "石制装饰品物料",
+
+  "vswap.category.bricks": "砖制方块物料",
+  "vswap.category.bricks_deco": "砖制装饰品物料",
+
+  "vswap.category.mud_bricks": "泥砖方块物料",
+  "vswap.category.mud_bricks_deco": "泥砖装饰品物料",
+
+  "vswap.category.sandstone": "沙石物料",
+  "vswap.category.sandstone_deco": "沙石装饰品物料",
+
+  "vswap.category.prismarine": "海晶物料",
+  "vswap.category.prismarine_deco": "海晶装饰品物料",
+
+  "vswap.category.nether_cobblestone": "下界卵石物料",
+  "vswap.category.nether_stone": "下界石材物料",
+  "vswap.category.nether_cobblestone_deco": "下界卵石装饰品物料",
+  "vswap.category.nether_stone_deco": "下界石材装饰品物料",
+
+  "vswap.category.ender_stone": "末地石材物料",
+  "vswap.category.ender_stone_deco": "末地石材装饰品物料",
+
+  "vswap.category.purpur": "紫颂物料",
+  "vswap.category.purpur_deco": "紫颂装饰品物料",
+
+  "vswap.category.copper": "铜制物料",
+  "vswap.category.copper_deco": "铜制装饰品物料",
+
+
+
+  "vswap.category.wool": "羊毛物料",
+  "vswap.category.wool_carpets": "羊毛地毯物料",
+
+  "vswap.category.terracotta": "陶瓦物料",
+  "vswap.category.glazed_terracotta": "带釉陶瓦物料",
+
+
+  "vswap.category.concrete": "混凝土物料",
+  "vswap.category.concrete_powder": "混凝土粉末物料",
+
+  "vswap.category.glass": "玻璃物料",
+  "vswap.category.glass_panes": "玻璃板物料",
+
+  "vswap.category.shulker_box": "潜影盒物料",
+  "vswap.category.candle": "蜡烛物料",
+  "vswap.category.banner": "旗帜物料",
+
 
 
 
   "vswap.ponder.industry/carbon_fiber_sail.header" : "碳纤维风帆",
-  "vswap.ponder.industry/carbon_fiber_sail.text1" : "传统的风帆方块达到8个才能使得风车轴承运作",
-  "vswap.ponder.industry/carbon_fiber_sail.text2" : "一个碳纤维风帆相当于4个普通风帆方块",
+  "vswap.ponder.industry/carbon_fiber_sail.text_1" : "传统的风帆方块达到8个才能使得风车轴承运作",
+  "vswap.ponder.industry/carbon_fiber_sail.text_2" : "一个碳纤维风帆相当于4个普通风帆方块",
 
 
   "vswap.ponder.industry/gp_projector_basic.header": "绿图&投影仪基础",
@@ -117,6 +201,7 @@
   "vswap.ponder.artillery/artillery_docker_loading.text_3": "只需要右键交互炮闩...",
   "vswap.ponder.artillery/artillery_docker_loading.text_4": "弹头部分会被发射出去",
   "vswap.ponder.artillery/artillery_docker_loading.text_5": "弹壳部分会从后方弹出",
+  "vswap.ponder.artillery/artillery_docker_loading.text_6": "当手动或通过物理途径装弹时, 可以装填分装炮弹",
 
   "vswap.ponder.artillery/artillery_arm_loading.header": "火炮自动装填",
   "vswap.ponder.artillery/artillery_arm_loading.text_1": "可以使用动力臂自动装填火炮",
@@ -140,8 +225,8 @@
 
   "vswap.ponder.munition/munition_ap.header": "穿甲战斗部",
   "vswap.ponder.munition/munition_ap.text_1": "穿甲弹的后效取决于弹头和动能",
-  "vswap.ponder.munition/munition_ap.text_2": "APFSDS有高穿透倍率和低毁伤倍率",
-  "vswap.ponder.munition/munition_ap.text_3": "所以APFSDS能够穿透远距离，但是造成的毁伤面积较小",
+  "vswap.ponder.munition/munition_ap.text_2": "APDS有高穿透倍率和低毁伤倍率",
+  "vswap.ponder.munition/munition_ap.text_3": "所以APDS能够穿透远距离，但是造成的毁伤面积较小",
   "vswap.ponder.munition/munition_ap.text_4": "APCR有中等穿透倍率和中等毁伤倍率",
   "vswap.ponder.munition/munition_ap.text_5": "所以APCR在造成一定的毁伤面积的同时穿透一定距离",
   "vswap.ponder.munition/munition_ap.text_6": "普通方块也能作为穿甲弹头，其毁伤倍率较高但是穿透倍率很低",
@@ -181,9 +266,30 @@
   "vswap.ponder.dock/dock_construct.text_7": "当解锁置船台收到红石信号时, 建造好的物理体将被解锁",
   "vswap.ponder.dock/dock_construct.text_8": "当置船多方块结构上方不存在物理体时才可开始下一项工程",
 
+  "vswap.ponder.dock/dock_display.header": "置船台和显示链接器",
+  "vswap.ponder.dock/dock_display.text_1": "显示链接器可以显示置船台(或置船多方块结构)的状态(记得设置一下显示链接器)",
+  "vswap.ponder.dock/dock_display.text_2": "当一项工程开始后, 会显示所有需要的物料",
+  "vswap.ponder.dock/dock_display.text_3": "动力臂可抓取建造完成的物理体",
+
   "vswap.ponder.docker/docker_usage.header": "舵㭘的使用",
   "vswap.ponder.docker/docker_usage.text_1": "手持舵㭘右键可放置物理体",
   "vswap.ponder.docker/docker_usage.text_2": "按下Alt可切换为方块放置模式(仅当物理体缩放为1.0时)",
   "vswap.ponder.docker/docker_usage.text_3": "机械手也可放置物理体",
-  "vswap.ponder.docker/docker_usage.text_4": "该模组大部分可以与手持物理体交互的方块也可与舵㭘交互"
+  "vswap.ponder.docker/docker_usage.text_4": "该模组大部分可以与手持物理体交互的方块也可与舵㭘交互",
+
+  "vswap.ponder.industry/shredder_usage.header": "粉碎机使用",
+  "vswap.ponder.industry/shredder_usage.text_1": "粉碎机可以粉碎掉落的方块物品",
+  "vswap.ponder.industry/shredder_usage.text_2": "完成粉碎后, 产出的物料从后方输出",
+  "vswap.ponder.industry/shredder_usage.text_3": "粉碎机也可粉碎传送带上的方块物品",
+  "vswap.ponder.industry/shredder_usage.text_4": "粉碎机也可直接输出到下方的容器中",
+
+  "vswap.ponder.industry/shredder_breaking.header": "粉碎机粉碎",
+  "vswap.ponder.industry/shredder_breaking.text_1": "粉碎机可以粉碎方块",
+  "vswap.ponder.industry/shredder_breaking.text_2": "完成粉碎后, 产出的物料会从后方输出",
+  "vswap.ponder.industry/shredder_breaking.text_3": "粉碎机也可破坏物理体上的方块",
+
+  "vswap.ponder.industry/shredder_ms_integration.header": "物料整合",
+  "vswap.ponder.industry/shredder_ms_integration.text_1": "相同类别的方块会粉碎成相同物料",
+  "vswap.ponder.industry/shredder_ms_integration.text_2": "无需担心, 你可以使用对应物料放置所有相同类型的方块",
+  "vswap.ponder.industry/shredder_ms_integration.text_3": "按下切换键即可更换放置的方块"
 }

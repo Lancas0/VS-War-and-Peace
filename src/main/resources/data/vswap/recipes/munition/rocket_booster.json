@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "GSG",
+    "GCG",
+    " I "
+  ],
+  "key": {
+    "S": { "item": "vswap:empty_shell" },
+    "C": { "item": "minecraft:cauldron" },
+    "I": { "item": "create:sturdy_sheet" },
+    "G": { "tag": "forge:gunpowder" }
+  },
+  "result": {
+    "item": "vswap:rocket_booster",
+    "count": 1
+  }
+}

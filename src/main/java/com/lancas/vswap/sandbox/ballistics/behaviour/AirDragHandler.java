@@ -13,7 +13,8 @@ public class AirDragHandler {
 
     //todo sort
     public static void applyAirDragIfShould(SandBoxServerShip ship, BallisticData data) {
-        if (data.terminated || !data.barrelCtx.isAbsoluteExitBarrel()) return;
+        //if (data.terminated || !data.barrelCtx.isAbsoluteExitBarrel()) return;
+        if (data.terminated) return;
 
         //gather data
         var rigidbody = ship.getRigidbody();

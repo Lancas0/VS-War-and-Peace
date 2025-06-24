@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "SGS",
+    "PGP",
+    "SGS"
+  ],
+  "key": {
+    "G": { "tag": "forge:gunpowder" },
+    "P": { "item": "minecraft:paper" },
+    "S": { "item": "minecraft:string" }
+  },
+  "result": {
+    "item": "vswap:ccc",
+    "count": 1
+  }
+}

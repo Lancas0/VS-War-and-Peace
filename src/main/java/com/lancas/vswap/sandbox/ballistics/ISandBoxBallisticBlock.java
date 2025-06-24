@@ -6,6 +6,7 @@ import com.lancas.vswap.sandbox.ballistics.data.BallisticFlyingContext;
 import com.lancas.vswap.sandbox.ballistics.data.BallisticInitialStateSubData;
 import com.lancas.vswap.sandbox.ballistics.data.BallisticPos;
 import com.lancas.vswap.sandbox.ballistics.trigger.SandBoxTriggerInfo;
+import com.lancas.vswap.ship.ballistics.data.BallisticsHitInfo;
 import com.lancas.vswap.subproject.sandbox.ship.SandBoxServerShip;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.state.BlockState;
@@ -21,6 +22,8 @@ public interface ISandBoxBallisticBlock {
     public default void onExitBarrel(ServerLevel level, SandBoxServerShip onShip, BallisticPos ballisticPos) {}
 
     public default void appendTriggerInfos(ServerLevel level, BallisticPos ballisticPos, BlockState state, SandBoxServerShip ship, List<SandBoxTriggerInfo> dest) {}
+
+    public default void onClip(ServerLevel level, BallisticPos ballisticPos, BallisticsHitInfo hitInfo, BlockState state, SandBoxServerShip ship, List<SandBoxTriggerInfo> dest) {}
 
     public default void doTerminalEffect(ServerLevel level, SandBoxServerShip ship, BallisticPos ballisticPos, BlockState state, List<SandBoxTriggerInfo> infos, Dest<Boolean> terminateByEffect) {
         //terminateByEffect.set(false);

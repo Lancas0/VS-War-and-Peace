@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " B ",
+    " P ",
+    " P "
+  ],
+  "key": {
+    "B": { "tag": "forge:ingots/brass" },
+    "P": { "tag": "forge:plates/brass" }
+  },
+  "result": {
+    "item": "vswap:empty_primer",
+    "count": 1
+  }
+}

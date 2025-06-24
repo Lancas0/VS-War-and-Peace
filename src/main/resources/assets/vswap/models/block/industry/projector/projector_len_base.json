@@ -3,6 +3,7 @@
 	"parent": "minecraft:block/block",
 	"texture_size": [16, 16],
 	"textures": {
+		"particle": "vswap:block/industry/projector/projector_len",
 		"2": "vswap:block/industry/projector/projector_len"
 	},
 	"elements": [

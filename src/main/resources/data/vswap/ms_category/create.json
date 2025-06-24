@@ -1,0 +1,142 @@
+[
+  {
+    "name": "transmission_part",
+    "localization": "vswap.category.transmission_part",
+    "icon": "create:cogwheel",
+    "include": [
+      "create:shaft",
+      "create:cogwheel",
+      "create:large_cogwheel",
+      "create:andesite_encased_cogwheel",
+      "create:andesite_encased_large_cogwheel",
+      "create:brass_encased_cogwheel",
+      "create:brass_encased_large_cogwheel",
+      "create:gearbox",
+      "create:encased_chain_drive",
+      "create:piston_extension_pole"
+    ],
+    "exclude": []
+  },
+  {
+    "name": "transmission_control_part",
+    "localization": "vswap.category.transmission_control_part",
+    "icon": "create:clutch",
+    "include": [
+      "create:clutch",
+      "create:gearshift"
+    ],
+    "exclude": []
+  },
+  {
+    "name": "simple_create_machine",
+    "localization": "vswap.category.simple_create_machine",
+    "icon": "create:depot",
+    "include": [
+      "create:turntable",
+      "create:millstone",
+      "create:water_wheel",
+      "create:large_water_wheel",
+      "create:linear_chassis",
+      "create:secondary_linear_chassis",
+      "create:radial_chassis",
+      "create:mechanical_bearing",
+      "create:windmill_bearing",
+      "create:basin",
+      "create:hand_crank",
+      "create:mechanical_piston",
+      "create:sticky_mechanical_piston",
+      "create:gantry_carriage"
+    ],
+    "exclude": []
+  },
+  {
+    "name": "create_factory_machine",
+    "localization": "vswap.category.create_factory_machine",
+    "icon": "create:mechanical_mixer",
+    "include": [
+      "create:stressometer",
+      "create:speedometer",
+      "create:mechanical_mixer",
+      "create:encased_fan",
+      "create:mechanical_drill",
+      "create:mechanical_press",
+      "create:mechanical_saw",
+      "create:portable_storage_interface",
+      "create:mechanical_harvester",
+      "create:mechanical_plough",
+      "create:rope_pulley"
+    ],
+    "exclude": []
+  },
+  {
+    "name": "create_logistic_part",
+    "localization": "vswap.category.create_logistic_part",
+    "icon": "create:belt_connector",
+    "include": [
+      "create:depot",
+      "create:belt",
+      "create:chute",
+      "create:andesite_belt_funnel",
+      "create:andesite_funnel",
+      "create:andesite_tunnel",
+      "create:portable_storage_interface",
+      "create:weighted_ejector"
+    ],
+    "exclude": []
+  },
+  {
+    "name": "create_advanced_logistic_part",
+    "localization": "vswap.category.create_advanced_logistic_part",
+    "icon": "create:brass_funnel",
+    "include": [
+      "create:brass_belt_funnel",
+      "create:brass_funnel",
+      "create:brass_tunnel",
+      "create:smart_chute",
+      "create:smart_fluid_pipe"
+    ],
+    "exclude": []
+  },
+  {
+    "name": "create_pipe_part",
+    "localization": "vswap.category.create_pipe_part",
+    "icon": "create:fluid_pipe",
+    "include": [
+      "create:fluid_pipe",
+      "create:mechanical_pump",
+      "create:fluid_valve",
+      "create:copper_valve_handle",
+      "create:portable_fluid_interface",
+      "create:spout",
+      "create:fluid_tank",
+      "create:item_drain",
+      "create:hose_pulley"
+    ],
+    "exclude": []
+  },
+  {
+    "name": "create_delicate_part",
+    "localization": "vswap.category.create_delicate_part",
+    "icon": "create:flywheel",
+    "include": [
+      "create:flywheel",
+      "create:steam_whistle",
+      "create:fluid_valve",
+      "create:elevator_pulley",
+      "create:cuckoo_clock",
+      "create:steam_engine"
+    ],
+    "exclude": []
+  },
+  {
+    "name": "create_creative_part",
+    "localization": "vswap.category.create_creative_part",
+    "icon": "create:creative_motor",
+    "include": [
+      "create:creative_motor",
+      "create:creative_fluid_tank",
+      "create:creative_crate"
+    ],
+    "exclude": []
+  }
+]

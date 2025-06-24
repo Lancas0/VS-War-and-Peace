@@ -3,10 +3,12 @@ package com.lancas.vswap.sandbox.ballistics.behaviour;
 import com.lancas.vswap.WapConfig;
 import com.lancas.vswap.debug.EzDebug;
 import com.lancas.vswap.foundation.api.Dest;
+import com.lancas.vswap.sandbox.ballistics.ISandBoxBallisticBlock;
 import com.lancas.vswap.sandbox.ballistics.data.BallisticData;
 import com.lancas.vswap.sandbox.ballistics.data.BallisticFlyingContext;
 import com.lancas.vswap.sandbox.ballistics.data.BallisticPos;
 import com.lancas.vswap.sandbox.ballistics.trigger.SandBoxTriggerInfo;
+import com.lancas.vswap.ship.ballistics.data.BallisticsHitInfo;
 import com.lancas.vswap.subproject.sandbox.component.behviour.SandBoxExpireTicker;
 import com.lancas.vswap.subproject.sandbox.component.behviour.abs.ServerOnlyBehaviour;
 import com.lancas.vswap.subproject.sandbox.component.data.ExpireTickerData;
@@ -15,6 +17,9 @@ import com.lancas.vswap.subproject.sandbox.component.data.writer.IRigidbodyDataW
 import com.lancas.vswap.util.JomlUtil;
 import com.lancas.vswap.util.RandUtil;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 import org.joml.*;
 
 import java.util.ArrayList;
@@ -94,19 +99,21 @@ public class BallisticBehaviour extends ServerOnlyBehaviour<BallisticData> {
             if (headPos != null && data.stuckHitPos != null)
                 rigidWriter.moveLocalPosToWorld(headPos.localPos(), data.stuckHitPos);
             return;
+        } else {
+            ship.getRigidbody().getDataWriter().setEarthGravity();
         }
 
         //todo reaction force
-        if (data.barrelCtx.appliedHighPressureStage)  //only after apply power can update barrel ctx
-            BarrelCtxUpdateHandler.updateBarrelCtx(level, ship, data);
+        //if (data.barrelCtx.appliedHighPressureStage)  //only after apply power can update barrel ctx
+         //   BarrelCtxUpdateHandler.updateBarrelCtx(level, ship, data);
 
         //EzDebug.log("barrel ctx updated");
 
 
-        if (!data.barrelCtx.isAbsoluteExitBarrel()) {
+        /*if (!data.barrelCtx.isAbsoluteExitBarrel()) {
             ship.getRigidbody().getDataWriter().setNoGravity();
             return;
-        } /*else {
+        }*/ /*else {
             ship.getRigidbody().getDataWriter().setEarthGravity();
         }*/
 
@@ -149,20 +156,75 @@ public class BallisticBehaviour extends ServerOnlyBehaviour<BallisticData> {
         //Quaterniond q = new Quaterniond().look
         //rigidWriter.setRotation(JomlUtil.swingRotateTo(new Vector3d(0, 0, 1), vel, new Quaterniond()));
 
+        //Vector3dc initialVel = rigidReader.getVelocity();
+        Vector3d refVel = rigidReader.getVelocity(new Vector3d());
+        Vector3d rayWithLen = refVel.mul(0.05, new Vector3d());
+
+        BallisticPos headBPos = data.initialStateData.getPosFromHead(0);
+        Vec3 headWorldPos = JomlUtil.v3(rigidReader.localIToWorldPos(headBPos.localPos()));
+
+        ClipContext clip = new ClipContext(
+            headWorldPos,
+            headWorldPos.add(JomlUtil.v3(rayWithLen)),
+            ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE,
+            null
+        );
+        Dest<Boolean> bouncing = new Dest<>(false);
         AtomicBoolean needTerminate = new AtomicBoolean(false);
-        data.initialStateData.foreachBallisticBlock(ship, (locPos, state, bb) -> {
-            Dest<Boolean> curNeedTerminate = new Dest<>(false);
-            bb.doTerminalEffect(level, ship, locPos, state, infos, curNeedTerminate);
+        BlockState warhead = ship.getBlockCluster().getDataReader().getBlockState(headBPos.localPos());
+        for (int i = 0; i < WapConfig.maxDestroyCnt; ++i) {  //loop until miss hit or i>=MAX_DESTROY_CNT
+            if (bouncing.get()) break;
+            if (refVel.lengthSquared() < 0.1 || !Double.isFinite(refVel.lengthSquared())) break;
+            if (needTerminate.get())
+                break;
 
-            if (curNeedTerminate.get())
-                needTerminate.set(true);
-        });
+            BallisticsHitInfo hitInfo = BallisticsHitInfo.clipIncludeShip(level, clip, data.vsShipFirer);
+            if (hitInfo == null)  //not hit
+                break;
 
-        AtomicBoolean penetrateTerminate = new AtomicBoolean(false);
+            data.initialStateData.fromHeadToBallisticPoses.stream()
+                //.map(x -> ship.getBlockCluster().getDataReader().getBlockState(x.localPos()))
+                //.filter(x -> x.getBlock() instanceof ISandBoxBallisticBlock)
+                //.map(x -> (ISandBoxBallisticBlock)(x.getBlock()))
+                .forEach(x -> {
+                    BlockState s = ship.getBlockCluster().getDataReader().getBlockState(x.localPos());
+                    if (s.getBlock() instanceof ISandBoxBallisticBlock bb) {
+                        bb.onClip(level, x, hitInfo, s, ship, infos);
+                    }
+                });
+
+            data.initialStateData.foreachBallisticBlock(ship, (locPos, state, bb) -> {
+                Dest<Boolean> curNeedTerminate = new Dest<>(false);
+                bb.doTerminalEffect(level, ship, locPos, state, infos, curNeedTerminate);
+
+                if (curNeedTerminate.get())
+                    needTerminate.set(true);
+            });
+
+            if (needTerminate.get())
+                break;
+
+            double mass = rigidReader.getMass();  //todo rigidData's mass effect by scale
+            //Vector3d lastHitVel = new Vector3d(rigidDataReader.getVelocity());
+            double warheadScale = rigidReader.getScale().x();  //todo 3d scale?  todo scale effects
+
+            //Vector3d tempLastVel = new Vector3d(lastHitVel);
+
+
+            //todo limit max destroy range
+            PenetrateHandler.breakAroundBlocks(level, ship, data, warhead, headBPos, refVel, hitInfo, bouncing, needTerminate);
+        }
+
+
+
+
+
+
+        /*AtomicBoolean penetrateTerminate = new AtomicBoolean(false);
         PenetrateHandler.handle(level, ship, data, penetrateTerminate);
 
         if (penetrateTerminate.get())
-            needTerminate.set(true);
+            needTerminate.set(true);*/
 
 
         /*for (SandBoxTriggerInfo info : infos) {

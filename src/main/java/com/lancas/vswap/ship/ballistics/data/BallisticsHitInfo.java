@@ -87,8 +87,8 @@ public class BallisticsHitInfo {
             shipBeHit.getId()
         );
     }
-    public static @Nullable BallisticsHitInfo clipIncludeShip(Level level, ClipContext clip) {
-        BlockHitResult hitResult = RaycastUtilsKt.clipIncludeShips(level, clip, false);
+    public static @Nullable BallisticsHitInfo clipIncludeShip(Level level, ClipContext clip, long skipShip) {
+        BlockHitResult hitResult = RaycastUtilsKt.clipIncludeShips(level, clip, false, skipShip);
 
         if (hitResult.getType() == HitResult.Type.MISS)
             return null;
@@ -101,6 +101,7 @@ public class BallisticsHitInfo {
             return inShip(hitShip, JomlUtil.v3(fromInShip), hitResult.getBlockPos(), hitResult.getLocation(), hitResult.getDirection());
         }
     }
+
 
     @Override
     public String toString() {

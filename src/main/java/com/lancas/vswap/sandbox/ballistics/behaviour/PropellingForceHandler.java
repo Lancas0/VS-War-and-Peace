@@ -16,7 +16,8 @@ public class PropellingForceHandler {
 
     public static void applyPropellingForceIfShould(SandBoxServerShip ship, BallisticData data) {
         //EzDebug.log("termianted:" + data.terminated + ", always:" + data.barrelCtx.alwaysInBarrelSinceLaunch);
-        if (data.terminated || !data.barrelCtx.alwaysInBarrelSinceLaunch) return;
+        //if (data.terminated || !data.barrelCtx.alwaysInBarrelSinceLaunch) return;
+        if (data.terminated) return;
 
         IRigidbodyDataReader rigidReader = ship.getRigidbody().getDataReader();
 
@@ -36,7 +37,8 @@ public class PropellingForceHandler {
             //ship.getRigidbody().getDataWriter().applyWork(data.initialStateData.totalPropellingEnergy);
             double energy = data.initialStateData.stdPropellingEnergy * STD_PROPELLANT_ENERGY;
             Vector3d vel = data.initialStateData.worldLaunchDir.normalize(Math.sqrt(2 * energy / rigidReader.getMass()), new Vector3d());
-            ship.getRigidbody().getDataWriter().setVelocity(vel);
+            //ship.getRigidbody().getDataWriter().setVelocity(vel);
+            ship.getRigidbody().getDataWriter().addVelocity(vel);
             EzDebug.log("energy:" + data.initialStateData.stdPropellingEnergy / 1000 + " KJ" + ", vel:" + vel + ", velLen:" + vel.length());
             data.barrelCtx.appliedHighPressureStage = true;
         }

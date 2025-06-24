@@ -10,22 +10,22 @@ public class BallisticBarrelContextSubData implements IComponentData<BallisticBa
 
 
     public BallisticBarrelContextSubData copyData(BallisticBarrelContextSubData src) {
-        exitedBarrelTicks = src.exitedBarrelTicks;
-        alwaysInBarrelSinceLaunch = src.alwaysInBarrelSinceLaunch;
+        ///exitedBarrelTicks = src.exitedBarrelTicks;
+        //alwaysInBarrelSinceLaunch = src.alwaysInBarrelSinceLaunch;
         return this;
     }
 
-    public int exitedBarrelTicks = 0;              //determine if to apply anti gravity and start detect, > ABSOLUTE_EXIT_BARREL_TICK so exit barrel
-    public boolean alwaysInBarrelSinceLaunch = true;  //determine if to apply propelling power
+    //public int exitedBarrelTicks = 0;              //determine if to apply anti gravity and start detect, > ABSOLUTE_EXIT_BARREL_TICK so exit barrel
+    //public boolean alwaysInBarrelSinceLaunch = true;  //determine if to apply propelling power
     public boolean appliedHighPressureStage = false;
 
-    public boolean isAbsoluteExitBarrel() { return exitedBarrelTicks >= ABSOLUTE_EXIT_BARREL_TICK; }
+    //public boolean isAbsoluteExitBarrel() { return exitedBarrelTicks >= ABSOLUTE_EXIT_BARREL_TICK; }
 
     @Override
     public CompoundTag saved() {
         return new NbtBuilder()
-            .putInt("exited_barrel_ticks", exitedBarrelTicks)
-            .putBoolean("in_barrel_since_launch", alwaysInBarrelSinceLaunch)
+            //.putInt("exited_barrel_ticks", exitedBarrelTicks)
+            //.putBoolean("in_barrel_since_launch", alwaysInBarrelSinceLaunch)
             .putBoolean("applied_high_pressure_stage", appliedHighPressureStage)
             //.putBoolean("terminated", terminated)
             .get();
@@ -33,8 +33,8 @@ public class BallisticBarrelContextSubData implements IComponentData<BallisticBa
     @Override
     public BallisticBarrelContextSubData load(CompoundTag tag) {
         NbtBuilder.modify(tag)
-            .readIntDo("exited_barrel_ticks", v -> exitedBarrelTicks = v)
-            .readBooleanDo("in_barrel_since_launch", v -> alwaysInBarrelSinceLaunch = v)
+            //.readIntDo("exited_barrel_ticks", v -> exitedBarrelTicks = v)
+            //.readBooleanDo("in_barrel_since_launch", v -> alwaysInBarrelSinceLaunch = v)
             .readBooleanDo("applied_high_pressure_stage", v -> appliedHighPressureStage = v);
             //.readBooleanDo("terminated", v -> terminated = v);
 

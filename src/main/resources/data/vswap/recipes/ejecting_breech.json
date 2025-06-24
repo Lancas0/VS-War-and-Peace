@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " P ",
+    "PBP",
+    "RPR"
+  ],
+  "key": {
+    "P": { "item": "create:sturdy_sheet" },
+    "B": { "tag": "forge:plates/brass" },
+    "R": { "item": "minecraft:redstone" }
+  },
+  "result": {
+    "item": "vswap:ejecting_breech",
+    "count": 1
+  }
+}

@@ -60,6 +60,7 @@ public class CategoryBuilder {  //Category as generic param, act like friend cla
 
 
     public final String categoryName;
+    public final String localizationKey;
 
     //todo concurrent?
     protected Set<String> includeTags = new HashSet<>();
@@ -86,8 +87,9 @@ public class CategoryBuilder {  //Category as generic param, act like friend cla
     }
 
     //protected Category(@NotNull String inCategoryName, @NotNull ResourceLocation inIconKey) { categoryName = inCategoryName; iconKey = inIconKey; }
-    public CategoryBuilder(String inCategoryName, Collection<String> inIncludeTags, Collection<String> inIncludeIDs, Collection<String> inExcludeTags, Collection<String> inExcludeIDs, String inIconID) {
+    public CategoryBuilder(String inCategoryName, String inLocalizationKey, Collection<String> inIncludeTags, Collection<String> inIncludeIDs, Collection<String> inExcludeTags, Collection<String> inExcludeIDs, String inIconID) {
         categoryName = inCategoryName;
+        localizationKey = inLocalizationKey;
 
         includeTags.addAll(inIncludeTags);
         includeIDs.addAll(inIncludeIDs);
@@ -99,6 +101,13 @@ public class CategoryBuilder {  //Category as generic param, act like friend cla
             EzDebug.warn("create category icon fail. will create default icon of DIRT");
             iconKey = Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(Items.DIRT));
         }*/
+    }
+
+    public void append(CategoryBuilder other) {
+        includeTags.addAll(other.includeTags);
+        includeIDs.addAll(other.includeIDs);
+        excludeTags.addAll(other.excludeTags);
+        excludeIDs.addAll(other.excludeIDs);
     }
 
     protected boolean contains(Block block) {
@@ -135,18 +144,18 @@ public class CategoryBuilder {  //Category as generic param, act like friend cla
         //EzDebug.log("cate builder, blockID:" + blockID + ", return:" + (anyTagIncluded.get() && (!anyTagExcluded.get())));
         return anyTagIncluded.get() && (!anyTagExcluded.get());
     }
-    public Category build() {
+    /*public Category build() {
         if (!valid()) {
             throw new RuntimeException("should not called build because the builder is not valid");
         }
         //return new Category(categoryName, builtIncludeIDs, iconKey);
         List<String> ids = new ArrayList<>();
-        BuiltInRegistries.BLOCK.forEach(b -> {
+        ForgeRegistries.BLOCKS.forEach(b -> {
             if (contains(b))
-                ids.add(Objects.requireNonNull(BuiltInRegistries.BLOCK.getKey(b)).toString());
+                ids.add(Objects.requireNonNull(ForgeRegistries.BLOCKS.getKey(b)).toString());
         });
         return new Category(categoryName, ids, iconKey);
-    }
+    }*/
 
     public boolean valid() {
         //return !builtIncludeIDs.isEmpty();

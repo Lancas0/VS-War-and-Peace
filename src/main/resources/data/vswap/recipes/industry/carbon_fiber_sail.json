@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    { "item" : "create:sail_frame" },
+    { "item" : "vswap:carbon_fiber" }
+  ],
+  "result": {
+    "item": "vswap:carbon_fiber_sail",
+    "count": 1
+  }
+}

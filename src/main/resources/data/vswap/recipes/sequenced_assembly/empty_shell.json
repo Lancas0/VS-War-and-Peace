@@ -1,0 +1,24 @@
+{
+  "type": "create:sequenced_assembly",
+  "ingredient": {
+    "tag": "forge:plates/iron"
+  },
+  "loops": 3,
+  "results": [
+    { "item": "vswap:empty_shell" }
+  ],
+  "sequence": [
+    {
+      "type": "create:pressing",
+      "ingredients": [
+        { "item": "create:iron_sheet" }
+      ],
+      "results": [
+        { "item": "create:iron_sheet" }
+      ]
+    }
+  ],
+  "transitionalItem": {
+    "item": "create:iron_sheet"
+  }
+}

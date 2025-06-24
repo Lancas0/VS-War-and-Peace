@@ -8,6 +8,7 @@ import com.lancas.vswap.content.block.blocks.cartridge.attach.FloatingChamber;
 import com.lancas.vswap.content.block.blocks.cartridge.booster.RocketBooster;
 import com.lancas.vswap.content.block.blocks.cartridge.attach.glider.Glider;
 import com.lancas.vswap.content.block.blocks.cartridge.attach.glider.GliderWing;
+import com.lancas.vswap.content.block.blocks.cartridge.primer.EmptyPrimer;
 import com.lancas.vswap.content.block.blocks.cartridge.primer.TorpedoPrimer;
 import com.lancas.vswap.content.block.blocks.cartridge.propellant.CombustiblePropellantBlock;
 import com.lancas.vswap.content.block.blocks.cartridge.primer.PrimerBlock;
@@ -15,7 +16,7 @@ import com.lancas.vswap.content.block.blocks.cartridge.propellant.ShelledPropell
 import com.lancas.vswap.content.block.blocks.cartridge.warhead.*;
 import com.lancas.vswap.content.block.blocks.cartridge.fuze.ImpactFuze;
 import com.lancas.vswap.content.block.blocks.cartridge.attach.TailFin;
-import com.lancas.vswap.content.block.blocks.cartridge.propellant.empty.EmptyShelledPropellant;
+import com.lancas.vswap.content.block.blocks.cartridge.propellant.empty.EmptyShell;
 import com.lancas.vswap.content.block.blocks.cartridge.warhead.apds.WarheadAPDS;
 import com.lancas.vswap.content.block.blocks.debug.Block01;
 import com.lancas.vswap.content.block.blocks.industry.create.CarbonFiberSail;
@@ -29,8 +30,10 @@ import com.lancas.vswap.content.block.blocks.scope.MechScopeBlock;
 import com.lancas.vswap.content.block.blocks.scope.TelescopicScope;
 import com.lancas.vswap.subproject.blockplusapi.itemplus.ItemPlus;
 import com.simibubi.create.AllMovementBehaviours;
+import com.simibubi.create.content.redstone.displayLink.AllDisplayBehaviours;
 import com.simibubi.create.foundation.data.CreateRegistrate;
 import com.simibubi.create.foundation.data.SharedProperties;
+import com.simibubi.create.foundation.data.TagGen;
 import com.tterrag.registrate.util.entry.BlockEntry;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.MapColor;
@@ -39,6 +42,20 @@ import static com.lancas.vswap.VsWap.REGISTRATE;
 
 
 public class WapBlocks {
+    public static class General {
+        public static BlockEntry<EmptyShell> EMPTY_SHELL = REGISTRATE
+            .block("empty_shell", EmptyShell::new)
+            .initialProperties(SharedProperties::stone)
+            .transform(TagGen.pickaxeOnly())
+            .properties(p -> p.noOcclusion().mapColor(MapColor.PODZOL))
+            .item()
+            .build()
+            .register();
+
+        public static void register() {
+
+        }
+    }
 
     public static class Artillery {
         /*public static BlockEntry<ArtilleryCornerBlock> ARTILLERY_CORNER = REGISTRATE //todo friction
@@ -60,6 +77,7 @@ public class WapBlocks {
         public static BlockEntry<ArtilleryBarrelBlock> ARTILLERY_BARREL = REGISTRATE
             .block("artillery_barrel", ArtilleryBarrelBlock::new)
             .initialProperties(SharedProperties::stone)
+            .transform(TagGen.pickaxeOnly())
             .properties(p -> p.mapColor(MapColor.STONE))  //todo friction
             .item()
             .build()
@@ -68,6 +86,7 @@ public class WapBlocks {
         public static BlockEntry<CartridgeRailBlock> CARTRIDGE_RAIL = REGISTRATE
             .block("cartridge_rail", CartridgeRailBlock::new)
             .initialProperties(SharedProperties::stone)
+            .transform(TagGen.pickaxeOnly())
             .properties(p -> p.mapColor(MapColor.STONE))  //todo friction
             .item()
             .build()
@@ -84,6 +103,7 @@ public class WapBlocks {
         public static BlockEntry<EjectingBreech> EJECTING_BREECH = REGISTRATE
             .block("ejecting_breech", EjectingBreech::new)
             .initialProperties(SharedProperties::stone)
+            .transform(TagGen.pickaxeOnly())
             .properties(p -> p.mapColor(MapColor.STONE))  //todo friction
             .item()
             .build()
@@ -134,13 +154,7 @@ public class WapBlocks {
     public static class Cartridge {
         public static class Propellant {
             public static class Empty {
-                public static BlockEntry<EmptyShelledPropellant> EMPTY_PROPELLANT = REGISTRATE
-                    .block("empty_shelled_propellant", EmptyShelledPropellant::new)
-                    .initialProperties(SharedProperties::stone)
-                    .properties(p -> p.noOcclusion().mapColor(MapColor.PODZOL))
-                    .item()
-                    .build()
-                    .register();
+
 
                 /*public static BlockEntry<EmptyGauge12> EMPTY_GAUGE12 = REGISTRATE
                     .block("empty_gauge12", EmptyGauge12::new)
@@ -159,6 +173,7 @@ public class WapBlocks {
             public static BlockEntry<ShelledPropellant> SHELLED_PROPELLANT = REGISTRATE
                 .block("shelled_propellant", ShelledPropellant::new)
                 .initialProperties(SharedProperties::wooden)
+                .transform(TagGen.pickaxeOnly())
                 .properties(p -> p.noOcclusion().mapColor(MapColor.PODZOL))
                 .item(ItemPlus::getOrCreateFromBlockAndGet)
                 .build()
@@ -166,7 +181,8 @@ public class WapBlocks {
 
             public static BlockEntry<CombustiblePropellantBlock> COMBUSTIBLE_PROPELLANT = REGISTRATE
                 .block("ccc", CombustiblePropellantBlock::new)
-                .initialProperties(SharedProperties::stone)
+                .initialProperties(SharedProperties::wooden)
+                .transform(TagGen.axeOrPickaxe())
                 .properties(p -> p.noOcclusion().mapColor(MapColor.PODZOL))
                 .item()
                 .build()
@@ -187,6 +203,7 @@ public class WapBlocks {
             public static BlockEntry<WarheadAPCR> WARHEAD_APCR = REGISTRATE
                 .block("warhead_apcr", WarheadAPCR::new)
                 .initialProperties(SharedProperties::stone)
+                .transform(TagGen.pickaxeOnly())
                 .properties(p -> p.noOcclusion().mapColor(MapColor.PODZOL))
                 .item(ItemPlus::getOrCreateFromBlockAndGet)
                 .build()
@@ -195,6 +212,8 @@ public class WapBlocks {
             public static BlockEntry<WarheadAPDS> WARHEAD_APDS = REGISTRATE
                 .block("warhead_apds", WarheadAPDS::new)
                 .properties(p -> p.noOcclusion().mapColor(MapColor.PODZOL))
+                .initialProperties(SharedProperties::stone)
+                .transform(TagGen.pickaxeOnly())
                 .item(ItemPlus::getOrCreateFromBlockAndGet)
                 .build()
                 .register();
@@ -216,6 +235,7 @@ public class WapBlocks {
             public static BlockEntry<HeWarhead> HE_WARHEAD = REGISTRATE
                 .block("he_warhead", HeWarhead::new)
                 .initialProperties(SharedProperties::stone)
+                .transform(TagGen.pickaxeOnly())
                 .properties(p -> p.noOcclusion().mapColor(MapColor.PODZOL))
                 .item(ItemPlus::getOrCreateFromBlockAndGet)
                 .build()
@@ -224,6 +244,7 @@ public class WapBlocks {
             public static BlockEntry<WarheadHEAT> WARHEAD_HEAT = REGISTRATE
                 .block("warhead_heat", WarheadHEAT::new)
                 .initialProperties(SharedProperties::stone)
+                .transform(TagGen.pickaxeOnly())
                 .properties(p -> p.noOcclusion().mapColor(MapColor.PODZOL))
                 .item(ItemPlus::getOrCreateFromBlockAndGet)
                 .build()
@@ -251,6 +272,7 @@ public class WapBlocks {
             public static BlockEntry<ImpactFuze> IMPACT_FUSE = REGISTRATE
                 .block("impact_fuze", ImpactFuze::new)
                 .initialProperties(SharedProperties::stone)
+                .transform(TagGen.pickaxeOnly())
                 .properties(p -> p.noOcclusion().mapColor(MapColor.PODZOL))
                 .item(ItemPlus::getOrCreateFromBlockAndGet)
                 .build()
@@ -263,6 +285,7 @@ public class WapBlocks {
             public static BlockEntry<Glider> GLIDER = REGISTRATE
                 .block("glider", Glider::new)
                 .initialProperties(SharedProperties::stone)
+                .transform(TagGen.pickaxeOnly())
                 .properties(p -> p.noOcclusion().mapColor(MapColor.PODZOL))
                 .item(ItemPlus::getOrCreateFromBlockAndGet)
                 .build()
@@ -271,6 +294,7 @@ public class WapBlocks {
             public static BlockEntry<GliderWing> GLIDER_WING = REGISTRATE
                 .block("glider_wing", GliderWing::new)
                 .initialProperties(SharedProperties::stone)
+                .transform(TagGen.pickaxeOnly())
                 .properties(p -> p.noOcclusion().mapColor(MapColor.PODZOL))
                 .item(ItemPlus::getOrCreateFromBlockAndGet)
                 .build()
@@ -280,6 +304,7 @@ public class WapBlocks {
             public static BlockEntry<RocketBooster> ROCKET_BOOSTER = REGISTRATE
                 .block("rocket_booster", RocketBooster::new)
                 .initialProperties(SharedProperties::stone)
+                .transform(TagGen.pickaxeOnly())
                 .properties(p -> p.noOcclusion().mapColor(MapColor.PODZOL))
                 .item(ItemPlus::getOrCreateFromBlockAndGet)
                 .build()
@@ -288,6 +313,7 @@ public class WapBlocks {
             public static BlockEntry<FloatingChamber> FLOATING_CHAMBER = REGISTRATE
                 .block("floating_chamber", FloatingChamber::new)
                 .initialProperties(SharedProperties::stone)
+                .transform(TagGen.pickaxeOnly())
                 .properties(p -> p.noOcclusion().mapColor(MapColor.PODZOL))
                 .item(ItemPlus::getOrCreateFromBlockAndGet)
                 .build()
@@ -302,14 +328,25 @@ public class WapBlocks {
             public static BlockEntry<PrimerBlock> PRIMER = REGISTRATE
                 .block("primer", PrimerBlock::new)
                 .initialProperties(SharedProperties::stone)
+                .transform(TagGen.pickaxeOnly())
                 .properties(p -> p.noOcclusion().mapColor(MapColor.PODZOL))
                 .item(ItemPlus::getOrCreateFromBlockAndGet)
+                .build()
+                .register();
+
+            public static BlockEntry<EmptyPrimer> EMPTY_PRIMER = REGISTRATE
+                .block("empty_primer", EmptyPrimer::new)
+                .initialProperties(SharedProperties::stone)
+                .transform(TagGen.pickaxeOnly())
+                .properties(p -> p.noOcclusion().mapColor(MapColor.PODZOL))
+                .item()
                 .build()
                 .register();
 
             public static BlockEntry<TorpedoPrimer> TORPEDO_PRIMER = REGISTRATE
                 .block("torpedo_primer", TorpedoPrimer::new)
                 .initialProperties(SharedProperties::stone)
+                .transform(TagGen.pickaxeOnly())
                 .properties(p -> p.noOcclusion().mapColor(MapColor.PODZOL))
                 .item(ItemPlus::getOrCreateFromBlockAndGet)
                 .build()
@@ -348,6 +385,7 @@ public class WapBlocks {
         public static BlockEntry<TailFin> TAIL_FIN = REGISTRATE
             .block("tail_fin", TailFin::new)
             .initialProperties(SharedProperties::stone)
+            .transform(TagGen.pickaxeOnly())
             .properties(p -> p.noOcclusion().mapColor(MapColor.PODZOL))
             .item(ItemPlus::getOrCreateFromBlockAndGet)
             .build()
@@ -409,6 +447,7 @@ public class WapBlocks {
             public static BlockEntry<CarbonFiberSail> CARBON_FIBER_SAIL = REGISTRATE
                 .block("carbon_fiber_sail", CarbonFiberSail::new)
                 .initialProperties(SharedProperties::stone)
+                .transform(TagGen.axeOrPickaxe())
                 .properties(p -> p.noOcclusion().mapColor(MapColor.PODZOL))
                 .item()
                 .build()
@@ -421,6 +460,7 @@ public class WapBlocks {
             public static BlockEntry<ProjectionCenter> PROJECTION_CENTER =  REGISTRATE
                 .block("projection_center", ProjectionCenter::new)
                 .properties(p -> p.noOcclusion().mapColor(MapColor.PODZOL))
+                .initialProperties(SharedProperties::stone)
                 .item()
                 .build()
                 .register();
@@ -428,6 +468,8 @@ public class WapBlocks {
             public static BlockEntry<VSProjector> VS_PROJECTOR =  REGISTRATE
                 .block("vs_projector", VSProjector::new)
                 .properties(p -> p.noOcclusion().mapColor(MapColor.PODZOL))
+                .initialProperties(SharedProperties::stone)
+                .transform(TagGen.axeOrPickaxe())
                 .item()
                 .build()
                 .register();
@@ -435,6 +477,8 @@ public class WapBlocks {
             public static BlockEntry<ProjectorLen> PROJECT_LEN =  REGISTRATE
                 .block("projector_len", ProjectorLen::new)
                 .properties(p -> p.noOcclusion().mapColor(MapColor.PODZOL))
+                .initialProperties(SharedProperties::stone)
+                .transform(TagGen.pickaxeOnly())
                 .item()
                 .build()
                 .register();
@@ -446,6 +490,8 @@ public class WapBlocks {
             public static BlockEntry<Shredder> SHREDDER = REGISTRATE
                 .block("shredder", Shredder::new)
                 .properties(p -> p.noOcclusion().mapColor(MapColor.PODZOL))
+                .initialProperties(SharedProperties::stone)
+                .transform(TagGen.pickaxeOnly())
                 .item()
                 .build()
                 .register();
@@ -455,6 +501,9 @@ public class WapBlocks {
             .block("dock", Dock::new)
             .properties(p -> p.noOcclusion().mapColor(MapColor.PODZOL))
             .onRegister(CreateRegistrate.connectedTextures(DockCTBehaviour::new))
+            .onRegister(AllDisplayBehaviours.assignDataBehaviour(new DockDisplayLinkSrc(), "show_needed_material"))
+            .initialProperties(SharedProperties::stone)
+            .transform(TagGen.pickaxeOnly())
             //.item(ItemPlus::getOrCreateFromBlockAndGet)
             .item()
             .build()
@@ -464,6 +513,8 @@ public class WapBlocks {
             .block("dock_green_print_holder", DockGreenPrintHolder::new)
             .properties(p -> p.noOcclusion().mapColor(MapColor.PODZOL))
             .onRegister(CreateRegistrate.connectedTextures(DockCTBehaviour::new))
+            .initialProperties(SharedProperties::stone)
+            .transform(TagGen.pickaxeOnly())
             //.item(ItemPlus::getOrCreateFromBlockAndGet)
             .item()
             .build()
@@ -473,6 +524,8 @@ public class WapBlocks {
             .block("dock_construction_detector", DockConstructionDetector::new)
             .properties(p -> p.noOcclusion().mapColor(MapColor.PODZOL))
             .onRegister(CreateRegistrate.connectedTextures(DockCTBehaviour::new))
+            .initialProperties(SharedProperties::stone)
+            .transform(TagGen.pickaxeOnly())
             .item()
             .build()
             .register();
@@ -481,6 +534,8 @@ public class WapBlocks {
             .block("dock_unlocker", DockUnlocker::new)
             .properties(p -> p.noOcclusion().mapColor(MapColor.PODZOL))
             .onRegister(CreateRegistrate.connectedTextures(DockCTBehaviour::new))
+            .initialProperties(SharedProperties::stone)
+            .transform(TagGen.pickaxeOnly())
             .item()
             .build()
             .register();
@@ -541,6 +596,8 @@ public class WapBlocks {
         .block("mech_scope_block", MechScopeBlock::new)
         .initialProperties(SharedProperties::stone)
         .properties(p -> p.noOcclusion().mapColor(MapColor.PODZOL))
+        .initialProperties(SharedProperties::stone)
+        .transform(TagGen.pickaxeOnly())
         .onRegister(AllMovementBehaviours.movementBehaviour(new ScopeMovementBehaviour()))
         .item()
         .build()
@@ -549,6 +606,8 @@ public class WapBlocks {
     public static BlockEntry<TelescopicScope> TELE_SCOPE_BLOCK = REGISTRATE
         .block("tele_scope_block", TelescopicScope::new)
         .initialProperties(SharedProperties::stone)
+        .initialProperties(SharedProperties::stone)
+        .transform(TagGen.pickaxeOnly())
         .properties(p -> p.noOcclusion().mapColor(MapColor.PODZOL))
         .onRegister(AllMovementBehaviours.movementBehaviour(new ScopeMovementBehaviour()))
         .item()
@@ -671,6 +730,8 @@ public class WapBlocks {
 
 
     public static void register() {
+        General.register();
+
         Artillery.register();
         Cartridge.register();
 

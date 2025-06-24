@@ -11,17 +11,18 @@ import com.lancas.vswap.ship.helper.LazyShip;
 import com.lancas.vswap.ship.helper.builder.ShipBuilder;
 import com.lancas.vswap.subproject.mstandardized.CategoryRegistry;
 import com.lancas.vswap.subproject.mstandardized.MaterialStandardizedItem;
-import com.lancas.vswap.util.JomlUtil;
-import com.lancas.vswap.util.NbtBuilder;
-import com.lancas.vswap.util.ShipUtil;
-import com.lancas.vswap.util.StrUtil;
+import com.lancas.vswap.util.*;
+import edn.stratodonut.trackwork.tracks.blocks.TrackBaseBlock;
+import edn.stratodonut.trackwork.tracks.blocks.WheelBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.util.INBTSerializable;
+import net.minecraftforge.fml.ModList;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3d;
 import org.joml.primitives.AABBd;
@@ -32,7 +33,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class ShipConstructHandler implements INBTSerializable<CompoundTag> {
-    protected ConcurrentHashMap<String, ConcurrentLinkedQueue<TriTuple.SavedBlockTuple>> toConstruct = new ConcurrentHashMap<>();
+    public ConcurrentHashMap<String, ConcurrentLinkedQueue<TriTuple.SavedBlockTuple>> toConstruct = new ConcurrentHashMap<>();
     protected long constructingShipId = -1;
     protected final Vector3d scale = new Vector3d();
     protected final Vector3d bottomCenterPivot = new Vector3d();
@@ -106,11 +107,12 @@ public class ShipConstructHandler implements INBTSerializable<CompoundTag> {
 
         return material;
     }
-    public void creativePutMaterial(ServerLevel level) {
+    public boolean creativePutMaterial(ServerLevel level) {
         String anyUnConstructedCateName = toConstruct.keySet().stream().findAny().orElse(null);
-        if (anyUnConstructedCateName == null) return;  //supposed construction finished
+        if (anyUnConstructedCateName == null) return false;  //supposed construction finished
 
         putCategoryBlock(level, anyUnConstructedCateName, false);
+        return true;
     }
 
 
@@ -142,11 +144,31 @@ public class ShipConstructHandler implements INBTSerializable<CompoundTag> {
         ServerShip constructing = getConstructingShip(level);
 
         BlockPos origin = RRWChunkyShipSchemeData.getOriginInShipForScheme(level, constructing);
+
+        CompoundTag toLoadBeNbt;
+        if (constructTuple.getBeNbt() != null) {
+            NbtBuilder toLoadBeNbtBuilder = NbtBuilder.copy(constructTuple.getBeNbt());
+            //todo this is temp compact, to remove later
+            if (ModList.get().isLoaded("trackwork")) {
+                Block block = constructTuple.getBlockState().getBlock();
+                if ((block instanceof WheelBlock) || (block instanceof TrackBaseBlock)) {
+                    toLoadBeNbtBuilder
+                        .putBoolean("Assembled", false)
+                        .remove("trackBlockID");
+                        //.putFloat("Speed", 0f);
+                }
+            }
+            toLoadBeNbt = toLoadBeNbtBuilder.get();
+        } else {
+            toLoadBeNbt = null;
+        }
+
+
         ShipBuilder.modify(level, constructing)
                 .addBlockAtActual(
                     origin.offset(constructTuple.getBlockPos()),
                     constructTuple.getBlockState(),
-                    constructTuple.getBeNbt()
+                    toLoadBeNbt
                 );
 
         /*BlockState prev = ship.getBlockCluster().getDataWriter().setBlock(JomlUtil.i(constructTuple.getBp()), constructTuple.getState());
@@ -211,5 +233,7 @@ public class ShipConstructHandler implements INBTSerializable<CompoundTag> {
             .readVector3d("scale", scale)
             .readVector3d("pivot", bottomCenterPivot)
             .readLongDo("constructing_ship_id", v -> constructingShipId = v);
+
+        CompoundTag t = tag;  //for debug breakpoint
     }
 }

@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " P ",
+    " S ",
+    " P "
+  ],
+  "key": {
+    "P": { "item": "create:sturdy_sheet" },
+    "S": { "item": "vswap:empty_shell" }
+  },
+  "result": {
+    "item": "vswap:warhead_apds",
+    "count": 1
+  }
+}

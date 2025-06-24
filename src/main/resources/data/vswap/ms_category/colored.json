@@ -1,0 +1,101 @@
+[
+  {
+    "name": "wool_category",
+    "localization": "vswap.category.wool",
+    "icon": "minecraft:white_wool",
+    "include": [
+      "#minecraft:wool"
+    ],
+    "exclude": []
+  },
+  {
+    "name": "terracotta_category",
+    "localization": "vswap.category.terracotta",
+    "icon": "minecraft:terracotta",
+    "include": [
+      "#minecraft:terracotta"
+    ],
+    "exclude": []
+  },
+  {
+    "name": "glazed_terracotta_category",
+    "localization": "vswap.category.glazed_terracotta",
+    "icon": "minecraft:white_glazed_terracotta",
+    "include": [
+      "#vswap:glazed_terracotta"
+    ],
+    "exclude": []
+  },
+  {
+    "name": "wool_carpets_category",
+    "localization": "vswap.category.wool_carpets",
+    "icon": "minecraft:white_carpet",
+    "include": [
+      "#minecraft:wool_carpets"
+    ],
+    "exclude": []
+  },
+  {
+    "name": "concrete_category",
+    "localization": "vswap.category.concrete",
+    "icon": "minecraft:white_concrete",
+    "include": [
+      "#vswap:concrete"
+    ],
+    "exclude": []
+  },
+  {
+    "name": "concrete_powder_category",
+    "localization": "vswap.category.concrete_powder",
+    "icon": "minecraft:white_concrete_powder",
+    "include": [
+      "#vswap:concrete_powder"
+    ],
+    "exclude": []
+  },
+  {
+    "name": "glass_category",
+    "localization": "vswap.category.glass",
+    "icon": "minecraft:glass",
+    "include": [
+      "#forge:glass"
+    ],
+    "exclude": []
+  },
+  {
+    "name": "glass_panes_category",
+    "localization": "vswap.category.glass_panes",
+    "icon": "minecraft:glass_pane",
+    "include": [
+      "#forge:glass_panes"
+    ],
+    "exclude": []
+  },
+  {
+    "name": "shulker_box_category",
+    "localization": "vswap.category.shulker_box",
+    "icon": "minecraft:shulker_box",
+    "include": [
+      "#minecraft:shulker_boxes"
+    ],
+    "exclude": []
+  },
+  {
+    "name": "candle_category",
+    "localization": "vswap.category.candle",
+    "icon": "minecraft:candle",
+    "include": [
+      "#minecraft:candles"
+    ],
+    "exclude": []
+  },
+  {
+    "name": "banner_category",
+    "localization": "vswap.category.banner",
+    "icon": "minecraft:white_banner",
+    "include": [
+      "#minecraft:banners"
+    ],
+    "exclude": []
+  }
+]

@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    { "item" : "minecraft:paper" },
+    { "item" : "create:brass_hand" }
+  ],
+  "result": {
+    "item": "vswap:grab_it",
+    "count": 1
+  }
+}

@@ -25,45 +25,9 @@ import java.util.UUID;
 public class SandBoxRigidbody
     extends BothSideBehaviour<RigidbodyData>
     implements IRigidbodyBehaviour {
-    //private boolean massCenterDirty = true;
-    //private final Vector3d massCenter = new Vector3d();
 
     @Override
     protected RigidbodyData makeInitialData() { return new RigidbodyData(); }
-    /*@Override
-    public void loadData(SandBoxServerShip inShip, SandBoxRigidbodyData src) {
-        ship = inShip;
-        data.copyData(src);
-
-
-        //massCenterDirty = true;
-    }*/
-    //@Override
-    //public IRigidbodyDataReader getExposedData() { return data; }
-    /*public Vector3d calLocalMassCenter() {
-        /.*if (data.mass < 1E-10)  {
-            //when mass is 0, massCenter is at (0, 0, 0)
-            massCenterDirty = true;
-            return massCenter.zero();
-        }
-
-        if (massCenterDirty) {
-            data.localPosMassMul.div(data.mass, massCenter);
-            massCenterDirty = false;
-        }
-
-        return massCenter;*./
-        //if (data.mass < 1E-10) return massCenter.zero();
-        //return data.localPosMassMul.div(data.mass, massCenter);  //从质量位置积分计算质心很简单，不需要LazyUpdate，反而增加复杂度
-        if (data.mass < 1E-10) return new Vector3d();
-        return data.localPosMassMul.div(data.mass, new Vector3d());
-    }
-    //todo cache
-    public Vector3d calWorldMassCenter() {
-        return ship.getTransform().localToWorldPos(calLocalMassCenter(), new Vector3d());
-    }
-    //public Matrix3dc getInertia() { return data.inertiaTensor; }
-     */
 
     @Override
     public IRigidbodyDataReader getDataReader() { return data; }
@@ -80,15 +44,6 @@ public class SandBoxRigidbody
             return r.data;
         return null;
     }
-
-    /*public void addForce(Vector3dc force) {
-        //if (data.mass < 1E-10) return;  //don't check mass now: sometimes mass is still zero right after created, physTick will handle it.
-        //data.applyingForces.add(new Vector3d(force));
-    }
-    public void applyTorque(Vector3dc torque) {
-        //if (data.mass < 1E-10) return;
-        //data.applyingTorques.add(new Vector3d(torque));
-    }*/
 
 
     @Override
@@ -139,14 +94,10 @@ public class SandBoxRigidbody
         }
     }
     private void applyForcesAndVelocity(double dt) {
-        //EzDebug.log("rigidbody applying force count:" + StrUtil.F2(data.applyingForces.size()));
-
         while (!data.applyingForces.isEmpty()) {
             Vector3d force = data.applyingForces.poll();
-            //EzDebug.log("polled rigidbody applying force:" + StrUtil.F2(force));
 
             Vector3d addVelocity = force.div(data.mass, new Vector3d()).mul(dt);
-            //EzDebug.log("force:" + StrUtil.F2(force) + ", addVel:" + StrUtil.F2(addVelocity));
             if (force.isFinite())
                 data.velocity.add(addVelocity);
             else
@@ -159,8 +110,6 @@ public class SandBoxRigidbody
         if (data.velocity.isFinite() && !isZero(data.velocity)) {
             Vector3d movement = data.velocity.mul(dt, new Vector3d());
             data.transform.position.add(movement);
-
-            //EzDebug.log("rigidbody movement:" + StrUtil.F2(movement));
         }
 
         if (!data.velocity.isFinite()) EzDebug.warn("ship:" + ship.getUuid() + ", have invalid velocity:" + data.velocity);
@@ -182,13 +131,6 @@ public class SandBoxRigidbody
             Vector3d torque = data.applyingTorques.poll();
             Vector3d addOmega = torque.mul(invInertiaWorld, new Vector3d()).mul(dt);//torque.mul(localInvInertia, new Vector3d()).mul(PHYS_TICK_TIME_S);
 
-            //EzDebug.log("applying torque:" + torque);
-            /*EzDebug.log("localInvInertia:" + localInvInertia +
-                "\nworldInvInertia:" + invInertiaWorld +
-                "\ntorque:" + StrUtil.F2(torque) + ", torMulLocal:" + torque.mul(localInvInertia, new Vector3d()) + ", torMulWorld:" + torque.mul(invInertiaWorld, new Vector3d()) +
-                "\nrotation" + StrUtil.F2(ship.getTransform().getRotation().getEulerAnglesXYZ(new Vector3d())) + ", addOmega:" + StrUtil.F2(addOmega)
-            );*/
-
             if (addOmega.isFinite()) {
                 data.omega.add(addOmega);
             } else {
@@ -196,10 +138,7 @@ public class SandBoxRigidbody
             }
         }
 
-        // 更新旋转：将角速度转换为四元数增量
         if (data.omega.isFinite() && !isZero(data.omega)) {
-            //EzDebug.log("applying omega:" + StrUtil.F2(data.omega));
-
             double angle = data.omega.length() * dt;
             Vector3d rotateAxis = data.omega.normalize(new Vector3d());
             Quaterniond deltaQ = new Quaterniond().fromAxisAngleRad(rotateAxis, angle);

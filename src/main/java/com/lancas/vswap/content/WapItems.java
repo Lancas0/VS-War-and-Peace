@@ -3,7 +3,7 @@ package com.lancas.vswap.content;
 //import com.lancas.vs_wap.content.items.docker.DockerItem;
 import com.lancas.vswap.content.item.items.BreechUnloader;
 import com.lancas.vswap.content.item.items.DebugTool;
-import com.lancas.vswap.content.item.items.EinherjarWand;
+import com.lancas.vswap.content.item.items.GrabIt;
 import com.lancas.vswap.content.item.items.GreenPrint;
 import com.lancas.vswap.content.item.items.docker.Docker;
 import com.lancas.vswap.content.item.items.vsmotion.MotionRecorder;
@@ -15,8 +15,8 @@ import static com.lancas.vswap.VsWap.REGISTRATE;
 
 public class WapItems {
 
-    public static final ItemEntry<EinherjarWand> VSWAP_WAND = REGISTRATE
-            .item("vswap_wand", EinherjarWand::new)
+    public static final ItemEntry<GrabIt> GRAB_IT = REGISTRATE
+            .item("grab_it", GrabIt::new)
             .properties(p -> p.stacksTo(1))
             .register();
 
@@ -51,10 +51,10 @@ public class WapItems {
         .register();
         */
 
-    /*public static final ItemEntry<DebugTool> DEBUG_TOOL = REGISTRATE
+    public static final ItemEntry<DebugTool> DEBUG_TOOL = REGISTRATE
         .item("debug_tool", DebugTool::new)
         .properties(p -> p.stacksTo(1))
-        .register();*/
+        .register();
 
 
     public static final ItemEntry<BreechUnloader> BREECH_UNLOADER = REGISTRATE
@@ -64,6 +64,11 @@ public class WapItems {
 
     public static final ItemEntry<MaterialStandardizedItem> MATERIAL_STANDARDIZED = REGISTRATE
         .item("ms_item", MaterialStandardizedItem::new)
+        .properties(p -> p.stacksTo(64))
+        .register();
+
+    public static final ItemEntry<Item> CREATIVE_MS = REGISTRATE
+        .item("ms_creative", Item::new)
         .properties(p -> p.stacksTo(64))
         .register();
 
@@ -81,10 +86,20 @@ public class WapItems {
         .item("propellant_item", PropellantItem::new)
         .*/
 
+    public static class CraftItems {
+
+        public static final ItemEntry<Item> CARBON_FIBER =  REGISTRATE
+            .item("carbon_fiber", Item::new)
+            .register();
+
+        public static void register() {}
+    }
+
 
     public static void register() {
         //test testIterable
         //WapItems.Docker.register();
+        CraftItems.register();
     }
     //public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
 

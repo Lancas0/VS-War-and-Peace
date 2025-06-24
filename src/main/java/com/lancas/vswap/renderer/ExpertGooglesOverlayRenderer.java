@@ -2,6 +2,8 @@ package com.lancas.vswap.renderer;
 
 import com.lancas.vswap.VsWap;
 import com.lancas.vswap.WapLang;
+import com.lancas.vswap.content.block.blocks.cartridge.warhead.WarheadAPCR;
+import com.lancas.vswap.content.block.blocks.cartridge.warhead.apds.WarheadAPDS;
 import com.lancas.vswap.content.info.block.WapBlockInfos;
 import com.lancas.vswap.foundation.api.QuadPredicate;
 import com.lancas.vswap.foundation.math.WapBallisticMath;
@@ -237,7 +239,12 @@ public class ExpertGooglesOverlayRenderer {
         });
         //add critical degree showcase
         addTooltipProvider(((level, player, bp, tooltip) -> {
-            if (player.getMainHandItem().getItem() instanceof BlockItem bi && bi.getBlock() instanceof ISandBoxBallisticBlock bb) {
+            if (player.getMainHandItem().getItem() instanceof BlockItem bi) {
+                Block bb = bi.getBlock();
+                if (!(bb instanceof WarheadAPDS) && !(bb instanceof WarheadAPCR))
+                    return false;
+
+
                 BlockState warheadState = bi.getBlock().defaultBlockState();
                 BlockState armourState = level.getBlockState(bp);
                 if (!(Minecraft.getInstance().hitResult instanceof BlockHitResult hitResult))

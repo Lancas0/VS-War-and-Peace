@@ -41,6 +41,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 
 public class MaterialStandardizedItem extends Item implements IFilterItem {
@@ -139,16 +140,19 @@ public class MaterialStandardizedItem extends Item implements IFilterItem {
             AtomicReference<InteractionResult> result = new AtomicReference<>(InteractionResult.PASS);
 
             Optional.ofNullable(ClientBlockSelection.getSelectBlockOrMainBlockOf(handStack))
-                .map(b -> {
+                /*.map(b -> {
                     if (b.asItem() instanceof BlockItem bi)
                         return bi;
                     EzDebug.warn("the item of block:" + b + " is not blockItem!");
                     return null;
-                })
+                })*/
                 .ifPresentOrElse(
                     toPlace -> {
-                        simulatePlace(level, player, ctx, toPlace);
-                        result.set(InteractionResult.SUCCESS);
+                        InteractionResult res = simulatePlace(level, player, ctx, toPlace);
+                        if (res == InteractionResult.CONSUME || res == InteractionResult.CONSUME_PARTIAL || res == InteractionResult.SUCCESS) {
+                            handStack.shrink(1);
+                        }
+                        result.set(res);
                     },
                     () -> EzDebug.log("get null selecting block item")
                 );
@@ -156,9 +160,19 @@ public class MaterialStandardizedItem extends Item implements IFilterItem {
             return result.get();
         }
     }
-    private InteractionResult simulatePlace(ServerLevel level, Player player, UseOnContext ctx, BlockItem item) {
+    private InteractionResult simulatePlace(ServerLevel level, Player player, UseOnContext ctx, Block block) {
+        Function<UseOnContext, InteractionResult> custom = ICustomPlaceMaterialBlock.getCustomPlaceAction(block);
+        if (custom != null) {
+            return custom.apply(ctx);
+        }
+
+        if (!(block.asItem() instanceof BlockItem blockItem)) {
+            EzDebug.warn("Block " + StrUtil.getBlockName(block.defaultBlockState()) + "'s item is not BlockItem!");
+            return InteractionResult.FAIL;
+        }
+
         UseOnCtxAccessor ctxAccessor = (UseOnCtxAccessor)ctx;
-        UseOnContext simulateUseCtx = new UseOnContext(level, player, ctx.getHand(), item.getDefaultInstance(), ctxAccessor.getHitResult());
+        UseOnContext simulateUseCtx = new UseOnContext(level, player, ctx.getHand(), blockItem.getDefaultInstance(), ctxAccessor.getHitResult());
 
         // 创建方块放置上下文
         BlockPlaceContext placeContext = new BlockPlaceContext(simulateUseCtx);
@@ -175,11 +189,22 @@ public class MaterialStandardizedItem extends Item implements IFilterItem {
         if (placeAgainst.isAir()) {
             return InteractionResult.PASS;
         }
-        BlockState stateToPlace = item.getBlock().getStateForPlacement(placeContext);
+        BlockState stateToPlace = blockItem.getBlock().getStateForPlacement(placeContext);
 
 
         // place logic
-        InteractionResult result = item.place(placeContext);
+        InteractionResult result = blockItem.place(placeContext);
+        if (result == InteractionResult.CONSUME || result == InteractionResult.CONSUME_PARTIAL || result == InteractionResult.SUCCESS) {
+            // after place event
+            String dimID = VSGameUtilsKt.getDimensionId(level);
+            ResourceKey<Level> levelKey = VSGameUtilsKt.getResourceKey(dimID);
+            BlockEvent.EntityPlaceEvent placeEvent = new BlockEvent.EntityPlaceEvent(
+                BlockSnapshot.create(levelKey, level, ctx.getClickedPos()),
+                placeAgainst,
+                player
+            );
+            MinecraftForge.EVENT_BUS.post(placeEvent);
+        }
         // todo 处理结果
         /*if (result.consumesAction()) {
             // 播放放置音效
@@ -200,15 +225,7 @@ public class MaterialStandardizedItem extends Item implements IFilterItem {
         }
         return false;*/
 
-        // after place event
-        String dimID = VSGameUtilsKt.getDimensionId(level);
-        ResourceKey<Level> levelKey = VSGameUtilsKt.getResourceKey(dimID);
-        BlockEvent.EntityPlaceEvent placeEvent = new BlockEvent.EntityPlaceEvent(
-            BlockSnapshot.create(levelKey, level, ctx.getClickedPos()),
-            placeAgainst,
-            player
-        );
-        MinecraftForge.EVENT_BUS.post(placeEvent);
+
 
         return result;
     }

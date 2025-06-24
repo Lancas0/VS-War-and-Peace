@@ -21,10 +21,12 @@
     "create.ui.OutlineEntryAccessor",
     "create.ui.OutlineMixin",
     "create.ui.OutlineParamsAccessor",
-    "debug.FluidTankBlockEntityMixin",
-    "debug.SmartBlockEntityMixin",
+    "valkyrien.PhysItemAccessor",
+    "valkyrien.SafePhysThreadInMaybePhyItemMixin",
+    "valkyrien.SafePhysThreadInMaybePhysPipelineMixin",
     "valkyrien.ShipObjectServerWorldAccessor",
-    "valkyrien.ShipUnloadMixin"
+    "valkyrien.ShipUnloadMixin",
+    "valkyrien.VsPhysThreadAccessor"
   ],
   "client": [
     "CameraMixin",
@@ -32,7 +34,6 @@
     "client.option.MixinGammaOption",
     "client.render.ItemEntityMixin",
     "client.render.LevelRendererMixin",
-    "create.bugfix.PonderUIFix",
     "sandbox.SandBoxAABBRenderer",
     "sandbox.SandBoxLevelRenderMixin"
   ],

@@ -5,6 +5,7 @@ import com.lancas.vswap.content.info.block.WapBlockInfos;
 import com.lancas.vswap.debug.EzDebug;
 import com.lancas.vswap.foundation.api.Dest;
 import com.lancas.vswap.foundation.math.WapBallisticMath;
+import com.lancas.vswap.sandbox.ballistics.ISandBoxBallisticBlock;
 import com.lancas.vswap.sandbox.ballistics.data.BallisticData;
 import com.lancas.vswap.sandbox.ballistics.data.BallisticPos;
 import com.lancas.vswap.ship.ballistics.data.BallisticsHitInfo;
@@ -72,17 +73,20 @@ public class PenetrateHandler {
         Dest<Boolean> bouncing = new Dest<>(false);
 
         for (int i = 0; i < WapConfig.maxDestroyCnt; ++i) {  //loop until miss hit or i>=MAX_DESTROY_CNT
-            BallisticsHitInfo hitInfo = BallisticsHitInfo.clipIncludeShip(level, clip);
+            if (bouncing.get()) break;
+            if (refVel.lengthSquared() < 0.1 || !Double.isFinite(refVel.lengthSquared())) break;
+
+            BallisticsHitInfo hitInfo = BallisticsHitInfo.clipIncludeShip(level, clip, ballisticData.vsShipFirer);
             if (hitInfo == null)  //not hit
                 break;
+
 
             double mass = rigidReader.getMass();  //todo rigidData's mass effect by scale
             //Vector3d lastHitVel = new Vector3d(rigidDataReader.getVelocity());
             double warheadScale = rigidReader.getScale().x();  //todo 3d scale?  todo scale effects
 
             //Vector3d tempLastVel = new Vector3d(lastHitVel);
-            if (bouncing.get()) break;
-            if (refVel.lengthSquared() < 0.1 || !Double.isFinite(refVel.lengthSquared())) break;
+
 
             //todo limit max destroy range
             breakAroundBlocks(level, ship, ballisticData, warhead, headBPos, refVel, hitInfo, bouncing, terminate);
@@ -144,7 +148,7 @@ public class PenetrateHandler {
         });
 
     }*/
-    private static void breakAroundBlocks(ServerLevel level, SandBoxServerShip ship, BallisticData data, BlockState warhead, BallisticPos ballisticPos, Vector3d refHitVel, BallisticsHitInfo hitInfo, Dest<Boolean> bouncing, AtomicBoolean terminate) {
+    public static void breakAroundBlocks(ServerLevel level, SandBoxServerShip ship, BallisticData data, BlockState warhead, BallisticPos ballisticPos, Vector3d refHitVel, BallisticsHitInfo hitInfo, Dest<Boolean> bouncing, AtomicBoolean terminate) {
         if (terminate.get() || bouncing.get()) return;
         if (refHitVel.lengthSquared() < 0.1 || !Double.isFinite(refHitVel.lengthSquared())) return;
 

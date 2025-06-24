@@ -434,15 +434,15 @@ public class EjectingBreech extends BlockPlus implements /*IBreech,*/IBE<Ejectin
 
         //todo check if can load
 
-        HoldableAttachment holdable = sHoldingShip.getAttachment(HoldableAttachment.class);
+        /*HoldableAttachment holdable = sHoldingShip.getAttachment(HoldableAttachment.class);
         if (holdable == null) {
             EzDebug.warn("the holding ship has no holdable!");
             return false;
-        }
+        }*/
 
         ICanHoldShip icanHoldShip = (ICanHoldShip)player;
         withBreechBeDo(sLevel, bp, be -> {
-            be.loadShipMunition(holdable);
+            be.loadShipMunition(sHoldingShip);
         });
         //iBreech.loadMunitionShip(sLevel, bp, state, sHoldingShip, true);
 

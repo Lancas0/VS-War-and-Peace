@@ -12,7 +12,7 @@ public class ActivatorBlockEntity extends BlockEntity {
         super(p_155228_, p_155229_, p_155230_);
     }
 
-    //do not save so can retrigger every times replaced(for vanilla.json use docker) todo is it a good solution?
+    //do not save so can retrigger every times replaced(for vanilla.disabled use docker) todo is it a good solution?
     public int remainDelayTicks = DELAYED_TICKS;
     public int remainTicks = ACTIVATOR_TICKS;
     protected boolean activating = false;

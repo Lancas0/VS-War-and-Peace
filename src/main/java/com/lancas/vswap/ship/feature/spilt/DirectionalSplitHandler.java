@@ -44,7 +44,7 @@ public class DirectionalSplitHandler {
         AABBic shipAABB = ship.getShipAABB();
         if (shipAABB == null) return dest;
 
-        //do not care whether the split start is air: ccc turns to air after trigger.
+        //do not care whether the split start is air: ccc.json turns to air after trigger.
         BlockPos splitStart = splitterPos.relative(splitDir);
         /*if (level.getBlockState(splitStart).isAir()) {
             EzDebug.warn("fail to split because split start is air");

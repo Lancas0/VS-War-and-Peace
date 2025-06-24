@@ -101,15 +101,32 @@ public class ImpactFuze extends BlockPlus implements ICollisionTrigger, ISandBox
         setTriggered(state, true);
     }
 
+    @Override
+    public void onClip(ServerLevel level, BallisticPos ballisticPos, BallisticsHitInfo hitInfo, BlockState state, SandBoxServerShip ship, List<SandBoxTriggerInfo> dest) {
+        if (isTriggered(state)) return;
+        if (ballisticPos.fromHead() != 0) return;
+
+        IRigidbodyDataReader rigidReader = ship.getRigidbody().getDataReader();
+
+        Vector3dc fuzeWorldPos = rigidReader.localIToWorldPos(ballisticPos.localPos());
+        Vector3dc vel = rigidReader.getVelocity();
+
+
+        var activateInfo = new SandBoxTriggerInfo.ActivateTriggerInfo(ship.getUuid(), ballisticPos.localPos(), state, hitInfo.worldHitPos);
+        dest.add(activateInfo);
+
+        ship.getBlockCluster().getDataWriter().setBlock(ballisticPos.localPos(), state.setValue(TRIGGERED, true));
+    }
+
     private void setTriggered(BlockState state, boolean val) { state.setValue(TRIGGERED, val); }
     private boolean isTriggered(BlockState state) { return state.getValue(TRIGGERED); }
 
 
-    @Override
+    /*@Override
     public void appendTriggerInfos(ServerLevel level, BallisticPos ballisticPos, BlockState state, SandBoxServerShip ship, List<SandBoxTriggerInfo> dest) {
         if (isTriggered(state)) return;
         if (ballisticPos.fromHead() != 0) return;  //don't trigger if not head
-        /*Vector3dc velocity = ship.getRigidbody().getExposedData().getVelocity();
+        /.*Vector3dc velocity = ship.getRigidbody().getExposedData().getVelocity();
         Vector3d movement = velocity.mul(0.06, new Vector3d());  //raycast predict time is 0.06
 
         Vector3dc worldPos = ship.getTransform().localToWorldPos(localPos, new Vector3d());
@@ -128,7 +145,7 @@ public class ImpactFuze extends BlockPlus implements ICollisionTrigger, ISandBox
         var activateInfo = new SandBoxTriggerInfo.ActivateTriggerInfo(ship.getUuid(), localPos, state, hitInfo.worldHitPos);
         dest.add(activateInfo);
         setTriggered(state, true);
-        ship.setBlock(localPos, state.setValue(TRIGGERED, true));*/
+        ship.setBlock(localPos, state.setValue(TRIGGERED, true));*./
 
         IRigidbodyDataReader rigidReader = ship.getRigidbody().getDataReader();
 
@@ -155,18 +172,18 @@ public class ImpactFuze extends BlockPlus implements ICollisionTrigger, ISandBox
         //BlockPos blockPos = JomlUtil.bpContaining(worldPos);
         //BlockState findState = level.getBlockState(blockPos);
 
-        /*if (!findState.isAir()) {
+        /.*if (!findState.isAir()) {
             var activateInfo = new SandBoxTriggerInfo.ActivateTriggerInfo(ship.getUuid(), ballisticPos.localPos(), state, worldPos);
             dest.add(activateInfo);
 
             ship.getBlockCluster().getDataWriter().setBlock(ballisticPos.localPos(), state.setValue(TRIGGERED, true));
-        }*/
+        }*./
 
-        /*EzDebug.log(
+        /.*EzDebug.log(
             "set state:" + ship.getCluster().getBlock(localPos).getValue(TRIGGERED) +
                 "\n get info:" + activateInfo
-        );*/
-    }
+        );*./
+    }*/
 
     /*@Override
     public double getMass(BlockState state) {

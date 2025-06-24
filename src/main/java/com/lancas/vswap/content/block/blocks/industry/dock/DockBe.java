@@ -1,5 +1,6 @@
 package com.lancas.vswap.content.block.blocks.industry.dock;
 
+import com.lancas.vswap.WapConfig;
 import com.lancas.vswap.content.item.items.docker.Docker;
 import com.lancas.vswap.content.saved.vs_constraint.ConstraintSmartHolder;
 import com.lancas.vswap.content.saved.vs_constraint.ConstraintTarget;
@@ -361,6 +362,28 @@ public class DockBe extends SyncedBlockEntity implements IMultiContainerBE, IHav
         return true;
     }
 
+    protected boolean isShipAbove(ServerLevel level) {
+        ServerShip inShip = ShipUtil.getServerShipAt(level, worldPosition);
+        long inShipId = inShip == null ? -1 : inShip.getId();
+
+        double inShipScale = inShip == null ? 1 : inShip.getTransform().getShipToWorldScaling().x();
+        double xLen = multiData.getLengthOfAxis(Direction.Axis.X) * inShipScale;
+        double zLen = multiData.getLengthOfAxis(Direction.Axis.Z) * inShipScale;
+
+        AABBd checkAABB = JomlUtil.dCenterExtended(getMultiCenterTopInWorld(level).add(0, 1.5, 0), xLen / 2.0, 1.5, zLen / 2.0);
+        if (WapConfig.debug_on) {
+            CreateClient.OUTLINER.showAABB("DockCheckAABB", JomlUtil.aabb(checkAABB));
+        }
+
+        for (ServerShip aboveShip : VSGameUtilsKt.getShipObjectWorld(level).getAllShips().getIntersecting(
+            checkAABB
+        )) {
+            if (inShipId != aboveShip.getId())
+                return true;
+        }
+        return false;
+    }
+
     public ItemStack construct(ItemStack material, boolean simulate) {
         if (!isController()) {
             return getControllerBE().construct(material, simulate);
@@ -369,14 +392,19 @@ public class DockBe extends SyncedBlockEntity implements IMultiContainerBE, IHav
         if (!(level instanceof ServerLevel sLevel))
             return material;  //must start construction in server
         if (constructHandler != null) {  //already started
-            return constructHandler.putMaterial(sLevel, material, simulate);
+            ItemStack afterStack = constructHandler.putMaterial(sLevel, material, simulate);
+            if (!afterStack.equals(material, true)) {
+                notifyUpdate();
+            }
+
+            return afterStack;
         }
 
         if (holdingVsShipId >= 0)
             return material;  //holding ship and not constructing
 
 
-        ServerShip inShip = ShipUtil.getServerShipAt(sLevel, worldPosition);
+        /*ServerShip inShip = ShipUtil.getServerShipAt(sLevel, worldPosition);
         double inShipScale = inShip == null ? 1 : inShip.getTransform().getShipToWorldScaling().x();
         double xLen = multiData.getLengthOfAxis(Direction.Axis.X) * inShipScale;
         double zLen = multiData.getLengthOfAxis(Direction.Axis.Z) * inShipScale;
@@ -387,7 +415,9 @@ public class DockBe extends SyncedBlockEntity implements IMultiContainerBE, IHav
                 return material;
             if (aboveShip.getId() != inShip.getId())
                 return material;  //has ship above, do not construct
-        }
+        }*/
+        if (isShipAbove(sLevel))
+            return material;
 
         if (!(material.getItem() instanceof MaterialStandardizedItem ms)) {
             EzDebug.warn("construct accept not ms item:" + material.getItem());
@@ -431,6 +461,8 @@ public class DockBe extends SyncedBlockEntity implements IMultiContainerBE, IHav
                 AABBi constructedShipAABB = new AABBi(shapeSize).translate(origin.getX(), origin.getY(), origin.getZ());
 
                 moveAndApplyConstraint(sLevel, constructing, JomlUtil.dFaceCenter(constructedShipAABB, Direction.DOWN), additionalRot);
+
+                notifyUpdate();
             }
             return remain;
         }
@@ -448,14 +480,23 @@ public class DockBe extends SyncedBlockEntity implements IMultiContainerBE, IHav
 
         //todo doing construct stuff
         if (constructHandler != null) {
-            if (!simulate)
-                constructHandler.creativePutMaterial(sLevel);
-            return true;  //already started
+            if (simulate) {
+                return !constructHandler.isCompleted();  //complete for can't put in
+            }
+            //already started
+            if (constructHandler.creativePutMaterial(sLevel)) {
+                notifyUpdate();
+                return true;
+            } else
+                return false; //already started
         }
 
         //not constructing but holding a ship
         if (holdingVsShipId >= 0)
-            return false;  //holding ship
+            return false;
+
+        if (isShipAbove(sLevel))
+            return false;
 
         Vector3d centerTop = getMultiCenterTopInWorld(sLevel);
 
@@ -495,6 +536,8 @@ public class DockBe extends SyncedBlockEntity implements IMultiContainerBE, IHav
                 AABBi constructedShipAABB = new AABBi(shapeSize).translate(origin.getX(), origin.getY(), origin.getZ());
 
                 moveAndApplyConstraint(sLevel, constructing, JomlUtil.dFaceCenter(constructedShipAABB, Direction.DOWN), additionalRot);
+
+                notifyUpdate();
             }
             return true;
         }

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " D ",
+    " T ",
+    " P "
+  ],
+  "key": {
+    "D": { "item": "vswap:dock" },
+    "T": { "item": "create:electron_tube" },
+    "P": { "item": "minecraft:paper" }
+  },
+  "result": {
+    "item": "vswap:dock_green_print_holder",
+    "count": 1
+  }
+}

@@ -250,9 +250,9 @@ dependencies {
     //jei
     runtimeOnly fg.deobf("mezz.jei:jei-${minecraft_version}-forge:${jei_version}")
     // Create
-    implementation fg.deobf("com.simibubi.create:create-${minecraft_version}:${create_forge_version}")  { transitive = true }
-    implementation fg.deobf("com.tterrag.registrate:Registrate:${registrate_version}")  { transitive = true }
-    implementation fg.deobf("com.jozufozu.flywheel:flywheel-forge-${minecraft_version}:${flywheel_version}") { transitive = true }
+    implementation fg.deobf("com.simibubi.create:create-${minecraft_version}:${create_forge_version}")
+    implementation fg.deobf("com.tterrag.registrate:Registrate:${registrate_version}")
+    implementation fg.deobf("com.jozufozu.flywheel:flywheel-forge-${minecraft_version}:${flywheel_version}")
 
 
     //implementation fg.deobf("org.valkyrienskies:valkyrienskies-120-forge:2.3.0-beta.5+6911bbe238")
@@ -275,12 +275,15 @@ dependencies {
 
     implementation fg.deobf("maven.modrinth:MyfCcqiE:ogrWXsFW")  //create interactive
 
+    implementation fg.deobf("maven.modrinth:qS1ot7R2:olye6Wcg")  //vmod
+    //implementation fg.deobf("net.spaceeye:valkyrien-ship-schematics-$project.name:1.18.2-1.1") {transitive = false}
+    //implementation fg.deobf("net.spaceeye:valkyrien-ship-schematics-$project.name:1.18.2-1.1") {transitive = false}
 
 
     runtimeOnly fg.deobf("curse.maven:cc-tweaked-282001:5379173")
     runtimeOnly fg.deobf("maven.modrinth:QCUnCyr8:MO4nsdTK")  //control craft
 
-    runtimeOnly fg.deobf("maven.modrinth:FXDpZRJG:qyQLIJgu")  //trackwork
+    implementation fg.deobf("maven.modrinth:FXDpZRJG:qyQLIJgu")  //trackwork
 
     runtimeOnly fg.deobf("maven.modrinth:sk9knFPE:uNALdylI")  //Rhino
     runtimeOnly fg.deobf("maven.modrinth:umyGl7zF:g5igndAv")  //kubejs
@@ -295,6 +298,8 @@ dependencies {
 
     runtimeOnly fg.deobf("maven.modrinth:jIVvzR1C:e2W89mnA")  //vs tournament
     runtimeOnly fg.deobf("maven.modrinth:Vg5TIO6d:1o1CPwZD")
+
+    runtimeOnly fg.deobf("maven.modrinth:21JTaupZ:jdJCsldy")  //forget what is it
     //runtimeOnly fg.deobf("libs:create_connected:1.1.4")
 
 
@@ -302,8 +307,6 @@ dependencies {
 
     //runtimeOnly fg.deobf("maven.modrinth:dCKRaeBC:YncE2C0Y")  //Forgematica
     //runtimeOnly fg.deobf("maven.modrinth:SKI34J7B:6lS8JYz3")  //MaFgLib
-
-    //runtimeOnly fg.deobf("maven.modrinth:qS1ot7R2:FM7dnwSg")  //vmod
 
     //runtimeOnly fg.deobf("curse.maven:better-tips-nbt-tag-682363:5932570")  //Better Tag NBT Tips
     //runtimeOnly files("libs/clockwork-1.20.1-0.1.16-forge-b3b22e39fe.jar")
@@ -328,6 +331,9 @@ dependencies {
     implementation 'org.joml:joml-primitives:1.10.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib:2.0.0"
     implementation "org.jetbrains.kotlin:kotlin-reflect:2.0.0"
+
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3")
+
 
     implementation 'net.bytebuddy:byte-buddy:1.12.7'
     implementation 'net.bytebuddy:byte-buddy-agent:1.12.7'

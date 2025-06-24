@@ -1,38 +1,162 @@
 [
   {
-    "block": "minecraft:dirt",
-    "armour_rhae": 0.05,
-    "armour_ab_ratio": 2
-  },
-  {
-    "tag": "minecraft:logs",
-    "armour_rhae": 0.1,
-    "armour_ab_ratio": 1.3
-  },
-  {
-    "tag": "minecraft:planks",
-    "armour_rhae": 0.1,
+    "block": "minecraft:iron_block",
+    "armour_rhae": 2,
     "armour_ab_ratio": 1
   },
   {
-    "block": "minecraft:wooden_stairs",
-    "armour_rhae": 0.1,
-    "armour_ab_ratio": 1.2
-  },
-  {
-    "block": "minecraft:wooden_slabs",
-    "armour_rhae": 0.1,
-    "armour_ab_ratio": 1.2
+    "block": "minecraft:diamond_block",
+    "armour_rhae": 10,
+    "armour_ab_ratio": 0.1
   },
   {
     "block": "minecraft:netherite_block",
     "armour_rhae": 8,
+    "armour_ab_ratio": 0.5
+  },
+  {
+    "block": "minecraft:lapis_block",
+    "armour_rhae": 1.2,
+    "armour_ab_ratio": 1.5
+  },
+  {
+    "block": "minecraft:redstone_block",
+    "armour_rhae": 0.8,
+    "armour_ab_ratio": 2
+  },
+  {
+    "block": "minecraft:emerald_block",
+    "armour_rhae": 5,
+    "armour_ab_ratio": 0.2
+  },
+
+
+  {
+    "category": "*dirt_category",
+    "armour_rhae": 0.1,
+    "armour_ab_ratio": 2.5
+  },
+  {
+    "category": "*log_category",
+    "armour_rhae": 0.2,
+    "armour_ab_ratio": 1.3
+  },
+  {
+    "category": "*wooden_planks_category",
+    "armour_rhae": 0.2,
+    "armour_ab_ratio": 1
+  },
+  {
+    "category": "*cobblestone_category",
+    "armour_rhae": 0.4,
+    "armour_ab_ratio": 0.5
+  },
+  {
+    "category": "*stone_category",
+    "armour_rhae": 0.4,
+    "armour_ab_ratio": 0.5
+  },
+  {
+    "category": "*bricks_category",
+    "armour_rhae": 0.4,
     "armour_ab_ratio": 0.6
   },
   {
-    "block": "minecraft:bedrock",
-    "armour_rhae": "Infinity",
-    "armour_ab_ratio": "Infinity"
+    "category": "*mud_bricks_category",
+    "armour_rhae": 0.25,
+    "armour_ab_ratio": 3
+  },
+  {
+    "category": "*sandstone_category",
+    "armour_rhae": 0.3,
+    "armour_ab_ratio": 0.6
+  },
+  {
+    "category": "*prismarine_category",
+    "armour_rhae": 0.5,
+    "armour_ab_ratio": 1
+  },
+  {
+    "category": "*nether_cobblestone_category",
+    "armour_rhae": 0.7,
+    "armour_ab_ratio": 0.4
+  },
+  {
+    "category": "*nether_stone_category",
+    "armour_rhae": 0.8,
+    "armour_ab_ratio": 0.8
+  },
+  {
+    "category": "*quartz_category",
+    "armour_rhae": 0.7,
+    "armour_ab_ratio": 0.3
+  },
+  {
+    "category": "*ender_stone_category",
+    "armour_rhae": 0.5,
+    "armour_ab_ratio": 1
+  },
+  {
+    "category": "*purpur_category",
+    "armour_rhae": 0.1,
+    "armour_ab_ratio": 6
+  },
+  {
+    "category": "*copper_category",
+    "armour_rhae": 0.8,
+    "armour_ab_ratio": 1.5
+  },
+
+
+  {
+    "category": "*wool_category",
+    "armour_rhae": 0.2,
+    "armour_ab_ratio": 8
+  },
+  {
+    "category": "*wool_carpets_category",
+    "armour_rhae": 0.2,
+    "armour_ab_ratio": 4
+  },
+  {
+    "category": "*terracotta_category",
+    "armour_rhae": 0.6,
+    "armour_ab_ratio": 0.4
+  },
+  {
+    "category": "*concrete_category",
+    "armour_rhae": 3.5,
+    "armour_ab_ratio": 0.4
+  },
+  {
+    "category": "*concrete_powder_category",
+    "armour_rhae": 0.2,
+    "armour_ab_ratio": 0.7
+  },
+  {
+    "category": "*glass_category",
+    "armour_rhae": 0.1,
+    "armour_ab_ratio": 0.4
+  },
+  {
+    "category": "*glass_panes_category",
+    "armour_rhae": 0.1,
+    "armour_ab_ratio": 0.2
+  },
+  {
+    "category": "*shulker_box_category",
+    "armour_rhae": 0.3,
+    "armour_ab_ratio": 2.5
+  },
+  {
+    "category": "*candle_category",
+    "armour_rhae": 0.1,
+    "armour_ab_ratio": 0.1
+  },
+  {
+    "category": "*banner_category",
+    "armour_rhae": 0.1,
+    "armour_ab_ratio": 4
   }
 
 ]

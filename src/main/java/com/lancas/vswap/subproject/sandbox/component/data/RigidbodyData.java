@@ -56,20 +56,9 @@ public class RigidbodyData implements IComponentData<RigidbodyData>, IRigidbodyD
         transform.set(initialTransform);
         gravity.set(initialGravity);
     }
-    //public RigidbodyData(CompoundTag tag) { load(tag); }
     public static RigidbodyData createEarthGravity(ITransformPrimitive initialTransform) {
         return new RigidbodyData(initialTransform, new Vector3d(0, -9.8, 0));
     }
-    /*public static RigidbodyData createNoGravity() {
-        return new RigidbodyData();  //actually default is no gravity
-    }
-    public static RigidbodyData createDefault() { return new RigidbodyData(); }
-    public static RigidbodyData createEarthGravity() {
-        RigidbodyData data = new RigidbodyData();
-        initialGravity
-        return data;
-    }*/
-
 
     @Override
     public RigidbodyData copyData(RigidbodyData src) {
@@ -133,98 +122,8 @@ public class RigidbodyData implements IComponentData<RigidbodyData>, IRigidbodyD
             localInertiaTensor.m00 += self_xxyyzz + m * (sqDy + sqDz);
             localInertiaTensor.m11 += self_xxyyzz + m * (sqDx + sqDz);
             localInertiaTensor.m22 += self_xxyyzz + m * (sqDx + sqDy);
-
-            // 不考虑非对角项
-            /*I.xy -= m * delta.x * delta.y;
-            I.xz -= m * delta.x * delta.z;
-            I.yz -= m * delta.y * delta.z;*/
         });
     }
-    /*public void updateInertia(SandBoxServerShip ship) {
-        inertiaTensor.zero();
-        if (mass < 1E-10 || ship.getCluster().blockCount() == 0) return;
-
-        //只有一个方块时特殊计算:拆成八个角算
-        if (ship.getCluster().blockCount() == 1) {
-            updateInertiaOnlyOneBlock(ship);
-            return;
-        }
-
-        Vector3d massCenter = ship.getRigidbody().calLocalMassCenter();
-        ship.getCluster().foreach((localPos, state) -> {
-            Vector3d delta = JomlUtil.d(localPos).sub(massCenter);
-            double dx = delta.x, dy = delta.y, dz = delta.z;
-            double m = WapBlockInfos.mass.valueOrDefaultOf(state);
-
-            double xx = m * (dy*dy + dz*dz);
-            double yy = m * (dx*dx + dz*dz);
-            double zz = m * (dx*dx + dy*dy);
-            double xy = m * dx * dy;
-            double xz = m * dx * dz;
-            double yz = m * dy * dz;
-
-            inertiaTensor.m00 += xx;
-            inertiaTensor.m11 += yy;
-            inertiaTensor.m22 += zz;
-        });
-        /.*for (var blockEntry : ship.getCluster().allBlocks()) {
-
-            //忽略对角项
-            //data.inertiaTensor.m10 -= xy;
-            //data.inertiaTensor.m20 -= xz;
-
-            data.inertiaTensor.m01 -= xy;
-
-            data.inertiaTensor.m21 -= yz;
-
-            data.inertiaTensor.m02 -= xz;
-            data.inertiaTensor.m12 -= yz;
-
-
-            //data.inertiaTensor.
-        }*./
-    }*/
-    /*private void updateInertiaOnlyOneBlock(SandBoxServerShip ship) {
-        Vector3d massCenter = ship.getRigidbody().calLocalMassCenter();
-        BiConsumer<Vector3ic, BlockState> calOneCorner = (localPos, state) -> {
-            double cm = WapBlockInfos.mass.valueOrDefaultOf(state) / 8.0;
-            for (double cx : new double[]{ -0.25, 0.25 }) {
-                for (double cy : new double[]{ -0.25, 0.25 }) {
-                    for (double cz : new double[]{ -0.25, 0.25 }) {
-                        double
-                            dx = cx - massCenter.x,
-                            dy = cy - massCenter.y,
-                            dz = cz - massCenter.z;
-
-                        double xx = cm * (dy*dy + dz*dz);
-                        double yy = cm * (dx*dx + dz*dz);
-                        double zz = cm * (dx*dx + dy*dy);
-                        double xy = cm * dx * dy;
-                        double xz = cm * dx * dz;
-                        double yz = cm * dy * dz;
-
-                        //忽略对角项
-                        inertiaTensor.m00 += xx;
-                        inertiaTensor.m11 += yy;
-                        inertiaTensor.m22 += zz;
-                        /.*
-                        data.inertiaTensor.m10 -= xy;
-                        data.inertiaTensor.m20 -= xz;
-
-                        data.inertiaTensor.m01 -= xy;
-
-                        data.inertiaTensor.m21 -= yz;
-
-                        data.inertiaTensor.m02 -= xz;
-                        data.inertiaTensor.m12 -= yz;*./
-
-                    }
-                }
-            }
-        };
-
-        ship.getCluster().foreach(calOneCorner);
-    }*/
     @Override
     public CompoundTag saved() {
         return new NbtBuilder()
@@ -553,16 +452,6 @@ public class RigidbodyData implements IComponentData<RigidbodyData>, IRigidbodyD
         });
         return this;
     }
-
-    /*@Override
-    public RigidbodyData setVelocity(Vector3dc newVel) { velocity.set(newVel); return this; }  //todo sync
-    @Override
-    public RigidbodyData setOmega(Vector3dc newOmega) { omega.set(newOmega); return this; }  //todo sync
-
-    @Override
-    public Vector3dc getGravity() { return gravity; }
-    @Override
-    public void setGravity(Vector3dc newGravity) { gravity.set(newGravity); }  //todo sync*/
 
 
     public RigidbodyData setPositionImmediately(Vector3dc pos) {

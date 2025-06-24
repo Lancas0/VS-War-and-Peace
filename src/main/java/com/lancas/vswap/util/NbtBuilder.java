@@ -146,6 +146,10 @@ public class NbtBuilder {
         //return getTag != null && !getTag.isEmpty();
         return nbt.contains(key);
     }
+    public NbtBuilder remove(String key) {
+        nbt.remove(key);
+        return this;
+    }
 
 
     public NbtBuilder putInt(String key, int v) {
@@ -732,7 +736,7 @@ public class NbtBuilder {
         consumer.accept(
             new BlockPos(tag.getInt("x"), tag.getInt("y"), tag.getInt("z")),
             NbtUtils.readBlockState(BuiltInRegistries.BLOCK.asLookup(), tag.getCompound("state")),
-            tag.contains("be") ? null : tag.getCompound("be")
+            tag.contains("be") ? tag.getCompound("be") : null
         );
     }
 

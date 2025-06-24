@@ -1,6 +1,7 @@
 [
   {
     "name": "dirt_category",
+    "localization": "vswap.category.dirt",
     "icon": "minecraft:dirt",
     "include": [
       "#minecraft:dirt",
@@ -9,42 +10,69 @@
     "exclude": []
   },
   {
-    "name": "wool_category",
-    "icon": "minecraft:white_wool",
+    "name": "log_category",
+    "localization": "vswap.category.log",
+    "icon": "minecraft:oak_log",
     "include": [
-      "#minecraft:wool"
+      "#minecraft:logs",
+      "#minecraft:bamboo_blocks"
     ],
     "exclude": []
   },
   {
-    "name": "log_category",
-    "icon": "minecraft:oak_log",
-    "include": "#minecraft:logs",
-    "exclude": []
-  },
-  {
-    "name": "planks_category",
+    "name": "wooden_planks_category",
+    "localization": "vswap.category.wooden_planks",
     "icon": "minecraft:oak_planks",
-    "include": "#minecraft:planks",
+    "include": [
+      "#minecraft:planks",
+      "minecraft:bamboo_mosaic"
+    ],
     "exclude": []
   },
   {
     "name": "cobblestone_category",
+    "localization": "vswap.category.cobblestone",
     "icon": "minecraft:cobblestone",
-    "include": "#forge:cobblestone",
-    "exclude": []
+    "include": [
+      "#forge:cobblestone"
+    ],
+    "exclude": [
+      "minecraft:infested_cobblestone"
+    ]
   },
   {
     "name": "stone_category",
+    "localization": "vswap.category.stone",
     "icon": "minecraft:stone",
     "include": [
-      "#forge:stone",
-      "#minecraft:stone_bricks"
+      "#minecraft:base_stone_overworld",
+      "#minecraft:stone_bricks",
+      "#vswap:deepslate_bricks"
+    ],
+    "exclude": []
+  },
+  {
+    "name": "bricks_category",
+    "localization": "vswap.category.bricks",
+    "icon": "minecraft:bricks",
+    "include": [
+      "minecraft:bricks"
+    ],
+    "exclude": []
+  },
+  {
+    "name": "mud_bricks_category",
+    "localization": "vswap.category.mud_bricks",
+    "icon": "minecraft:mud_bricks",
+    "include": [
+      "minecraft:packed_mud",
+      "minecraft:mud_bricks"
     ],
     "exclude": []
   },
   {
     "name": "sandstone_category",
+    "localization": "vswap.category.sandstone",
     "icon": "minecraft:sandstone",
     "include": [
       "#forge:sandstone"
@@ -52,7 +80,43 @@
     "exclude": []
   },
   {
+    "name": "prismarine_category",
+    "localization": "vswap.category.prismarine",
+    "icon": "minecraft:prismarine",
+    "include": [
+      "minecraft:prismarine",
+      "minecraft:dark_prismarine",
+      "minecraft:prismarine_bricks"
+    ],
+    "exclude": []
+  },
+  {
+    "name": "nether_cobblestone_category",
+    "localization": "vswap.category.nether_cobblestone",
+    "icon": "minecraft:netherrack",
+    "include": [
+      "#minecraft:base_stone_nether"
+    ],
+    "exclude": []
+  },
+  {
+    "name": "nether_stone_category",
+    "localization": "vswap.category.nether_stone",
+    "icon": "minecraft:nether_bricks",
+    "include": [
+      "minecraft:nether_bricks",
+      "minecraft:cracked_nether_bricks",
+      "minecraft:chiseled_nether_bricks",
+      "minecraft:red_nether_bricks",
+      "minecraft:smooth_basalt",
+      "minecraft:polished_basalt",
+      "#vswap:blackstone_bricks"
+    ],
+    "exclude": []
+  },
+  {
     "name": "quartz_category",
+    "localization": "vswap.category.quartz",
     "icon": "minecraft:quartz_block",
     "include": [
       "minecraft:quartz_block",
@@ -60,6 +124,35 @@
       "minecraft:quartz_pillar",
       "minecraft:chiseled_quartz_block",
       "minecraft:quartz_stair"
+    ],
+    "exclude": []
+  },
+  {
+    "name": "ender_stone_category",
+    "localization": "vswap.category.ender_stone",
+    "icon": "minecraft:end_stone",
+    "include": [
+      "minecraft:end_stone",
+      "minecraft:end_stone_bricks"
+    ],
+    "exclude": []
+  },
+  {
+    "name": "purpur_category",
+    "localization": "vswap.category.purpur",
+    "icon": "minecraft:purpur_block",
+    "include": [
+      "minecraft:purpur_block",
+      "minecraft:purpur_pillar"
+    ],
+    "exclude": []
+  },
+  {
+    "name": "copper_category",
+    "localization": "vswap.category.copper",
+    "icon": "minecraft:copper_block",
+    "include": [
+      "#vswap:copper_blocks"
     ],
     "exclude": []
   }
