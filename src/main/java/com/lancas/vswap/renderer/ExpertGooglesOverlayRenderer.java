@@ -252,7 +252,9 @@ public class ExpertGooglesOverlayRenderer {
                 if (armourState.isAir())
                     return false;
 
-                Vector3d incidenceDir = JomlUtil.d(hitResult.getLocation().subtract(player.getEyePosition())).normalize();
+                // Newer VS versions report ship hits in shipyard space; the incidence direction needs world space.
+                Vector3d hitWorld = WorldUtil.getWorldPos(level, JomlUtil.d(hitResult.getLocation()), new Vector3d());
+                Vector3d incidenceDir = hitWorld.sub(JomlUtil.d(player.getEyePosition())).normalize();
                 Vector3d normal = WorldUtil.getWorldDirection(level, bp, hitResult.getDirection());
 
                 double warheadHardness = WapBlockInfos.ArmourRhae.valueOrDefaultOf(bi.getBlock().defaultBlockState());
